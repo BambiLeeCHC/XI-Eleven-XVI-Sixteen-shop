@@ -3,6 +3,7 @@ import base64
 import logging
 import json
 from emergentintegrations.llm.chat import LlmChat, UserMessage, ImageContent
+from emergentintegrations.llm.openai.image_generation import OpenAIImageGeneration
 
 logger = logging.getLogger(__name__)
 
@@ -136,7 +137,7 @@ Return JSON with:
     except json.JSONDecodeError:
         return {"body_profile": response, "skin_tone": "n/a", "build": dimensions.get("body_type", "average"), "fit_preferences": "regular"}
 
-async def generate_tryon_visualization(user_image_base64: str, product_name: str, product_image_url: str, dimensions: dict) -> str:
+async def generate_tryon_visualization(user_image_base64: str, product_name: str, product_image_url: str, dimensions: dict) -> dict:
     """Use AI to describe how a garment would look on the user's body."""
     chat = LlmChat(
         api_key=get_api_key(),
@@ -166,3 +167,55 @@ Return JSON:
         return json.loads(cleaned)
     except json.JSONDecodeError:
         return {"fit_analysis": response, "size_notes": "", "style_rating": 7, "adjustments_needed": "none", "overall_look": response}
+
+
+async def generate_tryon_image(user_image_base64: str, product_name: str, product_description: str, dimensions: dict) -> str:
+    """Use GPT Image 1 to render the garment on the user's body. Returns base64 image."""
+    image_gen = OpenAIImageGeneration(api_key=get_api_key())
+    prompt = (
+        f"A high-end fashion editorial photo of a person wearing {product_name}. "
+        f"The person has a {dimensions.get('body_type', 'average')} build, "
+        f"shoulder width {dimensions.get('shoulder_width', 44)}cm, "
+        f"height {dimensions.get('height_cm', 175)}cm. "
+        f"The garment is {product_description}. "
+        f"Studio lighting, luxury brand aesthetic, clean background, "
+        f"professional fashion photography style, the clothing fits perfectly on the body."
+    )
+    try:
+        images = await image_gen.generate_images(
+            prompt=prompt,
+            model="gpt-image-1",
+            number_of_images=1
+        )
+        if images and len(images) > 0:
+            return base64.b64encode(images[0]).decode('utf-8')
+        return None
+    except Exception as e:
+        logger.error(f"Try-on image generation error: {e}")
+        return None
+
+
+async def generate_ad_image(product_name: str, product_description: str, style_notes: str = "") -> str:
+    """Generate a high-end advertising image for a product. Returns base64 image."""
+    image_gen = OpenAIImageGeneration(api_key=get_api_key())
+    prompt = (
+        f"A luxury fashion advertising campaign photo for '{product_name}'. "
+        f"{product_description}. "
+        f"Professional model wearing the garment in a high-end editorial setting. "
+        f"Dramatic studio lighting, premium brand aesthetic like Gucci or Balenciaga. "
+        f"Clean, minimal background, sharp focus on the outfit. "
+        f"High fashion photography, magazine quality, aspirational luxury lifestyle. "
+        f"{style_notes}"
+    )
+    try:
+        images = await image_gen.generate_images(
+            prompt=prompt,
+            model="gpt-image-1",
+            number_of_images=1
+        )
+        if images and len(images) > 0:
+            return base64.b64encode(images[0]).decode('utf-8')
+        return None
+    except Exception as e:
+        logger.error(f"Ad image generation error: {e}")
+        return None

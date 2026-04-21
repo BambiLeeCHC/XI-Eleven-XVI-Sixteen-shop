@@ -28,7 +28,7 @@ export default function Header() {
       <div className="max-w-7xl mx-auto px-6 lg:px-12 h-16 flex items-center justify-between">
         <Link to="/" className="flex items-center gap-3" data-testid="logo-link">
           <img src={LOGO_URL} alt="XI XVI" className="h-10 w-10 object-contain" />
-          <span className="font-heading text-lg tracking-tight text-[#C5A059] font-medium hidden sm:block">
+          <span className="font-heading text-lg tracking-tight text-[#8B6914] font-medium hidden sm:block">
             ELEVEN SIXTEEN
           </span>
         </Link>
@@ -40,7 +40,7 @@ export default function Header() {
               key={item.path}
               to={item.path}
               className={`text-sm font-body tracking-wide transition-colors duration-300 flex items-center gap-2
-                ${isActive(item.path) ? 'text-[#C5A059]' : 'text-[#A3A3A3] hover:text-[#F5F5F0]'}`}
+                ${isActive(item.path) ? 'text-[#8B6914]' : 'text-[#6B6B6B] hover:text-[#1A1A1A]'}`}
               data-testid={`nav-${item.label.toLowerCase().replace(' ', '-')}`}
             >
               <item.icon size={16} strokeWidth={1.5} />
@@ -54,7 +54,7 @@ export default function Header() {
             <>
               <Link
                 to="/profile"
-                className="text-sm text-[#A3A3A3] hover:text-[#F5F5F0] transition-colors flex items-center gap-2"
+                className="text-sm text-[#6B6B6B] hover:text-[#1A1A1A] transition-colors flex items-center gap-2"
                 data-testid="nav-profile"
               >
                 <User size={16} strokeWidth={1.5} />
@@ -64,7 +64,7 @@ export default function Header() {
                 variant="ghost"
                 size="sm"
                 onClick={() => { logout(); navigate('/'); }}
-                className="text-[#A3A3A3] hover:text-[#F5F5F0] rounded-none"
+                className="text-[#6B6B6B] hover:text-[#1A1A1A] rounded-none"
                 data-testid="logout-btn"
               >
                 <LogOut size={16} strokeWidth={1.5} />
@@ -72,7 +72,7 @@ export default function Header() {
             </>
           ) : (
             <Link to="/login" data-testid="nav-login">
-              <Button className="bg-[#C5A059] text-black hover:bg-[#B38D46] rounded-none text-sm px-6">
+              <Button className="bg-[#1A1A1A] text-white hover:bg-[#333] rounded-none text-sm px-6">
                 Sign In
               </Button>
             </Link>
@@ -81,7 +81,7 @@ export default function Header() {
 
         {/* Mobile menu toggle */}
         <button
-          className="md:hidden text-[#F5F5F0]"
+          className="md:hidden text-[#1A1A1A]"
           onClick={() => setMobileOpen(!mobileOpen)}
           data-testid="mobile-menu-toggle"
         >
@@ -91,24 +91,24 @@ export default function Header() {
 
       {/* Mobile Nav */}
       {mobileOpen && (
-        <div className="md:hidden bg-[#0F0F0F] border-t border-[#2E2E2E] px-6 py-4 space-y-3" data-testid="mobile-nav">
+        <div className="md:hidden bg-white border-t border-[#E8E4DD] px-6 py-4 space-y-3" data-testid="mobile-nav">
           {navItems.map(item => (
             <Link
               key={item.path}
               to={item.path}
               onClick={() => setMobileOpen(false)}
-              className="block text-sm text-[#A3A3A3] hover:text-[#F5F5F0] py-2"
+              className="block text-sm text-[#6B6B6B] hover:text-[#1A1A1A] py-2"
             >
               {item.label}
             </Link>
           ))}
           {user ? (
             <>
-              <Link to="/profile" onClick={() => setMobileOpen(false)} className="block text-sm text-[#A3A3A3] py-2">Profile</Link>
-              <button onClick={() => { logout(); navigate('/'); setMobileOpen(false); }} className="text-sm text-[#A3A3A3] py-2">Logout</button>
+              <Link to="/profile" onClick={() => setMobileOpen(false)} className="block text-sm text-[#6B6B6B] py-2">Profile</Link>
+              <button onClick={() => { logout(); navigate('/'); setMobileOpen(false); }} className="text-sm text-[#6B6B6B] py-2">Logout</button>
             </>
           ) : (
-            <Link to="/login" onClick={() => setMobileOpen(false)} className="block text-sm text-[#C5A059] py-2">Sign In</Link>
+            <Link to="/login" onClick={() => setMobileOpen(false)} className="block text-sm text-[#8B6914] py-2">Sign In</Link>
           )}
         </div>
       )}

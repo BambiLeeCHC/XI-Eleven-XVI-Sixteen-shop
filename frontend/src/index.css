@@ -9,8 +9,8 @@ body {
     font-family: 'Manrope', sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    background: #050505;
-    color: #F5F5F0;
+    background: #FAF8F5;
+    color: #1A1A1A;
 }
 
 code {
@@ -19,26 +19,26 @@ code {
 
 @layer base {
     :root {
-        --background: 0 0% 2%;
-        --foreground: 40 10% 95%;
-        --card: 0 0% 6%;
-        --card-foreground: 40 10% 95%;
-        --popover: 0 0% 6%;
-        --popover-foreground: 40 10% 95%;
-        --primary: 39 45% 56%;
-        --primary-foreground: 0 0% 2%;
-        --secondary: 0 0% 8%;
-        --secondary-foreground: 0 0% 88%;
-        --muted: 0 0% 12%;
-        --muted-foreground: 0 0% 64%;
-        --accent: 0 0% 12%;
-        --accent-foreground: 40 10% 95%;
+        --background: 36 33% 97%;
+        --foreground: 0 0% 10%;
+        --card: 0 0% 100%;
+        --card-foreground: 0 0% 10%;
+        --popover: 0 0% 100%;
+        --popover-foreground: 0 0% 10%;
+        --primary: 39 45% 45%;
+        --primary-foreground: 0 0% 100%;
+        --secondary: 36 20% 92%;
+        --secondary-foreground: 0 0% 20%;
+        --muted: 36 15% 90%;
+        --muted-foreground: 0 0% 45%;
+        --accent: 36 20% 92%;
+        --accent-foreground: 0 0% 10%;
         --destructive: 0 84% 60%;
         --destructive-foreground: 0 0% 98%;
-        --border: 0 0% 18%;
-        --input: 0 0% 18%;
-        --ring: 39 45% 56%;
-        --chart-1: 39 45% 56%;
+        --border: 36 15% 85%;
+        --input: 36 15% 85%;
+        --ring: 39 45% 45%;
+        --chart-1: 39 45% 45%;
         --chart-2: 0 0% 64%;
         --chart-3: 0 0% 40%;
         --chart-4: 39 30% 40%;
@@ -84,18 +84,18 @@ code {
 }
 
 .glass-header {
-    background: rgba(0, 0, 0, 0.6);
+    background: rgba(250, 248, 245, 0.85);
     backdrop-filter: blur(24px);
     -webkit-backdrop-filter: blur(24px);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
 }
 
 .gold-glow {
-    box-shadow: 0 0 20px rgba(197, 160, 89, 0.15);
+    box-shadow: 0 0 20px rgba(176, 135, 56, 0.15);
 }
 
 .scan-line {
-    background: linear-gradient(transparent, rgba(197, 160, 89, 0.3), transparent);
+    background: linear-gradient(transparent, rgba(176, 135, 56, 0.3), transparent);
     animation: scanMove 2s ease-in-out infinite;
 }
 

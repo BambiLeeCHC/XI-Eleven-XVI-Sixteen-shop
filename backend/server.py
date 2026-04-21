@@ -22,7 +22,8 @@ from auth import (
 from storage import init_storage, put_object, get_object
 from ai_service import (
     analyze_body_dimensions_openai, analyze_body_dimensions_gemini,
-    merge_dimensions, generate_virtual_twin, generate_tryon_visualization
+    merge_dimensions, generate_virtual_twin, generate_tryon_visualization,
+    generate_tryon_image, generate_ad_image
 )
 from printful_service import (
     fetch_catalog_products, fetch_product_details, fetch_store_products,
@@ -341,6 +342,28 @@ async def virtual_tryon(request: Request, body: dict):
     result = await generate_tryon_visualization(photo_base64, product_name, product_image, measurements)
     return result
 
+# ─── Virtual Try-On Image Rendering ──────────────────────
+@api_router.post("/tryon/render")
+async def virtual_tryon_render(request: Request, body: dict):
+    user = await get_current_user(request, db)
+    if not user.get("photo_path"):
+        raise HTTPException(status_code=400, detail="No photo uploaded. Please complete body scan first.")
+    measurements = user.get("measurements", {})
+    product_name = body.get("product_name", "")
+    product_description = body.get("product_description", product_name)
+
+    # Fetch user photo from storage
+    try:
+        photo_data, _ = get_object(user["photo_path"])
+        photo_base64 = base64.b64encode(photo_data).decode("utf-8")
+    except Exception:
+        raise HTTPException(status_code=400, detail="Could not retrieve your photo")
+
+    image_b64 = await generate_tryon_image(photo_base64, product_name, product_description, measurements)
+    if not image_b64:
+        raise HTTPException(status_code=500, detail="Image generation failed")
+    return {"image_base64": image_b64}
+
 # ─── Orders ──────────────────────────────────────────────
 @api_router.post("/orders")
 async def create_order(data: OrderInput, request: Request):
@@ -434,9 +457,52 @@ async def admin_update_product(printful_id: int, body: dict, request: Request):
         update_fields["active"] = body["active"]
     if "category" in body:
         update_fields["category"] = body["category"]
+    if "name" in body:
+        update_fields["name"] = body["name"]
+    if "description" in body:
+        update_fields["description"] = body["description"]
+    if "sale_price" in body:
+        update_fields["sale_price"] = body["sale_price"]
+    if "featured" in body:
+        update_fields["featured"] = body["featured"]
+    if "ad_images" in body:
+        update_fields["ad_images"] = body["ad_images"]
     if update_fields:
         await db.products.update_one({"printful_id": printful_id}, {"$set": update_fields})
     return {"message": "Product updated"}
+
+# ─── Admin AI Ad Generator ────────────────────────────────
+@api_router.post("/admin/generate-ad")
+async def admin_generate_ad(body: dict, request: Request):
+    await require_admin(request)
+    product_name = body.get("product_name", "")
+    product_description = body.get("product_description", "")
+    style_notes = body.get("style_notes", "")
+    if not product_name:
+        raise HTTPException(status_code=400, detail="Product name required")
+    
+    image_b64 = await generate_ad_image(product_name, product_description, style_notes)
+    if not image_b64:
+        raise HTTPException(status_code=500, detail="Ad image generation failed")
+    
+    # Store the generated ad image in object storage
+    image_data = base64.b64decode(image_b64)
+    storage_path = f"xixvi-shop/ads/{uuid.uuid4()}.png"
+    try:
+        result = put_object(storage_path, image_data, "image/png")
+        storage_path = result.get("path", storage_path)
+    except Exception as e:
+        logger.error(f"Ad image storage error: {e}")
+    
+    # If printful_id provided, attach to product
+    printful_id = body.get("printful_id")
+    if printful_id:
+        await db.products.update_one(
+            {"printful_id": int(printful_id)},
+            {"$push": {"ad_images": {"path": storage_path, "created_at": datetime.now(timezone.utc).isoformat()}}}
+        )
+    
+    return {"image_base64": image_b64, "storage_path": storage_path}
 
 @api_router.get("/admin/orders")
 async def admin_get_orders(request: Request, page: int = 1, limit: int = 50, status: Optional[str] = None):

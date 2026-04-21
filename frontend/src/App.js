@@ -20,8 +20,8 @@ function ProtectedRoute({ children, adminOnly = false }) {
   const { user, loading } = useAuth();
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#050505]">
-        <div className="text-[#C5A059] text-sm font-body">Loading...</div>
+      <div className="min-h-screen flex items-center justify-center bg-[#FAF8F5]">
+        <div className="text-[#8B6914] text-sm font-body">Loading...</div>
       </div>
     );
   }
@@ -32,7 +32,7 @@ function ProtectedRoute({ children, adminOnly = false }) {
 
 function AppRoutes() {
   return (
-    <div className="flex flex-col min-h-screen bg-[#050505]">
+    <div className="flex flex-col min-h-screen bg-[#FAF8F5]">
       <Header />
       <main className="flex-1">
         <Routes>
