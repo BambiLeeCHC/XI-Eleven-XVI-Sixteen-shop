@@ -52,6 +52,15 @@ A virtual shopping experience for XI eleven XVI sixteen in which a user uploads 
 - Admin panel (5 tabs: dashboard, settings, products, orders, users)
 - Luxury dark theme (black/gold, Playfair Display + Manrope)
 
+### Iteration 2 (April 21, 2026)
+- Imperial units as primary display with metric toggle (Switch component)
+- Lighter/brighter color theme (cream #FAF8F5 background, dark text)
+- Product editing in admin panel (Dialog with name, category, description, sale price, active, featured)
+- Virtual try-on rendering toggle (text analysis vs AI image generation via GPT Image 1)
+- Product photo carousel/gallery on product detail page
+- Admin AI ad generator (GPT Image 1 creates campaign images from product descriptions)
+- Unit conversion utilities (cm/inches, kg/lbs)
+
 ## Prioritized Backlog
 ### P0 (Critical)
 - None remaining - all core flows functional
