@@ -61,6 +61,18 @@ A virtual shopping experience for XI eleven XVI sixteen in which a user uploads 
 - Admin AI ad generator (GPT Image 1 creates campaign images from product descriptions)
 - Unit conversion utilities (cm/inches, kg/lbs)
 
+### Iteration 3 (April 21, 2026)
+- Multi-item shopping cart (add, remove, clear)
+- Stripe checkout integration (create session, status polling, webhook)
+- Admin product deletion from storefront
+- Updated landing page with product photos, CTAs, inspirational statements
+- Trust badges section (AI Analysis, Fit Guarantee, Secure Checkout)
+- Cart page with order summary and Stripe checkout
+- Checkout success page with payment status polling
+- Updated ProductDetail to "Add to Cart" flow
+- Cart link in header when logged in
+- Payment transactions collection for order tracking
+
 ## Prioritized Backlog
 ### P0 (Critical)
 - None remaining - all core flows functional
