@@ -5,7 +5,7 @@ import { Button } from '../components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '../components/ui/dialog';
 import {
   Settings, RefreshCw, Package, Users, ShoppingBag, Loader2,
-  Key, ChevronDown, ChevronUp, Edit2, Check, X, BarChart3, Sparkles, Save, Image
+  Key, ChevronDown, ChevronUp, Edit2, Check, X, BarChart3, Sparkles, Save, Image, Trash2
 } from 'lucide-react';
 import axios from 'axios';
 
@@ -94,6 +94,14 @@ export default function Admin() {
       fetchProducts(); // Refresh to see new ad image
     } catch (err) { console.error(err); setAdResult({ error: 'Generation failed. Please try again.' }); }
     finally { setAdGenerating(false); }
+  };
+
+  const deleteProduct = async (printfulId) => {
+    if (!window.confirm('Delete this product from the storefront? This cannot be undone.')) return;
+    try {
+      await axios.delete(`${API}/api/admin/products/${printfulId}`, { withCredentials: true });
+      fetchProducts();
+    } catch (err) { console.error(err); }
   };
 
   const updateOrderStatus = async (orderId, status) => {
@@ -234,6 +242,9 @@ export default function Admin() {
                             </button>
                             <button onClick={() => openAdGenerator(p)} className="text-[#8B6914] hover:underline flex items-center gap-1" data-testid={`gen-ad-${p.printful_id}`}>
                               <Sparkles size={12} /> AI Ad
+                            </button>
+                            <button onClick={() => deleteProduct(p.printful_id)} className="text-red-500 hover:underline flex items-center gap-1" data-testid={`delete-product-${p.printful_id}`}>
+                              <Trash2 size={12} /> Delete
                             </button>
                           </div>
                         </td>

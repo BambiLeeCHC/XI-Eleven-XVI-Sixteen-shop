@@ -14,6 +14,8 @@ import ProductDetail from "./pages/ProductDetail";
 import VirtualTwinScan from "./pages/VirtualTwinScan";
 import Profile from "./pages/Profile";
 import Orders from "./pages/Orders";
+import Cart from "./pages/Cart";
+import CheckoutSuccess from "./pages/CheckoutSuccess";
 import Admin from "./pages/Admin";
 
 function ProtectedRoute({ children, adminOnly = false }) {
@@ -44,6 +46,8 @@ function AppRoutes() {
           <Route path="/scan" element={<ProtectedRoute><VirtualTwinScan /></ProtectedRoute>} />
           <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
           <Route path="/orders" element={<ProtectedRoute><Orders /></ProtectedRoute>} />
+          <Route path="/cart" element={<ProtectedRoute><Cart /></ProtectedRoute>} />
+          <Route path="/checkout/success" element={<ProtectedRoute><CheckoutSuccess /></ProtectedRoute>} />
           <Route path="/admin" element={<ProtectedRoute adminOnly><Admin /></ProtectedRoute>} />
         </Routes>
       </main>

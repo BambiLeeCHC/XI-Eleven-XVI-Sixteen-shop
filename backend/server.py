@@ -31,6 +31,8 @@ from printful_service import (
 )
 from size_engine import recommend_size
 
+from emergentintegrations.payments.stripe.checkout import StripeCheckout, CheckoutSessionResponse, CheckoutStatusResponse, CheckoutSessionRequest
+
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
@@ -79,6 +81,13 @@ class OrderInput(BaseModel):
     variant_index: int = 0
     quantity: int = 1
     size: str = ""
+
+class CartItemInput(BaseModel):
+    product_printful_id: int
+    variant_index: int = 0
+    size: str = ""
+    color: str = ""
+    quantity: int = 1
 
 # ─── Startup ─────────────────────────────────────────────
 @app.on_event("startup")
@@ -559,5 +568,187 @@ async def printful_catalog(category_id: Optional[int] = None, limit: int = 20, o
 async def printful_product(product_id: int):
     result = await fetch_product_details(db, product_id)
     return result
+
+# ─── Cart ─────────────────────────────────────────────────
+@api_router.get("/cart")
+async def get_cart(request: Request):
+    user = await get_current_user(request, db)
+    cart = await db.carts.find_one({"user_id": user["_id"]}, {"_id": 0})
+    if not cart:
+        return {"items": [], "total": 0}
+    return cart
+
+@api_router.post("/cart/add")
+async def add_to_cart(data: CartItemInput, request: Request):
+    user = await get_current_user(request, db)
+    product = await db.products.find_one({"printful_id": data.product_printful_id}, {"_id": 0})
+    if not product:
+        raise HTTPException(status_code=404, detail="Product not found")
+    variant = product["variants"][data.variant_index] if data.variant_index < len(product.get("variants", [])) else product["variants"][0] if product.get("variants") else None
+    price = float(variant["retail_price"]) if variant and variant.get("retail_price") else 0
+
+    cart_item = {
+        "id": str(uuid.uuid4()),
+        "product_printful_id": data.product_printful_id,
+        "product_name": product.get("name", ""),
+        "thumbnail_url": product.get("thumbnail_url", ""),
+        "variant_index": data.variant_index,
+        "size": data.size,
+        "color": data.color,
+        "quantity": data.quantity,
+        "price": price,
+        "image": variant.get("image", "") if variant else ""
+    }
+
+    cart = await db.carts.find_one({"user_id": user["_id"]})
+    if cart:
+        await db.carts.update_one({"user_id": user["_id"]}, {"$push": {"items": cart_item}})
+    else:
+        await db.carts.insert_one({"user_id": user["_id"], "items": [cart_item]})
+
+    # Recalculate total
+    cart = await db.carts.find_one({"user_id": user["_id"]})
+    total = sum(item["price"] * item["quantity"] for item in cart.get("items", []))
+    await db.carts.update_one({"user_id": user["_id"]}, {"$set": {"total": round(total, 2)}})
+    updated = await db.carts.find_one({"user_id": user["_id"]}, {"_id": 0})
+    return updated
+
+@api_router.delete("/cart/{item_id}")
+async def remove_from_cart(item_id: str, request: Request):
+    user = await get_current_user(request, db)
+    await db.carts.update_one({"user_id": user["_id"]}, {"$pull": {"items": {"id": item_id}}})
+    cart = await db.carts.find_one({"user_id": user["_id"]})
+    if cart:
+        total = sum(item["price"] * item["quantity"] for item in cart.get("items", []))
+        await db.carts.update_one({"user_id": user["_id"]}, {"$set": {"total": round(total, 2)}})
+    updated = await db.carts.find_one({"user_id": user["_id"]}, {"_id": 0})
+    return updated or {"items": [], "total": 0}
+
+@api_router.delete("/cart")
+async def clear_cart(request: Request):
+    user = await get_current_user(request, db)
+    await db.carts.delete_one({"user_id": user["_id"]})
+    return {"items": [], "total": 0}
+
+# ─── Stripe Checkout ──────────────────────────────────────
+@api_router.post("/checkout/create")
+async def create_checkout(request: Request, body: dict):
+    user = await get_current_user(request, db)
+    cart = await db.carts.find_one({"user_id": user["_id"]})
+    if not cart or not cart.get("items"):
+        raise HTTPException(status_code=400, detail="Cart is empty")
+
+    total = sum(item["price"] * item["quantity"] for item in cart["items"])
+    if total <= 0:
+        raise HTTPException(status_code=400, detail="Invalid cart total")
+
+    origin_url = body.get("origin_url", os.environ.get("FRONTEND_URL", "http://localhost:3000"))
+    success_url = f"{origin_url}/checkout/success?session_id={{CHECKOUT_SESSION_ID}}"
+    cancel_url = f"{origin_url}/cart"
+
+    stripe_key = os.environ.get("STRIPE_API_KEY")
+    webhook_url = f"{str(request.base_url).rstrip('/')}/api/webhook/stripe"
+    stripe_checkout = StripeCheckout(api_key=stripe_key, webhook_url=webhook_url)
+
+    checkout_request = CheckoutSessionRequest(
+        amount=round(total, 2),
+        currency="usd",
+        success_url=success_url,
+        cancel_url=cancel_url,
+        metadata={"user_id": user["_id"], "user_email": user.get("email", "")}
+    )
+
+    session = await stripe_checkout.create_checkout_session(checkout_request)
+
+    # Create payment transaction record
+    await db.payment_transactions.insert_one({
+        "id": str(uuid.uuid4()),
+        "session_id": session.session_id,
+        "user_id": user["_id"],
+        "email": user.get("email", ""),
+        "amount": round(total, 2),
+        "currency": "usd",
+        "payment_status": "initiated",
+        "cart_items": cart["items"],
+        "created_at": datetime.now(timezone.utc).isoformat()
+    })
+
+    return {"url": session.url, "session_id": session.session_id}
+
+@api_router.get("/checkout/status/{session_id}")
+async def checkout_status(session_id: str, request: Request):
+    user = await get_current_user(request, db)
+    stripe_key = os.environ.get("STRIPE_API_KEY")
+    webhook_url = f"{str(request.base_url).rstrip('/')}/api/webhook/stripe"
+    stripe_checkout = StripeCheckout(api_key=stripe_key, webhook_url=webhook_url)
+
+    status = await stripe_checkout.get_checkout_status(session_id)
+
+    # Update payment transaction
+    txn = await db.payment_transactions.find_one({"session_id": session_id})
+    if txn and txn.get("payment_status") != "paid":
+        await db.payment_transactions.update_one(
+            {"session_id": session_id},
+            {"$set": {"payment_status": status.payment_status, "status": status.status, "updated_at": datetime.now(timezone.utc).isoformat()}}
+        )
+        # If paid, create orders and clear cart
+        if status.payment_status == "paid":
+            for item in txn.get("cart_items", []):
+                order_doc = {
+                    "id": str(uuid.uuid4()),
+                    "user_id": txn["user_id"],
+                    "product_printful_id": item.get("product_printful_id"),
+                    "product_name": item.get("product_name", ""),
+                    "variant": None,
+                    "size": item.get("size", ""),
+                    "quantity": item.get("quantity", 1),
+                    "total_price": round(item.get("price", 0) * item.get("quantity", 1), 2),
+                    "currency": "usd",
+                    "status": "pending",
+                    "tracking_number": None,
+                    "shipping_address": (await db.users.find_one({"_id": ObjectId(txn["user_id"]) if not isinstance(txn["user_id"], str) else txn["user_id"]}) or {}).get("address"),
+                    "payment_session_id": session_id,
+                    "created_at": datetime.now(timezone.utc).isoformat(),
+                    "updated_at": datetime.now(timezone.utc).isoformat()
+                }
+                await db.orders.insert_one(order_doc)
+            # Clear cart
+            user_id = txn["user_id"]
+            await db.carts.delete_one({"user_id": user_id})
+
+    return {
+        "status": status.status,
+        "payment_status": status.payment_status,
+        "amount_total": status.amount_total,
+        "currency": status.currency
+    }
+
+@api_router.post("/webhook/stripe")
+async def stripe_webhook(request: Request):
+    body = await request.body()
+    sig = request.headers.get("Stripe-Signature", "")
+    stripe_key = os.environ.get("STRIPE_API_KEY")
+    webhook_url = f"{str(request.base_url).rstrip('/')}/api/webhook/stripe"
+    stripe_checkout = StripeCheckout(api_key=stripe_key, webhook_url=webhook_url)
+    try:
+        event = await stripe_checkout.handle_webhook(body, sig)
+        if event.payment_status == "paid" and event.session_id:
+            await db.payment_transactions.update_one(
+                {"session_id": event.session_id},
+                {"$set": {"payment_status": "paid", "updated_at": datetime.now(timezone.utc).isoformat()}}
+            )
+        return {"received": True}
+    except Exception as e:
+        logger.error(f"Webhook error: {e}")
+        return {"received": True}
+
+# ─── Admin Delete Product ─────────────────────────────────
+@api_router.delete("/admin/products/{printful_id}")
+async def admin_delete_product(printful_id: int, request: Request):
+    await require_admin(request)
+    result = await db.products.delete_one({"printful_id": printful_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Product not found")
+    return {"message": "Product deleted"}
 
 app.include_router(api_router)

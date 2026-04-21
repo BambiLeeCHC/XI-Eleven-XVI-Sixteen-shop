@@ -99,13 +99,17 @@ export default function ProductDetail() {
     finally { setLoadingTryon(false); }
   };
 
-  const handleOrder = async () => {
+  const handleAddToCart = async () => {
     if (!user) { navigate('/login'); return; }
     setOrdering(true);
     try {
       const variantIndex = product.variants?.findIndex(v => v.size === selectedSize && (!selectedColor || v.color === selectedColor)) ?? 0;
-      await axios.post(`${API}/api/orders`, {
-        product_id: String(product.printful_id), variant_index: Math.max(variantIndex, 0), quantity: 1, size: selectedSize
+      await axios.post(`${API}/api/cart/add`, {
+        product_printful_id: product.printful_id,
+        variant_index: Math.max(variantIndex, 0),
+        quantity: 1,
+        size: selectedSize,
+        color: selectedColor
       }, { withCredentials: true });
       setOrderSuccess(true);
     } catch (err) { console.error(err); }
@@ -258,14 +262,17 @@ export default function ProductDetail() {
             {orderSuccess ? (
               <div className="border border-[#8B6914]/30 bg-[#8B6914]/5 p-4 text-center" data-testid="order-success">
                 <Check size={24} className="text-[#8B6914] mx-auto mb-2" />
-                <p className="text-sm text-[#8B6914]">Order placed successfully!</p>
-                <Button onClick={() => navigate('/orders')} variant="ghost" className="text-[#8B6914] mt-2 text-xs">View Orders</Button>
+                <p className="text-sm text-[#8B6914]">Added to cart!</p>
+                <div className="flex gap-2 justify-center mt-2">
+                  <Button onClick={() => navigate('/cart')} variant="ghost" className="text-[#8B6914] text-xs">View Cart</Button>
+                  <Button onClick={() => setOrderSuccess(false)} variant="ghost" className="text-[#6B6B6B] text-xs">Continue Shopping</Button>
+                </div>
               </div>
             ) : (
-              <Button onClick={handleOrder} disabled={ordering}
+              <Button onClick={handleAddToCart} disabled={ordering}
                 className="w-full bg-[#1A1A1A] text-white hover:bg-[#333] rounded-none py-3 text-sm font-medium tracking-wide"
-                data-testid="add-to-order-btn">
-                {ordering ? <><Loader2 size={16} className="animate-spin mr-2" /> Placing Order...</> : 'Place Order'}
+                data-testid="add-to-cart-btn">
+                {ordering ? <><Loader2 size={16} className="animate-spin mr-2" /> Adding...</> : <><ShoppingBag size={16} className="mr-2" /> Add to Cart</>}
               </Button>
             )}
 

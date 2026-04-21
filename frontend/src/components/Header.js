@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { User, ShoppingBag, ScanLine, LayoutDashboard, LogOut, Menu, X } from 'lucide-react';
+import { User, ShoppingBag, ScanLine, LayoutDashboard, LogOut, Menu, X, ShoppingCart } from 'lucide-react';
 import { Button } from './ui/button';
 
 const LOGO_URL = "https://customer-assets.emergentagent.com/job_4f8469e3-e351-4c6b-84fb-3083ae8d6801/artifacts/kx63xgdp_8BB11A37-BBDF-4142-B3C6-F33EC6722B63.png";
@@ -18,6 +18,10 @@ export default function Header() {
     { label: 'Shop', path: '/shop', icon: ShoppingBag },
     { label: 'Body Scan', path: '/scan', icon: ScanLine },
   ];
+
+  if (user) {
+    navItems.push({ label: 'Cart', path: '/cart', icon: ShoppingCart });
+  }
 
   if (user && user.role === 'admin') {
     navItems.push({ label: 'Admin', path: '/admin', icon: LayoutDashboard });
