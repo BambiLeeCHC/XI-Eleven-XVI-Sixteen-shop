@@ -10,11 +10,11 @@ import uuid
 
 BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', '').rstrip('/')
 
-# Test credentials
-ADMIN_EMAIL = "admin@xixvi.com"
-ADMIN_PASSWORD = "admin123"
+# Test credentials from environment or defaults
+ADMIN_EMAIL = os.environ.get("ADMIN_EMAIL", "admin@xixvi.com")
+ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "admin123")
 TEST_USER_EMAIL = f"TEST_user_{uuid.uuid4().hex[:8]}@test.com"
-TEST_USER_PASSWORD = "testpass123"
+TEST_USER_PASSWORD = os.environ.get("TEST_USER_PASSWORD", "testpass123")
 TEST_USER_NAME = "Test User"
 
 

@@ -276,13 +276,13 @@ async def serve_file(path: str, request: Request, auth: str = Query(None)):
     except Exception:
         if not auth:
             raise HTTPException(status_code=401, detail="Not authenticated")
-        # Minimal auth check via query param
-        user = None
+        # Minimal auth check via query param - user not needed for file serving
+        pass
 
     try:
         data, content_type = get_object(path)
         return Response(content=data, media_type=content_type)
-    except Exception as e:
+    except Exception:
         raise HTTPException(status_code=404, detail="File not found")
 
 # ─── Products / Shop ─────────────────────────────────────
@@ -677,7 +677,7 @@ async def create_checkout(request: Request, body: dict):
 
 @api_router.get("/checkout/status/{session_id}")
 async def checkout_status(session_id: str, request: Request):
-    user = await get_current_user(request, db)
+    await get_current_user(request, db)  # auth check only
     stripe_key = os.environ.get("STRIPE_API_KEY")
     webhook_url = f"{str(request.base_url).rstrip('/')}/api/webhook/stripe"
     stripe_checkout = StripeCheckout(api_key=stripe_key, webhook_url=webhook_url)

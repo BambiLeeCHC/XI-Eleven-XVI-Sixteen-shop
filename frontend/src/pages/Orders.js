@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '../components/ui/button';
@@ -21,15 +21,16 @@ export default function Orders() {
   const [loading, setLoading] = useState(true);
   const [expandedOrder, setExpandedOrder] = useState(null);
 
+  const fetchOrders = useCallback(async () => {
+    try { const { data } = await axios.get(`${API}/api/orders`, { withCredentials: true }); setOrders(data.orders || []); }
+    catch (err) { if (process.env.NODE_ENV === 'development') console.error('Failed to fetch orders:', err); }
+    finally { setLoading(false); }
+  }, []);
+
   useEffect(() => {
     if (!user) { navigate('/login'); return; }
     fetchOrders();
-  }, [user]); // eslint-disable-line
-
-  const fetchOrders = async () => {
-    try { const { data } = await axios.get(`${API}/api/orders`, { withCredentials: true }); setOrders(data.orders || []); }
-    catch (err) { console.error(err); } finally { setLoading(false); }
-  };
+  }, [user, navigate, fetchOrders]);
 
   const StatusIcon = ({ status }) => {
     switch (status) {

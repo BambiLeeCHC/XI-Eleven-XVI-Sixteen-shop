@@ -30,8 +30,9 @@ export default function Profile() {
       await axios.put(`${API}/api/profile/address`, address, { withCredentials: true });
       setSaved(true); await refreshUser();
       setTimeout(() => setSaved(false), 3000);
-    } catch (err) { console.error(err); }
-    finally { setSaving(false); }
+    } catch (err) {
+      if (process.env.NODE_ENV === 'development') console.error('Failed to save address:', err);
+    } finally { setSaving(false); }
   };
 
   return (

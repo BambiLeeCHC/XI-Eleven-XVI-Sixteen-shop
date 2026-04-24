@@ -12,7 +12,8 @@ export function AuthProvider({ children }) {
     try {
       const { data } = await axios.get(`${API}/api/auth/me`, { withCredentials: true });
       setUser(data);
-    } catch {
+    } catch (err) {
+      if (process.env.NODE_ENV === 'development') console.error('Auth check failed:', err.message);
       setUser(false);
     } finally {
       setLoading(false);
@@ -42,7 +43,9 @@ export function AuthProvider({ children }) {
     try {
       const { data } = await axios.get(`${API}/api/auth/me`, { withCredentials: true });
       setUser(data);
-    } catch { /* ignore */ }
+    } catch (err) {
+      if (process.env.NODE_ENV === 'development') console.error('Refresh user failed:', err.message);
+    }
   };
 
   return (

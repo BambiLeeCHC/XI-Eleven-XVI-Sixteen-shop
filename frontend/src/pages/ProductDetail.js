@@ -1,11 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { Button } from '../components/ui/button';
 import { Switch } from '../components/ui/switch';
-import { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext } from '../components/ui/carousel';
-import { Loader2, Ruler, ShoppingBag, ScanLine, Check, Image, FileText, ChevronLeft, ChevronRight } from 'lucide-react';
-import { formatMeasurement, MEASUREMENT_LABELS } from '../utils/units';
+import { Loader2, Ruler, ShoppingBag, ScanLine, Check, Image, FileText, ChevronLeft } from 'lucide-react';
 import axios from 'axios';
 
 const API = process.env.REACT_APP_BACKEND_URL;
@@ -24,7 +22,7 @@ export default function ProductDetail() {
   const [isMetric, setIsMetric] = useState(false);
 
   // Try-on state
-  const [tryonMode, setTryonMode] = useState('analysis'); // 'analysis' or 'render'
+  const [tryonMode, setTryonMode] = useState('analysis');
   const [tryonResult, setTryonResult] = useState(null);
   const [tryonImage, setTryonImage] = useState(null);
   const [loadingTryon, setLoadingTryon] = useState(false);
@@ -35,9 +33,7 @@ export default function ProductDetail() {
   // Image gallery
   const [activeImageIdx, setActiveImageIdx] = useState(0);
 
-  useEffect(() => { fetchProduct(); }, [id]); // eslint-disable-line
-
-  const fetchProduct = async () => {
+  const fetchProduct = useCallback(async () => {
     setLoading(true);
     try {
       const { data } = await axios.get(`${API}/api/products/${id}`);
@@ -48,9 +44,13 @@ export default function ProductDetail() {
         if (sizes.length) setSelectedSize(sizes[0]);
         if (colors.length) setSelectedColor(colors[0]);
       }
-    } catch { setProduct(null); }
-    finally { setLoading(false); }
-  };
+    } catch (err) {
+      if (process.env.NODE_ENV === 'development') console.error('Failed to fetch product:', err);
+      setProduct(null);
+    } finally { setLoading(false); }
+  }, [id]);
+
+  useEffect(() => { fetchProduct(); }, [fetchProduct]);
 
   const getAllImages = () => {
     if (!product) return [];
@@ -72,7 +72,7 @@ export default function ProductDetail() {
       const { data } = await axios.post(`${API}/api/size-recommend`, { category: product?.category || 'tops' }, { withCredentials: true });
       setSizeRec(data);
       if (data.recommended_size) setSelectedSize(data.recommended_size);
-    } catch (err) { console.error(err); }
+    } catch (err) { if (process.env.NODE_ENV === 'development') console.error('Size recommendation error:', err); }
     finally { setLoadingRec(false); }
   };
 
@@ -95,7 +95,7 @@ export default function ProductDetail() {
         }, { withCredentials: true, timeout: 120000 });
         setTryonResult(data);
       }
-    } catch (err) { console.error('Try-on error:', err); }
+    } catch (err) { if (process.env.NODE_ENV === 'development') console.error('Try-on error:', err); }
     finally { setLoadingTryon(false); }
   };
 
@@ -112,7 +112,7 @@ export default function ProductDetail() {
         color: selectedColor
       }, { withCredentials: true });
       setOrderSuccess(true);
-    } catch (err) { console.error(err); }
+    } catch (err) { if (process.env.NODE_ENV === 'development') console.error('Add to cart error:', err); }
     finally { setOrdering(false); }
   };
 
@@ -145,7 +145,7 @@ export default function ProductDetail() {
                 </div>
                 <div className="flex gap-2 overflow-x-auto pb-2">
                   {allImages.map((img, i) => (
-                    <button key={i} onClick={() => setActiveImageIdx(i)}
+                    <button key={`thumb-${img.slice(0,20)}-${i}`} onClick={() => setActiveImageIdx(i)}
                       className={`w-16 h-16 border flex-shrink-0 overflow-hidden ${activeImageIdx === i ? 'border-[#8B6914]' : 'border-[#E8E4DD]'}`}>
                       <img src={img.startsWith('ad:') ? '' : img} alt="" className="w-full h-full object-cover" />
                     </button>

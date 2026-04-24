@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { Search, Filter, Loader2 } from 'lucide-react';
 import { Button } from '../components/ui/button';
@@ -17,9 +17,7 @@ export default function Shop() {
   const [search, setSearch] = useState('');
   const activeCategory = searchParams.get('category') || 'all';
 
-  useEffect(() => { fetchProducts(); }, [activeCategory, page]); // eslint-disable-line
-
-  const fetchProducts = async () => {
+  const fetchProducts = useCallback(async () => {
     setLoading(true);
     try {
       const params = { page, limit: 20 };
@@ -27,9 +25,12 @@ export default function Shop() {
       if (search) params.search = search;
       const { data } = await axios.get(`${API}/api/products`, { params });
       setProducts(data.products || []); setCategories(data.categories || []); setTotal(data.total || 0);
-    } catch (err) { console.error(err); }
-    finally { setLoading(false); }
-  };
+    } catch (err) {
+      if (process.env.NODE_ENV === 'development') console.error('Failed to fetch products:', err);
+    } finally { setLoading(false); }
+  }, [activeCategory, page, search]);
+
+  useEffect(() => { fetchProducts(); }, [fetchProducts]);
 
   const handleSearch = (e) => { e.preventDefault(); setPage(1); fetchProducts(); };
   const setCategory = (cat) => { setSearchParams(cat === 'all' ? {} : { category: cat }); setPage(1); };

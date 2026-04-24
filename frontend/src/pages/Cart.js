@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { Button } from '../components/ui/button';
-import { ShoppingBag, Trash2, Loader2, ArrowRight, Minus, Plus } from 'lucide-react';
+import { ShoppingBag, Trash2, Loader2, ArrowRight } from 'lucide-react';
 import axios from 'axios';
 
 const API = process.env.REACT_APP_BACKEND_URL;
@@ -14,31 +14,36 @@ export default function Cart() {
   const [loading, setLoading] = useState(true);
   const [checking, setChecking] = useState(false);
 
-  useEffect(() => {
-    if (!user) { navigate('/login'); return; }
-    fetchCart();
-  }, [user]); // eslint-disable-line
-
-  const fetchCart = async () => {
+  const fetchCart = useCallback(async () => {
     try {
       const { data } = await axios.get(`${API}/api/cart`, { withCredentials: true });
       setCart(data);
-    } catch (err) { console.error(err); }
-    finally { setLoading(false); }
-  };
+    } catch (err) {
+      if (process.env.NODE_ENV === 'development') console.error('Failed to fetch cart:', err);
+    } finally { setLoading(false); }
+  }, []);
+
+  useEffect(() => {
+    if (!user) { navigate('/login'); return; }
+    fetchCart();
+  }, [user, navigate, fetchCart]);
 
   const removeItem = async (itemId) => {
     try {
       const { data } = await axios.delete(`${API}/api/cart/${itemId}`, { withCredentials: true });
       setCart(data);
-    } catch (err) { console.error(err); }
+    } catch (err) {
+      if (process.env.NODE_ENV === 'development') console.error('Failed to remove item:', err);
+    }
   };
 
   const clearCart = async () => {
     try {
       const { data } = await axios.delete(`${API}/api/cart`, { withCredentials: true });
       setCart(data);
-    } catch (err) { console.error(err); }
+    } catch (err) {
+      if (process.env.NODE_ENV === 'development') console.error('Failed to clear cart:', err);
+    }
   };
 
   const handleCheckout = async () => {
@@ -50,7 +55,7 @@ export default function Cart() {
         window.location.href = data.url;
       }
     } catch (err) {
-      console.error('Checkout error:', err);
+      if (process.env.NODE_ENV === 'development') console.error('Checkout error:', err);
       alert(err.response?.data?.detail || 'Checkout failed');
     } finally { setChecking(false); }
   };

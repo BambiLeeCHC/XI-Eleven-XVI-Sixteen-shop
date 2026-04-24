@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { Button } from '../components/ui/button';
 import { Check, Loader2, Package } from 'lucide-react';
@@ -12,11 +12,7 @@ export default function CheckoutSuccess() {
   const [status, setStatus] = useState(null);
   const [polling, setPolling] = useState(true);
 
-  useEffect(() => {
-    if (sessionId) pollStatus(0);
-  }, [sessionId]); // eslint-disable-line
-
-  const pollStatus = async (attempt) => {
+  const pollStatus = useCallback(async (attempt) => {
     if (attempt >= 5) { setPolling(false); return; }
     try {
       const { data } = await axios.get(`${API}/api/checkout/status/${sessionId}`, { withCredentials: true });
@@ -25,10 +21,14 @@ export default function CheckoutSuccess() {
       if (data.status === 'expired') { setPolling(false); return; }
       setTimeout(() => pollStatus(attempt + 1), 2000);
     } catch (err) {
-      console.error(err);
+      if (process.env.NODE_ENV === 'development') console.error('Payment status poll error:', err);
       setTimeout(() => pollStatus(attempt + 1), 2000);
     }
-  };
+  }, [sessionId]);
+
+  useEffect(() => {
+    if (sessionId) pollStatus(0);
+  }, [sessionId, pollStatus]);
 
   return (
     <div className="min-h-screen flex items-center justify-center pt-20 px-6" data-testid="checkout-success-page">

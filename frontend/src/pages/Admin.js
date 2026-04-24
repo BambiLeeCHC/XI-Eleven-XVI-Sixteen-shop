@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '../components/ui/button';
@@ -37,26 +37,26 @@ export default function Admin() {
   const [adGenerating, setAdGenerating] = useState(false);
   const [adResult, setAdResult] = useState(null);
 
+  const fetchStats = useCallback(async () => { try { const { data } = await axios.get(`${API}/api/admin/stats`, { withCredentials: true }); setStats(data); } catch (err) { if (process.env.NODE_ENV === 'development') console.error('Failed to fetch stats:', err); } }, []);
+  const fetchSettings = useCallback(async () => { try { const { data } = await axios.get(`${API}/api/admin/settings`, { withCredentials: true }); setSettings(data.settings || []); } catch (err) { if (process.env.NODE_ENV === 'development') console.error('Failed to fetch settings:', err); } }, []);
+  const fetchProducts = useCallback(async () => { setLoading(true); try { const { data } = await axios.get(`${API}/api/admin/products`, { withCredentials: true }); setProducts(data.products || []); } catch (err) { if (process.env.NODE_ENV === 'development') console.error('Failed to fetch products:', err); } finally { setLoading(false); } }, []);
+  const fetchOrders = useCallback(async () => { setLoading(true); try { const { data } = await axios.get(`${API}/api/admin/orders`, { withCredentials: true }); setOrders(data.orders || []); } catch (err) { if (process.env.NODE_ENV === 'development') console.error('Failed to fetch orders:', err); } finally { setLoading(false); } }, []);
+  const fetchUsers = useCallback(async () => { setLoading(true); try { const { data } = await axios.get(`${API}/api/admin/users`, { withCredentials: true }); setUsers(data.users || []); } catch (err) { if (process.env.NODE_ENV === 'development') console.error('Failed to fetch users:', err); } finally { setLoading(false); } }, []);
+
   useEffect(() => {
     if (!user || user.role !== 'admin') { navigate('/login'); return; }
     fetchStats(); fetchSettings();
-  }, [user]); // eslint-disable-line
+  }, [user, navigate, fetchStats, fetchSettings]);
 
   useEffect(() => {
     if (activeTab === 'products') fetchProducts();
     if (activeTab === 'orders') fetchOrders();
     if (activeTab === 'users') fetchUsers();
-  }, [activeTab]); // eslint-disable-line
-
-  const fetchStats = async () => { try { const { data } = await axios.get(`${API}/api/admin/stats`, { withCredentials: true }); setStats(data); } catch {} };
-  const fetchSettings = async () => { try { const { data } = await axios.get(`${API}/api/admin/settings`, { withCredentials: true }); setSettings(data.settings || []); } catch {} };
-  const fetchProducts = async () => { setLoading(true); try { const { data } = await axios.get(`${API}/api/admin/products`, { withCredentials: true }); setProducts(data.products || []); } catch {} finally { setLoading(false); } };
-  const fetchOrders = async () => { setLoading(true); try { const { data } = await axios.get(`${API}/api/admin/orders`, { withCredentials: true }); setOrders(data.orders || []); } catch {} finally { setLoading(false); } };
-  const fetchUsers = async () => { setLoading(true); try { const { data } = await axios.get(`${API}/api/admin/users`, { withCredentials: true }); setUsers(data.users || []); } catch {} finally { setLoading(false); } };
+  }, [activeTab, fetchProducts, fetchOrders, fetchUsers]);
 
   const saveSetting = async () => {
     if (!newValue.trim()) return;
-    try { await axios.put(`${API}/api/admin/settings`, { key: newKey, value: newValue }, { withCredentials: true }); setNewValue(''); await fetchSettings(); } catch {}
+    try { await axios.put(`${API}/api/admin/settings`, { key: newKey, value: newValue }, { withCredentials: true }); setNewValue(''); await fetchSettings(); } catch (err) { if (process.env.NODE_ENV === 'development') console.error('Failed to save setting:', err); }
   };
 
   const syncProducts = async () => {
@@ -105,11 +105,11 @@ export default function Admin() {
   };
 
   const updateOrderStatus = async (orderId, status) => {
-    try { await axios.put(`${API}/api/admin/orders/${orderId}`, { status }, { withCredentials: true }); fetchOrders(); } catch {}
+    try { await axios.put(`${API}/api/admin/orders/${orderId}`, { status }, { withCredentials: true }); fetchOrders(); } catch (err) { if (process.env.NODE_ENV === 'development') console.error('Failed to update order status:', err); }
   };
 
   const updateOrderTracking = async (orderId, tracking) => {
-    try { await axios.put(`${API}/api/admin/orders/${orderId}`, { tracking_number: tracking }, { withCredentials: true }); fetchOrders(); } catch {}
+    try { await axios.put(`${API}/api/admin/orders/${orderId}`, { tracking_number: tracking }, { withCredentials: true }); fetchOrders(); } catch (err) { if (process.env.NODE_ENV === 'development') console.error('Failed to update tracking:', err); }
   };
 
   const tabs = [
@@ -362,8 +362,8 @@ export default function Admin() {
                   </tr>
                 </thead>
                 <tbody>
-                  {users.map((u, i) => (
-                    <tr key={i} className="border-b border-[#E8E4DD] hover:bg-[#FAF8F5]">
+                  {users.map((u) => (
+                    <tr key={u.email} className="border-b border-[#E8E4DD] hover:bg-[#FAF8F5]">
                       <td className="p-3 text-[#1A1A1A]">{u.name || 'N/A'}</td>
                       <td className="p-3 text-[#6B6B6B]">{u.email}</td>
                       <td className="p-3"><span className={`px-2 py-0.5 ${u.role === 'admin' ? 'text-[#8B6914]' : 'text-[#6B6B6B]'}`}>{u.role}</span></td>
