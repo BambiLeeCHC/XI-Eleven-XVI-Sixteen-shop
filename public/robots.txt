@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+Disallow: /profile
+Disallow: /orders
+Disallow: /checkout
+Disallow: /cart
+
+Sitemap: https://xi-xvi-store-b70b82f5.viktor.space/sitemap.xml
