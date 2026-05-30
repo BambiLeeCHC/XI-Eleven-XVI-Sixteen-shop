@@ -78,7 +78,7 @@ export function StoreFooter() {
             </span>
           </div>
           <p className="text-[12px] leading-relaxed" style={{ color: "rgba(245,230,220,0.3)" }}>
-            Luxury fashion, precision style. Personal style assistant at your fingertips.
+            Luxury fashion, made exclusively for you. Zero waste. Zero compromise. Every piece crafted on demand.
           </p>
           <p className="text-[10px] mt-4" style={{ color: "rgba(245,230,220,0.18)" }}>
             XI Eleven XVI Sixteen L.L.C.<br />
@@ -99,6 +99,7 @@ export function StoreFooter() {
         <div>
           <h4 className="text-[10px] tracking-[0.3em] uppercase font-semibold mb-4" style={{ color: "rgba(245,230,220,0.45)" }}>HELP</h4>
           <div className="flex flex-col gap-2">
+            <Link to="/about" className="text-[12px] transition-colors" style={{ color: "rgba(245,230,220,0.3)" }}>Our Story</Link>
             <Link to="/size-guide" className="text-[12px] transition-colors" style={{ color: "rgba(245,230,220,0.3)" }}>Size Guide</Link>
             <Link to="/profile" className="text-[12px] transition-colors" style={{ color: "rgba(245,230,220,0.3)" }}>My Profile</Link>
             <Link to="/orders" className="text-[12px] transition-colors" style={{ color: "rgba(245,230,220,0.3)" }}>Orders</Link>

@@ -197,11 +197,19 @@ export const estimateShipping = action({
         const maxTransit: number | null =
           rate.maxDeliveryDays ?? rate.max_delivery_days ?? null;
 
+        // Standard shipping is FREE — check if this is a standard/flat rate
+        const isStandard = rate.id === "STANDARD" ||
+          rate.name.toLowerCase().includes("standard") ||
+          rate.name.toLowerCase().includes("flat");
+        const originalRateCents = Math.round(parseFloat(rate.rate) * 100);
+
         return {
           id: rate.id,
-          name: rate.name,
-          rate: rate.rate,
-          rateInCents: Math.round(parseFloat(rate.rate) * 100),
+          name: isStandard ? `${rate.name} — FREE` : rate.name,
+          rate: isStandard ? "0.00" : rate.rate,
+          rateInCents: isStandard ? 0 : originalRateCents,
+          originalRateCents,
+          isFreeShipping: isStandard,
           currency: rate.currency || "USD",
           transitMinDays: minTransit,
           transitMaxDays: maxTransit,

@@ -235,6 +235,66 @@ export function HomePage() {
         </div>
       </section>
 
+      {/* ── Made for You Section ── */}
+      <section
+        className="py-20 px-6"
+        style={{
+          background: "linear-gradient(#0e0a0f 0%, #140e18 50%, #0e0a0f 100%)",
+          borderTop: "1px solid rgba(240,210,190,0.06)",
+        }}
+      >
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center mb-12">
+            <div
+              className="inline-flex items-center gap-2 px-4 py-1.5 mb-6"
+              style={{
+                background: "rgba(245,200,170,0.05)",
+                border: "1px solid rgba(245,200,170,0.12)",
+                borderRadius: "10px",
+              }}
+            >
+              <span style={{ color: "rgba(245,200,170,0.7)" }}>✦</span>
+              <span className="text-[10px] tracking-[0.3em] uppercase font-medium" style={{ color: "rgba(245,200,170,0.6)" }}>COUTURE, REDEFINED</span>
+            </div>
+            <h2 className="text-3xl md:text-4xl text-white mb-4 font-light" style={{ fontFamily: "var(--font-display)" }}>
+              Made Exclusively for You
+            </h2>
+            <p className="text-[14px] max-w-lg mx-auto leading-relaxed" style={{ color: "rgba(245,230,220,0.38)" }}>
+              Every piece is crafted the moment you order it — not pulled from a shelf. That's not fast fashion. That's couture for the modern age. Zero waste. Zero compromise.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+            {[
+              { step: "01", title: "You Choose", desc: "Browse our curated collection — every detail obsessed over.", icon: "🔍" },
+              { step: "02", title: "We Craft", desc: "Your order triggers production. One piece, made just for you.", icon: "🪡" },
+              { step: "03", title: "You Receive", desc: "Your one-of-a-kind piece arrives — crafted with intention.", icon: "📦" },
+            ].map((item) => (
+              <div
+                key={item.step}
+                className="text-center p-6"
+                style={{
+                  background: "rgba(255,240,230,0.02)",
+                  border: "1px solid rgba(240,210,190,0.06)",
+                  borderRadius: "16px",
+                }}
+              >
+                <span className="text-2xl mb-3 block">{item.icon}</span>
+                <span className="text-[9px] tracking-[0.3em] uppercase font-bold" style={{ color: "rgba(200,140,255,0.5)" }}>STEP {item.step}</span>
+                <h3 className="text-[15px] text-white font-medium mt-1 mb-2" style={{ fontFamily: "var(--font-display)" }}>{item.title}</h3>
+                <p className="text-[11px] leading-relaxed" style={{ color: "rgba(245,230,220,0.35)" }}>{item.desc}</p>
+              </div>
+            ))}
+          </div>
+
+          <div className="text-center mt-8">
+            <Link to="/about" className="text-[11px] tracking-[0.15em] uppercase font-medium transition-colors" style={{ color: "rgba(200,160,220,0.55)" }}>
+              Read Our Story →
+            </Link>
+          </div>
+        </div>
+      </section>
+
       {/* Style Assistant Section */}
       <section
         className="py-20 px-6"

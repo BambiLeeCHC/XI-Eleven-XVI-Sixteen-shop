@@ -19,6 +19,7 @@ import {
   ShippingPolicyPage,
   ReturnsPage,
   SizeGuidePage,
+  AboutPage,
   AdminPage,
 } from "./pages";
 
@@ -42,6 +43,7 @@ function App() {
             <Route path="/shipping-policy" element={<ShippingPolicyPage />} />
             <Route path="/returns" element={<ReturnsPage />} />
             <Route path="/size-guide" element={<SizeGuidePage />} />
+            <Route path="/about" element={<AboutPage />} />
 
             {/* Protected routes */}
             <Route element={<ProtectedRoute />}>

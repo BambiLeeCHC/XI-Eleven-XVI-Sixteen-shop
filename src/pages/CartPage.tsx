@@ -132,10 +132,30 @@ export function CartPage() {
           <span className="text-[12px] uppercase tracking-wider" style={{ color: "rgba(245,230,220,0.45)" }}>Subtotal</span>
           <span style={{ color: "rgba(245,230,220,0.75)" }}>${(subtotal / 100).toFixed(2)}</span>
         </div>
-        <div className="flex justify-between items-center mb-6">
-          <span className="text-[12px] uppercase tracking-wider" style={{ color: "rgba(245,230,220,0.45)" }}>Shipping</span>
-          <span className="text-[12px]" style={{ color: "rgba(200,160,220,0.65)" }}>Calculated at checkout</span>
+        <div className="flex justify-between items-center mb-2">
+          <span className="text-[12px] uppercase tracking-wider" style={{ color: "rgba(245,230,220,0.45)" }}>Standard Shipping</span>
+          <span className="text-[12px] font-semibold" style={{ color: "rgba(200,220,160,0.85)" }}>FREE</span>
         </div>
+        <div className="flex justify-between items-center mb-6">
+          <span className="text-[12px] uppercase tracking-wider" style={{ color: "rgba(245,230,220,0.45)" }}>Expedited Options</span>
+          <span className="text-[12px]" style={{ color: "rgba(200,160,220,0.55)" }}>Available at checkout</span>
+        </div>
+
+        {/* Made for You callout */}
+        <div className="flex items-start gap-3 p-4 mb-6" style={{
+          background: "rgba(200,140,255,0.04)",
+          border: "1px solid rgba(200,140,255,0.08)",
+          borderRadius: "12px",
+        }}>
+          <span className="text-base shrink-0 mt-0.5">✦</span>
+          <div>
+            <p className="text-[11px] font-semibold tracking-[0.1em] uppercase mb-1" style={{ color: "rgba(200,160,220,0.7)" }}>Made Exclusively for You</p>
+            <p className="text-[11px] leading-relaxed" style={{ color: "rgba(245,230,220,0.38)" }}>
+              Each piece is crafted on demand — no mass production, no waste. Production takes 2–5 business days before shipping, because your item is being made just for you.
+            </p>
+          </div>
+        </div>
+
         <div className="flex justify-between items-center mb-8 pt-4" style={{ borderTop: "1px solid rgba(240,210,190,0.08)" }}>
           <span className="text-[12px] uppercase tracking-wider font-semibold" style={{ color: "rgba(245,230,220,0.65)" }}>Subtotal</span>
           <span className="text-xl text-white">${(subtotal / 100).toFixed(2)}</span>

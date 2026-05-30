@@ -1,9 +1,68 @@
 import { httpRouter } from "convex/server";
 import { httpAction } from "./_generated/server";
 import { auth } from "./auth";
+import { internal } from "./_generated/api";
 
 const http = httpRouter();
 auth.addHttpRoutes(http);
+
+// ─── Stripe Webhook — payment confirmation + auto-fulfillment ──────────
+
+http.route({
+  path: "/stripe-webhook",
+  method: "POST",
+  handler: httpAction(async (ctx, request) => {
+    try {
+      const body = await request.json();
+      const eventType = body?.type;
+
+      if (eventType === "checkout.session.completed") {
+        const session = body.data?.object;
+        if (!session?.id) {
+          return new Response("Missing session ID", { status: 400 });
+        }
+
+        // Find the order by Stripe checkout session ID
+        const order: any = await ctx.runQuery(
+          // @ts-ignore
+          "orders:getByStripeSession" as any,
+          { stripeCheckoutSessionId: session.id }
+        );
+
+        if (order) {
+          // Update order status to paid
+          await ctx.runMutation(
+            // @ts-ignore
+            "orders:updateStatus" as any,
+            {
+              orderId: order._id,
+              status: "paid",
+              stripePaymentIntentId: session.payment_intent || undefined,
+              fulfillmentStage: "payment_received",
+            }
+          );
+
+          // Auto-trigger Printful fulfillment
+          try {
+            await ctx.runAction(
+              // @ts-ignore
+              "orders:fulfillWithPrintful" as any,
+              { orderId: order._id }
+            );
+          } catch (e) {
+            console.error("Auto-fulfillment failed:", e);
+            // Non-fatal — order is still marked as paid
+          }
+        }
+      }
+
+      return new Response("OK", { status: 200 });
+    } catch (error) {
+      console.error("Stripe webhook error:", error);
+      return new Response("Webhook processing error", { status: 500 });
+    }
+  }),
+});
 
 // Image proxy — serves Convex storage images with Google-friendly headers
 http.route({

@@ -93,6 +93,16 @@ const schema = defineSchema({
     ),
     trackingUrl: v.optional(v.string()),
     trackingNumber: v.optional(v.string()),
+    trackingCarrier: v.optional(v.string()),
+    shippingMethod: v.optional(v.string()),
+    // Fulfillment stage tracking
+    fulfillmentStage: v.optional(v.string()), // "payment_received" | "sent_to_printful" | "printful_processing" | "printful_fulfilled" | "shipped" | "delivered"
+    fulfillmentHistory: v.optional(v.array(v.object({
+      stage: v.string(),
+      timestamp: v.number(),
+      note: v.optional(v.string()),
+    }))),
+    printfulStatus: v.optional(v.string()),
   })
     .index("by_session", ["sessionId"])
     .index("by_user", ["userId"])
@@ -120,6 +130,13 @@ const schema = defineSchema({
     customerId: v.id("users"),
     tags: v.array(v.string()),
   }).index("by_customer", ["customerId"]),
+
+  // Shipping settings — admin-configurable shipping rules
+  shippingSettings: defineTable({
+    key: v.string(), // "free_standard", "standard_label", "expedited_enabled", "expedited_markup", etc.
+    value: v.string(), // JSON-stringified value
+    updatedAt: v.number(),
+  }).index("by_key", ["key"]),
 
   // Tax settings — admin-configurable tax rates by region
   taxSettings: defineTable({

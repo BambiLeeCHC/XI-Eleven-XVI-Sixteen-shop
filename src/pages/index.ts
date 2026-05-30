@@ -8,4 +8,5 @@ export { ProfilePage } from "./ProfilePage";
 export { OrdersPage } from "./OrdersPage";
 export { PrivacyPage, TermsPage, ShippingPolicyPage, ReturnsPage } from "./LegalPages";
 export { SizeGuidePage } from "./SizeGuidePage";
+export { AboutPage } from "./AboutPage";
 export { default as AdminPage } from "./AdminPage";

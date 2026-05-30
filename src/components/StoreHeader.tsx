@@ -98,6 +98,14 @@ export function StoreHeader() {
               >
                 SHOP MEN
               </Link>
+              <Link
+                to="/about"
+                className={`px-4 py-2 text-[11px] tracking-[0.2em] uppercase font-semibold transition-all ${
+                  location.pathname === "/about" ? "text-white" : "text-white/55 hover:text-white"
+                }`}
+              >
+                ABOUT
+              </Link>
             </nav>
 
             {/* Right side: cart + sign-in + mobile hamburger */}
@@ -231,6 +239,7 @@ export function StoreHeader() {
               <div className="my-6 border-t border-white/[0.06]" />
 
               <MobileNavLink to="/cart" label="CART" badge={cartCount > 0 ? cartCount : undefined} />
+              <MobileNavLink to="/about" label="ABOUT" />
               <MobileNavLink to="/size-guide" label="SIZE GUIDE" />
 
               <div className="my-6 border-t border-white/[0.06]" />

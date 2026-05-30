@@ -465,7 +465,22 @@ export function ProductPage() {
           </button>
 
           {/* Trust signals */}
-          <div className="flex gap-6 mt-8 pt-6" style={{ borderTop: "1px solid rgba(240,210,190,0.08)" }}>
+          {/* Made for You callout */}
+          <div className="flex items-start gap-3 mt-6 p-4" style={{
+            background: "rgba(200,140,255,0.04)",
+            border: "1px solid rgba(200,140,255,0.08)",
+            borderRadius: "12px",
+          }}>
+            <span className="text-base shrink-0 mt-0.5">✦</span>
+            <div>
+              <p className="text-[11px] font-semibold tracking-[0.1em] uppercase mb-1" style={{ color: "rgba(200,160,220,0.7)" }}>Made Exclusively for You</p>
+              <p className="text-[10px] leading-relaxed" style={{ color: "rgba(245,230,220,0.35)" }}>
+                This piece is crafted on demand — produced the moment you order, just for you. No mass production, no waste. Production takes 2–5 business days.
+              </p>
+            </div>
+          </div>
+
+          <div className="flex gap-6 mt-6 pt-5" style={{ borderTop: "1px solid rgba(240,210,190,0.08)" }}>
             <div className="flex items-center gap-2">
               <span className="text-sm">📦</span>
               <span className="text-[10px]" style={{ color: "rgba(245,230,220,0.38)" }}>
@@ -473,9 +488,9 @@ export function ProductPage() {
               </span>
             </div>
             <div className="flex items-center gap-2">
-              <span className="text-sm">↩️</span>
+              <span className="text-sm">🪡</span>
               <span className="text-[10px]" style={{ color: "rgba(245,230,220,0.38)" }}>
-                Easy Returns
+                Made to Order
               </span>
             </div>
             <div className="flex items-center gap-2">

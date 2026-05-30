@@ -61,6 +61,7 @@ type AdminTab =
   | "customers"
   | "crm"
   | "newsletter"
+  | "shipping"
   | "tax"
   | "settings";
 
@@ -106,7 +107,8 @@ const NAV_ITEMS: Array<{ id: AdminTab; label: string; icon: any }> = [
   { id: "customers", label: "Customers", icon: Users },
   { id: "crm", label: "CRM", icon: MessageSquare },
   { id: "newsletter", label: "Newsletter", icon: Mail },
-  { id: "tax", label: "Tax & Shipping", icon: Receipt },
+  { id: "shipping", label: "Shipping", icon: Truck },
+  { id: "tax", label: "Tax Rates", icon: Receipt },
   { id: "settings", label: "Settings", icon: Settings },
 ];
 
@@ -772,6 +774,31 @@ function OrderDetailModal({
               </div>
               <div>
                 <label className="text-[10px] text-white/25 mb-1 block">
+                  Fulfillment Stage
+                </label>
+                <select
+                  value={newStatus === "paid" ? "payment_received" : newStatus === "fulfilled" ? "printful_fulfilled" : newStatus === "shipped" ? "shipped" : newStatus === "delivered" ? "delivered" : "payment_received"}
+                  onChange={(e) => {
+                    const stage = e.target.value;
+                    if (stage === "shipped") setNewStatus("shipped");
+                    else if (stage === "delivered") setNewStatus("delivered");
+                    else if (stage === "printful_fulfilled" || stage === "printful_processing") setNewStatus("fulfilled");
+                    else setNewStatus("paid");
+                  }}
+                  className="w-full bg-white/[0.04] border border-white/[0.08] rounded-md px-3 py-2 text-sm text-white/70 focus:outline-none"
+                >
+                  <option value="payment_received" className="bg-[#1a1a1a]">Payment Received</option>
+                  <option value="sent_to_printful" className="bg-[#1a1a1a]">Sent to Production</option>
+                  <option value="printful_processing" className="bg-[#1a1a1a]">Being Crafted</option>
+                  <option value="printful_fulfilled" className="bg-[#1a1a1a]">Production Complete</option>
+                  <option value="shipped" className="bg-[#1a1a1a]">Shipped</option>
+                  <option value="delivered" className="bg-[#1a1a1a]">Delivered</option>
+                </select>
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="text-[10px] text-white/25 mb-1 block">
                   Tracking Number
                 </label>
                 <input
@@ -779,6 +806,16 @@ function OrderDetailModal({
                   value={trackingNumber}
                   onChange={(e) => setTrackingNumber(e.target.value)}
                   placeholder="Optional"
+                  className="w-full bg-white/[0.04] border border-white/[0.08] rounded-md px-3 py-2 text-sm text-white/70 placeholder-white/15 focus:outline-none"
+                />
+              </div>
+              <div>
+                <label className="text-[10px] text-white/25 mb-1 block">
+                  Carrier
+                </label>
+                <input
+                  type="text"
+                  placeholder="e.g. USPS, FedEx"
                   className="w-full bg-white/[0.04] border border-white/[0.08] rounded-md px-3 py-2 text-sm text-white/70 placeholder-white/15 focus:outline-none"
                 />
               </div>
@@ -1643,6 +1680,196 @@ function SettingsTab() {
   );
 }
 
+// ─── Shipping Tab ───────────────────────────────────────────────────────
+
+const FULFILLMENT_STAGES = [
+  { key: "payment_received", label: "Payment Received", color: "#f59e0b" },
+  { key: "sent_to_printful", label: "Sent to Production", color: "#3b82f6" },
+  { key: "printful_processing", label: "Being Crafted", color: "#8b5cf6" },
+  { key: "printful_fulfilled", label: "Production Complete", color: "#10b981" },
+  { key: "shipped", label: "Shipped", color: "#06b6d4" },
+  { key: "delivered", label: "Delivered", color: "#22c55e" },
+];
+
+function ShippingTab() {
+  const settings = useQuery(api.shipping.listSettings) ?? {};
+  const upsertSetting = useMutation(api.shipping.upsertSetting);
+  const orders = useQuery(api.orders.listAll) ?? [];
+  const updateStatus = useMutation(api.orders.updateStatus);
+
+  const [freeStandard, setFreeStandard] = useState<boolean>(true);
+  const [showExpedited, setShowExpedited] = useState<boolean>(true);
+  const [fulfillMin, setFulfillMin] = useState("2");
+  const [fulfillMax, setFulfillMax] = useState("5");
+  const [saved, setSaved] = useState(false);
+
+  // Sync state from loaded settings
+  useState(() => {
+    if (settings.free_standard !== undefined) setFreeStandard(settings.free_standard === "true");
+    if (settings.show_expedited !== undefined) setShowExpedited(settings.show_expedited === "true");
+    if (settings.fulfillment_min_days) setFulfillMin(settings.fulfillment_min_days);
+    if (settings.fulfillment_max_days) setFulfillMax(settings.fulfillment_max_days);
+  });
+
+  const handleSave = async () => {
+    await upsertSetting({ key: "free_standard", value: String(freeStandard) });
+    await upsertSetting({ key: "show_expedited", value: String(showExpedited) });
+    await upsertSetting({ key: "fulfillment_min_days", value: fulfillMin });
+    await upsertSetting({ key: "fulfillment_max_days", value: fulfillMax });
+    setSaved(true);
+    setTimeout(() => setSaved(false), 2000);
+  };
+
+  // Orders with fulfillment stages
+  const activeOrders = orders.filter((o: any) =>
+    o.status === "paid" || o.status === "fulfilled" || o.status === "shipped"
+  );
+
+  const handleStageUpdate = async (orderId: string, stage: string) => {
+    await updateStatus({
+      orderId: orderId as any,
+      status: stage === "shipped" ? "shipped" : stage === "delivered" ? "delivered" : "fulfilled",
+      fulfillmentStage: stage,
+    });
+  };
+
+  return (
+    <div className="max-w-4xl">
+      <h2 className="text-xl text-white font-semibold mb-6">Shipping & Fulfillment</h2>
+
+      {/* Settings Card */}
+      <div className="p-6 mb-8 rounded-xl" style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)" }}>
+        <h3 className="text-sm text-white/70 uppercase tracking-wider mb-5">Shipping Settings</h3>
+
+        <div className="space-y-4">
+          {/* Free Standard */}
+          <div className="flex items-center justify-between py-2">
+            <div>
+              <p className="text-sm text-white/80">Free Standard Shipping</p>
+              <p className="text-xs text-white/30">Offer free standard shipping on all orders</p>
+            </div>
+            <button
+              onClick={() => setFreeStandard(!freeStandard)}
+              className="transition-colors"
+              style={{ color: freeStandard ? "#10b981" : "rgba(255,255,255,0.3)" }}
+            >
+              {freeStandard ? <ToggleRight size={28} /> : <ToggleLeft size={28} />}
+            </button>
+          </div>
+
+          {/* Expedited Options */}
+          <div className="flex items-center justify-between py-2">
+            <div>
+              <p className="text-sm text-white/80">Show Expedited Options</p>
+              <p className="text-xs text-white/30">Display expedited shipping at checkout (from Printful rates)</p>
+            </div>
+            <button
+              onClick={() => setShowExpedited(!showExpedited)}
+              className="transition-colors"
+              style={{ color: showExpedited ? "#10b981" : "rgba(255,255,255,0.3)" }}
+            >
+              {showExpedited ? <ToggleRight size={28} /> : <ToggleLeft size={28} />}
+            </button>
+          </div>
+
+          {/* Fulfillment Time */}
+          <div className="flex items-center justify-between py-2">
+            <div>
+              <p className="text-sm text-white/80">Production Time (days)</p>
+              <p className="text-xs text-white/30">Made-to-order production window</p>
+            </div>
+            <div className="flex items-center gap-2">
+              <input
+                type="number"
+                value={fulfillMin}
+                onChange={(e) => setFulfillMin(e.target.value)}
+                className="w-14 text-center text-sm rounded-lg py-1.5"
+                style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", color: "white" }}
+              />
+              <span className="text-white/30 text-xs">to</span>
+              <input
+                type="number"
+                value={fulfillMax}
+                onChange={(e) => setFulfillMax(e.target.value)}
+                className="w-14 text-center text-sm rounded-lg py-1.5"
+                style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", color: "white" }}
+              />
+            </div>
+          </div>
+        </div>
+
+        <button
+          onClick={handleSave}
+          className="mt-6 px-6 py-2.5 text-xs tracking-wider uppercase font-bold text-white rounded-lg transition-all"
+          style={{
+            background: saved
+              ? "linear-gradient(135deg, #10b981, #059669)"
+              : "linear-gradient(135deg, #c48dff, #ff9eb8)",
+          }}
+        >
+          {saved ? "✓ SAVED" : "SAVE SETTINGS"}
+        </button>
+      </div>
+
+      {/* Active Orders / Fulfillment Tracker */}
+      <div className="p-6 rounded-xl" style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)" }}>
+        <h3 className="text-sm text-white/70 uppercase tracking-wider mb-5">
+          Order Fulfillment ({activeOrders.length} active)
+        </h3>
+
+        {activeOrders.length === 0 ? (
+          <p className="text-sm text-white/30 py-8 text-center">No active orders requiring fulfillment.</p>
+        ) : (
+          <div className="space-y-4">
+            {activeOrders.slice(0, 20).map((order: any) => {
+              const currentStageIdx = FULFILLMENT_STAGES.findIndex(s => s.key === order.fulfillmentStage);
+              return (
+                <div key={order._id} className="p-4 rounded-lg" style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.04)" }}>
+                  <div className="flex items-center justify-between mb-3">
+                    <div>
+                      <span className="text-xs text-white/40 font-mono">#{order._id.slice(-8)}</span>
+                      <span className="text-xs text-white/30 ml-3">{order.email}</span>
+                    </div>
+                    <span className="text-xs text-white/50">
+                      {format(new Date(order._creationTime), "MMM d, yyyy")}
+                    </span>
+                  </div>
+                  {/* Stage progression */}
+                  <div className="flex items-center gap-1 mb-2">
+                    {FULFILLMENT_STAGES.map((stage, i) => (
+                      <button
+                        key={stage.key}
+                        onClick={() => handleStageUpdate(order._id, stage.key)}
+                        className="flex-1 h-2 rounded-full transition-all cursor-pointer hover:opacity-80"
+                        title={`Set: ${stage.label}`}
+                        style={{
+                          background: i <= currentStageIdx
+                            ? stage.color
+                            : "rgba(255,255,255,0.06)",
+                        }}
+                      />
+                    ))}
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] text-white/40">
+                      {currentStageIdx >= 0 ? FULFILLMENT_STAGES[currentStageIdx].label : "Unknown"}
+                    </span>
+                    {order.printfulOrderId && (
+                      <span className="text-[10px] text-purple-400/50">
+                        Printful #{order.printfulOrderId}
+                      </span>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 // ─── Tax & Shipping Tab ─────────────────────────────────────────────────
 
 function TaxTab() {
@@ -2072,6 +2299,8 @@ export default function AdminPage() {
         return <CrmTab preselectedCustomerId={crmCustomerId} />;
       case "newsletter":
         return <NewsletterTab />;
+      case "shipping":
+        return <ShippingTab />;
       case "tax":
         return <TaxTab />;
       case "settings":
