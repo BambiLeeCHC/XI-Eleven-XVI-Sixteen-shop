@@ -1,7 +1,7 @@
 import { v } from "convex/values";
 import { mutation, query, action, internalMutation } from "./_generated/server";
 import { getAuthUserId } from "@convex-dev/auth/server";
-import { internal } from "./_generated/api";
+import { api, internal } from "./_generated/api";
 
 declare const process: { env: Record<string, string | undefined> };
 
@@ -233,7 +233,7 @@ export const fulfillWithPrintful = action({
   returns: v.any(),
   handler: async (ctx, { orderId }) => {
     // Get order details
-    const order: any = await ctx.runQuery(internal.orders.getById as any, { orderId });
+    const order: any = await ctx.runQuery(api.orders.getById as any, { orderId });
     if (!order) return { success: false, error: "Order not found" };
     if (order.printfulOrderId) return { success: false, error: "Already sent to Printful" };
 
@@ -245,7 +245,7 @@ export const fulfillWithPrintful = action({
     const printfulItems: Array<{ sync_variant_id: number; quantity: number }> = [];
     for (const item of order.items) {
       // Look up product for variant info
-      const product: any = await ctx.runQuery(internal.orders.getProduct as any, { productId: item.productId });
+      const product: any = await ctx.runQuery(api.orders.getProduct as any, { productId: item.productId });
       if (!product?.printfulVariants) continue;
 
       const pureSize = item.size.includes(" / ") ? item.size.split(" / ").pop()! : item.size;
