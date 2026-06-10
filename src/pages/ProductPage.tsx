@@ -7,6 +7,7 @@ import type { Id } from "../../convex/_generated/dataModel";
 import { SEO, buildProductJsonLd, buildBreadcrumbJsonLd } from "../components/SEO";
 import { getProductSEO } from "../data/seoMeta";
 import { CompleteTheLook } from "../components/CompleteTheLook";
+import { ProductFitGuide } from "../components/ProductFitGuide";
 
 /** Extract just the size label from a variant name like "D-SLIP DRESS [BLACK] / XS" → "XS" */
 function cleanSizeLabel(size: string): string {
@@ -319,6 +320,7 @@ export function ProductPage() {
   const sessionId = useSessionId();
   const [selectedSize, setSelectedSize] = useState<string>("");
   const [added, setAdded] = useState(false);
+  const [activeTab, setActiveTab] = useState<"details" | "fit">("details");
 
   if (product === undefined) {
     return (
@@ -401,9 +403,88 @@ export function ProductPage() {
           <p className="text-2xl mb-6" style={{ color: "rgba(245,230,220,0.75)" }}>
             ${(product.price / 100).toFixed(2)}
           </p>
-          <p className="text-[14px] leading-relaxed mb-8 whitespace-pre-line" style={{ color: "rgba(245,230,220,0.4)" }}>
-            {product.description}
-          </p>
+
+          {/* ── Details / Fit Guide Section ── */}
+          <div
+            style={{
+              background: activeTab === "fit"
+                ? "linear-gradient(165deg, rgba(245,238,230,0.97), rgba(235,228,220,0.95))"
+                : "linear-gradient(165deg, rgba(245,238,230,0.06), rgba(235,228,220,0.03))",
+              borderRadius: "16px",
+              border: activeTab === "fit"
+                ? "1px solid rgba(200,180,160,0.3)"
+                : "1px solid rgba(240,210,190,0.08)",
+              padding: "0",
+              marginBottom: "24px",
+              transition: "all 0.35s ease",
+              boxShadow: activeTab === "fit"
+                ? "0 8px 40px rgba(200,140,255,0.08), 0 2px 12px rgba(0,0,0,0.1)"
+                : "none",
+              overflow: "hidden",
+            }}
+          >
+            {/* Tab buttons */}
+            <div className="flex gap-0" style={{ borderBottom: activeTab === "fit" ? "1px solid rgba(180,160,140,0.15)" : "1px solid rgba(240,210,190,0.06)" }}>
+              <button
+                type="button"
+                onClick={() => setActiveTab("details")}
+                className="flex-1 py-3.5 text-[11px] tracking-[0.2em] uppercase font-bold transition-all relative"
+                style={{
+                  color: activeTab === "details"
+                    ? (activeTab === "fit" ? "rgba(30,25,20,0.8)" : "white")
+                    : (activeTab === "fit" ? "rgba(30,25,20,0.35)" : "rgba(245,230,220,0.35)"),
+                  background: "transparent",
+                  border: "none",
+                  cursor: "pointer",
+                }}
+              >
+                Details
+                {activeTab === "details" && (
+                  <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-3/4 h-[2.5px]"
+                    style={{ background: "linear-gradient(90deg, #c48dff, #ff9eb8)", borderRadius: "2px" }} />
+                )}
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveTab("fit")}
+                className="flex-1 py-3.5 text-[11px] tracking-[0.2em] uppercase font-bold transition-all relative flex items-center justify-center gap-1.5"
+                style={{
+                  color: activeTab === "fit"
+                    ? "rgba(30,25,20,0.9)"
+                    : "rgba(245,230,220,0.35)",
+                  background: "transparent",
+                  border: "none",
+                  cursor: "pointer",
+                }}
+              >
+                <span>Fit Guide</span>
+                <span className="text-[9px]" style={{ color: activeTab === "fit" ? "rgba(160,100,220,0.7)" : "rgba(200,140,255,0.4)" }}>✦</span>
+                {activeTab === "fit" && (
+                  <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-3/4 h-[2.5px]"
+                    style={{ background: "linear-gradient(90deg, #c48dff, #ff9eb8)", borderRadius: "2px" }} />
+                )}
+              </button>
+            </div>
+
+            {/* Tab Content */}
+            <div style={{ padding: activeTab === "fit" ? "20px 16px" : "16px 16px" }}>
+              {activeTab === "details" ? (
+                <p className="text-[14px] leading-relaxed whitespace-pre-line" style={{ color: "rgba(245,230,220,0.4)" }}>
+                  {product.description}
+                </p>
+              ) : (
+                <ProductFitGuide
+                  product={{ name: product.name, category: product.category, sizes: product.sizes || [], images: product.images || [] }}
+                  externalSize={selectedSize ? cleanSizeLabel(selectedSize) : undefined}
+                  onSizeSelect={(size) => {
+                    const match = product.sizes?.find((s: string) => cleanSizeLabel(s) === size);
+                    if (match) setSelectedSize(match);
+                  }}
+                  lightMode={true}
+                />
+              )}
+            </div>
+          </div>
 
           {/* Size Selector */}
           {product.sizes?.length > 0 && (
@@ -413,7 +494,6 @@ export function ProductPage() {
                 style={{ color: "rgba(245,230,220,0.45)" }}
               >
                 SIZE
-              <Link to="/size-guide" className="ml-2 text-[10px] tracking-normal normal-case font-normal underline" style={{ color: "rgba(200,140,255,0.45)" }}>Size Guide</Link>
               </p>
               <div className="flex flex-wrap gap-2">
                 {product.sizes.map((size: string) => (

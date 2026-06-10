@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { SEO, buildOrganizationJsonLd } from "../components/SEO";
+import { CategoryCarousel } from "../components/CategoryCarousel";
+import { ProductSpotlights } from "../components/ProductSpotlight";
 import { PAGE_SEO } from "../data/seoMeta";
 
 export function HomePage() {
@@ -14,6 +16,9 @@ export function HomePage() {
         jsonLd={buildOrganizationJsonLd()}
       />
     <div>
+      {/* ── Category Carousel — above the hero ── */}
+      <CategoryCarousel />
+
       {/* Hero Section */}
       <section className="relative min-h-[100vh] flex items-center justify-center overflow-hidden">
         {/* Video Backgrounds */}
@@ -234,6 +239,9 @@ export function HomePage() {
           </div>
         </div>
       </section>
+
+      {/* ── Product Spotlights — below the hero ── */}
+      <ProductSpotlights />
 
       {/* ── Made for You Section ── */}
       <section
