@@ -1,10 +1,11 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef, useCallback } from "react";
+import { getDrapeCdnUrl } from "../data/drapeCdnUrls";
 
 /* ═══════════════════════════════════════════════════════════════════
-   ProductFitGuide — Flat Overlay Fit Visualization
+   ProductFitGuide V9 — Size Guide Only (Body Type removed)
    
-   Places transparent product photos on the pavé diamond mannequins,
-   sized via real Printful measurements and anchored to body landmarks.
+   Clean size-guide with CDN-hosted drapes at 600×900 q80.
+   Each size shows a unique AI-generated drape on the pavé mannequin.
    ═══════════════════════════════════════════════════════════════════ */
 
 /* ─── Types ──────────────────────────────────────────────────────── */
@@ -23,92 +24,79 @@ interface Props {
   lightMode?: boolean;
 }
 
-/* ─── Mannequin Landmarks (in 701×875 image coordinate space) ──── */
+/* ─── Drape Map (M-size base / static fallback) ──────────────────── */
 
-interface MannequinData {
-  imgW: number;
-  imgH: number;
-  heightInches: number;  // model height
-  pxPerInch: number;     // pixels per inch on the mannequin image
-  centerX: number;       // body center X
-  shoulderY: number;     // top of shoulder line
-  waistY: number;        // natural waist line
-  headTopY: number;      // top of head for reference
+const DRAPE_MAP: Record<string, string> = {
+  "D-Slip Dress [Black]": "/drapes/draped_d-slip-dress-black.webp",
+  "D-Slip Dress [Nude]": "/drapes/draped_d-slip-dress-nude.webp",
+  "D-Slip Dress [Red]": "/drapes/draped_d-slip-dress-red.webp",
+  "D-Slip Dress [Whisper]": "/drapes/draped_d-slip-dress-whisper.webp",
+  "D-Slip Dress [Pink Lace]": "/drapes/draped_d-slip-dress-pink-lace.webp",
+  "D-Slip Dress [Dark Cerulean]": "/drapes/draped_d-slip-dress-dark-cerulean.webp",
+  "J-Glitch Jersey [Black]": "/drapes/draped_j-glitch-jersey-black.webp",
+  "J-Glitch Jersey [Volt]": "/drapes/draped_j-glitch-jersey-volt.webp",
+  "J-Glitch Jersey [White]": "/drapes/draped_j-glitch-jersey-white.webp",
+  "J-Glitch Jersey [Ice]": "/drapes/draped_j-glitch-jersey-ice.webp",
+  "J-Glitch Jersey [Pink]": "/drapes/draped_j-glitch-jersey-pink.webp",
+  "J-Glitch Jersey [Peach]": "/drapes/draped_j-glitch-jersey-peach.webp",
+  'S-Glitch 2.5\u201d Shorts [Black]': "/drapes/draped_s-glitch-2-5-shorts-black.webp",
+  'S-Glitch 2.5" Shorts [Black]': "/drapes/draped_s-glitch-2-5-shorts-black.webp",
+  'S-Glitch 2.5" Shorts [White]': "/drapes/draped_s-glitch-2-5-shorts-white.webp",
+  'S-Glitch 2.5" Shorts [Volt]': "/drapes/draped_s-glitch-2-5-shorts-volt.webp",
+  'S-Glitch 2.5" Shorts [Peach]': "/drapes/draped_s-glitch-2-5-shorts-peach.webp",
+  'S-Glitch 2.5" Shorts [Ice]': "/drapes/draped_s-glitch-2-5-shorts-ice.webp",
+  'S-Glitch 2.5" Shorts [Pink]': "/drapes/draped_s-glitch-2-5-shorts-pink.webp",
+  "L-Flow Leggings [Dash]": "/drapes/draped_l-flow-leggings-dash.webp",
+  "L-Flow Leggings [Onyx]": "/drapes/draped_l-flow-leggings-onyx.webp",
+  "L-Flow Leggings [Ivory]": "/drapes/draped_l-flow-leggings-ivory.webp",
+  "B-Lift Sports Bra [Dash]": "/drapes/draped_b-lift-sports-bra-dash.webp",
+  "B-Lift Sports Bra [Onyx]": "/drapes/draped_b-lift-sports-bra-onyx.webp",
+  "B-Lift Sports Bra [Ivory]": "/drapes/draped_b-lift-sports-bra-ivory.webp",
+  "T-Icon Oversized Tee [Black]": "/drapes/draped_t-icon-oversized-tee-black.webp",
+  "T-Icon Oversized Tee [French Navy]": "/drapes/draped_t-icon-oversized-tee-french-navy.webp",
+  "T-Icon Oversized Tee [Heather Grey]": "/drapes/draped_t-icon-oversized-tee-heather-grey.webp",
+  "T-Icon Oversized Tee [Stone]": "/drapes/draped_t-icon-oversized-tee-stone.webp",
+  "T-Icon Oversized Tee [White]": "/drapes/draped_t-icon-oversized-tee-white.webp",
+  "T-Icon Tie-Dye Tee [Milky Way]": "/drapes/draped_t-icon-tie-dye-tee-milky-way.webp",
+  "T-Icon Tie-Dye Tee [Navy / White]": "/drapes/draped_t-icon-tie-dye-tee-navy-white.webp",
+  "T-Icon Tie-Dye Tee [Sherbet Rainbow]": "/drapes/draped_t-icon-tie-dye-tee-sherbet-rainbow.webp",
+  "T-Icon Tie-Dye Tee [Classic Rainbow]": "/drapes/draped_t-icon-tie-dye-tee-classic-rainbow.webp",
+  "T-Icon Tie-Dye Tee [Black / White]": "/drapes/draped_t-icon-tie-dye-tee-black-white.webp",
+};
+
+/* ─── URL Helpers ────────────────────────────────────────────────── */
+
+function getSlugFromPath(path: string): string {
+  const match = path.match(/draped_(.+)\.webp$/);
+  return match ? match[1] : "";
 }
 
-const MANNEQUIN: Record<string, MannequinData> = {
-  female: {
-    imgW: 701, imgH: 875,
-    heightInches: 69,   // 5'9"
-    pxPerInch: 12.35,
-    centerX: 275,
-    shoulderY: 175,
-    waistY: 340,
-    headTopY: 16,
-  },
-  male: {
-    imgW: 701, imgH: 875,
-    heightInches: 72,   // 6'0"
-    pxPerInch: 11.71,
-    centerX: 384,
-    shoulderY: 160,
-    waistY: 370,
-    headTopY: 15,
-  },
-};
-
-/* ─── Overlay Content Bounds ─────────────────────────────────────
-   These describe where the actual garment content sits within each
-   flat overlay image (values are fractions of the overlay image size).
-   
-   topFrac = how far from the top of the image the garment content starts
-   centerXFrac = horizontal center of the garment content
-   hFrac = how much of the image height the garment content occupies
-   wFrac = how much of the image width the garment content occupies
-   imgW, imgH = actual overlay image dimensions in pixels
-   ─────────────────────────────────────────────────────────────────── */
-
-interface OverlayBounds {
-  topFrac: number;
-  centerXFrac: number;
-  hFrac: number;
-  wFrac: number;
-  imgW: number;
-  imgH: number;
+function getDrapeUrl(productName: string): string | null {
+  let url = DRAPE_MAP[productName];
+  if (!url) {
+    const norm = productName.replace(/[\u201c\u201d\u2018\u2019]/g, '"');
+    url = DRAPE_MAP[norm];
+  }
+  if (!url) {
+    const key = productName.toLowerCase().replace(/[^a-z0-9]/g, "");
+    for (const [k, v] of Object.entries(DRAPE_MAP)) {
+      if (k.toLowerCase().replace(/[^a-z0-9]/g, "") === key) {
+        url = v;
+        break;
+      }
+    }
+  }
+  return url || null;
 }
 
-const OVERLAY_BOUNDS: Record<string, OverlayBounds> = {
-  dress:    { topFrac: 0.030, centerXFrac: 0.503, hFrac: 0.93, wFrac: 0.65, imgW: 400, imgH: 400 },
-  jersey:   { topFrac: 0.023, centerXFrac: 0.514, hFrac: 0.94, wFrac: 0.85, imgW: 400, imgH: 400 },
-  shorts:   { topFrac: 0.160, centerXFrac: 0.496, hFrac: 0.69, wFrac: 0.80, imgW: 400, imgH: 400 },
-  leggings: { topFrac: 0.068, centerXFrac: 0.497, hFrac: 0.85, wFrac: 0.55, imgW: 400, imgH: 600 },
-  bra:      { topFrac: 0.070, centerXFrac: 0.500, hFrac: 0.81, wFrac: 0.72, imgW: 400, imgH: 400 },
-  tee:      { topFrac: 0.117, centerXFrac: 0.499, hFrac: 0.765, wFrac: 0.978, imgW: 400, imgH: 400 },
-};
+function getSizeDrapeUrl(baseDrapeUrl: string, size: string): string {
+  const slug = getSlugFromPath(baseDrapeUrl);
+  if (!slug) return baseDrapeUrl;
+  const sizeSlug = size.toLowerCase().replace(/\s+/g, "");
+  return `/drapes/sizes/draped_${slug}_${sizeSlug}.webp`;
+}
 
-/* ─── Printful Garment Lengths (inches) ──────────────────────────── */
-
-const GARMENT_LENGTHS: Record<string, Record<string, number>> = {
-  dress:    { XS: 35.04, S: 36.61, M: 37.80, L: 38.98, XL: 40.55, "2XL": 42.13 },
-  jersey:   { "2XS": 29.1, XS: 29.5, S: 29.9, M: 30.3, L: 31.1, XL: 32.1, "2XL": 33.1, "3XL": 34.1, "4XL": 35.0, "5XL": 36.0, "6XL": 37.0 },
-  shorts:   { XS: 11.42, S: 12.20, M: 13.39, L: 14.17, XL: 14.57, "2XL": 14.96, "3XL": 15.35 },
-  leggings: { XS: 37.01, S: 37.80, M: 38.58, L: 40.16, XL: 41.73 },
-  bra:      { XS: 10.24, S: 11.02, M: 11.81, L: 12.60, XL: 13.39, "2XL": 14.17 },
-  tee:      { S: 28.74, M: 29.53, L: 30.31, XL: 31.50, "2XL": 32.48 },
-};
-
-/* ─── Anchor type per garment ────────────────────────────────────── */
-
-const GARMENT_ANCHORS: Record<string, "shoulder" | "waist"> = {
-  dress: "shoulder",
-  jersey: "shoulder",
-  shorts: "waist",
-  leggings: "waist",
-  bra: "shoulder",
-  tee: "shoulder",
-};
-
-/* ─── Garment Detection ──────────────────────────────────────────── */
+/* ─── Garment / Gender Detection ─────────────────────────────────── */
 
 function detectGarmentType(name: string): string {
   const n = name.toUpperCase();
@@ -131,118 +119,6 @@ function detectGender(name: string, category?: string): "female" | "male" {
   if (n.includes("TEE") || n.includes("T-ICON")) return "male";
   if (n.includes("WOMEN") || n.includes("FEMALE")) return "female";
   return "male";
-}
-
-/* ─── Overlay Map ────────────────────────────────────────────────── */
-
-const OVERLAY_MAP: Record<string, string> = {
-  "D-Slip Dress [Black]": "/overlays/d-slip-dress-black.png",
-  "D-Slip Dress [Nude]": "/overlays/d-slip-dress-nude.png",
-  "D-Slip Dress [Red]": "/overlays/d-slip-dress-red.png",
-  "D-Slip Dress [Whisper]": "/overlays/d-slip-dress-whisper.png",
-  "D-Slip Dress [Pink Lace]": "/overlays/d-slip-dress-pink-lace.png",
-  "D-Slip Dress [Dark Cerulean]": "/overlays/d-slip-dress-dark-cerulean.png",
-  "J-Glitch Jersey [Black]": "/overlays/j-glitch-jersey-black.png",
-  "J-Glitch Jersey [Volt]": "/overlays/j-glitch-jersey-volt.png",
-  "J-Glitch Jersey [White]": "/overlays/j-glitch-jersey-white.png",
-  "J-Glitch Jersey [Ice]": "/overlays/j-glitch-jersey-ice.png",
-  "J-Glitch Jersey [Pink]": "/overlays/j-glitch-jersey-pink.png",
-  "J-Glitch Jersey [Peach]": "/overlays/j-glitch-jersey-peach.png",
-  "S-Glitch 2.5\u201d Shorts [Black]": "/overlays/s-glitch-25-shorts-black.png",
-  'S-Glitch 2.5" Shorts [Black]': "/overlays/s-glitch-25-shorts-black.png",
-  'S-Glitch 2.5" Shorts [White]': "/overlays/s-glitch-25-shorts-white.png",
-  'S-Glitch 2.5" Shorts [Volt]': "/overlays/s-glitch-25-shorts-volt.png",
-  'S-Glitch 2.5" Shorts [Peach]': "/overlays/s-glitch-25-shorts-peach.png",
-  'S-Glitch 2.5" Shorts [Ice]': "/overlays/s-glitch-25-shorts-ice.png",
-  'S-Glitch 2.5" Shorts [Pink]': "/overlays/s-glitch-25-shorts-pink.png",
-  "L-Flow Leggings [Dash]": "/overlays/l-flow-leggings-dash.png",
-  "L-Flow Leggings [Onyx]": "/overlays/l-flow-leggings-onyx.png",
-  "L-Flow Leggings [Ivory]": "/overlays/l-flow-leggings-ivory.png",
-  "B-Lift Sports Bra [Dash]": "/overlays/b-lift-sports-bra-dash.png",
-  "B-Lift Sports Bra [Onyx]": "/overlays/b-lift-sports-bra-onyx.png",
-  "B-Lift Sports Bra [Ivory]": "/overlays/b-lift-sports-bra-ivory.png",
-  "T-Icon Oversized Tee [Black]": "/overlays/t-icon-oversized-tee-black.png",
-  "T-Icon Oversized Tee [French Navy]": "/overlays/t-icon-oversized-tee-french-navy.png",
-  "T-Icon Oversized Tee [Heather Grey]": "/overlays/t-icon-oversized-tee-heather-grey.png",
-  "T-Icon Oversized Tee [Stone]": "/overlays/t-icon-oversized-tee-stone.png",
-  "T-Icon Oversized Tee [White]": "/overlays/t-icon-oversized-tee-white.png",
-  "T-Icon Tie-Dye Tee [Milky Way]": "/overlays/t-icon-tie-dye-tee-milky-way.png",
-  "T-Icon Tie-Dye Tee [Navy / White]": "/overlays/t-icon-tie-dye-tee-navy-white.png",
-  "T-Icon Tie-Dye Tee [Sherbet Rainbow]": "/overlays/t-icon-tie-dye-tee-sherbet-rainbow.png",
-  "T-Icon Tie-Dye Tee [Classic Rainbow]": "/overlays/t-icon-tie-dye-tee-classic-rainbow.png",
-  "T-Icon Tie-Dye Tee [Black / White]": "/overlays/t-icon-tie-dye-tee-black-white.png",
-};
-
-function getOverlayUrl(productName: string): string | null {
-  let url = OVERLAY_MAP[productName];
-  if (!url) {
-    const norm = productName.replace(/[\u201c\u201d\u2018\u2019]/g, '"');
-    url = OVERLAY_MAP[norm];
-  }
-  if (!url) {
-    const key = productName.toLowerCase().replace(/[^a-z0-9]/g, "");
-    for (const [k, v] of Object.entries(OVERLAY_MAP)) {
-      if (k.toLowerCase().replace(/[^a-z0-9]/g, "") === key) {
-        url = v;
-        break;
-      }
-    }
-  }
-  return url || null;
-}
-
-/* ─── Position Calculator ────────────────────────────────────────── */
-
-function calculateOverlayPosition(
-  garmentType: string,
-  size: string,
-  gender: "female" | "male",
-): { topPct: number; leftPct: number; widthPct: number; heightPct: number } {
-  const m = MANNEQUIN[gender];
-  const o = OVERLAY_BOUNDS[garmentType] || OVERLAY_BOUNDS.tee;
-  const lengths = GARMENT_LENGTHS[garmentType] || GARMENT_LENGTHS.tee;
-
-  // Get garment length for this size (fallback to middle size)
-  let lengthInches = lengths[size];
-  if (lengthInches === undefined) {
-    const available = Object.keys(lengths);
-    lengthInches = lengths[available[Math.floor(available.length / 2)]];
-  }
-
-  // Convert garment length to pixels on the mannequin image
-  const garmentLengthPx = lengthInches * m.pxPerInch;
-
-  // The overlay image height that corresponds to this garment length
-  // garmentLengthPx = overlayHeightPx * hFrac
-  // So: overlayHeightPx = garmentLengthPx / hFrac
-  const overlayHeightPx = garmentLengthPx / o.hFrac;
-
-  // Overlay width from aspect ratio
-  const imgAspect = o.imgW / o.imgH;
-  const overlayWidthPx = overlayHeightPx * imgAspect;
-
-  // Determine anchor Y position
-  const anchor = GARMENT_ANCHORS[garmentType] || "shoulder";
-  const anchorY = anchor === "shoulder" ? m.shoulderY : m.waistY;
-
-  // The garment content starts at topFrac from the top of the overlay image.
-  // We want that content start to align with the anchor point.
-  // overlayTopPx + topFrac * overlayHeightPx = anchorY
-  // overlayTopPx = anchorY - topFrac * overlayHeightPx
-  const overlayTopPx = anchorY - (o.topFrac * overlayHeightPx);
-
-  // Center the overlay horizontally on the mannequin body center
-  // The garment content center is at centerXFrac within the overlay
-  // So: overlayLeftPx + centerXFrac * overlayWidthPx = m.centerX
-  const overlayLeftPx = m.centerX - (o.centerXFrac * overlayWidthPx);
-
-  // Convert to percentages of mannequin image dimensions
-  return {
-    topPct: (overlayTopPx / m.imgH) * 100,
-    leftPct: (overlayLeftPx / m.imgW) * 100,
-    widthPct: (overlayWidthPx / m.imgW) * 100,
-    heightPct: (overlayHeightPx / m.imgH) * 100,
-  };
 }
 
 /* ─── Size Chart Data ────────────────────────────────────────────── */
@@ -289,6 +165,30 @@ const SIZE_CHARTS: Record<string, SizeChartEntry[]> = {
   ],
 };
 
+/* ─── Fit Description ────────────────────────────────────────────── */
+
+function getFitDescription(garmentType: string, size: string, sizes: string[]): string {
+  const idx = sizes.indexOf(size);
+  if (idx < 0) return "";
+  const ratio = sizes.length > 1 ? idx / (sizes.length - 1) : 0.5;
+  if (ratio <= 0.15) return "Compressive, body-hugging fit";
+  if (ratio <= 0.35) return "Snug, fitted silhouette";
+  if (ratio <= 0.55) return "True-to-size fit";
+  if (ratio <= 0.75) return "Relaxed, comfortable fit";
+  return "Oversized, loose drape";
+}
+
+/* ─── Image Preloader ────────────────────────────────────────────── */
+
+const preloadedUrls = new Set<string>();
+
+function preloadImage(url: string) {
+  if (preloadedUrls.has(url)) return;
+  preloadedUrls.add(url);
+  const img = new Image();
+  img.src = url;
+}
+
 /* ═══════════════════════════════════════════════════════════════════
    Component
    ═══════════════════════════════════════════════════════════════════ */
@@ -296,53 +196,38 @@ const SIZE_CHARTS: Record<string, SizeChartEntry[]> = {
 export function ProductFitGuide({ product, externalSize, onSizeSelect, lightMode = false }: Props) {
   const [selectedSize, setSelectedSize] = useState<string>("");
 
-  /* ── Light/dark adaptive colors ── */
+  // Crossfade layers
+  const [layerA, setLayerA] = useState<string>("");
+  const [layerB, setLayerB] = useState<string>("");
+  const [activeLayer, setActiveLayer] = useState<"A" | "B">("A");
+  const [layerAReady, setLayerAReady] = useState(false);
+  const [layerBReady, setLayerBReady] = useState(false);
+  const pendingUrlRef = useRef<string>("");
+
+  /* ─── Theme colors ─────────────────────────────────────────────── */
+
   const c = lightMode ? {
-    text:        "rgba(30,25,20,0.75)",
-    textMuted:   "rgba(30,25,20,0.4)",
-    textFaint:   "rgba(30,25,20,0.25)",
-    accent:      "rgba(140,80,200,0.75)",
-    accentFaint: "rgba(140,80,200,0.12)",
-    accentBorder:"rgba(140,80,200,0.25)",
-    border:      "rgba(30,25,20,0.08)",
-    cardBg:      "rgba(30,25,20,0.03)",
-    activeBg:    "rgba(140,80,200,0.08)",
-    btnActive:   "linear-gradient(135deg, rgba(140,80,200,0.12), rgba(220,120,160,0.08))",
-    btnBorder:   "1px solid rgba(140,80,200,0.25)",
-    btnInactive: "1px solid rgba(30,25,20,0.1)",
-    sizeActive:  "rgba(30,25,20,0.85)",
-    sizeInactive:"rgba(30,25,20,0.35)",
-    highlight:   "rgba(30,25,20,0.7)",
-    colHighlight:"rgba(140,80,200,0.06)",
-    fitNote:     "rgba(140,80,200,0.06)",
-    fitNoteBorder: "rgba(140,80,200,0.12)",
-    fitNoteText: "rgba(30,25,20,0.35)",
-    badgeBg:     "rgba(255,255,255,0.85)",
-    badgeText:   "rgba(140,80,200,0.7)",
-    modelText:   "rgba(255,255,255,0.6)",
+    text: "rgba(30,25,20,0.75)", textMuted: "rgba(30,25,20,0.4)", textFaint: "rgba(30,25,20,0.25)",
+    accent: "rgba(140,80,200,0.75)", accentFaint: "rgba(140,80,200,0.12)", accentBorder: "rgba(140,80,200,0.25)",
+    border: "rgba(30,25,20,0.08)", cardBg: "rgba(30,25,20,0.03)", activeBg: "rgba(140,80,200,0.08)",
+    btnActive: "linear-gradient(135deg, rgba(140,80,200,0.12), rgba(220,120,160,0.08))",
+    btnBorder: "1px solid rgba(140,80,200,0.25)", btnInactive: "1px solid rgba(30,25,20,0.1)",
+    sizeActive: "rgba(30,25,20,0.85)", sizeInactive: "rgba(30,25,20,0.35)",
+    highlight: "rgba(30,25,20,0.7)", colHighlight: "rgba(140,80,200,0.06)",
+    fitNote: "rgba(140,80,200,0.06)", fitNoteBorder: "rgba(140,80,200,0.12)",
+    fitNoteText: "rgba(30,25,20,0.35)", badgeBg: "rgba(255,255,255,0.85)",
+    badgeText: "rgba(140,80,200,0.7)", modelText: "rgba(255,255,255,0.6)",
   } : {
-    text:        "rgba(245,230,220,0.8)",
-    textMuted:   "rgba(245,230,220,0.4)",
-    textFaint:   "rgba(245,230,220,0.25)",
-    accent:      "rgba(200,140,255,0.7)",
-    accentFaint: "rgba(200,140,255,0.08)",
-    accentBorder:"rgba(200,140,255,0.2)",
-    border:      "rgba(240,210,190,0.06)",
-    cardBg:      "rgba(255,240,230,0.02)",
-    activeBg:    "rgba(200,140,255,0.05)",
-    btnActive:   "linear-gradient(135deg, rgba(200,140,255,0.15), rgba(255,158,184,0.08))",
-    btnBorder:   "1px solid rgba(200,140,255,0.3)",
-    btnInactive: "1px solid rgba(240,210,190,0.1)",
-    sizeActive:  "white",
-    sizeInactive:"rgba(245,230,220,0.45)",
-    highlight:   "rgba(245,230,220,0.8)",
-    colHighlight:"rgba(200,140,255,0.05)",
-    fitNote:     "rgba(200,140,255,0.03)",
-    fitNoteBorder: "rgba(200,140,255,0.06)",
-    fitNoteText: "rgba(245,230,220,0.32)",
-    badgeBg:     "rgba(0,0,0,0.7)",
-    badgeText:   "rgba(200,140,255,0.7)",
-    modelText:   "rgba(245,230,220,0.3)",
+    text: "rgba(245,230,220,0.8)", textMuted: "rgba(245,230,220,0.4)", textFaint: "rgba(245,230,220,0.25)",
+    accent: "rgba(200,140,255,0.7)", accentFaint: "rgba(200,140,255,0.08)", accentBorder: "rgba(200,140,255,0.2)",
+    border: "rgba(240,210,190,0.06)", cardBg: "rgba(255,240,230,0.02)", activeBg: "rgba(200,140,255,0.05)",
+    btnActive: "linear-gradient(135deg, rgba(200,140,255,0.15), rgba(255,158,184,0.08))",
+    btnBorder: "1px solid rgba(200,140,255,0.3)", btnInactive: "1px solid rgba(240,210,190,0.1)",
+    sizeActive: "white", sizeInactive: "rgba(245,230,220,0.45)",
+    highlight: "rgba(245,230,220,0.8)", colHighlight: "rgba(200,140,255,0.05)",
+    fitNote: "rgba(200,140,255,0.03)", fitNoteBorder: "rgba(200,140,255,0.06)",
+    fitNoteText: "rgba(245,230,220,0.32)", badgeBg: "rgba(0,0,0,0.7)",
+    badgeText: "rgba(200,140,255,0.7)", modelText: "rgba(245,230,220,0.3)",
   };
 
   useEffect(() => {
@@ -351,8 +236,7 @@ export function ProductFitGuide({ product, externalSize, onSizeSelect, lightMode
 
   const garmentType = detectGarmentType(product.name);
   const gender = detectGender(product.name, product.category);
-  const mannequinUrl = gender === "female" ? "/mannequin-female.png" : "/mannequin-male.png";
-  const overlayUrl = useMemo(() => getOverlayUrl(product.name), [product.name]);
+  const baseDrapeUrl = useMemo(() => getDrapeUrl(product.name), [product.name]);
 
   const uniqueSizes = useMemo(() => {
     const clean = product.sizes.map((s) => {
@@ -365,20 +249,105 @@ export function ProductFitGuide({ product, externalSize, onSizeSelect, lightMode
   const currentSize = selectedSize || uniqueSizes[Math.floor(uniqueSizes.length / 2)] || "M";
   const sizeChart = SIZE_CHARTS[garmentType] || [];
 
-  // Calculate overlay position for current size
-  const pos = useMemo(
-    () => calculateOverlayPosition(garmentType, currentSize, gender),
-    [garmentType, currentSize, gender],
-  );
+  /* ─── URL Resolution: CDN first, static fallback ────────────────── */
+
+  const productSlug = useMemo(() => getSlugFromPath(baseDrapeUrl || ""), [baseDrapeUrl]);
+
+  const targetUrl = useMemo(() => {
+    if (!baseDrapeUrl) return "";
+    const sizeSlug = currentSize.toLowerCase().replace(/\s+/g, "");
+    return getDrapeCdnUrl(productSlug, sizeSlug) || getSizeDrapeUrl(baseDrapeUrl, currentSize);
+  }, [baseDrapeUrl, currentSize, productSlug]);
+
+  /* ─── Crossfade Engine ─────────────────────────────────────────── */
+
+  useEffect(() => {
+    if (targetUrl && !layerA && !layerB) {
+      setLayerA(targetUrl);
+      setActiveLayer("A");
+    }
+  }, [targetUrl, layerA, layerB]);
+
+  useEffect(() => {
+    if (!targetUrl) return;
+    const currentActive = activeLayer === "A" ? layerA : layerB;
+    if (targetUrl === currentActive) return;
+
+    pendingUrlRef.current = targetUrl;
+
+    if (activeLayer === "A") {
+      setLayerBReady(false);
+      setLayerB(targetUrl);
+    } else {
+      setLayerAReady(false);
+      setLayerA(targetUrl);
+    }
+  }, [targetUrl]);
+
+  const handleLayerALoad = useCallback(() => {
+    setLayerAReady(true);
+    if (activeLayer === "B" && layerA === pendingUrlRef.current) {
+      setActiveLayer("A");
+    }
+  }, [activeLayer, layerA]);
+
+  const handleLayerBLoad = useCallback(() => {
+    setLayerBReady(true);
+    if (activeLayer === "A" && layerB === pendingUrlRef.current) {
+      setActiveLayer("B");
+    }
+  }, [activeLayer, layerB]);
+
+  const handleImageError = useCallback((layer: "A" | "B") => {
+    if (baseDrapeUrl) {
+      if (layer === "A") { setLayerA(baseDrapeUrl); }
+      else { setLayerB(baseDrapeUrl); }
+    }
+  }, [baseDrapeUrl]);
+
+  /* ─── Preload adjacent sizes ───────────────────────────────────── */
+
+  useEffect(() => {
+    if (!baseDrapeUrl) return;
+    const idx = uniqueSizes.indexOf(currentSize);
+    for (let i = Math.max(0, idx - 2); i <= Math.min(uniqueSizes.length - 1, idx + 2); i++) {
+      const sizeSlug = uniqueSizes[i].toLowerCase().replace(/\s+/g, "");
+      const cdnUrl = getDrapeCdnUrl(productSlug, sizeSlug);
+      if (cdnUrl) preloadImage(cdnUrl);
+      else preloadImage(getSizeDrapeUrl(baseDrapeUrl, uniqueSizes[i]));
+    }
+  }, [currentSize, baseDrapeUrl, uniqueSizes, productSlug]);
+
+  /* ─── Event Handlers ───────────────────────────────────────────── */
 
   const handleSizeClick = (size: string) => {
+    if (size === currentSize) return;
     setSelectedSize(size);
     onSizeSelect?.(size);
   };
 
+  const fitDesc = getFitDescription(garmentType, currentSize, uniqueSizes);
+  const modelLabel = gender === "female" ? "5'9\" model" : "6'0\" model";
+
+  const imgStyle = (visible: boolean): React.CSSProperties => ({
+    position: "absolute",
+    top: 0, left: 0,
+    width: "100%",
+    height: "100%",
+    objectFit: "cover",
+    opacity: visible ? 1 : 0,
+    transition: "opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
+    pointerEvents: "none",
+  });
+
+  /* ═══════════════════════════════════════════════════════════════
+     Render
+     ═══════════════════════════════════════════════════════════════ */
+
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
-      {/* ── Mannequin + Flat Overlay ── */}
+
+      {/* ── AI Drape Visualization ── */}
       <div
         style={{
           position: "relative",
@@ -389,125 +358,118 @@ export function ProductFitGuide({ product, externalSize, onSizeSelect, lightMode
           borderRadius: "16px",
           overflow: "hidden",
           border: "1px solid rgba(200,140,255,0.08)",
+          aspectRatio: "2 / 3",
         }}
       >
-        {/* Mannequin base image */}
-        <img
-          src={mannequinUrl}
-          alt={`${gender === "female" ? '5\'9"' : '6\'0"'} ${gender} mannequin`}
-          style={{ width: "100%", display: "block", opacity: 0.95 }}
-          draggable={false}
-        />
-
-        {/* Flat product overlay */}
-        {overlayUrl && (
+        {baseDrapeUrl ? (
+          <>
+            {layerA && (
+              <img
+                key={`A-${layerA}`}
+                src={layerA}
+                alt={`${product.name} drape`}
+                style={imgStyle(activeLayer === "A")}
+                onLoad={handleLayerALoad}
+                onError={() => handleImageError("A")}
+                draggable={false}
+              />
+            )}
+            {layerB && (
+              <img
+                key={`B-${layerB}`}
+                src={layerB}
+                alt={`${product.name} drape`}
+                style={imgStyle(activeLayer === "B")}
+                onLoad={handleLayerBLoad}
+                onError={() => handleImageError("B")}
+                draggable={false}
+              />
+            )}
+          </>
+        ) : (
           <img
-            key={`${overlayUrl}-${currentSize}`}
-            src={overlayUrl}
-            alt={`${product.name} fit preview`}
-            style={{
-              position: "absolute",
-              top: `${pos.topPct}%`,
-              left: `${pos.leftPct}%`,
-              width: `${pos.widthPct}%`,
-              height: `${pos.heightPct}%`,
-              objectFit: "contain",
-              pointerEvents: "none",
-              opacity: 0.92,
-              transition: "all 0.3s ease",
-              filter: "drop-shadow(0 2px 12px rgba(0,0,0,0.4))",
-            }}
+            src={gender === "female" ? "/mannequin-female.png" : "/mannequin-male.png"}
+            alt="mannequin"
+            style={{ width: "100%", display: "block", opacity: 0.95 }}
             draggable={false}
           />
         )}
 
-        {/* Size badge */}
+        {/* Size Badge */}
         <div
           style={{
-            position: "absolute",
-            bottom: "12px",
-            right: "12px",
-            background: c.badgeBg,
-            backdropFilter: "blur(8px)",
-            WebkitBackdropFilter: "blur(8px)",
-            borderRadius: "10px",
-            padding: "5px 12px",
+            position: "absolute", bottom: "12px", right: "12px", zIndex: 10,
+            background: c.badgeBg, backdropFilter: "blur(8px)", WebkitBackdropFilter: "blur(8px)",
+            borderRadius: "10px", padding: "5px 12px",
             border: `1px solid ${c.accentBorder}`,
-            display: "flex",
-            alignItems: "center",
-            gap: "6px",
+            display: "flex", alignItems: "center", gap: "6px",
           }}
         >
           <span style={{ fontSize: "8px", color: c.accent }}>✦</span>
-          <span
-            style={{
-              fontSize: "10px",
-              letterSpacing: "0.2em",
-              color: c.badgeText,
-              textTransform: "uppercase",
-              fontWeight: 600,
-            }}
-          >
+          <span style={{
+            fontSize: "10px", letterSpacing: "0.2em", color: c.badgeText,
+            textTransform: "uppercase", fontWeight: 600,
+          }}>
             Size {currentSize}
           </span>
         </div>
 
-        {/* Model height label */}
-        <div
-          style={{
-            position: "absolute",
-            bottom: "12px",
-            left: "12px",
-            background: "rgba(0,0,0,0.5)",
-            borderRadius: "8px",
-            padding: "4px 10px",
-          }}
-        >
-          <span
-            style={{
-              fontSize: "9px",
-              color: c.modelText,
-              letterSpacing: "0.1em",
-            }}
-          >
-            {gender === "female" ? "5'9\" model" : "6'0\" model"}
+        {/* Model info */}
+        <div style={{
+          position: "absolute", bottom: "12px", left: "12px", zIndex: 10,
+          background: "rgba(0,0,0,0.5)", borderRadius: "8px", padding: "4px 10px",
+        }}>
+          <span style={{ fontSize: "9px", color: c.modelText, letterSpacing: "0.1em" }}>
+            {modelLabel}
           </span>
         </div>
+
+        {/* Fit description */}
+        {fitDesc && (
+          <div style={{
+            position: "absolute", top: "12px", left: "50%", transform: "translateX(-50%)",
+            zIndex: 10, background: "rgba(0,0,0,0.65)", backdropFilter: "blur(6px)",
+            borderRadius: "8px", padding: "4px 12px",
+            transition: "opacity 0.3s",
+          }}>
+            <span style={{ fontSize: "9px", color: "rgba(200,140,255,0.7)", letterSpacing: "0.05em" }}>
+              {fitDesc}
+            </span>
+          </div>
+        )}
       </div>
 
       {/* ── Size Selector ── */}
       <div>
-        <p
-          style={{
-            fontSize: "10px",
-            letterSpacing: "0.25em",
-            textTransform: "uppercase",
-            color: c.textMuted,
-            marginBottom: "8px",
-            fontWeight: 600,
-          }}
-        >
-          Select Size to Preview Fit
+        <p style={{
+          fontSize: "10px", letterSpacing: "0.25em", textTransform: "uppercase",
+          color: c.textMuted, marginBottom: "8px", fontWeight: 600,
+        }}>
+          Select Size
         </p>
-        <div style={{ display: "flex", gap: "6px", flexWrap: "wrap" }}>
+        <div style={{
+          display: "flex", gap: "4px", flexWrap: "wrap",
+          background: c.cardBg, border: `1px solid ${c.border}`,
+          borderRadius: "12px", padding: "4px",
+        }}>
           {uniqueSizes.map((size) => {
             const isActive = currentSize === size;
             return (
               <button
-                key={size}
-                type="button"
+                key={size} type="button"
                 onClick={() => handleSizeClick(size)}
                 style={{
-                  padding: "6px 14px",
-                  fontSize: "11px",
-                  letterSpacing: "0.1em",
+                  padding: "8px 14px", fontSize: "11px", letterSpacing: "0.1em",
                   textTransform: "uppercase",
+                  flex: uniqueSizes.length <= 7 ? "1" : undefined,
+                  minWidth: "40px",
                   color: isActive ? c.sizeActive : c.sizeInactive,
                   background: isActive ? c.btnActive : "transparent",
-                  border: isActive ? c.btnBorder : c.btnInactive,
+                  border: isActive ? c.btnBorder : "1px solid transparent",
                   borderRadius: "8px",
                   cursor: "pointer",
-                  transition: "all 0.2s ease",
+                  transition: "all 0.25s cubic-bezier(0.4, 0, 0.2, 1)",
+                  fontWeight: isActive ? 600 : 400,
                 }}
               >
                 {size}
@@ -519,29 +481,15 @@ export function ProductFitGuide({ product, externalSize, onSizeSelect, lightMode
 
       {/* ── Size Chart Table ── */}
       {sizeChart.length > 0 && (
-        <div
-          style={{
-            background: c.cardBg,
-            border: `1px solid ${c.border}`,
-            borderRadius: "12px",
-            overflow: "hidden",
-          }}
-        >
-          <div
-            style={{
-              padding: "10px 14px",
-              borderBottom: `1px solid ${c.border}`,
-            }}
-          >
-            <span
-              style={{
-                fontSize: "10px",
-                letterSpacing: "0.2em",
-                textTransform: "uppercase",
-                color: c.textMuted,
-                fontWeight: 600,
-              }}
-            >
+        <div style={{
+          background: c.cardBg, border: `1px solid ${c.border}`,
+          borderRadius: "12px", overflow: "hidden",
+        }}>
+          <div style={{ padding: "10px 14px", borderBottom: `1px solid ${c.border}` }}>
+            <span style={{
+              fontSize: "10px", letterSpacing: "0.2em", textTransform: "uppercase",
+              color: c.textMuted, fontWeight: 600,
+            }}>
               Size Chart
             </span>
           </div>
@@ -549,33 +497,20 @@ export function ProductFitGuide({ product, externalSize, onSizeSelect, lightMode
             <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "11px" }}>
               <thead>
                 <tr>
-                  <th
-                    style={{
-                      textAlign: "left",
-                      padding: "8px 12px",
-                      color: c.textFaint,
-                      fontWeight: 500,
-                      fontSize: "10px",
-                      letterSpacing: "0.1em",
-                      textTransform: "uppercase",
-                    }}
-                  >
+                  <th style={{
+                    textAlign: "left", padding: "8px 12px", color: c.textFaint,
+                    fontWeight: 500, fontSize: "10px", letterSpacing: "0.1em", textTransform: "uppercase",
+                  }}>
                     Measure
                   </th>
                   {uniqueSizes.map((size) => (
-                    <th
-                      key={size}
-                      style={{
-                        textAlign: "center",
-                        padding: "8px 8px",
-                        color: currentSize === size ? c.accent : c.textFaint,
-                        fontWeight: currentSize === size ? 700 : 500,
-                        fontSize: "10px",
-                        letterSpacing: "0.1em",
-                        textTransform: "uppercase",
-                        transition: "color 0.2s",
-                      }}
-                    >
+                    <th key={size} style={{
+                      textAlign: "center", padding: "8px 8px",
+                      color: currentSize === size ? c.accent : c.textFaint,
+                      fontWeight: currentSize === size ? 700 : 500,
+                      fontSize: "10px", letterSpacing: "0.1em", textTransform: "uppercase",
+                      transition: "color 0.25s",
+                    }}>
                       {size}
                     </th>
                   ))}
@@ -583,36 +518,24 @@ export function ProductFitGuide({ product, externalSize, onSizeSelect, lightMode
               </thead>
               <tbody>
                 {sizeChart.map((row, i) => (
-                  <tr
-                    key={row.label}
-                    style={{
-                      borderTop: `1px solid ${c.border}`,
-                      background: i % 2 === 0 ? "transparent" : c.cardBg,
-                    }}
-                  >
-                    <td
-                      style={{
-                        padding: "8px 12px",
-                        color: c.textMuted,
-                        fontWeight: 500,
-                        whiteSpace: "nowrap",
-                      }}
-                    >
+                  <tr key={row.label} style={{
+                    borderTop: `1px solid ${c.border}`,
+                    background: i % 2 === 0 ? "transparent" : c.cardBg,
+                  }}>
+                    <td style={{
+                      padding: "8px 12px", color: c.textMuted, fontWeight: 500, whiteSpace: "nowrap",
+                    }}>
                       {row.label}{" "}
                       <span style={{ color: c.textFaint, fontSize: "9px" }}>({row.unit})</span>
                     </td>
                     {uniqueSizes.map((size) => (
-                      <td
-                        key={size}
-                        style={{
-                          textAlign: "center",
-                          padding: "8px 8px",
-                          color: currentSize === size ? c.highlight : c.textFaint,
-                          fontWeight: currentSize === size ? 600 : 400,
-                          transition: "all 0.2s",
-                          background: currentSize === size ? c.colHighlight : "transparent",
-                        }}
-                      >
+                      <td key={size} style={{
+                        textAlign: "center", padding: "8px 8px",
+                        color: currentSize === size ? c.highlight : c.textFaint,
+                        fontWeight: currentSize === size ? 600 : 400,
+                        transition: "all 0.25s",
+                        background: currentSize === size ? c.colHighlight : "transparent",
+                      }}>
                         {row.sizes[size] || "—"}
                       </td>
                     ))}
@@ -625,25 +548,12 @@ export function ProductFitGuide({ product, externalSize, onSizeSelect, lightMode
       )}
 
       {/* ── Fit Note ── */}
-      <div
-        style={{
-          padding: "12px 16px",
-          background: c.fitNote,
-          border: `1px solid ${c.fitNoteBorder}`,
-          borderRadius: "12px",
-        }}
-      >
-        <p
-          style={{
-            fontSize: "10px",
-            lineHeight: 1.7,
-            color: c.fitNoteText,
-            margin: 0,
-          }}
-        >
-          ✦ Shown on a {gender === "female" ? "5'9\"" : "6'0\""} pavé black diamond
-          mannequin. Garment is sized using actual Printful measurements — 
-          select different sizes to see how the proportions change on the form.
+      <div style={{
+        padding: "12px 16px", background: c.fitNote,
+        border: `1px solid ${c.fitNoteBorder}`, borderRadius: "12px",
+      }}>
+        <p style={{ fontSize: "10px", lineHeight: 1.7, color: c.fitNoteText, margin: 0 }}>
+          ✦ Each size has its own AI-generated drape rendered on a {gender === "female" ? "5'9\"" : "6'0\""} pavé black diamond mannequin. The mannequin stays the same — the garment changes to show how each size fits, drapes, and falls on the body using real Printful measurements.
         </p>
       </div>
     </div>

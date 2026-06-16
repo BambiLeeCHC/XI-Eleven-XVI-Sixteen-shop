@@ -20,6 +20,7 @@ import {
   ReturnsPage,
   SizeGuidePage,
   AboutPage,
+  ContactPage,
   AdminPage,
 } from "./pages";
 
@@ -44,6 +45,7 @@ function App() {
             <Route path="/returns" element={<ReturnsPage />} />
             <Route path="/size-guide" element={<SizeGuidePage />} />
             <Route path="/about" element={<AboutPage />} />
+            <Route path="/contact" element={<ContactPage />} />
 
             {/* Protected routes */}
             <Route element={<ProtectedRoute />}>
