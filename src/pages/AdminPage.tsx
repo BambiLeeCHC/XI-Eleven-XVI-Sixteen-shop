@@ -1617,39 +1617,217 @@ function SettingsTab() {
   const customers = useQuery(api.admin.listCustomers);
   const setRole = useMutation(api.admin.setUserRole);
 
+  const [search, setSearch] = useState("");
+  const [showAddAdmin, setShowAddAdmin] = useState(false);
+  const [confirmRemove, setConfirmRemove] = useState<string | null>(null);
+  const [confirmGrant, setConfirmGrant] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
+
   const admins = customers?.filter((c: any) => c.role === "admin") || [];
+  const nonAdmins = customers?.filter((c: any) => c.role !== "admin") || [];
+
+  // Filter non-admins by search
+  const filteredNonAdmins = nonAdmins.filter((c: any) => {
+    if (!search.trim()) return false; // Only show when searching
+    const q = search.toLowerCase();
+    return (
+      (c.name || "").toLowerCase().includes(q) ||
+      (c.email || "").toLowerCase().includes(q)
+    );
+  });
+
+  const handleGrantAdmin = async (userId: string) => {
+    setSaving(true);
+    try {
+      await setRole({ userId: userId as Id<"users">, role: "admin" });
+      setConfirmGrant(null);
+      setSearch("");
+      setShowAddAdmin(false);
+    } catch (e) {
+      console.error("Failed to grant admin:", e);
+    }
+    setSaving(false);
+  };
+
+  const handleRevokeAdmin = async (userId: string) => {
+    setSaving(true);
+    try {
+      await setRole({ userId: userId as Id<"users">, role: "customer" });
+      setConfirmRemove(null);
+    } catch (e) {
+      console.error("Failed to revoke admin:", e);
+    }
+    setSaving(false);
+  };
 
   return (
     <div className="space-y-6">
       <h1 className="text-lg font-medium text-white/90">Settings</h1>
 
-      {/* Admin Management */}
-      <div className="bg-white/[0.03] border border-white/[0.06] rounded-lg p-4 space-y-3">
-        <h3 className="text-[11px] tracking-wider uppercase text-white/30">
-          Admin Users
-        </h3>
-        {admins.map((admin: any) => (
-          <div
-            key={admin._id}
-            className="flex items-center justify-between py-2 border-b border-white/[0.04] last:border-0"
-          >
-            <div>
-              <p className="text-sm text-white/70">{admin.name || "—"}</p>
-              <p className="text-[11px] text-white/30">{admin.email}</p>
-            </div>
-            <div className="flex items-center gap-2">
-              <UserCheck className="w-3.5 h-3.5 text-amber-400/50" />
-              <span className="text-xs text-amber-400/50">Admin</span>
-            </div>
+      {/* ── Admin Privilege Management ─────────────────────────────── */}
+      <div className="bg-white/[0.03] border border-white/[0.06] rounded-lg p-5 space-y-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <UserCheck className="w-4 h-4 text-amber-400/60" />
+            <h3 className="text-[11px] tracking-wider uppercase text-white/30">
+              Admin Privileges
+            </h3>
           </div>
-        ))}
-        {admins.length === 0 && (
-          <p className="text-xs text-white/20">No admin users</p>
+          <button
+            onClick={() => { setShowAddAdmin(!showAddAdmin); setSearch(""); }}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
+              showAddAdmin
+                ? "bg-white/[0.08] text-white/60"
+                : "bg-amber-500/15 text-amber-400 hover:bg-amber-500/25"
+            }`}
+          >
+            {showAddAdmin ? (
+              <>
+                <X className="w-3 h-3" />
+                Cancel
+              </>
+            ) : (
+              <>
+                <Plus className="w-3 h-3" />
+                Add Admin
+              </>
+            )}
+          </button>
+        </div>
+
+        {/* Current Admins */}
+        <div className="space-y-1">
+          {admins.length === 0 && (
+            <p className="text-xs text-white/20 py-2">No admin users</p>
+          )}
+          {admins.map((admin: any) => (
+            <div
+              key={admin._id}
+              className="flex items-center justify-between py-2.5 px-3 rounded-md bg-white/[0.02] border border-white/[0.04] group"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-full bg-amber-500/10 flex items-center justify-center text-xs font-medium text-amber-400/70">
+                  {(admin.name || admin.email || "?")[0]?.toUpperCase()}
+                </div>
+                <div>
+                  <p className="text-sm text-white/80">{admin.name || "—"}</p>
+                  <p className="text-[11px] text-white/30">{admin.email}</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] font-medium tracking-wider uppercase text-amber-400/50 bg-amber-500/10 px-2 py-0.5 rounded">
+                  Admin
+                </span>
+                {confirmRemove === admin._id ? (
+                  <div className="flex items-center gap-1.5 animate-in fade-in">
+                    <span className="text-[10px] text-red-400/60 mr-1">Remove?</span>
+                    <button
+                      disabled={saving}
+                      onClick={() => handleRevokeAdmin(admin._id)}
+                      className="px-2 py-0.5 rounded text-[10px] font-medium bg-red-500/20 text-red-400 hover:bg-red-500/30 transition-colors disabled:opacity-40"
+                    >
+                      {saving ? "..." : "Yes"}
+                    </button>
+                    <button
+                      onClick={() => setConfirmRemove(null)}
+                      className="px-2 py-0.5 rounded text-[10px] bg-white/5 text-white/30 hover:bg-white/10 transition-colors"
+                    >
+                      No
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    onClick={() => setConfirmRemove(admin._id)}
+                    className="opacity-0 group-hover:opacity-100 transition-opacity px-2 py-0.5 rounded text-[10px] text-red-400/50 hover:text-red-400 hover:bg-red-500/10"
+                  >
+                    Revoke
+                  </button>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Add Admin Panel */}
+        {showAddAdmin && (
+          <div className="border border-amber-500/10 bg-amber-500/[0.03] rounded-lg p-4 space-y-3 animate-in slide-in-from-top-2">
+            <p className="text-xs text-white/40">
+              Search registered users by name or email to grant admin privileges.
+            </p>
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-white/20" />
+              <input
+                type="text"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Search by name or email..."
+                className="w-full bg-white/[0.05] border border-white/[0.08] rounded-md pl-9 pr-3 py-2 text-sm text-white/80 placeholder-white/20 focus:outline-none focus:border-amber-500/30"
+                autoFocus
+              />
+            </div>
+
+            {/* Search Results */}
+            {search.trim() && (
+              <div className="max-h-56 overflow-y-auto space-y-1 rounded-md">
+                {filteredNonAdmins.length === 0 ? (
+                  <p className="text-xs text-white/20 text-center py-3">
+                    No matching users found
+                  </p>
+                ) : (
+                  filteredNonAdmins.map((user: any) => (
+                    <div
+                      key={user._id}
+                      className="flex items-center justify-between py-2 px-3 rounded-md bg-white/[0.02] border border-white/[0.04] hover:border-white/[0.08] transition-colors"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="w-7 h-7 rounded-full bg-white/[0.06] flex items-center justify-center text-[11px] text-white/40">
+                          {(user.name || user.email || "?")[0]?.toUpperCase()}
+                        </div>
+                        <div>
+                          <p className="text-sm text-white/70">
+                            {user.name || "—"}
+                          </p>
+                          <p className="text-[10px] text-white/30">
+                            {user.email}
+                          </p>
+                        </div>
+                      </div>
+                      {confirmGrant === user._id ? (
+                        <div className="flex items-center gap-1.5 animate-in fade-in">
+                          <span className="text-[10px] text-amber-400/60 mr-1">Grant admin?</span>
+                          <button
+                            disabled={saving}
+                            onClick={() => handleGrantAdmin(user._id)}
+                            className="px-2.5 py-1 rounded text-[10px] font-medium bg-amber-500/20 text-amber-400 hover:bg-amber-500/30 transition-colors disabled:opacity-40"
+                          >
+                            {saving ? "..." : "Yes"}
+                          </button>
+                          <button
+                            onClick={() => setConfirmGrant(null)}
+                            className="px-2 py-1 rounded text-[10px] bg-white/5 text-white/30 hover:bg-white/10 transition-colors"
+                          >
+                            No
+                          </button>
+                        </div>
+                      ) : (
+                        <button
+                          onClick={() => setConfirmGrant(user._id)}
+                          className="px-3 py-1 rounded-md text-[10px] font-medium bg-amber-500/10 text-amber-400/60 hover:bg-amber-500/20 hover:text-amber-400 transition-colors"
+                        >
+                          Make Admin
+                        </button>
+                      )}
+                    </div>
+                  ))
+                )}
+              </div>
+            )}
+          </div>
         )}
       </div>
 
-      {/* Store Info */}
-      <div className="bg-white/[0.03] border border-white/[0.06] rounded-lg p-4 space-y-3">
+      {/* ── Store Info ─────────────────────────────────────────────── */}
+      <div className="bg-white/[0.03] border border-white/[0.06] rounded-lg p-5 space-y-3">
         <h3 className="text-[11px] tracking-wider uppercase text-white/30">
           Store Information
         </h3>
