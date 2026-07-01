@@ -14,7 +14,6 @@ import {
   ChevronRight,
   Search,
   Filter,
-  ArrowUpDown,
   Eye,
   Edit,
   Trash2,
@@ -37,7 +36,6 @@ import {
   ToggleLeft,
   ToggleRight,
   Download,
-  Percent,
 } from "lucide-react";
 import {
   BarChart,

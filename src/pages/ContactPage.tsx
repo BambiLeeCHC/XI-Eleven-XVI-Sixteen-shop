@@ -60,7 +60,7 @@ export function ContactPage() {
       <SEO
         title="Contact Us — XI XVI"
         description="Get in touch with XI Eleven XVI Sixteen. We'd love to hear from you."
-        path="/contact"
+        url="/contact"
       />
 
       <div

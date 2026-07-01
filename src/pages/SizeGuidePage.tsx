@@ -734,7 +734,7 @@ export function SizeGuidePage() {
                                   : "none",
                             }}
                           >
-                            {(row as Record<string, string | undefined>)[field] || "—"}
+                            {(row as unknown as Record<string, string | undefined>)[field] || "—"}
                           </td>
                         ))}
                       </tr>

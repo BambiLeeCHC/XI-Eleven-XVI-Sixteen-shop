@@ -1,5 +1,5 @@
 import { v } from "convex/values";
-import { action, internalQuery, query } from "./_generated/server";
+import { action, internalQuery } from "./_generated/server";
 import { internal } from "./_generated/api";
 
 declare const process: { env: Record<string, string | undefined> };
@@ -260,6 +260,7 @@ export const createCheckoutSession = action({
         "success_url": args.successUrl + "?session_id={CHECKOUT_SESSION_ID}",
         "cancel_url": args.cancelUrl,
         "phone_number_collection[enabled]": "true",
+        "allow_promotion_codes": "true",
       };
 
       // Pre-fill customer email if provided

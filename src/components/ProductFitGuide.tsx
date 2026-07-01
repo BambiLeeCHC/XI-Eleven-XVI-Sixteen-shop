@@ -167,7 +167,7 @@ const SIZE_CHARTS: Record<string, SizeChartEntry[]> = {
 
 /* ─── Fit Description ────────────────────────────────────────────── */
 
-function getFitDescription(garmentType: string, size: string, sizes: string[]): string {
+function getFitDescription(_garmentType: string, size: string, sizes: string[]): string {
   const idx = sizes.indexOf(size);
   if (idx < 0) return "";
   const ratio = sizes.length > 1 ? idx / (sizes.length - 1) : 0.5;
@@ -200,8 +200,8 @@ export function ProductFitGuide({ product, externalSize, onSizeSelect, lightMode
   const [layerA, setLayerA] = useState<string>("");
   const [layerB, setLayerB] = useState<string>("");
   const [activeLayer, setActiveLayer] = useState<"A" | "B">("A");
-  const [layerAReady, setLayerAReady] = useState(false);
-  const [layerBReady, setLayerBReady] = useState(false);
+  const [_layerAReady, setLayerAReady] = useState(false);
+  const [_layerBReady, setLayerBReady] = useState(false);
   const pendingUrlRef = useRef<string>("");
 
   /* ─── Theme colors ─────────────────────────────────────────────── */

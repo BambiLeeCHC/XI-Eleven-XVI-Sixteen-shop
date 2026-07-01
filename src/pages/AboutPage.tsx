@@ -786,7 +786,7 @@ export function AboutPage() {
                   variant: "primary" as const,
                   desc: "From our numerological foundation to our design philosophy, we believe fashion can be a vehicle for self-expression, transformation, and personal power.",
                 },
-              ].map((value, i) => (
+              ].map((value, _i) => (
                 <div
                   key={value.title}
                   className="flex gap-4 p-6 group"

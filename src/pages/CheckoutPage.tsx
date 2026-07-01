@@ -275,9 +275,9 @@ export function CheckoutPage() {
         items,
       });
 
-      if (result?.success && result.rates?.length > 0) {
-        setShippingRates(result.rates);
-        setSelectedRate(result.rates[0]); // Pre-select cheapest
+      if (result?.success && result.rates && result.rates.length > 0) {
+        setShippingRates(result.rates as ShippingRate[]);
+        setSelectedRate((result.rates as ShippingRate[])[0]); // Pre-select cheapest
         setStep(2);
       } else {
         setError(
