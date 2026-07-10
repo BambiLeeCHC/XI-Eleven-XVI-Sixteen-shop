@@ -4,6 +4,7 @@ import { useConvexAuth } from "convex/react";
 import { Link, useLocation } from "react-router-dom";
 import { api } from "../../convex/_generated/api";
 import { useSessionId } from "../hooks/useSessionId";
+import { SearchOverlay } from "./SearchOverlay";
 
 export function StoreHeader() {
   const location = useLocation();
@@ -11,7 +12,9 @@ export function StoreHeader() {
   const cartCount = useQuery(api.cart.getCount, { sessionId }) ?? 0;
   const { isAuthenticated } = useConvexAuth();
   const isAdmin = useQuery(api.users.isAdmin);
+  const favCount = useQuery(api.favorites.getCount) ?? 0;
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
 
   // Close mobile menu on route change
   useEffect(() => {
@@ -44,82 +47,84 @@ export function StoreHeader() {
         </p>
       </div>
 
-      {/* Marquee */}
-      <div
-        className="w-full overflow-hidden py-2"
-        style={{
-          background: "#0c080e",
-          borderBottom: "1px solid rgba(240, 210, 190, 0.06)",
-        }}
-      >
-        <div className="animate-marquee whitespace-nowrap inline-flex">
-          {Array.from({ length: 4 }).map((_, i) => (
-            <span key={i} className="inline-flex items-center">
-              {["FREE STANDARD SHIPPING ON EVERY ORDER", "PERSONAL STYLE ASSISTANT", "LUXURY REDEFINED"].map((text) => (
-                <span key={text} className="inline-flex items-center">
-                  <span className="text-[10px] tracking-[0.2em] uppercase font-medium" style={{ color: "rgba(245, 230, 220, 0.45)" }}>{text}</span>
-                  <span className="mx-6 w-1 h-1 rounded-full inline-block" style={{ background: "rgba(200, 140, 255, 0.35)" }} />
-                </span>
-              ))}
-            </span>
-          ))}
-        </div>
-      </div>
-
       {/* Main Nav — Gradient Loop */}
       <header className="relative z-30">
         <div className="gradient-loop-nav relative">
           <div
-            className="relative z-10 max-w-7xl mx-auto px-6 lg:px-12 h-[82px] flex items-center justify-between"
+            className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 h-[82px] flex items-center justify-between"
             style={{ background: "transparent" }}
           >
-            <Link to="/" className="flex items-center gap-3 group shrink-0">
-              <img
-                src="https://decisive-cheetah-451.convex.cloud/api/storage/9f36be32-eae9-430a-ac7e-ab617f632b25"
-                alt="XI XVI — Eleven Sixteen"
-                className="h-12 w-auto object-contain drop-shadow-[0_0_8px_rgba(200,170,100,0.3)]"
-              />
-            </Link>
+            {/* Left: Logo + Category Quick Links */}
+            <div className="flex items-center gap-2 sm:gap-4 shrink-0">
+              <Link to="/" className="flex items-center gap-3 group shrink-0">
+                <img
+                  src="https://decisive-cheetah-451.convex.cloud/api/storage/9f36be32-eae9-430a-ac7e-ab617f632b25"
+                  alt="XI XVI — Eleven Sixteen"
+                  className="h-10 sm:h-12 w-auto object-contain drop-shadow-[0_0_8px_rgba(200,170,100,0.3)]"
+                />
+              </Link>
 
-            <nav className="hidden md:flex items-center gap-1">
-              <Link
-                to="/shop?gender=women"
-                className={`px-4 py-2 text-[11px] tracking-[0.2em] uppercase font-semibold transition-all ${
-                  location.search.includes("women") ? "text-white" : "text-white/55 hover:text-white"
-                }`}
-              >
-                SHOP WOMEN
-              </Link>
-              <Link
-                to="/shop?gender=men"
-                className={`px-4 py-2 text-[11px] tracking-[0.2em] uppercase font-semibold transition-all ${
-                  location.search.includes("men") && !location.search.includes("women") ? "text-white" : "text-white/55 hover:text-white"
-                }`}
-              >
-                SHOP MEN
-              </Link>
-              <Link
-                to="/about"
-                className={`px-4 py-2 text-[11px] tracking-[0.2em] uppercase font-semibold transition-all ${
-                  location.pathname === "/about" ? "text-white" : "text-white/55 hover:text-white"
-                }`}
-              >
-                ABOUT
-              </Link>
-            </nav>
+              {/* Category quick links — desktop */}
+              <nav className="hidden md:flex items-center gap-0.5 ml-2">
+                <span className="w-px h-5 bg-white/[0.08] mx-2" />
+                <Link
+                  to="/shop?gender=women"
+                  className={`px-3 py-2 text-[11px] tracking-[0.18em] uppercase font-semibold transition-all ${
+                    location.search.includes("women") ? "text-white" : "text-white/50 hover:text-white"
+                  }`}
+                >
+                  Women
+                </Link>
+                <Link
+                  to="/shop?gender=men"
+                  className={`px-3 py-2 text-[11px] tracking-[0.18em] uppercase font-semibold transition-all ${
+                    location.search.includes("men") && !location.search.includes("women") ? "text-white" : "text-white/50 hover:text-white"
+                  }`}
+                >
+                  Men
+                </Link>
+              </nav>
+            </div>
 
-            {/* Right side: cart + sign-in + mobile hamburger */}
-            <div className="flex items-center gap-3 shrink-0">
-              {/* Cart icon — always visible */}
-              <Link to="/cart" className="relative p-2 text-white/55 hover:text-white transition-colors group">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="group-hover:scale-105 transition-transform">
+            {/* Right side: search + favorites + cart + account + mobile hamburger */}
+            <div className="flex items-center gap-1 sm:gap-2 shrink-0">
+              {/* Search icon */}
+              <button
+                onClick={() => setSearchOpen(true)}
+                className="relative p-2 text-white/45 hover:text-white transition-colors group"
+                aria-label="Search"
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="group-hover:scale-105 transition-transform">
+                  <circle cx="11" cy="11" r="8" />
+                  <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                </svg>
+              </button>
+
+              {/* Favorites icon */}
+              <Link to="/favorites" className="relative p-2 text-white/45 hover:text-white transition-colors group">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="group-hover:scale-105 transition-transform">
+                  <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" />
+                </svg>
+                {favCount > 0 && (
+                  <span
+                    className="absolute -top-0.5 -right-0.5 min-w-[16px] h-[16px] px-1 rounded-full text-[8px] flex items-center justify-center text-white font-bold"
+                    style={{ background: "linear-gradient(135deg, #ff6b8a, #ff9eb8)" }}
+                  >
+                    {favCount}
+                  </span>
+                )}
+              </Link>
+
+              {/* Cart icon */}
+              <Link to="/cart" className="relative p-2 text-white/45 hover:text-white transition-colors group">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="group-hover:scale-105 transition-transform">
                   <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" />
                   <line x1="3" y1="6" x2="21" y2="6" />
                   <path d="M16 10a4 4 0 01-8 0" />
                 </svg>
                 {cartCount > 0 && (
                   <span
-                    className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1 rounded-full text-[9px] flex items-center justify-center text-white font-bold"
+                    className="absolute -top-0.5 -right-0.5 min-w-[16px] h-[16px] px-1 rounded-full text-[8px] flex items-center justify-center text-white font-bold"
                     style={{ background: "linear-gradient(135deg, #c48dff, #ff9eb8)" }}
                   >
                     {cartCount}
@@ -146,7 +151,7 @@ export function StoreHeader() {
                   <Link to="/profile" className="hidden md:block">
                     <button
                       type="button"
-                      className="relative px-5 py-2 text-[10px] tracking-[0.25em] uppercase font-semibold text-white overflow-hidden transition-all duration-300 glass-panel-sm hover:border-white/20"
+                      className="relative px-4 py-2 text-[10px] tracking-[0.2em] uppercase font-semibold text-white overflow-hidden transition-all duration-300 glass-panel-sm hover:border-white/20"
                       style={{
                         background: "linear-gradient(135deg, rgba(200,140,255,0.08), rgba(255,190,170,0.05))",
                         border: "1px solid rgba(240, 210, 190, 0.12)",
@@ -161,7 +166,7 @@ export function StoreHeader() {
                 <Link to="/login" className="hidden md:block">
                   <button
                     type="button"
-                    className="relative px-5 py-2 text-[10px] tracking-[0.25em] uppercase font-semibold text-white overflow-hidden transition-all duration-300 glass-panel-sm hover:border-white/20"
+                    className="relative px-4 py-2 text-[10px] tracking-[0.2em] uppercase font-semibold text-white overflow-hidden transition-all duration-300 glass-panel-sm hover:border-white/20"
                     style={{
                       background: "linear-gradient(135deg, rgba(200,140,255,0.08), rgba(255,190,170,0.05))",
                       border: "1px solid rgba(240, 210, 190, 0.12)",
@@ -197,6 +202,9 @@ export function StoreHeader() {
           </div>
         </div>
       </header>
+
+      {/* Search Overlay */}
+      <SearchOverlay isOpen={searchOpen} onClose={() => setSearchOpen(false)} />
 
       {/* ── Mobile Menu Overlay ── */}
       {mobileOpen && (
@@ -238,6 +246,7 @@ export function StoreHeader() {
 
               <div className="my-6 border-t border-white/[0.06]" />
 
+              <MobileNavLink to="/favorites" label="FAVORITES" badge={favCount > 0 ? favCount : undefined} />
               <MobileNavLink to="/cart" label="CART" badge={cartCount > 0 ? cartCount : undefined} />
               <MobileNavLink to="/about" label="ABOUT" />
               <MobileNavLink to="/size-guide" label="SIZE GUIDE" />

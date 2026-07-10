@@ -22,6 +22,7 @@ import {
   AboutPage,
   ContactPage,
   AdminPage,
+  FavoritesPage,
 } from "./pages";
 
 function App() {
@@ -46,6 +47,7 @@ function App() {
             <Route path="/size-guide" element={<SizeGuidePage />} />
             <Route path="/about" element={<AboutPage />} />
             <Route path="/contact" element={<ContactPage />} />
+            <Route path="/favorites" element={<FavoritesPage />} />
 
             {/* Protected routes */}
             <Route element={<ProtectedRoute />}>

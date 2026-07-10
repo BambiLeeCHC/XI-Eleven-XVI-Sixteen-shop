@@ -131,6 +131,30 @@ const schema = defineSchema({
     tags: v.array(v.string()),
   }).index("by_customer", ["customerId"]),
 
+  // Drape images — stored in Convex file storage for quality + no size limits
+  drapeImages: defineTable({
+    key: v.string(), // e.g. "d-slip-dress-black_curvy_xl" or "d-slip-dress-black_m" 
+    storageId: v.id("_storage"),
+    imageType: v.string(), // "base" | "size" | "archetype" | "archetype_size"
+    productSlug: v.string(), // e.g. "d-slip-dress-black"
+    archetype: v.optional(v.string()), // e.g. "curvy", "petite"
+    size: v.optional(v.string()), // e.g. "xs", "m", "xl"
+    width: v.optional(v.number()),
+    height: v.optional(v.number()),
+  })
+    .index("by_key", ["key"])
+    .index("by_product", ["productSlug"])
+    .index("by_type_product", ["imageType", "productSlug"]),
+
+  // Favorites / Wishlist
+  favorites: defineTable({
+    userId: v.id("users"),
+    productId: v.id("products"),
+    addedAt: v.number(),
+  })
+    .index("by_user", ["userId"])
+    .index("by_user_product", ["userId", "productId"]),
+
   // Shipping settings — admin-configurable shipping rules
   shippingSettings: defineTable({
     key: v.string(), // "free_standard", "standard_label", "expedited_enabled", "expedited_markup", etc.

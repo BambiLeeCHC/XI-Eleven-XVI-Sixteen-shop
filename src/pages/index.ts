@@ -9,4 +9,6 @@ export { OrdersPage } from "./OrdersPage";
 export { PrivacyPage, TermsPage, ShippingPolicyPage, ReturnsPage } from "./LegalPages";
 export { SizeGuidePage } from "./SizeGuidePage";
 export { AboutPage } from "./AboutPage";
+export { ContactPage } from "./ContactPage";
 export { default as AdminPage } from "./AdminPage";
+export { default as FavoritesPage } from "./FavoritesPage";

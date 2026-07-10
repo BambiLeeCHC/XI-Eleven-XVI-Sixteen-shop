@@ -31,3 +31,6 @@ bun.lockb
 tmp/
 test-results/
 playwright-report/
+# Old dist
+dist_old/
+package-lock.json
