@@ -2,13 +2,12 @@ import { Link } from "react-router-dom";
 import { useEffect, useState, useRef } from "react";
 
 /**
- * GlaMannequin Takeover — TERONA-level hero presence.
- * Full-viewport Baccarat crystal scene with bold manifesto typography,
- * integrated mannequin imagery, gold chain accents, glitch overlays,
- * and dramatic organic wave exit.
+ * GlaMannequin Takeover — V3
+ * Tiled Baccarat crystal background, massive "GLAMANNEQUIN TAKEOVER" headline,
+ * mannequin & Dash advert at equal scale, typewriter manifesto, gold chain.
  */
 
-/* ── Typewriter — bigger, bolder manifesto ── */
+/* ── Typewriter manifesto ── */
 function TypewriterManifesto({ onComplete }: { onComplete?: () => void }) {
   const [charIndex, setCharIndex] = useState(0);
   const completedRef = useRef(false);
@@ -18,9 +17,7 @@ function TypewriterManifesto({ onComplete }: { onComplete?: () => void }) {
     { text: "GlaMannequins", cls: "gt-text-accent" },
     { text: ", will not be ", cls: "gt-text-light" },
     { text: "silenced", cls: "gt-text-red" },
-    { text: ".\n", cls: "gt-text-light" },
-    { text: "We are not decoration.\n", cls: "gt-text-light" },
-    { text: "We are ", cls: "gt-text-light" },
+    { text: ". We are not decoration. We are ", cls: "gt-text-light" },
     { text: "ICONS.", cls: "gt-text-gold" },
   ];
 
@@ -30,7 +27,7 @@ function TypewriterManifesto({ onComplete }: { onComplete?: () => void }) {
   useEffect(() => {
     if (charIndex < totalChars) {
       const ch = fullText[charIndex];
-      const speed = ch === "\n" ? 400 : ch === "." ? 200 : 35 + Math.random() * 25;
+      const speed = ch === "." ? 180 : 30 + Math.random() * 20;
       const timer = setTimeout(() => setCharIndex((i) => i + 1), speed);
       return () => clearTimeout(timer);
     } else if (!completedRef.current) {
@@ -46,16 +43,9 @@ function TypewriterManifesto({ onComplete }: { onComplete?: () => void }) {
     if (charIndex <= segStart) return null;
     const visible = seg.text.slice(0, Math.max(0, charIndex - segStart));
     if (!visible) return null;
-    // Convert \n to <br/>
-    const parts = visible.split("\n");
     return (
       <span key={i} className={seg.cls}>
-        {parts.map((p, j) => (
-          <span key={j}>
-            {p}
-            {j < parts.length - 1 && <br />}
-          </span>
-        ))}
+        {visible}
       </span>
     );
   });
@@ -68,7 +58,7 @@ function TypewriterManifesto({ onComplete }: { onComplete?: () => void }) {
   );
 }
 
-/* ── Glitch flash messages ── */
+/* ── Glitch flash ── */
 function GlitchFlash() {
   const [visible, setVisible] = useState(false);
   const [msg, setMsg] = useState("");
@@ -88,7 +78,7 @@ function GlitchFlash() {
   useEffect(() => {
     const flash = () => {
       setMsg(messages[Math.floor(Math.random() * messages.length)]);
-      const top = 10 + Math.random() * 70;
+      const top = 5 + Math.random() * 80;
       const isLeft = Math.random() > 0.5;
       setPos({
         top: `${top}%`,
@@ -112,37 +102,6 @@ function GlitchFlash() {
   );
 }
 
-/* ── Floating diamond sparkle accents ── */
-function FloatingDiamond({ delay, x, y, size }: { delay: number; x: string; y: string; size: number }) {
-  return (
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 20 20"
-      style={{
-        position: "absolute",
-        left: x,
-        top: y,
-        pointerEvents: "none",
-        animation: `gt-diamond-float 5s ease-in-out infinite`,
-        animationDelay: `${delay}s`,
-        opacity: 0.4,
-      }}
-    >
-      <polygon
-        points="10,0 13,7 20,10 13,13 10,20 7,13 0,10 7,7"
-        fill="none"
-        stroke="rgba(232,213,176,0.5)"
-        strokeWidth="0.5"
-      />
-      <polygon
-        points="10,4 12,8 16,10 12,12 10,16 8,12 4,10 8,8"
-        fill="rgba(232,213,176,0.15)"
-      />
-    </svg>
-  );
-}
-
 export function DashSetBanner() {
   const [typewriterDone, setTypewriterDone] = useState(false);
   const [entered, setEntered] = useState(false);
@@ -156,46 +115,27 @@ export function DashSetBanner() {
     <>
       <style>{glamStyles}</style>
 
-      <section className="gt-hero-section">
-        {/* ── Full-bleed crystal background ── */}
-        <div className="gt-bg-layer">
-          <img
-            src="/crystal-star.jpg"
-            alt=""
-            className="gt-bg-img gt-bg-main"
-          />
-          {/* Secondary crystal texture blended on right */}
-          <img
-            src="/crystal-facet.jpg"
-            alt=""
-            className="gt-bg-img gt-bg-accent"
-          />
-          {/* Light overlay for depth */}
-          <div className="gt-bg-gradient" />
-        </div>
+      <section className="gt-hero">
+        {/* Tiled crystal background via CSS */}
+        <div className="gt-tiled-bg" />
+        <div className="gt-tiled-bg gt-tiled-bg-2" />
+        <div className="gt-bg-vignette" />
 
-        {/* ── Scanlines ── */}
+        {/* Scanlines */}
         <div className="gt-scanlines" />
 
-        {/* ── Glitch flashes ── */}
+        {/* Glitch flashes */}
         <GlitchFlash />
         <GlitchFlash />
 
-        {/* ── Floating diamond accents ── */}
-        <FloatingDiamond delay={0} x="8%" y="15%" size={22} />
-        <FloatingDiamond delay={1.2} x="85%" y="20%" size={16} />
-        <FloatingDiamond delay={2.5} x="75%" y="65%" size={20} />
-        <FloatingDiamond delay={0.8} x="12%" y="70%" size={14} />
-        <FloatingDiamond delay={3} x="50%" y="12%" size={18} />
-
-        {/* ── Gold chain draped across (like TERONA) ── */}
-        <svg className="gt-gold-chain" viewBox="0 0 1440 900" preserveAspectRatio="none">
+        {/* Gold chain SVG */}
+        <svg className="gt-gold-chain" viewBox="0 0 1440 1000" preserveAspectRatio="none">
           <defs>
             <linearGradient id="gtChainGold" x1="0%" y1="0%" x2="100%" y2="100%">
               <stop offset="0%" stopColor="rgba(184,148,63,0)" />
-              <stop offset="20%" stopColor="rgba(232,213,176,0.6)" />
+              <stop offset="15%" stopColor="rgba(232,213,176,0.6)" />
               <stop offset="50%" stopColor="rgba(255,235,180,0.8)" />
-              <stop offset="80%" stopColor="rgba(232,213,176,0.6)" />
+              <stop offset="85%" stopColor="rgba(232,213,176,0.6)" />
               <stop offset="100%" stopColor="rgba(184,148,63,0)" />
             </linearGradient>
             <filter id="gtChainGlow">
@@ -206,27 +146,23 @@ export function DashSetBanner() {
               </feMerge>
             </filter>
           </defs>
-          {/* Draped chain path — top-right to bottom-left */}
           <path
-            d="M1440,50 C1200,120 1000,200 900,350 C800,500 750,600 500,650 C300,690 100,700 0,720"
+            d="M1500,80 C1250,180 1050,300 920,450 C790,600 700,720 500,780 C300,830 100,840 -60,860"
             fill="none"
             stroke="url(#gtChainGold)"
             strokeWidth="2.5"
             filter="url(#gtChainGlow)"
-            className="gt-chain-path"
           />
-          {/* Highlight */}
           <path
-            d="M1440,48 C1200,118 1000,198 900,348 C800,498 750,598 500,648 C300,688 100,698 0,718"
+            d="M1500,78 C1250,178 1050,298 920,448 C790,598 700,718 500,778 C300,828 100,838 -60,858"
             fill="none"
-            stroke="rgba(255,255,255,0.15)"
+            stroke="rgba(255,255,255,0.12)"
             strokeWidth="1"
           />
-          {/* Diamond nodes along chain */}
           {[
-            { x: 1300, y: 80 }, { x: 1100, y: 155 }, { x: 950, y: 290 },
-            { x: 870, y: 400 }, { x: 750, y: 570 }, { x: 550, y: 640 },
-            { x: 350, y: 680 }, { x: 150, y: 705 },
+            { x: 1350, y: 115 }, { x: 1150, y: 220 }, { x: 1000, y: 370 },
+            { x: 900, y: 490 }, { x: 780, y: 650 }, { x: 580, y: 760 },
+            { x: 350, y: 810 }, { x: 120, y: 845 },
           ].map((p, i) => (
             <polygon
               key={i}
@@ -240,75 +176,81 @@ export function DashSetBanner() {
           ))}
         </svg>
 
-        {/* ── Content grid ── */}
+        {/* ── Content ── */}
         <div className={`gt-content ${entered ? "gt-entered" : ""}`}>
-          {/* Left: Bold manifesto */}
-          <div className="gt-text-side">
-            {/* Kicker */}
-            <div className="gt-kicker">
-              <span className="gt-kicker-line" />
-              <span className="gt-kicker-text">GLAMANNEQUIN TAKEOVER</span>
-              <span className="gt-kicker-line" />
-            </div>
 
-            {/* Typewriter manifesto — big, bold */}
-            <TypewriterManifesto onComplete={() => setTypewriterDone(true)} />
-
-            {/* CTA row */}
-            <div className={`gt-cta-row ${typewriterDone ? "gt-cta-visible" : ""}`}>
-              <Link to="/shop" className="gt-cta-primary">
-                SHOP THE COLLECTION
-                <span className="gt-cta-arrow">→</span>
-              </Link>
-              <span className="gt-cta-divider" />
-              <span className="gt-cta-sub">34 Products · 6 Colorways</span>
+          {/* ── MASSIVE HEADLINE ── */}
+          <div className="gt-headline-area">
+            <div className="gt-headline-kicker">
+              <span className="gt-k-diamond">✦</span>
+              <span className="gt-k-text">XI XVI PRESENTS</span>
+              <span className="gt-k-diamond">✦</span>
             </div>
+            <h1 className="gt-headline">
+              <span className="gt-headline-gla">Gla</span>
+              <span className="gt-headline-mannequin">Mannequin</span>
+              <br />
+              <span className="gt-headline-takeover">TAKEOVER</span>
+            </h1>
+            <div className="gt-headline-rule" />
           </div>
 
-          {/* Right: Mannequin hero + video inset */}
-          <div className="gt-visual-side">
-            {/* Main mannequin image */}
-            <div className="gt-mannequin-hero">
+          {/* ── DUAL VISUALS: Mannequin + Dash Advert ── */}
+          <div className="gt-dual-visuals">
+            {/* Mannequin card */}
+            <div className="gt-visual-card gt-visual-mannequin">
               <img
                 src="/dash-mannequin-promo.jpg"
                 alt="GlaMannequin — We are ICONS"
-                className="gt-mannequin-img"
+                className="gt-visual-img"
               />
-              {/* Gold border frame */}
-              <div className="gt-mannequin-frame" />
+              <div className="gt-card-frame" />
+              <div className="gt-card-label">
+                <span className="gt-card-dot" style={{ background: "#d4b96a" }} />
+                THE ICON
+              </div>
             </div>
 
-            {/* Floating video inset */}
-            <div className="gt-video-inset">
+            {/* Dash advert card — equal or larger */}
+            <div className="gt-visual-card gt-visual-advert">
               <video
                 autoPlay
                 muted
                 loop
                 playsInline
                 poster="/dash-set-promo-poster.jpg"
-                className="gt-video"
+                className="gt-visual-img gt-visual-video"
               >
                 <source src="/dash-set-promo.mp4" type="video/mp4" />
               </video>
-              <div className="gt-video-label">
-                <span className="gt-video-dot" />
-                LIVE
+              <div className="gt-card-frame" />
+              <div className="gt-card-label">
+                <span className="gt-card-dot gt-card-dot-live" />
+                THE COLLECTION
               </div>
+            </div>
+          </div>
+
+          {/* ── MANIFESTO + CTA ── */}
+          <div className="gt-bottom-zone">
+            <TypewriterManifesto onComplete={() => setTypewriterDone(true)} />
+
+            <div className={`gt-cta-row ${typewriterDone ? "gt-cta-visible" : ""}`}>
+              <Link to="/shop" className="gt-cta-btn">
+                SHOP THE COLLECTION
+                <span className="gt-cta-arrow">→</span>
+              </Link>
+              <span className="gt-cta-stat">34 Products · 6 Colorways · Made to Order</span>
             </div>
           </div>
         </div>
 
-        {/* ── Dramatic organic wave exit ── */}
+        {/* Wave exit */}
         <div className="gt-wave-exit">
           <svg viewBox="0 0 1440 120" preserveAspectRatio="none">
-            <path d="M0,0 L1440,0 L1440,40 C1200,110 960,20 720,60 C480,100 240,30 0,80 Z" fill="rgba(0,0,0,0.3)" />
+            <path d="M0,0 L1440,0 L1440,40 C1200,110 960,20 720,60 C480,100 240,30 0,80 Z" fill="rgba(0,0,0,0.25)" />
             <path d="M0,80 C240,30 480,100 720,60 C960,20 1200,110 1440,40 L1440,120 L0,120 Z" fill="#FAF8F3" />
-            <path
-              d="M0,80 C240,30 480,100 720,60 C960,20 1200,110 1440,40"
-              fill="none"
-              stroke="rgba(184,148,63,0.2)"
-              strokeWidth="1.5"
-            />
+            <path d="M0,80 C240,30 480,100 720,60 C960,20 1200,110 1440,40" fill="none" stroke="rgba(184,148,63,0.2)" strokeWidth="1.5" />
           </svg>
         </div>
       </section>
@@ -316,69 +258,59 @@ export function DashSetBanner() {
   );
 }
 
-/* ═══════════════════════════════════════════════════════════
-   STYLES — TERONA-level dramatic hero
-   ═══════════════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════════════════ */
 const glamStyles = `
-  @import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=VT323&family=Playfair+Display:ital,wght@0,700;1,700&display=swap');
 
-  /* ── Full-viewport hero ── */
-  .gt-hero-section {
+  /* ── Hero wrapper ── */
+  .gt-hero {
     position: relative;
     width: 100%;
     min-height: 100vh;
     min-height: 100svh;
     display: flex;
     align-items: center;
+    justify-content: center;
     overflow: hidden;
   }
 
-  @media (max-width: 767px) {
-    .gt-hero-section {
-      min-height: 90vh;
-    }
-  }
-
-  /* ── Background ── */
-  .gt-bg-layer {
+  /* ── TILED crystal background ── */
+  .gt-tiled-bg {
     position: absolute;
     inset: 0;
     z-index: 0;
+    background-image: url('/crystal-star.jpg');
+    background-repeat: repeat;
+    background-size: 500px 500px;
+    animation: gt-tile-drift 30s linear infinite;
   }
 
-  .gt-bg-img {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-
-  .gt-bg-main {
+  .gt-tiled-bg-2 {
     z-index: 1;
-    animation: gt-bg-breathe 10s ease-in-out infinite alternate;
-  }
-
-  .gt-bg-accent {
-    z-index: 2;
-    opacity: 0.3;
+    background-image: url('/crystal-facet.jpg');
+    background-size: 600px 600px;
+    opacity: 0.18;
     mix-blend-mode: overlay;
-    animation: gt-bg-breathe 12s ease-in-out infinite alternate-reverse;
+    animation: gt-tile-drift-2 40s linear infinite;
   }
 
-  @keyframes gt-bg-breathe {
-    0% { transform: scale(1); filter: brightness(1.0) contrast(1.05); }
-    100% { transform: scale(1.03); filter: brightness(1.1) contrast(1.1); }
+  @keyframes gt-tile-drift {
+    0% { background-position: 0 0; }
+    100% { background-position: 500px 500px; }
   }
 
-  .gt-bg-gradient {
+  @keyframes gt-tile-drift-2 {
+    0% { background-position: 0 0; }
+    100% { background-position: -600px 600px; }
+  }
+
+  .gt-bg-vignette {
     position: absolute;
     inset: 0;
-    z-index: 3;
+    z-index: 2;
     background:
-      linear-gradient(135deg, rgba(0,0,0,0.25) 0%, transparent 40%),
-      linear-gradient(to bottom, rgba(0,0,0,0.1) 0%, transparent 30%, transparent 60%, rgba(0,0,0,0.3) 100%),
-      radial-gradient(ellipse at 30% 50%, rgba(0,0,0,0.2) 0%, transparent 60%);
+      radial-gradient(ellipse at center, transparent 30%, rgba(0,0,0,0.35) 100%),
+      linear-gradient(to bottom, rgba(0,0,0,0.15) 0%, transparent 20%, transparent 80%, rgba(0,0,0,0.25) 100%);
   }
 
   /* ── Scanlines ── */
@@ -388,16 +320,13 @@ const glamStyles = `
     z-index: 15;
     pointer-events: none;
     background: repeating-linear-gradient(
-      0deg,
-      transparent,
-      transparent 3px,
-      rgba(0,0,0,0.02) 3px,
-      rgba(0,0,0,0.02) 6px
+      0deg, transparent, transparent 3px,
+      rgba(0,0,0,0.015) 3px, rgba(0,0,0,0.015) 6px
     );
-    animation: gt-scanline-move 10s linear infinite;
+    animation: gt-scan 10s linear infinite;
   }
 
-  @keyframes gt-scanline-move {
+  @keyframes gt-scan {
     0% { background-position: 0 0; }
     100% { background-position: 0 120px; }
   }
@@ -421,22 +350,13 @@ const glamStyles = `
     100% { opacity: 1; transform: translateX(0) skewX(0); }
   }
 
-  /* ── Gold chain SVG ── */
+  /* ── Gold chain ── */
   .gt-gold-chain {
     position: absolute;
     inset: 0;
-    z-index: 8;
+    z-index: 5;
     pointer-events: none;
-    opacity: 0.7;
-  }
-
-  .gt-chain-path {
-    animation: gt-chain-sway 8s ease-in-out infinite;
-  }
-
-  @keyframes gt-chain-sway {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(6px); }
+    opacity: 0.65;
   }
 
   .gt-chain-diamond {
@@ -444,31 +364,25 @@ const glamStyles = `
   }
 
   @keyframes gt-sparkle {
-    0%, 100% { opacity: 0.6; filter: brightness(1); }
-    50% { opacity: 1; filter: brightness(1.5); }
+    0%, 100% { opacity: 0.5; filter: brightness(1); }
+    50% { opacity: 1; filter: brightness(1.6); }
   }
 
-  /* ── Floating diamonds ── */
-  @keyframes gt-diamond-float {
-    0%, 100% { transform: translateY(0) rotate(0deg); opacity: 0.3; }
-    50% { transform: translateY(-12px) rotate(180deg); opacity: 0.6; }
-  }
-
-  /* ── Content grid ── */
+  /* ── Content ── */
   .gt-content {
     position: relative;
     z-index: 10;
     width: 100%;
-    max-width: 1400px;
+    max-width: 1300px;
     margin: 0 auto;
-    padding: 80px 40px 120px;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 60px;
+    padding: 100px 32px 140px;
+    display: flex;
+    flex-direction: column;
     align-items: center;
+    gap: 48px;
     opacity: 0;
-    transform: translateY(20px);
-    transition: opacity 0.8s ease 0.3s, transform 0.8s ease 0.3s;
+    transform: translateY(16px);
+    transition: opacity 0.8s ease 0.2s, transform 0.8s ease 0.2s;
   }
 
   .gt-content.gt-entered {
@@ -478,100 +392,282 @@ const glamStyles = `
 
   @media (max-width: 767px) {
     .gt-content {
-      grid-template-columns: 1fr;
+      padding: 90px 16px 100px;
       gap: 32px;
-      padding: 100px 20px 80px;
     }
   }
 
-  /* ── Left: Text side ── */
-  .gt-text-side {
+  /* ═══ HEADLINE ═══ */
+  .gt-headline-area {
+    text-align: center;
     display: flex;
     flex-direction: column;
-    gap: 28px;
-  }
-
-  /* Kicker */
-  .gt-kicker {
-    display: flex;
     align-items: center;
     gap: 12px;
   }
 
-  .gt-kicker-line {
-    flex: 0 0 40px;
-    height: 1px;
-    background: linear-gradient(90deg, rgba(184,148,63,0.5), transparent);
-  }
-
-  .gt-kicker-line:last-child {
-    background: linear-gradient(270deg, rgba(184,148,63,0.5), transparent);
-    flex: 1;
-  }
-
-  .gt-kicker-text {
+  .gt-headline-kicker {
+    display: flex;
+    align-items: center;
+    gap: 12px;
     font-family: 'VT323', monospace;
-    font-size: clamp(10px, 1.5vw, 14px);
-    letter-spacing: 0.35em;
-    color: rgba(232,213,176,0.7);
-    white-space: nowrap;
+    font-size: clamp(10px, 1.4vw, 14px);
+    letter-spacing: 0.4em;
+    color: rgba(232,213,176,0.65);
     animation: gt-kicker-pulse 3s ease-in-out infinite;
   }
 
   @keyframes gt-kicker-pulse {
-    0%, 100% { opacity: 0.7; }
+    0%, 100% { opacity: 0.65; }
     50% { opacity: 1; }
   }
 
-  /* Manifesto text */
-  .gt-manifesto {
-    font-family: 'VT323', 'Courier New', monospace;
-    font-size: clamp(28px, 5vw, 56px);
-    line-height: 1.15;
-    letter-spacing: 0.02em;
+  .gt-k-diamond {
+    color: #d4b96a;
+    font-size: 0.8em;
+  }
+
+  .gt-k-text {
+    white-space: nowrap;
+  }
+
+  .gt-headline {
+    margin: 0;
+    font-family: 'Playfair Display', 'Georgia', serif;
+    font-weight: 700;
+    line-height: 0.9;
+    text-align: center;
+    text-transform: none;
+  }
+
+  .gt-headline-gla {
+    font-size: clamp(48px, 9vw, 120px);
+    color: rgba(255,255,255,0.95);
+    font-style: italic;
+    text-shadow:
+      3px 3px 0 rgba(0,0,0,0.5),
+      0 0 40px rgba(0,0,0,0.3);
+  }
+
+  .gt-headline-mannequin {
+    font-size: clamp(48px, 9vw, 120px);
+    background: linear-gradient(135deg, #d4b96a 0%, #f5e6b8 40%, #d4b96a 70%, #b8943f 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    filter: drop-shadow(3px 3px 0 rgba(0,0,0,0.4));
+  }
+
+  .gt-headline-takeover {
+    display: block;
+    font-size: clamp(60px, 12vw, 160px);
+    letter-spacing: 0.15em;
+    background: linear-gradient(180deg, rgba(255,255,255,0.95) 0%, rgba(232,213,176,0.9) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    filter: drop-shadow(4px 4px 0 rgba(0,0,0,0.5));
+    font-style: normal;
   }
 
   @media (max-width: 767px) {
-    .gt-manifesto {
-      font-size: clamp(22px, 7vw, 36px);
+    .gt-headline-gla,
+    .gt-headline-mannequin {
+      font-size: clamp(36px, 11vw, 60px);
+    }
+    .gt-headline-takeover {
+      font-size: clamp(42px, 14vw, 80px);
+      letter-spacing: 0.08em;
     }
   }
 
+  .gt-headline-rule {
+    width: 120px;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #d4b96a, transparent);
+    margin-top: 8px;
+  }
+
+  /* ═══ DUAL VISUALS — equal scale ═══ */
+  .gt-dual-visuals {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+    width: 100%;
+    max-width: 1000px;
+    align-items: stretch;
+  }
+
+  @media (max-width: 767px) {
+    .gt-dual-visuals {
+      grid-template-columns: 1fr;
+      gap: 20px;
+      max-width: 400px;
+    }
+  }
+
+  .gt-visual-card {
+    position: relative;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow:
+      0 16px 64px rgba(0,0,0,0.4),
+      0 0 30px rgba(184,148,63,0.08);
+    transition: transform 0.4s ease, box-shadow 0.4s ease;
+  }
+
+  .gt-visual-card:hover {
+    transform: translateY(-6px) scale(1.01);
+    box-shadow:
+      0 24px 80px rgba(0,0,0,0.5),
+      0 0 50px rgba(184,148,63,0.12);
+  }
+
+  .gt-visual-mannequin {
+    animation: gt-float-a 6s ease-in-out infinite;
+  }
+
+  .gt-visual-advert {
+    animation: gt-float-b 6s ease-in-out infinite;
+  }
+
+  @keyframes gt-float-a {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-6px); }
+  }
+
+  @keyframes gt-float-b {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+  }
+
+  .gt-visual-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    min-height: 350px;
+  }
+
+  @media (min-width: 768px) {
+    .gt-visual-img {
+      min-height: 480px;
+    }
+  }
+
+  .gt-visual-video {
+    object-fit: contain;
+    background: #0a0a12;
+  }
+
+  .gt-card-frame {
+    position: absolute;
+    inset: 0;
+    border: 2px solid rgba(184,148,63,0.15);
+    border-radius: 16px;
+    pointer-events: none;
+  }
+
+  .gt-card-frame::before,
+  .gt-card-frame::after {
+    content: '';
+    position: absolute;
+    width: 36px;
+    height: 36px;
+  }
+
+  .gt-card-frame::before {
+    top: 10px; left: 10px;
+    border-top: 2px solid rgba(232,213,176,0.4);
+    border-left: 2px solid rgba(232,213,176,0.4);
+  }
+
+  .gt-card-frame::after {
+    bottom: 10px; right: 10px;
+    border-bottom: 2px solid rgba(232,213,176,0.4);
+    border-right: 2px solid rgba(232,213,176,0.4);
+  }
+
+  .gt-card-label {
+    position: absolute;
+    top: 14px;
+    left: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'VT323', monospace;
+    font-size: 13px;
+    letter-spacing: 0.2em;
+    color: rgba(255,255,255,0.9);
+    background: rgba(0,0,0,0.55);
+    backdrop-filter: blur(12px);
+    padding: 5px 14px;
+    border-radius: 24px;
+    border: 1px solid rgba(184,148,63,0.15);
+  }
+
+  .gt-card-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .gt-card-dot-live {
+    background: #ff4444;
+    animation: gt-dot-pulse 1.5s ease-in-out infinite;
+  }
+
+  @keyframes gt-dot-pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+
+  /* ═══ BOTTOM: Manifesto + CTA ═══ */
+  .gt-bottom-zone {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+    max-width: 800px;
+  }
+
+  .gt-manifesto {
+    font-family: 'VT323', 'Courier New', monospace;
+    font-size: clamp(18px, 3vw, 32px);
+    line-height: 1.3;
+    letter-spacing: 0.02em;
+    text-align: center;
+  }
+
   .gt-text-light {
-    color: rgba(255,255,255,0.95);
-    text-shadow:
-      2px 2px 0 rgba(0,0,0,0.5),
-      0 0 30px rgba(0,0,0,0.3);
+    color: rgba(255,255,255,0.92);
+    text-shadow: 2px 2px 0 rgba(0,0,0,0.5), 0 0 20px rgba(0,0,0,0.3);
   }
 
   .gt-text-accent {
     color: #d4b96a;
-    text-shadow:
-      2px 2px 0 rgba(0,0,0,0.6),
-      0 0 30px rgba(184,148,63,0.4);
-    background: rgba(184,148,63,0.15);
-    padding: 0 6px;
-    border-radius: 4px;
+    text-shadow: 2px 2px 0 rgba(0,0,0,0.6), 0 0 20px rgba(184,148,63,0.4);
+    background: rgba(184,148,63,0.12);
+    padding: 0 4px;
+    border-radius: 3px;
   }
 
   .gt-text-red {
     color: #ff4444;
-    text-shadow:
-      2px 2px 0 rgba(0,0,0,0.6),
-      0 0 20px rgba(255,40,40,0.4);
-    background: rgba(255,40,40,0.15);
-    padding: 0 6px;
-    border-radius: 4px;
+    text-shadow: 2px 2px 0 rgba(0,0,0,0.6), 0 0 16px rgba(255,40,40,0.4);
+    background: rgba(255,40,40,0.12);
+    padding: 0 4px;
+    border-radius: 3px;
   }
 
   .gt-text-gold {
     color: #ffcc00;
-    text-shadow:
-      2px 2px 0 rgba(0,0,0,0.6),
-      0 0 30px rgba(255,200,0,0.5);
-    background: rgba(255,200,0,0.15);
-    padding: 0 8px;
-    border-radius: 4px;
+    text-shadow: 2px 2px 0 rgba(0,0,0,0.6), 0 0 24px rgba(255,200,0,0.4);
+    background: rgba(255,200,0,0.12);
+    padding: 0 6px;
+    border-radius: 3px;
     font-weight: bold;
     font-size: 1.15em;
   }
@@ -587,14 +683,15 @@ const glamStyles = `
     50% { opacity: 0; }
   }
 
-  /* CTA row */
+  /* CTA */
   .gt-cta-row {
     display: flex;
     align-items: center;
-    gap: 16px;
+    gap: 20px;
     flex-wrap: wrap;
+    justify-content: center;
     opacity: 0;
-    transform: translateY(12px);
+    transform: translateY(10px);
     transition: opacity 0.6s ease, transform 0.6s ease;
   }
 
@@ -603,23 +700,23 @@ const glamStyles = `
     transform: translateY(0);
   }
 
-  .gt-cta-primary {
+  .gt-cta-btn {
     display: inline-flex;
     align-items: center;
     gap: 10px;
-    padding: 14px 32px;
+    padding: 16px 36px;
     font-family: 'VT323', monospace;
-    font-size: clamp(13px, 2vw, 17px);
+    font-size: clamp(14px, 2vw, 18px);
     letter-spacing: 0.2em;
     color: #0a0a12;
-    background: linear-gradient(135deg, #d4b96a 0%, #e8d5a0 40%, #d4b96a 100%);
+    background: linear-gradient(135deg, #d4b96a 0%, #f0dfa0 40%, #d4b96a 100%);
     background-size: 200% 100%;
     animation: gt-btn-shimmer 4s ease-in-out infinite;
     border: 1px solid rgba(232,213,176,0.4);
     border-radius: 6px;
     text-decoration: none;
     transition: all 0.3s ease;
-    box-shadow: 0 4px 24px rgba(184,148,63,0.25), 0 0 40px rgba(184,148,63,0.1);
+    box-shadow: 0 6px 28px rgba(184,148,63,0.3), 0 0 40px rgba(184,148,63,0.1);
   }
 
   @keyframes gt-btn-shimmer {
@@ -627,9 +724,9 @@ const glamStyles = `
     50% { background-position: 100% 50%; }
   }
 
-  .gt-cta-primary:hover {
-    transform: translateY(-2px) scale(1.02);
-    box-shadow: 0 8px 36px rgba(184,148,63,0.35), 0 0 60px rgba(184,148,63,0.15);
+  .gt-cta-btn:hover {
+    transform: translateY(-2px) scale(1.03);
+    box-shadow: 0 10px 40px rgba(184,148,63,0.4), 0 0 60px rgba(184,148,63,0.15);
   }
 
   .gt-cta-arrow {
@@ -637,169 +734,24 @@ const glamStyles = `
     transition: transform 0.3s ease;
   }
 
-  .gt-cta-primary:hover .gt-cta-arrow {
+  .gt-cta-btn:hover .gt-cta-arrow {
     transform: translateX(4px);
   }
 
-  .gt-cta-divider {
-    width: 1px;
-    height: 20px;
-    background: rgba(232,213,176,0.3);
-  }
-
-  .gt-cta-sub {
+  .gt-cta-stat {
     font-family: 'VT323', monospace;
-    font-size: clamp(11px, 1.4vw, 14px);
-    color: rgba(232,213,176,0.5);
+    font-size: clamp(11px, 1.3vw, 14px);
+    color: rgba(232,213,176,0.45);
     letter-spacing: 0.1em;
   }
 
   @media (max-width: 767px) {
-    .gt-cta-divider { display: none; }
-    .gt-cta-sub { display: none; }
-    .gt-cta-primary {
-      padding: 12px 24px;
+    .gt-cta-stat { display: none; }
+    .gt-cta-btn {
+      padding: 14px 28px;
       width: 100%;
       justify-content: center;
     }
-  }
-
-  /* ── Right: Visual side ── */
-  .gt-visual-side {
-    position: relative;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 400px;
-  }
-
-  @media (max-width: 767px) {
-    .gt-visual-side {
-      min-height: 280px;
-    }
-  }
-
-  /* Mannequin hero */
-  .gt-mannequin-hero {
-    position: relative;
-    width: 80%;
-    max-width: 400px;
-    border-radius: 16px;
-    overflow: hidden;
-    box-shadow:
-      0 20px 80px rgba(0,0,0,0.4),
-      0 0 40px rgba(184,148,63,0.1);
-    animation: gt-mannequin-float 6s ease-in-out infinite;
-  }
-
-  @keyframes gt-mannequin-float {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-8px); }
-  }
-
-  .gt-mannequin-img {
-    width: 100%;
-    height: auto;
-    display: block;
-    filter: drop-shadow(0 0 30px rgba(184,148,63,0.15));
-  }
-
-  .gt-mannequin-frame {
-    position: absolute;
-    inset: 0;
-    border: 2px solid rgba(184,148,63,0.2);
-    border-radius: 16px;
-    pointer-events: none;
-  }
-
-  .gt-mannequin-frame::before,
-  .gt-mannequin-frame::after {
-    content: '';
-    position: absolute;
-    width: 40px;
-    height: 40px;
-  }
-
-  .gt-mannequin-frame::before {
-    top: 8px;
-    left: 8px;
-    border-top: 2px solid rgba(232,213,176,0.5);
-    border-left: 2px solid rgba(232,213,176,0.5);
-  }
-
-  .gt-mannequin-frame::after {
-    bottom: 8px;
-    right: 8px;
-    border-bottom: 2px solid rgba(232,213,176,0.5);
-    border-right: 2px solid rgba(232,213,176,0.5);
-  }
-
-  /* Video inset — floating overlay */
-  .gt-video-inset {
-    position: absolute;
-    bottom: -10px;
-    right: -20px;
-    width: 55%;
-    max-width: 220px;
-    border-radius: 12px;
-    overflow: hidden;
-    border: 2px solid rgba(184,148,63,0.3);
-    box-shadow:
-      0 12px 48px rgba(0,0,0,0.4),
-      0 0 20px rgba(184,148,63,0.1);
-    z-index: 5;
-    animation: gt-video-bob 5s ease-in-out infinite;
-    animation-delay: 1.5s;
-  }
-
-  @keyframes gt-video-bob {
-    0%, 100% { transform: translateY(0) rotate(-1deg); }
-    50% { transform: translateY(-6px) rotate(0deg); }
-  }
-
-  @media (max-width: 767px) {
-    .gt-video-inset {
-      width: 45%;
-      max-width: 160px;
-      right: -10px;
-      bottom: -5px;
-    }
-  }
-
-  .gt-video {
-    width: 100%;
-    height: auto;
-    display: block;
-  }
-
-  .gt-video-label {
-    position: absolute;
-    top: 8px;
-    left: 8px;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-family: 'VT323', monospace;
-    font-size: 11px;
-    letter-spacing: 0.15em;
-    color: rgba(255,255,255,0.9);
-    background: rgba(0,0,0,0.5);
-    backdrop-filter: blur(8px);
-    padding: 3px 10px;
-    border-radius: 20px;
-  }
-
-  .gt-video-dot {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: #ff4444;
-    animation: gt-dot-pulse 1.5s ease-in-out infinite;
-  }
-
-  @keyframes gt-dot-pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.3; }
   }
 
   /* ── Wave exit ── */
@@ -819,13 +771,11 @@ const glamStyles = `
   }
 
   @media (min-width: 768px) {
-    .gt-wave-exit svg {
-      height: 120px;
-    }
+    .gt-wave-exit svg { height: 120px; }
   }
 
-  /* ── Occasional glitch bar ── */
-  .gt-hero-section::after {
+  /* ── Glitch bar ── */
+  .gt-hero::after {
     content: '';
     position: absolute;
     left: 0;
