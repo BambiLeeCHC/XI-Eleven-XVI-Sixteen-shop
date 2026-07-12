@@ -1,0 +1,441 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-info: var(--info);
+  --color-info-foreground: var(--info-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --font-display: "Playfair Display", Georgia, serif;
+}
+
+/* XI XVI — Summer Crystal Theme */
+:root {
+  --sidebar-width: 16rem;
+  --sidebar-width-icon: 3rem;
+  --radius: 0px;
+
+  --background: #FAFBFE;
+  --foreground: #1a1a2e;
+  --card: #FFFFFF;
+  --card-foreground: #1a1a2e;
+  --popover: #FFFFFF;
+  --popover-foreground: #1a1a2e;
+  --primary: #4a8fd9;
+  --primary-foreground: #ffffff;
+  --secondary: #f0f4f8;
+  --secondary-foreground: #2d3a4a;
+  --muted: #f0f4f8;
+  --muted-foreground: #6b7b8d;
+  --accent: #eef3fa;
+  --accent-foreground: #1a1a2e;
+  --destructive: #ef4444;
+  --destructive-foreground: #ffffff;
+  --success: #10b981;
+  --success-foreground: #ffffff;
+  --warning: #f59e0b;
+  --warning-foreground: #000000;
+  --info: #06b6d4;
+  --info-foreground: #ffffff;
+  --border: rgba(0, 40, 80, 0.08);
+  --input: rgba(0, 40, 80, 0.05);
+  --ring: rgba(74, 143, 217, 0.35);
+
+  --sidebar: #FFFFFF;
+  --sidebar-foreground: #1a1a2e;
+  --sidebar-primary: #4a8fd9;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #eef3fa;
+  --sidebar-accent-foreground: #1a1a2e;
+  --sidebar-border: rgba(0, 40, 80, 0.08);
+  --sidebar-ring: rgba(74, 143, 217, 0.35);
+
+  --chart-1: #4a8fd9;
+  --chart-2: #e88da8;
+  --chart-3: #f5c97a;
+  --chart-4: #6ee7b7;
+  --chart-5: #67e8f9;
+
+  /* Summer crystal palette */
+  --crystal-blue: rgba(74, 143, 217, 0.08);
+  --crystal-sky: rgba(100, 180, 240, 0.06);
+  --crystal-glass: rgba(200, 220, 245, 0.15);
+  --crystal-border: rgba(74, 143, 217, 0.12);
+}
+
+.dark {
+  --background: #FAFBFE;
+  --foreground: #1a1a2e;
+  --card: #FFFFFF;
+  --card-foreground: #1a1a2e;
+  --popover: #FFFFFF;
+  --popover-foreground: #1a1a2e;
+  --primary: #4a8fd9;
+  --primary-foreground: #ffffff;
+  --secondary: #f0f4f8;
+  --secondary-foreground: #2d3a4a;
+  --muted: #f0f4f8;
+  --muted-foreground: #6b7b8d;
+  --accent: #eef3fa;
+  --accent-foreground: #1a1a2e;
+  --destructive: #ef4444;
+  --destructive-foreground: #ffffff;
+  --border: rgba(0, 40, 80, 0.08);
+  --input: rgba(0, 40, 80, 0.05);
+  --ring: rgba(74, 143, 217, 0.35);
+}
+
+html {
+  color-scheme: light;
+}
+
+body {
+  background: #FAFBFE;
+  color: #1a1a2e;
+  font-family: Inter, -apple-system, system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Animations ─────────────────────────────────── */
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+@keyframes hero-spectrum {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+
+@keyframes announcement-pulse {
+  0%, 100% { opacity: 0; }
+  50% { opacity: 0.15; }
+}
+
+@keyframes holo-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes ghost-pulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.85; }
+}
+
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Color gradient loop animation for nav bar */
+@keyframes gradient-loop {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes glass-shimmer {
+  0% { transform: translateX(-100%) skewX(-15deg); }
+  100% { transform: translateX(200%) skewX(-15deg); }
+}
+
+/* Hero glass spectrum sweep — sunlight catching glass */
+@keyframes hero-glass-sweep {
+  0% { transform: translateX(-120%) skewX(-20deg); opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { transform: translateX(250%) skewX(-20deg); opacity: 0; }
+}
+
+.hero-glass-shimmer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.hero-glass-shimmer::before {
+  content: "";
+  position: absolute;
+  top: -20%;
+  left: 0;
+  width: 35%;
+  height: 140%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(74, 143, 217, 0.06) 20%,
+    rgba(100, 180, 240, 0.08) 40%,
+    rgba(150, 220, 255, 0.1) 55%,
+    rgba(74, 143, 217, 0.06) 70%,
+    transparent 100%
+  );
+  animation: hero-glass-sweep 5s ease-in-out infinite;
+  animation-delay: 1.5s;
+}
+
+.hero-glass-shimmer::after {
+  content: "";
+  position: absolute;
+  top: -10%;
+  left: 0;
+  width: 8%;
+  height: 120%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.25) 40%,
+    rgba(255, 255, 255, 0.35) 50%,
+    rgba(255, 255, 255, 0.25) 60%,
+    transparent 100%
+  );
+  animation: hero-glass-sweep 5s ease-in-out infinite;
+  animation-delay: 1.5s;
+}
+
+@keyframes lucite-glow {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 0.7; }
+}
+
+.animate-marquee {
+  animation: marquee 30s linear infinite;
+}
+
+.animate-hero-spectrum {
+  animation: hero-spectrum 6s ease-in-out infinite;
+}
+
+.announcement-pulse {
+  background: radial-gradient(ellipse at center, rgba(74, 143, 217, 0.1), transparent 70%);
+  animation: announcement-pulse 3s ease-in-out infinite;
+}
+
+.holo-ring {
+  background: conic-gradient(from 0deg, #ff0000, #ff8800, #ffff00, #00ff00, #00ffff, #0088ff, #8800ff, #ff00ff, #ff0000);
+  animation: holo-spin 3s linear infinite;
+}
+
+.ghost-icon {
+  animation: ghost-pulse 3s ease-in-out infinite;
+}
+
+.fade-in-up {
+  animation: fade-in-up 0.5s ease-out forwards;
+}
+
+/* ── Summer Nav ─────────────────────────────────── */
+.gradient-loop-nav {
+  position: relative;
+  overflow: hidden;
+}
+
+.gradient-loop-nav::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    rgba(74, 143, 217, 0.04),
+    rgba(100, 180, 240, 0.03),
+    rgba(150, 200, 245, 0.04),
+    rgba(74, 143, 217, 0.03)
+  );
+  background-size: 300% 100%;
+  animation: gradient-loop 8s ease-in-out infinite;
+  z-index: 0;
+}
+
+.gradient-loop-nav::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(74, 143, 217, 0.15),
+    rgba(100, 180, 240, 0.12),
+    rgba(74, 143, 217, 0.15),
+    transparent
+  );
+  background-size: 300% 100%;
+  animation: gradient-loop 8s ease-in-out infinite;
+  z-index: 1;
+}
+
+/* ── Glass Panels — Summer ──────────────────────── */
+.glass-panel {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.7) 0%,
+    rgba(240, 248, 255, 0.5) 50%,
+    rgba(255, 255, 255, 0.6) 100%
+  );
+  backdrop-filter: blur(20px) saturate(1.2);
+  -webkit-backdrop-filter: blur(20px) saturate(1.2);
+  border: 1px solid rgba(74, 143, 217, 0.1);
+  border-radius: 16px;
+}
+
+.glass-panel-sm {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.6) 0%,
+    rgba(240, 248, 255, 0.4) 100%
+  );
+  backdrop-filter: blur(12px) saturate(1.15);
+  -webkit-backdrop-filter: blur(12px) saturate(1.15);
+  border: 1px solid rgba(74, 143, 217, 0.08);
+  border-radius: 12px;
+}
+
+.glass-shimmer {
+  position: relative;
+  overflow: hidden;
+}
+
+.glass-shimmer::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 40%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.15),
+    transparent
+  );
+  animation: glass-shimmer 6s ease-in-out infinite;
+}
+
+/* ── Crystal Card Elements ──────────────────────── */
+.lucite-card {
+  background: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.9) 0%,
+    rgba(240, 248, 255, 0.7) 30%,
+    rgba(230, 240, 255, 0.6) 60%,
+    rgba(245, 250, 255, 0.8) 100%
+  );
+  border: 1px solid rgba(74, 143, 217, 0.1);
+  border-radius: 16px;
+  position: relative;
+  overflow: hidden;
+}
+
+.lucite-card::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(
+    ellipse at 30% 30%,
+    rgba(74, 143, 217, 0.04),
+    transparent 60%
+  );
+  pointer-events: none;
+}
+
+/* Gradient spectrum border for product cards */
+.spectrum-card-border {
+  position: relative;
+}
+
+.spectrum-card-border::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  background: linear-gradient(
+    135deg,
+    rgba(74, 143, 217, 0.2),
+    rgba(100, 180, 240, 0.15),
+    rgba(150, 200, 245, 0.12),
+    rgba(74, 143, 217, 0.2)
+  );
+  background-size: 300% 300%;
+  animation: gradient-loop 8s ease-in-out infinite;
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.spectrum-card-border:hover::before {
+  opacity: 1;
+}
+
+/* ── Spectrum Nav (legacy) ── */
+.spectrum-nav {
+  background: rgba(255, 255, 255, 0.95);
+}
+
+.spectrum-gradient {
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(74, 143, 217, 0.03),
+    rgba(100, 180, 240, 0.02),
+    transparent
+  );
+}
+
+/* ── Scrollbar — Summer ─────────────────────────── */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #f0f4f8;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(74, 143, 217, 0.3);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(74, 143, 217, 0.5);
+}
