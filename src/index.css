@@ -61,21 +61,21 @@
   --sidebar-width-icon: 3rem;
   --radius: 0px;
 
-  /* ── Dark Luxury Palette ── */
-  --background: #09090f;
-  --foreground: #f0e6d3;
-  --card: #111118;
-  --card-foreground: #f0e6d3;
-  --popover: #16161f;
-  --popover-foreground: #f0e6d3;
-  --primary: #c9a96e;
-  --primary-foreground: #09090f;
-  --secondary: #16161f;
-  --secondary-foreground: #d4c5a9;
-  --muted: #1a1a24;
-  --muted-foreground: #8a8490;
-  --accent: #1e1e2a;
-  --accent-foreground: #f0e6d3;
+  /* ── Bright Luxury Palette ── */
+  --background: #FAF8F3;
+  --foreground: #1a1a2e;
+  --card: #FFFFFF;
+  --card-foreground: #1a1a2e;
+  --popover: #FFFFFF;
+  --popover-foreground: #1a1a2e;
+  --primary: #b8943f;
+  --primary-foreground: #FFFFFF;
+  --secondary: #f5f0e6;
+  --secondary-foreground: #5a4a2e;
+  --muted: #f0ebe0;
+  --muted-foreground: #8a7a60;
+  --accent: #f8f4ec;
+  --accent-foreground: #1a1a2e;
   --destructive: #ef4444;
   --destructive-foreground: #ffffff;
   --success: #10b981;
@@ -84,66 +84,67 @@
   --warning-foreground: #000000;
   --info: #06b6d4;
   --info-foreground: #ffffff;
-  --border: rgba(201, 169, 110, 0.1);
-  --input: rgba(201, 169, 110, 0.08);
-  --ring: rgba(201, 169, 110, 0.3);
+  --border: rgba(180, 150, 90, 0.15);
+  --input: rgba(180, 150, 90, 0.1);
+  --ring: rgba(180, 150, 90, 0.3);
 
-  --sidebar: #0d0d14;
-  --sidebar-foreground: #f0e6d3;
-  --sidebar-primary: #c9a96e;
-  --sidebar-primary-foreground: #09090f;
-  --sidebar-accent: #1a1a24;
-  --sidebar-accent-foreground: #f0e6d3;
-  --sidebar-border: rgba(201, 169, 110, 0.08);
-  --sidebar-ring: rgba(201, 169, 110, 0.3);
+  --sidebar: #F5F0E6;
+  --sidebar-foreground: #1a1a2e;
+  --sidebar-primary: #b8943f;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: #f0ebe0;
+  --sidebar-accent-foreground: #1a1a2e;
+  --sidebar-border: rgba(180, 150, 90, 0.12);
+  --sidebar-ring: rgba(180, 150, 90, 0.3);
 
-  --chart-1: #c9a96e;
-  --chart-2: #e88da8;
-  --chart-3: #8ab4f8;
-  --chart-4: #6ee7b7;
-  --chart-5: #a78bfa;
+  --chart-1: #b8943f;
+  --chart-2: #d4708a;
+  --chart-3: #5a8fd0;
+  --chart-4: #3db88c;
+  --chart-5: #8a6fd4;
 
-  /* Brand tokens */
-  --gold: #c9a96e;
-  --gold-light: #e8d5b0;
-  --gold-dim: rgba(201, 169, 110, 0.15);
-  --midnight: #09090f;
-  --surface: #111118;
-  --surface-raised: #16161f;
-  --cream: #f0e6d3;
-  --cream-muted: rgba(240, 230, 211, 0.5);
+  /* Brand tokens — bright luxury */
+  --gold: #b8943f;
+  --gold-light: #d4b96a;
+  --gold-dim: rgba(184, 148, 63, 0.12);
+  --ivory: #FAF8F3;
+  --warm-white: #FFFFFF;
+  --surface: #F5F0E6;
+  --surface-raised: #FFFFFF;
+  --ink: #1a1a2e;
+  --ink-muted: rgba(26, 26, 46, 0.5);
 }
 
-/* Dark mode = same palette (always dark) */
+/* Dark mode = same bright palette */
 .dark {
-  --background: #09090f;
-  --foreground: #f0e6d3;
-  --card: #111118;
-  --card-foreground: #f0e6d3;
-  --popover: #16161f;
-  --popover-foreground: #f0e6d3;
-  --primary: #c9a96e;
-  --primary-foreground: #09090f;
-  --secondary: #16161f;
-  --secondary-foreground: #d4c5a9;
-  --muted: #1a1a24;
-  --muted-foreground: #8a8490;
-  --accent: #1e1e2a;
-  --accent-foreground: #f0e6d3;
+  --background: #FAF8F3;
+  --foreground: #1a1a2e;
+  --card: #FFFFFF;
+  --card-foreground: #1a1a2e;
+  --popover: #FFFFFF;
+  --popover-foreground: #1a1a2e;
+  --primary: #b8943f;
+  --primary-foreground: #FFFFFF;
+  --secondary: #f5f0e6;
+  --secondary-foreground: #5a4a2e;
+  --muted: #f0ebe0;
+  --muted-foreground: #8a7a60;
+  --accent: #f8f4ec;
+  --accent-foreground: #1a1a2e;
   --destructive: #ef4444;
   --destructive-foreground: #ffffff;
-  --border: rgba(201, 169, 110, 0.1);
-  --input: rgba(201, 169, 110, 0.08);
-  --ring: rgba(201, 169, 110, 0.3);
+  --border: rgba(180, 150, 90, 0.15);
+  --input: rgba(180, 150, 90, 0.1);
+  --ring: rgba(180, 150, 90, 0.3);
 }
 
 html {
-  color-scheme: dark;
+  color-scheme: light;
 }
 
 body {
-  background: #09090f;
-  color: #f0e6d3;
+  background: #FAF8F3;
+  color: #1a1a2e;
   font-family: Inter, -apple-system, system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
 }
@@ -242,10 +243,10 @@ body {
   background: linear-gradient(
     90deg,
     transparent 0%,
-    rgba(201, 169, 110, 0.04) 20%,
-    rgba(232, 213, 176, 0.06) 40%,
-    rgba(201, 169, 110, 0.08) 55%,
-    rgba(201, 169, 110, 0.04) 70%,
+    rgba(184, 148, 63, 0.06) 20%,
+    rgba(212, 185, 106, 0.08) 40%,
+    rgba(184, 148, 63, 0.1) 55%,
+    rgba(184, 148, 63, 0.06) 70%,
     transparent 100%
   );
   animation: hero-glass-sweep 6s ease-in-out infinite;
@@ -262,9 +263,9 @@ body {
   background: linear-gradient(
     90deg,
     transparent 0%,
-    rgba(255, 255, 255, 0.08) 40%,
-    rgba(255, 255, 255, 0.12) 50%,
-    rgba(255, 255, 255, 0.08) 60%,
+    rgba(255, 255, 255, 0.15) 40%,
+    rgba(255, 255, 255, 0.25) 50%,
+    rgba(255, 255, 255, 0.15) 60%,
     transparent 100%
   );
   animation: hero-glass-sweep 6s ease-in-out infinite;
@@ -313,7 +314,7 @@ body {
   height: auto;
 }
 
-/* Gold crystalline divider line */
+/* Gold crystalline divider line — bright */
 .divider-crystal {
   position: relative;
   height: 1px;
@@ -321,9 +322,9 @@ body {
   background: linear-gradient(
     90deg,
     transparent 0%,
-    rgba(201, 169, 110, 0.08) 15%,
-    rgba(201, 169, 110, 0.35) 50%,
-    rgba(201, 169, 110, 0.08) 85%,
+    rgba(184, 148, 63, 0.12) 15%,
+    rgba(184, 148, 63, 0.4) 50%,
+    rgba(184, 148, 63, 0.12) 85%,
     transparent 100%
   );
 }
@@ -335,7 +336,7 @@ body {
   left: 50%;
   transform: translate(-50%, -50%);
   font-size: 10px;
-  color: rgba(201, 169, 110, 0.5);
+  color: rgba(184, 148, 63, 0.6);
   background: var(--background);
   padding: 0 12px;
 }
@@ -347,25 +348,25 @@ body {
 .glass-panel {
   background: linear-gradient(
     135deg,
-    rgba(17, 17, 24, 0.8) 0%,
-    rgba(22, 22, 31, 0.6) 50%,
-    rgba(17, 17, 24, 0.7) 100%
+    rgba(255, 255, 255, 0.85) 0%,
+    rgba(250, 248, 243, 0.75) 50%,
+    rgba(255, 255, 255, 0.8) 100%
   );
   backdrop-filter: blur(20px) saturate(1.2);
   -webkit-backdrop-filter: blur(20px) saturate(1.2);
-  border: 1px solid rgba(201, 169, 110, 0.08);
+  border: 1px solid rgba(184, 148, 63, 0.12);
   border-radius: 16px;
 }
 
 .glass-panel-sm {
   background: linear-gradient(
     135deg,
-    rgba(17, 17, 24, 0.7) 0%,
-    rgba(22, 22, 31, 0.5) 100%
+    rgba(255, 255, 255, 0.75) 0%,
+    rgba(250, 248, 243, 0.6) 100%
   );
   backdrop-filter: blur(12px) saturate(1.15);
   -webkit-backdrop-filter: blur(12px) saturate(1.15);
-  border: 1px solid rgba(201, 169, 110, 0.06);
+  border: 1px solid rgba(184, 148, 63, 0.08);
   border-radius: 12px;
 }
 
@@ -384,7 +385,7 @@ body {
   background: linear-gradient(
     90deg,
     transparent,
-    rgba(201, 169, 110, 0.06),
+    rgba(184, 148, 63, 0.08),
     transparent
   );
   animation: glass-shimmer 6s ease-in-out infinite;
@@ -397,15 +398,16 @@ body {
 .lucite-card {
   background: linear-gradient(
     145deg,
-    rgba(17, 17, 24, 0.95) 0%,
-    rgba(22, 22, 31, 0.8) 30%,
-    rgba(26, 26, 36, 0.7) 60%,
-    rgba(17, 17, 24, 0.9) 100%
+    rgba(255, 255, 255, 0.95) 0%,
+    rgba(250, 248, 240, 0.85) 30%,
+    rgba(245, 240, 230, 0.8) 60%,
+    rgba(255, 255, 255, 0.9) 100%
   );
-  border: 1px solid rgba(201, 169, 110, 0.08);
+  border: 1px solid rgba(184, 148, 63, 0.1);
   border-radius: 16px;
   position: relative;
   overflow: hidden;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.04);
 }
 
 .lucite-card::before {
@@ -417,7 +419,7 @@ body {
   height: 200%;
   background: radial-gradient(
     ellipse at 30% 30%,
-    rgba(201, 169, 110, 0.03),
+    rgba(184, 148, 63, 0.03),
     transparent 60%
   );
   pointer-events: none;
@@ -435,10 +437,10 @@ body {
   border-radius: inherit;
   background: linear-gradient(
     135deg,
-    rgba(201, 169, 110, 0.2),
-    rgba(232, 213, 176, 0.15),
-    rgba(201, 169, 110, 0.1),
-    rgba(201, 169, 110, 0.2)
+    rgba(184, 148, 63, 0.25),
+    rgba(212, 185, 106, 0.2),
+    rgba(184, 148, 63, 0.15),
+    rgba(184, 148, 63, 0.25)
   );
   background-size: 300% 300%;
   animation: gradient-loop 8s ease-in-out infinite;
@@ -469,18 +471,18 @@ body {
   width: 2px;
   height: 2px;
   border-radius: 50%;
-  background: rgba(232, 213, 176, 0.6);
+  background: rgba(184, 148, 63, 0.4);
   box-shadow:
-    120px 80px 0 rgba(201, 169, 110, 0.3),
-    300px 150px 0 rgba(232, 213, 176, 0.2),
-    500px 60px 0 rgba(201, 169, 110, 0.4),
-    700px 200px 0 rgba(232, 213, 176, 0.15),
-    180px 300px 0 rgba(201, 169, 110, 0.25),
-    400px 250px 0 rgba(232, 213, 176, 0.35),
-    600px 320px 0 rgba(201, 169, 110, 0.2),
-    250px 180px 0 rgba(232, 213, 176, 0.3),
-    800px 100px 0 rgba(201, 169, 110, 0.15),
-    50px 250px 0 rgba(232, 213, 176, 0.25);
+    120px 80px 0 rgba(184, 148, 63, 0.2),
+    300px 150px 0 rgba(212, 185, 106, 0.15),
+    500px 60px 0 rgba(184, 148, 63, 0.25),
+    700px 200px 0 rgba(212, 185, 106, 0.1),
+    180px 300px 0 rgba(184, 148, 63, 0.15),
+    400px 250px 0 rgba(212, 185, 106, 0.2),
+    600px 320px 0 rgba(184, 148, 63, 0.12),
+    250px 180px 0 rgba(212, 185, 106, 0.18),
+    800px 100px 0 rgba(184, 148, 63, 0.1),
+    50px 250px 0 rgba(212, 185, 106, 0.15);
   animation: sparkle-twinkle 4s ease-in-out infinite;
 }
 
@@ -488,18 +490,201 @@ body {
   width: 1.5px;
   height: 1.5px;
   box-shadow:
-    80px 120px 0 rgba(201, 169, 110, 0.2),
-    220px 50px 0 rgba(232, 213, 176, 0.3),
-    350px 280px 0 rgba(201, 169, 110, 0.15),
-    550px 90px 0 rgba(232, 213, 176, 0.25),
-    650px 250px 0 rgba(201, 169, 110, 0.3),
-    150px 200px 0 rgba(232, 213, 176, 0.2),
-    450px 150px 0 rgba(201, 169, 110, 0.35),
-    750px 300px 0 rgba(232, 213, 176, 0.15),
-    900px 180px 0 rgba(201, 169, 110, 0.2),
-    100px 350px 0 rgba(232, 213, 176, 0.1);
+    80px 120px 0 rgba(184, 148, 63, 0.12),
+    220px 50px 0 rgba(212, 185, 106, 0.18),
+    350px 280px 0 rgba(184, 148, 63, 0.1),
+    550px 90px 0 rgba(212, 185, 106, 0.15),
+    650px 250px 0 rgba(184, 148, 63, 0.2),
+    150px 200px 0 rgba(212, 185, 106, 0.12),
+    450px 150px 0 rgba(184, 148, 63, 0.22),
+    750px 300px 0 rgba(212, 185, 106, 0.1),
+    900px 180px 0 rgba(184, 148, 63, 0.12),
+    100px 350px 0 rgba(212, 185, 106, 0.08);
   animation: sparkle-twinkle 5s ease-in-out infinite;
   animation-delay: 2s;
+}
+
+/* ═══════════════════════════════════════════════════════
+   V2 — RICH TEXTURED BACKGROUNDS
+   Not flat black — dark silk, velvet, depth.
+   ═══════════════════════════════════════════════════════ */
+
+/* Warm silk fabric texture — light, rich, tactile */
+.bg-warm-silk {
+  background:
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(184, 148, 63, 0.015) 2px,
+      rgba(184, 148, 63, 0.015) 4px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 2px,
+      rgba(184, 148, 63, 0.01) 2px,
+      rgba(184, 148, 63, 0.01) 4px
+    ),
+    radial-gradient(ellipse at 20% 50%, rgba(184, 148, 63, 0.05) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 50%, rgba(140, 100, 50, 0.03) 0%, transparent 50%),
+    #FAF8F3;
+}
+
+/* Warm cream — soft, rich, with subtle warmth */
+.bg-warm-cream {
+  background:
+    radial-gradient(ellipse at 30% 0%, rgba(184, 148, 63, 0.06) 0%, transparent 40%),
+    radial-gradient(ellipse at 70% 100%, rgba(160, 120, 60, 0.04) 0%, transparent 45%),
+    linear-gradient(180deg, #F5F0E6 0%, #FAF8F3 50%, #F5F0E6 100%);
+}
+
+/* Warm marble texture */
+.bg-warm-marble {
+  background:
+    radial-gradient(ellipse at 25% 25%, rgba(184, 148, 63, 0.04) 0%, transparent 50%),
+    radial-gradient(ellipse at 75% 60%, rgba(100, 80, 50, 0.03) 0%, transparent 40%),
+    radial-gradient(ellipse at 50% 80%, rgba(184, 148, 63, 0.02) 0%, transparent 50%),
+    repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 80px,
+      rgba(184, 148, 63, 0.01) 80px,
+      rgba(184, 148, 63, 0.01) 81px
+    ),
+    #F8F5EE;
+}
+
+/* ═══════════════════════════════════════════════════════
+   V2 — CRYSTAL CHAIN DIVIDER
+   XI XVI's version of TERONA's gold chain.
+   A strand of pavé crystals/diamonds hanging across sections.
+   ═══════════════════════════════════════════════════════ */
+
+@keyframes crystal-chain-sway {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  25% { transform: translateY(-2px) rotate(0.3deg); }
+  75% { transform: translateY(2px) rotate(-0.3deg); }
+}
+
+@keyframes crystal-sparkle-1 {
+  0%, 100% { opacity: 0.3; filter: brightness(1); }
+  50% { opacity: 1; filter: brightness(1.8); }
+}
+
+@keyframes crystal-sparkle-2 {
+  0%, 100% { opacity: 0.5; filter: brightness(1); }
+  35% { opacity: 1; filter: brightness(2); }
+  70% { opacity: 0.3; filter: brightness(0.8); }
+}
+
+.crystal-chain-container {
+  position: relative;
+  width: 100%;
+  overflow: visible;
+  z-index: 30;
+  margin: -30px 0;
+  pointer-events: none;
+}
+
+/* ═══════════════════════════════════════════════════════
+   V2 — DRAMATIC SECTION TRANSITIONS
+   ═══════════════════════════════════════════════════════ */
+
+/* Gold warmth rising effect at section boundaries */
+.gold-mist {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 120px;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse at 30% 100%, rgba(184, 148, 63, 0.06) 0%, transparent 50%),
+    radial-gradient(ellipse at 60% 80%, rgba(184, 148, 63, 0.04) 0%, transparent 40%),
+    radial-gradient(ellipse at 80% 100%, rgba(160, 120, 60, 0.03) 0%, transparent 50%);
+}
+
+.gold-mist-top {
+  top: -60px;
+  transform: scaleY(-1);
+}
+
+.gold-mist-bottom {
+  bottom: -60px;
+}
+
+/* ═══════════════════════════════════════════════════════
+   V2 — FLOATING ORNAMENTS
+   ═══════════════════════════════════════════════════════ */
+
+@keyframes float-slow {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-15px) rotate(3deg); }
+}
+
+@keyframes float-slower {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-10px) rotate(-2deg); }
+}
+
+.float-slow {
+  animation: float-slow 8s ease-in-out infinite;
+}
+
+.float-slower {
+  animation: float-slower 12s ease-in-out infinite;
+}
+
+/* ═══════════════════════════════════════════════════════
+   V2 — GOLD FRAME ORNAMENT
+   Decorative corner elements for sections
+   ═══════════════════════════════════════════════════════ */
+
+.gold-frame {
+  position: relative;
+}
+
+.gold-frame::before,
+.gold-frame::after {
+  content: "";
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  pointer-events: none;
+}
+
+.gold-frame::before {
+  top: 0;
+  left: 0;
+  border-top: 1px solid rgba(184, 148, 63, 0.25);
+  border-left: 1px solid rgba(184, 148, 63, 0.25);
+}
+
+.gold-frame::after {
+  bottom: 0;
+  right: 0;
+  border-bottom: 1px solid rgba(184, 148, 63, 0.25);
+  border-right: 1px solid rgba(184, 148, 63, 0.25);
+}
+
+/* ═══════════════════════════════════════════════════════
+   V2 — STATS COUNTER EFFECTS
+   ═══════════════════════════════════════════════════════ */
+
+.stat-number {
+  font-family: var(--font-display);
+  font-size: 3rem;
+  font-weight: 300;
+  color: #1a1a2e;
+  line-height: 1;
+}
+
+.stat-label {
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(184, 148, 63, 0.65);
+  margin-top: 8px;
 }
 
 /* ═══════════════════════════════════════════════════════
@@ -510,14 +695,14 @@ body {
   width: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #0d0d14;
+  background: #F5F0E6;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(201, 169, 110, 0.25);
+  background: rgba(184, 148, 63, 0.3);
   border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(201, 169, 110, 0.45);
+  background: rgba(184, 148, 63, 0.5);
 }
 
 /* ═══════════════════════════════════════════════════════
@@ -535,9 +720,9 @@ body {
   inset: 0;
   background: linear-gradient(
     90deg,
-    rgba(201, 169, 110, 0.02),
-    rgba(232, 213, 176, 0.01),
-    rgba(201, 169, 110, 0.02)
+    rgba(184, 148, 63, 0.02),
+    rgba(212, 185, 106, 0.01),
+    rgba(184, 148, 63, 0.02)
   );
   background-size: 300% 100%;
   animation: gradient-loop 8s ease-in-out infinite;
@@ -554,9 +739,9 @@ body {
   background: linear-gradient(
     90deg,
     transparent,
-    rgba(201, 169, 110, 0.12),
-    rgba(201, 169, 110, 0.08),
-    rgba(201, 169, 110, 0.12),
+    rgba(184, 148, 63, 0.15),
+    rgba(184, 148, 63, 0.1),
+    rgba(184, 148, 63, 0.15),
     transparent
   );
   background-size: 300% 100%;
@@ -565,19 +750,19 @@ body {
 }
 
 .spectrum-nav {
-  background: rgba(9, 9, 15, 0.95);
+  background: rgba(250, 248, 243, 0.97);
 }
 
 .spectrum-gradient {
   background: linear-gradient(
     90deg,
     transparent,
-    rgba(201, 169, 110, 0.02),
+    rgba(184, 148, 63, 0.02),
     transparent
   );
 }
 
 .announcement-pulse {
-  background: radial-gradient(ellipse at center, rgba(201, 169, 110, 0.08), transparent 70%);
+  background: radial-gradient(ellipse at center, rgba(184, 148, 63, 0.06), transparent 70%);
   animation: announcement-pulse 3s ease-in-out infinite;
 }

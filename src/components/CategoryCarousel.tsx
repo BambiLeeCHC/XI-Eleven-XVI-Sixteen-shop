@@ -11,8 +11,8 @@ interface CategoryDef {
 }
 
 const CATEGORIES: CategoryDef[] = [
-  { label: "Shop Women", shopLabel: "SHOP WOMEN", filter: { gender: "women" }, accent: "linear-gradient(135deg, #c9a96e, #e8d5b0)" },
-  { label: "Shop Men", shopLabel: "SHOP MEN", filter: { gender: "men" }, accent: "linear-gradient(135deg, #c9a96e, #a88d54)" },
+  { label: "Shop Women", shopLabel: "SHOP WOMEN", filter: { gender: "women" }, accent: "linear-gradient(135deg, #b8943f, #d4b96a)" },
+  { label: "Shop Men", shopLabel: "SHOP MEN", filter: { gender: "men" }, accent: "linear-gradient(135deg, #b8943f, #8a7030)" },
   { label: "Shop Dresses", shopLabel: "SHOP DRESSES", filter: { category: "Dresses" }, accent: "linear-gradient(135deg, #e88da8, #d67d98)" },
   { label: "Shop Tops", shopLabel: "SHOP TOPS", filter: { category: "Tops" }, accent: "linear-gradient(135deg, #8ab4f8, #6d9ee0)" },
   { label: "Shop Bottoms", shopLabel: "SHOP BOTTOMS", filter: { category: "Bottoms" }, accent: "linear-gradient(135deg, #e8b07a, #d8a06a)" },
@@ -44,12 +44,12 @@ function CategoryCard({ cat }: { cat: CategoryDef }) {
         <div
           className="rounded-2xl overflow-hidden transition-all duration-300 group-hover:scale-[1.02] group-hover:shadow-lg"
           style={{
-            background: "#111118",
-            border: "1px solid rgba(201, 169, 110, 0.06)",
+            background: "#FFFFFF",
+            border: "1px solid rgba(184, 148, 63, 0.06)",
             boxShadow: "0 2px 16px rgba(0, 0, 0, 0.3), 0 1px 3px rgba(0, 0, 0, 0.2)",
           }}
         >
-          <div className="relative" style={{ height: "220px", overflow: "hidden", background: "#0d0d14" }}>
+          <div className="relative" style={{ height: "220px", overflow: "hidden", background: "#F5F0E6" }}>
             {img ? (
               <img
                 src={img}
@@ -60,30 +60,30 @@ function CategoryCard({ cat }: { cat: CategoryDef }) {
             ) : (
               <div
                 className="w-full h-full flex items-center justify-center"
-                style={{ background: "rgba(201, 169, 110, 0.02)" }}
+                style={{ background: "rgba(184, 148, 63, 0.02)" }}
               >
-                <span style={{ color: "rgba(240, 230, 211, 0.15)", fontSize: "12px" }}>Loading...</span>
+                <span style={{ color: "rgba(26, 26, 46, 0.15)", fontSize: "12px" }}>Loading...</span>
               </div>
             )}
             <div
               className="absolute bottom-0 left-0 right-0 h-16 pointer-events-none"
-              style={{ background: "linear-gradient(transparent, rgba(17, 17, 24, 0.7))" }}
+              style={{ background: "linear-gradient(transparent, rgba(245, 240, 230, 0.7))" }}
             />
           </div>
 
           <div className="px-3 py-3 flex items-center justify-between">
             <span
               className="text-[11px] font-bold tracking-[0.06em] uppercase"
-              style={{ color: "#f0e6d3" }}
+              style={{ color: "#1a1a2e" }}
             >
               {cat.shopLabel}
             </span>
             <span
               className="text-[10px] font-semibold tracking-[0.1em] uppercase px-3 py-1.5 rounded-full"
               style={{
-                color: "#c9a96e",
-                background: "rgba(201, 169, 110, 0.06)",
-                border: "1px solid rgba(201, 169, 110, 0.1)",
+                color: "#b8943f",
+                background: "rgba(184, 148, 63, 0.06)",
+                border: "1px solid rgba(184, 148, 63, 0.1)",
               }}
             >
               SHOP
@@ -138,7 +138,7 @@ export function CategoryCarousel() {
     <section
       className="relative py-6 overflow-hidden"
       style={{
-        background: "linear-gradient(180deg, #09090f 0%, #0d0d14 100%)",
+        background: "linear-gradient(180deg, #FAF8F3 0%, #F5F0E6 100%)",
       }}
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
@@ -149,7 +149,7 @@ export function CategoryCarousel() {
       <div className="max-w-7xl mx-auto px-6 mb-4">
         <span
           className="text-[10px] tracking-[0.35em] uppercase font-semibold"
-          style={{ color: "rgba(201, 169, 110, 0.4)" }}
+          style={{ color: "rgba(184, 148, 63, 0.4)" }}
         >
           Browse Collections
         </span>
@@ -171,11 +171,11 @@ export function CategoryCarousel() {
       {/* Fade edges */}
       <div
         className="absolute left-0 top-0 bottom-0 w-16 pointer-events-none z-10"
-        style={{ background: "linear-gradient(90deg, #09090f, transparent)" }}
+        style={{ background: "linear-gradient(90deg, #FAF8F3, transparent)" }}
       />
       <div
         className="absolute right-0 top-0 bottom-0 w-16 pointer-events-none z-10"
-        style={{ background: "linear-gradient(270deg, #0d0d14, transparent)" }}
+        style={{ background: "linear-gradient(270deg, #F5F0E6, transparent)" }}
       />
     </section>
   );

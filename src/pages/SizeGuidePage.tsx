@@ -95,7 +95,7 @@ function SparkleParticle({ style }: { style: React.CSSProperties }) {
         width: "3px",
         height: "3px",
         borderRadius: "50%",
-        background: "radial-gradient(circle, rgba(9,9,15,0.95) 0%, rgba(200,200,220,0.6) 40%, transparent 70%)",
+        background: "radial-gradient(circle, rgba(255,255,255,0.95) 0%, rgba(200,200,220,0.6) 40%, transparent 70%)",
         boxShadow: "0 0 6px 2px rgba(17,17,24,0.5), 0 0 12px 4px rgba(200,180,255,0.2)",
         pointerEvents: "none",
         ...style,
@@ -151,18 +151,18 @@ function DressOverlay({ selectedSize }: OverlayProps) {
       <path
         d="M 38 18 Q 36 17 35 18 L 33 20 Q 30 22 30 26 L 30 30 Q 30 32 32 33 L 33 33 Q 32 36 31 40 L 28 65 Q 27 68 28 70 L 30 72 Q 38 75 50 75 Q 62 75 70 72 L 72 70 Q 73 68 72 65 L 69 40 Q 68 36 67 33 L 68 33 Q 70 32 70 30 L 70 26 Q 70 22 67 20 L 65 18 Q 64 17 62 18 L 58 20 Q 55 18 50 18 Q 45 18 42 20 Z"
         fill="url(#dressGradient)"
-        stroke="rgba(201,169,110,0.5)"
+        stroke="rgba(184,148,63,0.5)"
         strokeWidth="0.3"
         className="overlay-path"
       />
       {/* Straps */}
-      <line x1="40" y1="14" x2="38" y2="18" stroke="rgba(201,169,110,0.4)" strokeWidth="0.5" />
-      <line x1="60" y1="14" x2="62" y2="18" stroke="rgba(201,169,110,0.4)" strokeWidth="0.5" />
+      <line x1="40" y1="14" x2="38" y2="18" stroke="rgba(184,148,63,0.4)" strokeWidth="0.5" />
+      <line x1="60" y1="14" x2="62" y2="18" stroke="rgba(184,148,63,0.4)" strokeWidth="0.5" />
       <defs>
         <linearGradient id="dressGradient" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="rgba(201,169,110,0.15)" />
+          <stop offset="0%" stopColor="rgba(184,148,63,0.15)" />
           <stop offset="50%" stopColor="rgba(255,158,184,0.12)" />
-          <stop offset="100%" stopColor="rgba(201,169,110,0.08)" />
+          <stop offset="100%" stopColor="rgba(184,148,63,0.08)" />
         </linearGradient>
       </defs>
     </svg>
@@ -176,14 +176,14 @@ function JerseyOverlay({ selectedSize }: OverlayProps) {
       <path
         d="M 35 20 Q 28 21 25 24 L 20 30 Q 18 32 20 34 L 25 33 Q 27 32 28 31 L 28 50 Q 28 52 30 52 L 70 52 Q 72 52 72 50 L 72 31 Q 73 32 75 33 L 80 34 Q 82 32 80 30 L 75 24 Q 72 21 65 20 Q 60 19 55 18 L 52 17 Q 50 17 48 17 L 45 18 Q 40 19 35 20 Z"
         fill="url(#jerseyGradient)"
-        stroke="rgba(201,169,110,0.5)"
+        stroke="rgba(184,148,63,0.5)"
         strokeWidth="0.3"
         className="overlay-path"
       />
       <defs>
         <linearGradient id="jerseyGradient" x1="0" y1="0" x2="1" y2="1">
           <stop offset="0%" stopColor="rgba(100,180,255,0.15)" />
-          <stop offset="100%" stopColor="rgba(201,169,110,0.12)" />
+          <stop offset="100%" stopColor="rgba(184,148,63,0.12)" />
         </linearGradient>
       </defs>
     </svg>
@@ -197,14 +197,14 @@ function ShortsOverlay({ selectedSize }: OverlayProps) {
       <path
         d="M 30 48 L 30 52 Q 30 54 30 56 L 32 62 Q 33 64 36 64 L 46 63 Q 48 63 48 61 L 49 56 Q 50 55 51 56 L 52 61 Q 52 63 54 63 L 64 64 Q 67 64 68 62 L 70 56 Q 70 54 70 52 L 70 48 Q 70 46 68 46 L 32 46 Q 30 46 30 48 Z"
         fill="url(#shortsGradient)"
-        stroke="rgba(201,169,110,0.5)"
+        stroke="rgba(184,148,63,0.5)"
         strokeWidth="0.3"
         className="overlay-path"
       />
       <defs>
         <linearGradient id="shortsGradient" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stopColor="rgba(140,200,255,0.15)" />
-          <stop offset="100%" stopColor="rgba(201,169,110,0.10)" />
+          <stop offset="100%" stopColor="rgba(184,148,63,0.10)" />
         </linearGradient>
       </defs>
     </svg>
@@ -218,15 +218,15 @@ function LeggingsOverlay({ selectedSize }: OverlayProps) {
       <path
         d="M 34 38 L 34 42 Q 33 50 33 58 L 32 70 Q 31 78 32 84 Q 32 86 34 86 L 42 86 Q 44 86 44 84 L 46 70 Q 47 62 48 56 Q 49 54 50 54 Q 51 54 52 56 Q 53 62 54 70 L 56 84 Q 56 86 58 86 L 66 86 Q 68 86 68 84 Q 69 78 68 70 L 67 58 Q 67 50 66 42 L 66 38 Q 66 36 64 36 L 36 36 Q 34 36 34 38 Z"
         fill="url(#leggingsGradient)"
-        stroke="rgba(201,169,110,0.5)"
+        stroke="rgba(184,148,63,0.5)"
         strokeWidth="0.3"
         className="overlay-path"
       />
       <defs>
         <linearGradient id="leggingsGradient" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="rgba(201,169,110,0.15)" />
+          <stop offset="0%" stopColor="rgba(184,148,63,0.15)" />
           <stop offset="50%" stopColor="rgba(255,158,184,0.10)" />
-          <stop offset="100%" stopColor="rgba(201,169,110,0.06)" />
+          <stop offset="100%" stopColor="rgba(184,148,63,0.06)" />
         </linearGradient>
       </defs>
     </svg>
@@ -250,7 +250,7 @@ function BraOverlay({ selectedSize }: OverlayProps) {
       <defs>
         <linearGradient id="braGradient" x1="0" y1="0" x2="1" y2="1">
           <stop offset="0%" stopColor="rgba(255,158,184,0.18)" />
-          <stop offset="100%" stopColor="rgba(201,169,110,0.12)" />
+          <stop offset="100%" stopColor="rgba(184,148,63,0.12)" />
         </linearGradient>
       </defs>
     </svg>
@@ -264,14 +264,14 @@ function TeeOverlay({ selectedSize }: OverlayProps) {
       <path
         d="M 33 18 Q 26 20 22 24 L 16 32 Q 14 34 16 36 L 22 35 Q 25 34 26 32 L 26 55 Q 26 57 28 57 L 72 57 Q 74 57 74 55 L 74 32 Q 75 34 78 35 L 84 36 Q 86 34 84 32 L 78 24 Q 74 20 67 18 Q 62 17 57 16 L 53 15 Q 50 15 47 15 L 43 16 Q 38 17 33 18 Z"
         fill="url(#teeGradient)"
-        stroke="rgba(201,169,110,0.5)"
+        stroke="rgba(184,148,63,0.5)"
         strokeWidth="0.3"
         className="overlay-path"
       />
       <defs>
         <linearGradient id="teeGradient" x1="0" y1="0" x2="1" y2="1">
           <stop offset="0%" stopColor="rgba(245,200,120,0.12)" />
-          <stop offset="100%" stopColor="rgba(201,169,110,0.10)" />
+          <stop offset="100%" stopColor="rgba(184,148,63,0.10)" />
         </linearGradient>
       </defs>
     </svg>
@@ -384,7 +384,7 @@ function MeasurementOverlay({ overlayType, selectedSize, sizeData }: { overlayTy
               height="5"
               rx="1.5"
               fill="rgba(0,0,0,0.75)"
-              stroke="rgba(201,169,110,0.25)"
+              stroke="rgba(184,148,63,0.25)"
               strokeWidth="0.2"
             />
             {/* Label text */}
@@ -426,7 +426,7 @@ function MannequinViewer({ gender, overlayType, selectedSize, sizeData }: {
         aspectRatio: "701/875",
         borderRadius: "20px",
         overflow: "hidden",
-        border: "1px solid rgba(201,169,110,0.08)",
+        border: "1px solid rgba(184,148,63,0.08)",
         background: "linear-gradient(145deg, rgba(15,12,18,1), rgba(8,6,10,1))",
       }}
     >
@@ -468,7 +468,7 @@ function MannequinViewer({ gender, overlayType, selectedSize, sizeData }: {
           background: "rgba(0,0,0,0.6)",
           backdropFilter: "blur(12px)",
           borderRadius: "8px",
-          border: "1px solid rgba(201,169,110,0.15)",
+          border: "1px solid rgba(184,148,63,0.15)",
           zIndex: 5,
         }}
       >
@@ -482,14 +482,14 @@ function MannequinViewer({ gender, overlayType, selectedSize, sizeData }: {
         <div
           className="absolute top-3 right-3 px-3 py-1.5 size-badge"
           style={{
-            background: "linear-gradient(135deg, rgba(201,169,110,0.2), rgba(255,158,184,0.15))",
+            background: "linear-gradient(135deg, rgba(184,148,63,0.2), rgba(255,158,184,0.15))",
             backdropFilter: "blur(12px)",
             borderRadius: "8px",
-            border: "1px solid rgba(201,169,110,0.3)",
+            border: "1px solid rgba(184,148,63,0.3)",
             zIndex: 5,
           }}
         >
-          <span className="text-[11px] tracking-[0.15em] uppercase font-bold text-[#f0e6d3]">
+          <span className="text-[11px] tracking-[0.15em] uppercase font-bold text-[#1a1a2e]">
             {selectedSize}
           </span>
         </div>
@@ -548,8 +548,8 @@ export function SizeGuidePage() {
           to { opacity: 1; transform: translateX(0); }
         }
         @keyframes badgePulse {
-          0%, 100% { box-shadow: 0 0 8px rgba(201,169,110,0.2); }
-          50% { box-shadow: 0 0 16px rgba(201,169,110,0.4), 0 0 32px rgba(201,169,110,0.1); }
+          0%, 100% { box-shadow: 0 0 8px rgba(184,148,63,0.2); }
+          50% { box-shadow: 0 0 16px rgba(184,148,63,0.4), 0 0 32px rgba(184,148,63,0.1); }
         }
         .sparkle-particle {
           animation: sparkleFlash var(--duration, 2.5s) ease-in-out infinite;
@@ -579,21 +579,21 @@ export function SizeGuidePage() {
           transition: opacity 0.4s ease;
         }
         .mannequin-container {
-          box-shadow: 0 0 60px rgba(201,169,110,0.05), 0 0 120px rgba(0,0,0,0.3);
+          box-shadow: 0 0 60px rgba(184,148,63,0.05), 0 0 120px rgba(0,0,0,0.3);
         }
       `}</style>
 
       <div className="max-w-6xl mx-auto px-6 lg:px-12 py-16">
         {/* Header */}
         <h1
-          className="text-3xl md:text-4xl text-[#f0e6d3] font-light mb-3 text-center"
+          className="text-3xl md:text-4xl text-[#1a1a2e] font-light mb-3 text-center"
           style={{ fontFamily: "var(--font-display)" }}
         >
           Size Guide
         </h1>
         <p
           className="text-center text-[13px] mb-10"
-          style={{ color: "rgba(240,230,211,0.4)" }}
+          style={{ color: "rgba(26,26,46,0.4)" }}
         >
           All measurements in inches. Select a size to see how it fits.
         </p>
@@ -607,15 +607,15 @@ export function SizeGuidePage() {
               onClick={() => handleTabChange(t.key)}
               className="px-5 py-2.5 text-[11px] tracking-[0.15em] uppercase transition-all"
               style={{
-                color: active === t.key ? "white" : "rgba(240,230,211,0.4)",
+                color: active === t.key ? "white" : "rgba(26,26,46,0.4)",
                 background:
                   active === t.key
-                    ? "linear-gradient(135deg, rgba(201,169,110,0.15), rgba(255,158,184,0.08))"
+                    ? "linear-gradient(135deg, rgba(184,148,63,0.15), rgba(255,158,184,0.08))"
                     : "transparent",
                 border:
                   active === t.key
-                    ? "1px solid rgba(201,169,110,0.3)"
-                    : "1px solid rgba(201,169,110,0.08)",
+                    ? "1px solid rgba(184,148,63,0.3)"
+                    : "1px solid rgba(184,148,63,0.08)",
                 borderRadius: "12px",
               }}
             >
@@ -634,7 +634,7 @@ export function SizeGuidePage() {
               selectedSize={selectedSize}
               sizeData={sizeData}
             />
-            <p className="text-[11px] mt-4 text-center" style={{ color: "rgba(240,230,211,0.3)" }}>
+            <p className="text-[11px] mt-4 text-center" style={{ color: "rgba(26,26,46,0.3)" }}>
               {selectedSize
                 ? `Showing ${tab.label.toLowerCase()} fit for size ${selectedSize}`
                 : "Select a size below to see the fit overlay"}
@@ -645,7 +645,7 @@ export function SizeGuidePage() {
           <div>
             {/* Quick size selector row */}
             <div className="mb-6">
-              <p className="text-[10px] tracking-[0.2em] uppercase font-semibold mb-3" style={{ color: "rgba(201,169,110,0.55)" }}>
+              <p className="text-[10px] tracking-[0.2em] uppercase font-semibold mb-3" style={{ color: "rgba(184,148,63,0.55)" }}>
                 SELECT YOUR SIZE
               </p>
               <div className="flex flex-wrap gap-2">
@@ -656,19 +656,19 @@ export function SizeGuidePage() {
                     onClick={() => setSelectedSize(selectedSize === row.size ? null : row.size)}
                     className="px-4 py-2.5 text-[12px] tracking-wider uppercase font-medium transition-all"
                     style={{
-                      color: selectedSize === row.size ? "white" : "rgba(240,230,211,0.45)",
+                      color: selectedSize === row.size ? "white" : "rgba(26,26,46,0.45)",
                       background:
                         selectedSize === row.size
-                          ? "linear-gradient(135deg, rgba(201,169,110,0.2), rgba(255,158,184,0.12))"
+                          ? "linear-gradient(135deg, rgba(184,148,63,0.2), rgba(255,158,184,0.12))"
                           : "transparent",
                       border:
                         selectedSize === row.size
-                          ? "1px solid rgba(201,169,110,0.4)"
-                          : "1px solid rgba(201,169,110,0.1)",
+                          ? "1px solid rgba(184,148,63,0.4)"
+                          : "1px solid rgba(184,148,63,0.1)",
                       borderRadius: "10px",
                       boxShadow:
                         selectedSize === row.size
-                          ? "0 0 12px rgba(201,169,110,0.15)"
+                          ? "0 0 12px rgba(184,148,63,0.15)"
                           : "none",
                     }}
                   >
@@ -682,7 +682,7 @@ export function SizeGuidePage() {
             <div
               className="overflow-x-auto"
               style={{
-                border: "1px solid rgba(201,169,110,0.08)",
+                border: "1px solid rgba(184,148,63,0.08)",
                 borderRadius: "16px",
               }}
             >
@@ -694,9 +694,9 @@ export function SizeGuidePage() {
                         key={col}
                         className="px-4 py-3.5 text-left text-[10px] tracking-[0.2em] uppercase font-semibold"
                         style={{
-                          color: "rgba(201,169,110,0.55)",
-                          borderBottom: "1px solid rgba(201,169,110,0.08)",
-                          background: "rgba(201,169,110,0.03)",
+                          color: "rgba(184,148,63,0.55)",
+                          borderBottom: "1px solid rgba(184,148,63,0.08)",
+                          background: "rgba(184,148,63,0.03)",
                         }}
                       >
                         {col}
@@ -714,7 +714,7 @@ export function SizeGuidePage() {
                         className="cursor-pointer transition-all"
                         style={{
                           background: isSelected
-                            ? "rgba(201,169,110,0.08)"
+                            ? "rgba(184,148,63,0.08)"
                             : "transparent",
                         }}
                       >
@@ -725,12 +725,12 @@ export function SizeGuidePage() {
                             style={{
                               color:
                                 field === "size"
-                                  ? isSelected ? "white" : "rgba(240,230,211,0.7)"
-                                  : isSelected ? "rgba(240,230,211,0.8)" : "rgba(240,230,211,0.45)",
+                                  ? isSelected ? "white" : "rgba(26,26,46,0.7)"
+                                  : isSelected ? "rgba(26,26,46,0.8)" : "rgba(26,26,46,0.45)",
                               fontWeight: field === "size" ? 600 : 400,
                               borderBottom:
                                 i < tab.data.length - 1
-                                  ? "1px solid rgba(201,169,110,0.05)"
+                                  ? "1px solid rgba(184,148,63,0.05)"
                                   : "none",
                             }}
                           >
@@ -747,7 +747,7 @@ export function SizeGuidePage() {
             {/* Fit Note */}
             <p
               className="mt-4 text-[12px] italic"
-              style={{ color: "rgba(240,230,211,0.3)" }}
+              style={{ color: "rgba(26,26,46,0.3)" }}
             >
               {tab.note}
             </p>
@@ -758,14 +758,14 @@ export function SizeGuidePage() {
         <div
           className="mb-12 p-6"
           style={{
-            background: "linear-gradient(135deg, rgba(201,169,110,0.04), rgba(255,158,184,0.02))",
-            border: "1px solid rgba(201,169,110,0.08)",
+            background: "linear-gradient(135deg, rgba(184,148,63,0.04), rgba(255,158,184,0.02))",
+            border: "1px solid rgba(184,148,63,0.08)",
             borderRadius: "16px",
           }}
         >
           <h2
             className="text-[11px] tracking-[0.25em] uppercase font-semibold mb-4"
-            style={{ color: "rgba(201,169,110,0.6)" }}
+            style={{ color: "rgba(184,148,63,0.6)" }}
           >
             How to Measure
           </h2>
@@ -777,8 +777,8 @@ export function SizeGuidePage() {
               { label: "Length / Inseam", desc: "For tops: shoulder to hem. For bottoms: crotch seam to leg opening." },
             ].map((item) => (
               <div key={item.label}>
-                <p className="text-[12px] font-semibold text-[#f0e6d3]/70 mb-1">{item.label}</p>
-                <p className="text-[12px]" style={{ color: "rgba(240,230,211,0.35)" }}>
+                <p className="text-[12px] font-semibold text-[#1a1a2e]/70 mb-1">{item.label}</p>
+                <p className="text-[12px]" style={{ color: "rgba(26,26,46,0.35)" }}>
                   {item.desc}
                 </p>
               </div>
@@ -791,17 +791,17 @@ export function SizeGuidePage() {
           className="p-6"
           style={{
             background: "rgba(255,255,255,0.015)",
-            border: "1px solid rgba(201,169,110,0.06)",
+            border: "1px solid rgba(184,148,63,0.06)",
             borderRadius: "16px",
           }}
         >
           <h2
             className="text-[11px] tracking-[0.25em] uppercase font-semibold mb-4"
-            style={{ color: "rgba(240,230,211,0.5)" }}
+            style={{ color: "rgba(26,26,46,0.5)" }}
           >
             General Tips
           </h2>
-          <ul className="space-y-2 text-[12px]" style={{ color: "rgba(240,230,211,0.35)" }}>
+          <ul className="space-y-2 text-[12px]" style={{ color: "rgba(26,26,46,0.35)" }}>
             <li>• If you're between sizes, size up for a relaxed fit or down for compression.</li>
             <li>• All activewear (leggings, sports bras) uses four-way stretch fabric that molds to your shape.</li>
             <li>• Jersey and shorts fabrics have UPF50+ sun protection — great for outdoor training.</li>

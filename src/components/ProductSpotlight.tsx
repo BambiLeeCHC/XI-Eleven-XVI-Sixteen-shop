@@ -20,8 +20,8 @@ const SPOTLIGHTS: SpotlightConfig[] = [
     subtitle: "Six shades of effortless elegance",
     colorLine: "Available in 6 colors that drape like a dream — from classic Black to bold Red to delicate Pink Lace.",
     gender: "women",
-    gradient: "linear-gradient(135deg, rgba(201,169,110,0.06) 0%, rgba(232,141,168,0.04) 50%, rgba(201,169,110,0.03) 100%)",
-    btnColor: "#c9a96e",
+    gradient: "linear-gradient(135deg, rgba(184,148,63,0.06) 0%, rgba(232,141,168,0.04) 50%, rgba(184,148,63,0.03) 100%)",
+    btnColor: "#b8943f",
   },
   {
     baseName: "J-Glitch Jersey",
@@ -29,8 +29,8 @@ const SPOTLIGHTS: SpotlightConfig[] = [
     subtitle: "Six bold colors. Zero compromises.",
     colorLine: "Available in 6 statement colors — from stealth Black to electric Volt to icy cool.",
     gender: "men",
-    gradient: "linear-gradient(135deg, rgba(201,169,110,0.06) 0%, rgba(138,180,248,0.04) 50%, rgba(201,169,110,0.03) 100%)",
-    btnColor: "#c9a96e",
+    gradient: "linear-gradient(135deg, rgba(184,148,63,0.06) 0%, rgba(138,180,248,0.04) 50%, rgba(184,148,63,0.03) 100%)",
+    btnColor: "#b8943f",
   },
 ];
 
@@ -53,12 +53,12 @@ function VariantCard({ product }: { product: { _id: string; name: string; images
       <div
         className="rounded-2xl overflow-hidden transition-all duration-300 group-hover:scale-[1.02]"
         style={{
-          background: "#111118",
-          border: "1px solid rgba(201, 169, 110, 0.06)",
+          background: "#FFFFFF",
+          border: "1px solid rgba(184, 148, 63, 0.06)",
           boxShadow: "0 2px 16px rgba(0, 0, 0, 0.3), 0 1px 3px rgba(0, 0, 0, 0.2)",
         }}
       >
-        <div className="relative" style={{ height: "200px", overflow: "hidden", background: "#0d0d14" }}>
+        <div className="relative" style={{ height: "200px", overflow: "hidden", background: "#F5F0E6" }}>
           <img
             src={product.images[0]}
             alt={product.name}
@@ -67,19 +67,19 @@ function VariantCard({ product }: { product: { _id: string; name: string; images
           />
           <div
             className="absolute bottom-0 left-0 right-0 h-12 pointer-events-none"
-            style={{ background: "linear-gradient(transparent, rgba(17, 17, 24, 0.6))" }}
+            style={{ background: "linear-gradient(transparent, rgba(245, 240, 230, 0.6))" }}
           />
         </div>
         <div className="p-3">
           <p
             className="text-[10px] font-bold tracking-[0.08em] uppercase mb-0.5"
-            style={{ color: "#f0e6d3" }}
+            style={{ color: "#1a1a2e" }}
           >
             {color || product.name}
           </p>
           <p
             className="text-[11px] font-medium"
-            style={{ color: "rgba(201, 169, 110, 0.5)" }}
+            style={{ color: "rgba(184, 148, 63, 0.5)" }}
           >
             ${(product.price / 100).toFixed(2)}
           </p>
@@ -129,7 +129,7 @@ function VariantCarousel({ variants }: { variants: { _id: string; name: string; 
     <div
       className="relative py-6 overflow-hidden"
       style={{
-        background: "linear-gradient(180deg, #0d0d14, #09090f)",
+        background: "linear-gradient(180deg, #F5F0E6, #FAF8F3)",
       }}
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
@@ -139,7 +139,7 @@ function VariantCarousel({ variants }: { variants: { _id: string; name: string; 
       <div className="max-w-7xl mx-auto px-6 mb-3">
         <span
           className="text-[10px] tracking-[0.3em] uppercase font-semibold"
-          style={{ color: "rgba(201, 169, 110, 0.35)" }}
+          style={{ color: "rgba(184, 148, 63, 0.35)" }}
         >
           All Colors
         </span>
@@ -158,11 +158,11 @@ function VariantCarousel({ variants }: { variants: { _id: string; name: string; 
       {/* Fade edges */}
       <div
         className="absolute left-0 top-0 bottom-0 w-12 pointer-events-none z-10"
-        style={{ background: "linear-gradient(90deg, #0d0d14, transparent)" }}
+        style={{ background: "linear-gradient(90deg, #F5F0E6, transparent)" }}
       />
       <div
         className="absolute right-0 top-0 bottom-0 w-12 pointer-events-none z-10"
-        style={{ background: "linear-gradient(270deg, #09090f, transparent)" }}
+        style={{ background: "linear-gradient(270deg, #FAF8F3, transparent)" }}
       />
     </div>
   );
@@ -185,7 +185,7 @@ function Spotlight({ config }: { config: SpotlightConfig }) {
       {/* Hero banner */}
       <div
         className="relative overflow-hidden"
-        style={{ minHeight: "420px", background: "#0d0d14" }}
+        style={{ minHeight: "420px", background: "#F5F0E6" }}
       >
         <div
           className="absolute inset-0"
@@ -200,7 +200,7 @@ function Spotlight({ config }: { config: SpotlightConfig }) {
         <div
           className="absolute inset-0"
           style={{
-            background: `${config.gradient}, linear-gradient(180deg, rgba(9,9,15,0.5) 0%, rgba(9,9,15,0.8) 100%)`,
+            background: `${config.gradient}, linear-gradient(180deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.8) 100%)`,
           }}
         />
         {/* Diamond dust for depth */}
@@ -223,7 +223,7 @@ function Spotlight({ config }: { config: SpotlightConfig }) {
                   className="w-full rounded-lg"
                   style={{
                     boxShadow: "0 8px 40px rgba(0, 0, 0, 0.4)",
-                    border: "1px solid rgba(201, 169, 110, 0.1)",
+                    border: "1px solid rgba(184, 148, 63, 0.1)",
                   }}
                 />
               </div>
@@ -232,7 +232,7 @@ function Spotlight({ config }: { config: SpotlightConfig }) {
           <div className="flex-1 text-center md:text-left">
             <p
               className="text-[9px] tracking-[0.4em] uppercase font-medium mb-3"
-              style={{ color: "rgba(201, 169, 110, 0.5)" }}
+              style={{ color: "rgba(184, 148, 63, 0.5)" }}
             >
               ✦ {config.gender === "women" ? "WOMEN'S COLLECTION" : "MEN'S COLLECTION"}
             </p>
@@ -240,7 +240,7 @@ function Spotlight({ config }: { config: SpotlightConfig }) {
               className="text-3xl md:text-4xl font-light mb-3"
               style={{
                 fontFamily: "var(--font-display)",
-                color: "#f0e6d3",
+                color: "#1a1a2e",
                 textShadow: "0 2px 20px rgba(0, 0, 0, 0.5)",
               }}
             >
@@ -248,13 +248,13 @@ function Spotlight({ config }: { config: SpotlightConfig }) {
             </h3>
             <p
               className="text-[15px] font-light mb-2"
-              style={{ color: "rgba(240, 230, 211, 0.55)" }}
+              style={{ color: "rgba(26, 26, 46, 0.55)" }}
             >
               {config.subtitle}
             </p>
             <p
               className="text-[12px] leading-relaxed mb-6 max-w-sm"
-              style={{ color: "rgba(240, 230, 211, 0.35)" }}
+              style={{ color: "rgba(26, 26, 46, 0.35)" }}
             >
               {config.colorLine}
             </p>
@@ -263,9 +263,9 @@ function Spotlight({ config }: { config: SpotlightConfig }) {
               className="inline-block px-8 py-3 text-[11px] tracking-[0.2em] uppercase font-bold transition-all duration-300"
               style={{
                 background: config.btnColor,
-                color: "#09090f",
+                color: "#FAF8F3",
                 borderRadius: "10px",
-                boxShadow: `0 4px 20px rgba(201, 169, 110, 0.15)`,
+                boxShadow: `0 4px 20px rgba(184, 148, 63, 0.15)`,
               }}
             >
               SHOP NOW
@@ -282,7 +282,7 @@ function Spotlight({ config }: { config: SpotlightConfig }) {
 
 export function ProductSpotlights() {
   return (
-    <section style={{ background: "#0d0d14" }}>
+    <section style={{ background: "#F5F0E6" }}>
       {SPOTLIGHTS.map((config) => (
         <Spotlight key={config.baseName} config={config} />
       ))}

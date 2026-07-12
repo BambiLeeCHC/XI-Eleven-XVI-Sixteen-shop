@@ -37,11 +37,11 @@ export function StoreHeader() {
       <div
         className="w-full py-2 px-4 text-center relative overflow-hidden"
         style={{
-          background: "linear-gradient(90deg, #0d0d14 0%, #16161f 50%, #0d0d14 100%)",
-          borderBottom: "1px solid rgba(201, 169, 110, 0.08)",
+          background: "linear-gradient(90deg, #F5F0E6 0%, #F5F0E6 50%, #F5F0E6 100%)",
+          borderBottom: "1px solid rgba(184, 148, 63, 0.08)",
         }}
       >
-        <p className="text-[10px] tracking-[0.3em] uppercase relative z-10 font-medium" style={{ color: "rgba(201, 169, 110, 0.6)" }}>
+        <p className="text-[10px] tracking-[0.3em] uppercase relative z-10 font-medium" style={{ color: "rgba(184, 148, 63, 0.6)" }}>
           ✦ FREE STANDARD SHIPPING ON EVERY ORDER ✦
         </p>
       </div>
@@ -51,9 +51,9 @@ export function StoreHeader() {
         <div
           className="relative"
           style={{
-            background: "rgba(9, 9, 15, 0.97)",
+            background: "rgba(255, 255, 255, 0.97)",
             backdropFilter: "blur(20px)",
-            borderBottom: "1px solid rgba(201, 169, 110, 0.06)",
+            borderBottom: "1px solid rgba(184, 148, 63, 0.06)",
             boxShadow: "0 1px 20px rgba(0, 0, 0, 0.3)",
           }}
         >
@@ -72,11 +72,11 @@ export function StoreHeader() {
 
               {/* Category quick links — desktop */}
               <nav className="hidden md:flex items-center gap-0.5 ml-2">
-                <span className="w-px h-5 mx-2" style={{ background: "rgba(201, 169, 110, 0.12)" }} />
+                <span className="w-px h-5 mx-2" style={{ background: "rgba(184, 148, 63, 0.12)" }} />
                 <Link
                   to="/shop?gender=women"
                   className={`px-3 py-2 text-[11px] tracking-[0.18em] uppercase font-semibold transition-all ${
-                    location.search.includes("women") ? "text-[#c9a96e]" : "text-[#f0e6d3]/40 hover:text-[#c9a96e]"
+                    location.search.includes("women") ? "text-[#b8943f]" : "text-[#1a1a2e]/40 hover:text-[#b8943f]"
                   }`}
                 >
                   Women
@@ -84,7 +84,7 @@ export function StoreHeader() {
                 <Link
                   to="/shop?gender=men"
                   className={`px-3 py-2 text-[11px] tracking-[0.18em] uppercase font-semibold transition-all ${
-                    location.search.includes("men") && !location.search.includes("women") ? "text-[#c9a96e]" : "text-[#f0e6d3]/40 hover:text-[#c9a96e]"
+                    location.search.includes("men") && !location.search.includes("women") ? "text-[#b8943f]" : "text-[#1a1a2e]/40 hover:text-[#b8943f]"
                   }`}
                 >
                   Men
@@ -97,7 +97,7 @@ export function StoreHeader() {
               {/* Search icon */}
               <button
                 onClick={() => setSearchOpen(true)}
-                className="relative p-2 text-[#f0e6d3]/30 hover:text-[#c9a96e] transition-colors group"
+                className="relative p-2 text-[#1a1a2e]/30 hover:text-[#b8943f] transition-colors group"
                 aria-label="Search"
               >
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="group-hover:scale-105 transition-transform">
@@ -107,14 +107,14 @@ export function StoreHeader() {
               </button>
 
               {/* Favorites icon */}
-              <Link to="/favorites" className="relative p-2 text-[#f0e6d3]/30 hover:text-[#c9a96e] transition-colors group">
+              <Link to="/favorites" className="relative p-2 text-[#1a1a2e]/30 hover:text-[#b8943f] transition-colors group">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="group-hover:scale-105 transition-transform">
                   <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" />
                 </svg>
                 {favCount > 0 && (
                   <span
-                    className="absolute -top-0.5 -right-0.5 min-w-[16px] h-[16px] px-1 rounded-full text-[8px] flex items-center justify-center text-[#09090f] font-bold"
-                    style={{ background: "linear-gradient(135deg, #c9a96e, #e8d5b0)" }}
+                    className="absolute -top-0.5 -right-0.5 min-w-[16px] h-[16px] px-1 rounded-full text-[8px] flex items-center justify-center text-white font-bold"
+                    style={{ background: "linear-gradient(135deg, #b8943f, #d4b96a)" }}
                   >
                     {favCount}
                   </span>
@@ -122,7 +122,7 @@ export function StoreHeader() {
               </Link>
 
               {/* Cart icon */}
-              <Link to="/cart" className="relative p-2 text-[#f0e6d3]/30 hover:text-[#c9a96e] transition-colors group">
+              <Link to="/cart" className="relative p-2 text-[#1a1a2e]/30 hover:text-[#b8943f] transition-colors group">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="group-hover:scale-105 transition-transform">
                   <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" />
                   <line x1="3" y1="6" x2="21" y2="6" />
@@ -130,8 +130,8 @@ export function StoreHeader() {
                 </svg>
                 {cartCount > 0 && (
                   <span
-                    className="absolute -top-0.5 -right-0.5 min-w-[16px] h-[16px] px-1 rounded-full text-[8px] flex items-center justify-center text-[#09090f] font-bold"
-                    style={{ background: "linear-gradient(135deg, #c9a96e, #e8d5b0)" }}
+                    className="absolute -top-0.5 -right-0.5 min-w-[16px] h-[16px] px-1 rounded-full text-[8px] flex items-center justify-center text-white font-bold"
+                    style={{ background: "linear-gradient(135deg, #b8943f, #d4b96a)" }}
                   >
                     {cartCount}
                   </span>
@@ -159,9 +159,9 @@ export function StoreHeader() {
                       type="button"
                       className="relative px-4 py-2 text-[10px] tracking-[0.2em] uppercase font-semibold overflow-hidden transition-all duration-300"
                       style={{
-                        color: "#c9a96e",
-                        background: "rgba(201, 169, 110, 0.06)",
-                        border: "1px solid rgba(201, 169, 110, 0.15)",
+                        color: "#b8943f",
+                        background: "rgba(184, 148, 63, 0.06)",
+                        border: "1px solid rgba(184, 148, 63, 0.15)",
                         borderRadius: "8px",
                       }}
                     >
@@ -175,9 +175,9 @@ export function StoreHeader() {
                     type="button"
                     className="relative px-4 py-2 text-[10px] tracking-[0.2em] uppercase font-semibold overflow-hidden transition-all duration-300"
                     style={{
-                      color: "#c9a96e",
-                      background: "rgba(201, 169, 110, 0.06)",
-                      border: "1px solid rgba(201, 169, 110, 0.15)",
+                      color: "#b8943f",
+                      background: "rgba(184, 148, 63, 0.06)",
+                      border: "1px solid rgba(184, 148, 63, 0.15)",
                       borderRadius: "8px",
                     }}
                   >
@@ -189,7 +189,7 @@ export function StoreHeader() {
               {/* Mobile menu button */}
               <button
                 type="button"
-                className="md:hidden text-[#f0e6d3]/40 hover:text-[#c9a96e] p-2 transition-colors"
+                className="md:hidden text-[#1a1a2e]/40 hover:text-[#b8943f] p-2 transition-colors"
                 onClick={() => setMobileOpen(!mobileOpen)}
                 aria-label="Toggle menu"
               >
@@ -227,18 +227,18 @@ export function StoreHeader() {
           <div
             className="absolute top-0 right-0 w-[280px] h-full flex flex-col"
             style={{
-              background: "rgba(13, 13, 20, 0.98)",
-              borderLeft: "1px solid rgba(201, 169, 110, 0.08)",
+              background: "rgba(255, 255, 255, 0.98)",
+              borderLeft: "1px solid rgba(184, 148, 63, 0.08)",
               boxShadow: "-8px 0 32px rgba(0,0,0,0.4)",
             }}
           >
             {/* Close button */}
-            <div className="flex items-center justify-between px-6 h-[82px]" style={{ borderBottom: "1px solid rgba(201, 169, 110, 0.06)" }}>
-              <span className="text-[10px] tracking-[0.3em] uppercase" style={{ color: "rgba(201, 169, 110, 0.3)" }}>MENU</span>
+            <div className="flex items-center justify-between px-6 h-[82px]" style={{ borderBottom: "1px solid rgba(184, 148, 63, 0.06)" }}>
+              <span className="text-[10px] tracking-[0.3em] uppercase" style={{ color: "rgba(184, 148, 63, 0.3)" }}>MENU</span>
               <button
                 onClick={() => setMobileOpen(false)}
                 className="p-2 transition-colors"
-                style={{ color: "rgba(240, 230, 211, 0.3)" }}
+                style={{ color: "rgba(26, 26, 46, 0.3)" }}
                 aria-label="Close menu"
               >
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -254,14 +254,14 @@ export function StoreHeader() {
               <MobileNavLink to="/shop?gender=men" label="SHOP MEN" />
               <MobileNavLink to="/shop" label="SHOP ALL" />
 
-              <div className="my-6" style={{ borderTop: "1px solid rgba(201, 169, 110, 0.06)" }} />
+              <div className="my-6" style={{ borderTop: "1px solid rgba(184, 148, 63, 0.06)" }} />
 
               <MobileNavLink to="/favorites" label="FAVORITES" badge={favCount > 0 ? favCount : undefined} />
               <MobileNavLink to="/cart" label="CART" badge={cartCount > 0 ? cartCount : undefined} />
               <MobileNavLink to="/about" label="ABOUT" />
               <MobileNavLink to="/size-guide" label="SIZE GUIDE" />
 
-              <div className="my-6" style={{ borderTop: "1px solid rgba(201, 169, 110, 0.06)" }} />
+              <div className="my-6" style={{ borderTop: "1px solid rgba(184, 148, 63, 0.06)" }} />
 
               {isAuthenticated ? (
                 <>
@@ -288,8 +288,8 @@ export function StoreHeader() {
             </nav>
 
             {/* Footer */}
-            <div className="px-6 py-6" style={{ borderTop: "1px solid rgba(201, 169, 110, 0.06)" }}>
-              <p className="text-[9px] tracking-[0.2em] uppercase" style={{ color: "rgba(201, 169, 110, 0.2)" }}>
+            <div className="px-6 py-6" style={{ borderTop: "1px solid rgba(184, 148, 63, 0.06)" }}>
+              <p className="text-[9px] tracking-[0.2em] uppercase" style={{ color: "rgba(184, 148, 63, 0.2)" }}>
                 XI ELEVEN XVI SIXTEEN
               </p>
             </div>
@@ -317,15 +317,15 @@ function MobileNavLink({
       to={to}
       className={`flex items-center justify-between py-3 px-1 text-[11px] tracking-[0.2em] uppercase font-semibold transition-colors ${
         highlight
-          ? "text-[#c9a96e] hover:text-[#e8d5b0]"
-          : "text-[#f0e6d3]/40 hover:text-[#f0e6d3]"
+          ? "text-[#b8943f] hover:text-[#d4b96a]"
+          : "text-[#1a1a2e]/40 hover:text-[#1a1a2e]"
       }`}
     >
       <span>{label}</span>
       {badge !== undefined && (
         <span
-          className="min-w-[20px] h-[20px] px-1.5 rounded-full text-[9px] flex items-center justify-center text-[#09090f] font-bold"
-          style={{ background: "linear-gradient(135deg, #c9a96e, #e8d5b0)" }}
+          className="min-w-[20px] h-[20px] px-1.5 rounded-full text-[9px] flex items-center justify-center text-white font-bold"
+          style={{ background: "linear-gradient(135deg, #b8943f, #d4b96a)" }}
         >
           {badge}
         </span>
