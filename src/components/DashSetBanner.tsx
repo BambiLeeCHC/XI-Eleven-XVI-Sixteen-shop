@@ -556,8 +556,7 @@ const glamStyles = `
   }
 
   .gt-visual-video {
-    object-fit: contain;
-    background: #0a0a12;
+    object-fit: cover;
   }
 
   .gt-card-frame {
