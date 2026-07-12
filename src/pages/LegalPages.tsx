@@ -4,10 +4,10 @@ import { PAGE_SEO } from "../data/seoMeta";
 function LegalWrapper({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div className="max-w-2xl mx-auto px-6 py-12">
-      <h1 className="text-3xl text-[#1a1a2e] font-light mb-6" style={{ fontFamily: "var(--font-display)" }}>
+      <h1 className="text-3xl text-[#f0e6d3] font-light mb-6" style={{ fontFamily: "var(--font-display)" }}>
         {title}
       </h1>
-      <div className="space-y-4 text-[14px] text-[#1a1a2e]/45 leading-relaxed [&_h2]:text-[#1a1a2e]/70 [&_h2]:text-[16px] [&_h2]:font-semibold [&_h2]:mt-8 [&_h2]:mb-2 [&_h3]:text-[#1a1a2e]/55 [&_h3]:text-[14px] [&_h3]:font-semibold [&_h3]:mt-6 [&_h3]:mb-1 [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:space-y-1 [&_ol]:list-decimal [&_ol]:pl-5 [&_ol]:space-y-1 [&_a]:text-[#1a1a2e]/60 [&_a]:underline">
+      <div className="space-y-4 text-[14px] text-[#f0e6d3]/45 leading-relaxed [&_h2]:text-[#f0e6d3]/70 [&_h2]:text-[16px] [&_h2]:font-semibold [&_h2]:mt-8 [&_h2]:mb-2 [&_h3]:text-[#f0e6d3]/55 [&_h3]:text-[14px] [&_h3]:font-semibold [&_h3]:mt-6 [&_h3]:mb-1 [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:space-y-1 [&_ol]:list-decimal [&_ol]:pl-5 [&_ol]:space-y-1 [&_a]:text-[#f0e6d3]/60 [&_a]:underline">
         <p>XI Eleven XVI Sixteen L.L.C. ("we," "us," or "our") operates the XI · XVI fashion platform.</p>
         <p>EIN: 33-3471366 — Florida, USA</p>
         {children}

@@ -231,18 +231,18 @@ export function ProductFitGuide({ product, externalSize, onSizeSelect, lightMode
     highlight: "rgba(30,25,20,0.7)", colHighlight: "rgba(140,80,200,0.06)",
     fitNote: "rgba(140,80,200,0.06)", fitNoteBorder: "rgba(140,80,200,0.12)",
     fitNoteText: "rgba(30,25,20,0.35)", badgeBg: "rgba(255,255,255,0.85)",
-    badgeText: "rgba(140,80,200,0.7)", modelText: "rgba(255,255,255,0.6)",
+    badgeText: "rgba(140,80,200,0.7)", modelText: "rgba(17,17,24,0.6)",
   } : {
-    text: "rgba(26,26,46,0.8)", textMuted: "rgba(26,26,46,0.4)", textFaint: "rgba(26,26,46,0.25)",
-    accent: "rgba(74,143,217,0.7)", accentFaint: "rgba(74,143,217,0.08)", accentBorder: "rgba(74,143,217,0.2)",
-    border: "rgba(0,40,80,0.06)", cardBg: "rgba(74,143,217,0.02)", activeBg: "rgba(74,143,217,0.05)",
-    btnActive: "linear-gradient(135deg, rgba(74,143,217,0.15), rgba(255,158,184,0.08))",
-    btnBorder: "1px solid rgba(74,143,217,0.3)", btnInactive: "1px solid rgba(0,40,80,0.1)",
-    sizeActive: "white", sizeInactive: "rgba(26,26,46,0.45)",
-    highlight: "rgba(26,26,46,0.8)", colHighlight: "rgba(74,143,217,0.05)",
-    fitNote: "rgba(74,143,217,0.03)", fitNoteBorder: "rgba(74,143,217,0.06)",
-    fitNoteText: "rgba(26,26,46,0.32)", badgeBg: "rgba(0,0,0,0.7)",
-    badgeText: "rgba(74,143,217,0.7)", modelText: "rgba(26,26,46,0.3)",
+    text: "rgba(240,230,211,0.8)", textMuted: "rgba(240,230,211,0.4)", textFaint: "rgba(240,230,211,0.25)",
+    accent: "rgba(201,169,110,0.7)", accentFaint: "rgba(201,169,110,0.08)", accentBorder: "rgba(201,169,110,0.2)",
+    border: "rgba(201,169,110,0.06)", cardBg: "rgba(201,169,110,0.02)", activeBg: "rgba(201,169,110,0.05)",
+    btnActive: "linear-gradient(135deg, rgba(201,169,110,0.15), rgba(255,158,184,0.08))",
+    btnBorder: "1px solid rgba(201,169,110,0.3)", btnInactive: "1px solid rgba(201,169,110,0.1)",
+    sizeActive: "white", sizeInactive: "rgba(240,230,211,0.45)",
+    highlight: "rgba(240,230,211,0.8)", colHighlight: "rgba(201,169,110,0.05)",
+    fitNote: "rgba(201,169,110,0.03)", fitNoteBorder: "rgba(201,169,110,0.06)",
+    fitNoteText: "rgba(240,230,211,0.32)", badgeBg: "rgba(0,0,0,0.7)",
+    badgeText: "rgba(201,169,110,0.7)", modelText: "rgba(240,230,211,0.3)",
   };
 
   useEffect(() => {
@@ -372,7 +372,7 @@ export function ProductFitGuide({ product, externalSize, onSizeSelect, lightMode
           background: "radial-gradient(ellipse at center, rgba(30,25,35,0.9), rgba(0,0,0,0.95))",
           borderRadius: "16px",
           overflow: "hidden",
-          border: "1px solid rgba(74,143,217,0.08)",
+          border: "1px solid rgba(201,169,110,0.08)",
           aspectRatio: "2 / 3",
         }}
       >
@@ -447,7 +447,7 @@ export function ProductFitGuide({ product, externalSize, onSizeSelect, lightMode
             borderRadius: "8px", padding: "4px 12px",
             transition: "opacity 0.3s",
           }}>
-            <span style={{ fontSize: "9px", color: "rgba(74,143,217,0.7)", letterSpacing: "0.05em" }}>
+            <span style={{ fontSize: "9px", color: "rgba(201,169,110,0.7)", letterSpacing: "0.05em" }}>
               {fitDesc}
             </span>
           </div>

@@ -76,14 +76,14 @@ export function LoginPage() {
             VERIFY YOUR EMAIL
           </p>
           <h1
-            className="text-3xl text-[#1a1a2e] font-light mb-3 text-center"
+            className="text-3xl text-[#f0e6d3] font-light mb-3 text-center"
             style={{ fontFamily: "var(--font-display)" }}
           >
             Enter Code
           </h1>
-          <p className="text-[13px] text-[#1a1a2e]/40 text-center mb-8">
+          <p className="text-[13px] text-[#f0e6d3]/40 text-center mb-8">
             We sent a 6-digit code to{" "}
-            <span className="text-[#1a1a2e]/60">{email}</span>
+            <span className="text-[#f0e6d3]/60">{email}</span>
           </p>
 
           <form onSubmit={handleVerify} className="space-y-4">
@@ -94,7 +94,7 @@ export function LoginPage() {
             <button
               type="submit"
               disabled={loading || code.length !== 6}
-              className="w-full py-3 text-[11px] tracking-[0.25em] uppercase font-bold text-[#1a1a2e] transition-all disabled:opacity-50 rounded-md"
+              className="w-full py-3 text-[11px] tracking-[0.25em] uppercase font-bold text-[#f0e6d3] transition-all disabled:opacity-50 rounded-md"
               style={{
                 background: "linear-gradient(135deg, #a855f7, #7c3aed)",
               }}
@@ -103,7 +103,7 @@ export function LoginPage() {
             </button>
           </form>
 
-          <p className="text-center text-[12px] text-[#1a1a2e]/30 mt-6">
+          <p className="text-center text-[12px] text-[#f0e6d3]/30 mt-6">
             Didn't get a code?{" "}
             <button
               onClick={async () => {
@@ -121,14 +121,14 @@ export function LoginPage() {
             </button>
           </p>
 
-          <p className="text-center text-[12px] text-[#1a1a2e]/30 mt-3">
+          <p className="text-center text-[12px] text-[#f0e6d3]/30 mt-3">
             <button
               onClick={() => {
                 setNeedsVerification(false);
                 setCode("");
                 setError("");
               }}
-              className="text-[#1a1a2e]/40 hover:text-[#1a1a2e]/60"
+              className="text-[#f0e6d3]/40 hover:text-[#f0e6d3]/60"
             >
               ← Back to sign in
             </button>
@@ -146,7 +146,7 @@ export function LoginPage() {
           WELCOME BACK
         </p>
         <h1
-          className="text-3xl text-[#1a1a2e] font-light mb-8 text-center"
+          className="text-3xl text-[#f0e6d3] font-light mb-8 text-center"
           style={{ fontFamily: "var(--font-display)" }}
         >
           Sign In
@@ -154,7 +154,7 @@ export function LoginPage() {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-[10px] tracking-[0.25em] uppercase text-[#1a1a2e]/50 font-semibold mb-2">
+            <label className="block text-[10px] tracking-[0.25em] uppercase text-[#f0e6d3]/50 font-semibold mb-2">
               EMAIL
             </label>
             <input
@@ -162,12 +162,12 @@ export function LoginPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="you@example.com"
-              className="w-full bg-white/5 border border-white/10 text-[#1a1a2e]/80 placeholder-white/25 px-4 py-3 text-sm outline-none focus:border-purple-400/40 transition-colors rounded-md"
+              className="w-full bg-white/5 border border-white/10 text-[#f0e6d3]/80 placeholder-white/25 px-4 py-3 text-sm outline-none focus:border-purple-400/40 transition-colors rounded-md"
               required
             />
           </div>
           <div>
-            <label className="block text-[10px] tracking-[0.25em] uppercase text-[#1a1a2e]/50 font-semibold mb-2">
+            <label className="block text-[10px] tracking-[0.25em] uppercase text-[#f0e6d3]/50 font-semibold mb-2">
               PASSWORD
             </label>
             <input
@@ -175,7 +175,7 @@ export function LoginPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
-              className="w-full bg-white/5 border border-white/10 text-[#1a1a2e]/80 placeholder-white/25 px-4 py-3 text-sm outline-none focus:border-purple-400/40 transition-colors rounded-md"
+              className="w-full bg-white/5 border border-white/10 text-[#f0e6d3]/80 placeholder-white/25 px-4 py-3 text-sm outline-none focus:border-purple-400/40 transition-colors rounded-md"
               required
             />
           </div>
@@ -185,7 +185,7 @@ export function LoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3 text-[11px] tracking-[0.25em] uppercase font-bold text-[#1a1a2e] transition-all disabled:opacity-50 rounded-md"
+            className="w-full py-3 text-[11px] tracking-[0.25em] uppercase font-bold text-[#f0e6d3] transition-all disabled:opacity-50 rounded-md"
             style={{
               background: "linear-gradient(135deg, #a855f7, #7c3aed)",
             }}
@@ -194,7 +194,7 @@ export function LoginPage() {
           </button>
         </form>
 
-        <p className="text-center text-[12px] text-[#1a1a2e]/40 mt-6">
+        <p className="text-center text-[12px] text-[#f0e6d3]/40 mt-6">
           Don't have an account?{" "}
           <Link
             to="/signup"
@@ -287,16 +287,16 @@ export function SignupPage() {
             ALMOST THERE
           </p>
           <h1
-            className="text-3xl text-[#1a1a2e] font-light mb-3 text-center"
+            className="text-3xl text-[#f0e6d3] font-light mb-3 text-center"
             style={{ fontFamily: "var(--font-display)" }}
           >
             Verify Email
           </h1>
-          <p className="text-[13px] text-[#1a1a2e]/40 text-center mb-8">
+          <p className="text-[13px] text-[#f0e6d3]/40 text-center mb-8">
             We sent a 6-digit code to{" "}
-            <span className="text-[#1a1a2e]/60">{email}</span>
+            <span className="text-[#f0e6d3]/60">{email}</span>
             <br />
-            <span className="text-[#1a1a2e]/25 text-[11px]">
+            <span className="text-[#f0e6d3]/25 text-[11px]">
               Check your inbox (and spam folder)
             </span>
           </p>
@@ -311,7 +311,7 @@ export function SignupPage() {
             <button
               type="submit"
               disabled={loading || code.length !== 6}
-              className="w-full py-3 text-[11px] tracking-[0.25em] uppercase font-bold text-[#1a1a2e] transition-all disabled:opacity-50 rounded-md"
+              className="w-full py-3 text-[11px] tracking-[0.25em] uppercase font-bold text-[#f0e6d3] transition-all disabled:opacity-50 rounded-md"
               style={{
                 background: "linear-gradient(135deg, #a855f7, #7c3aed)",
               }}
@@ -320,7 +320,7 @@ export function SignupPage() {
             </button>
           </form>
 
-          <p className="text-center text-[12px] text-[#1a1a2e]/30 mt-6">
+          <p className="text-center text-[12px] text-[#f0e6d3]/30 mt-6">
             Didn't get a code?{" "}
             <button
               onClick={async () => {
@@ -342,14 +342,14 @@ export function SignupPage() {
             </button>
           </p>
 
-          <p className="text-center text-[12px] text-[#1a1a2e]/30 mt-3">
+          <p className="text-center text-[12px] text-[#f0e6d3]/30 mt-3">
             <button
               onClick={() => {
                 setNeedsVerification(false);
                 setCode("");
                 setError("");
               }}
-              className="text-[#1a1a2e]/40 hover:text-[#1a1a2e]/60"
+              className="text-[#f0e6d3]/40 hover:text-[#f0e6d3]/60"
             >
               ← Back
             </button>
@@ -367,7 +367,7 @@ export function SignupPage() {
           JOIN THE INNER CIRCLE
         </p>
         <h1
-          className="text-3xl text-[#1a1a2e] font-light mb-8 text-center"
+          className="text-3xl text-[#f0e6d3] font-light mb-8 text-center"
           style={{ fontFamily: "var(--font-display)" }}
         >
           Create Account
@@ -375,7 +375,7 @@ export function SignupPage() {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-[10px] tracking-[0.25em] uppercase text-[#1a1a2e]/50 font-semibold mb-2">
+            <label className="block text-[10px] tracking-[0.25em] uppercase text-[#f0e6d3]/50 font-semibold mb-2">
               EMAIL
             </label>
             <input
@@ -383,12 +383,12 @@ export function SignupPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="you@example.com"
-              className="w-full bg-white/5 border border-white/10 text-[#1a1a2e]/80 placeholder-white/25 px-4 py-3 text-sm outline-none focus:border-purple-400/40 transition-colors rounded-md"
+              className="w-full bg-white/5 border border-white/10 text-[#f0e6d3]/80 placeholder-white/25 px-4 py-3 text-sm outline-none focus:border-purple-400/40 transition-colors rounded-md"
               required
             />
           </div>
           <div>
-            <label className="block text-[10px] tracking-[0.25em] uppercase text-[#1a1a2e]/50 font-semibold mb-2">
+            <label className="block text-[10px] tracking-[0.25em] uppercase text-[#f0e6d3]/50 font-semibold mb-2">
               PASSWORD
             </label>
             <input
@@ -396,7 +396,7 @@ export function SignupPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Min. 6 characters"
-              className="w-full bg-white/5 border border-white/10 text-[#1a1a2e]/80 placeholder-white/25 px-4 py-3 text-sm outline-none focus:border-purple-400/40 transition-colors rounded-md"
+              className="w-full bg-white/5 border border-white/10 text-[#f0e6d3]/80 placeholder-white/25 px-4 py-3 text-sm outline-none focus:border-purple-400/40 transition-colors rounded-md"
               required
               minLength={6}
             />
@@ -407,7 +407,7 @@ export function SignupPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3 text-[11px] tracking-[0.25em] uppercase font-bold text-[#1a1a2e] transition-all disabled:opacity-50 rounded-md"
+            className="w-full py-3 text-[11px] tracking-[0.25em] uppercase font-bold text-[#f0e6d3] transition-all disabled:opacity-50 rounded-md"
             style={{
               background: "linear-gradient(135deg, #a855f7, #7c3aed)",
             }}
@@ -416,7 +416,7 @@ export function SignupPage() {
           </button>
         </form>
 
-        <p className="text-center text-[12px] text-[#1a1a2e]/40 mt-6">
+        <p className="text-center text-[12px] text-[#f0e6d3]/40 mt-6">
           Already have an account?{" "}
           <Link
             to="/login"
@@ -485,7 +485,7 @@ function OTPInput({
           onChange={(e) => handleChange(i, e.target.value)}
           onKeyDown={(e) => handleKeyDown(i, e)}
           onPaste={handlePaste}
-          className="w-11 h-14 text-center text-xl font-mono text-[#1a1a2e] bg-white/5 border border-white/15 rounded-lg focus:border-purple-400/60 focus:bg-white/[0.08] outline-none transition-all"
+          className="w-11 h-14 text-center text-xl font-mono text-[#f0e6d3] bg-white/5 border border-white/15 rounded-lg focus:border-purple-400/60 focus:bg-white/[0.08] outline-none transition-all"
           autoFocus={i === 0}
         />
       ))}

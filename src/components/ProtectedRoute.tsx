@@ -6,7 +6,7 @@ function LoadingSkeleton() {
     <div className="min-h-[60vh] flex items-center justify-center">
       <div className="text-center">
         <div className="text-2xl mb-2 animate-pulse">✦</div>
-        <p className="text-[11px] tracking-wider uppercase text-white/30">Loading...</p>
+        <p className="text-[11px] tracking-wider uppercase text-[#f0e6d3]/30">Loading...</p>
       </div>
     </div>
   );

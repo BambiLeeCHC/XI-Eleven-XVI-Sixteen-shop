@@ -83,7 +83,7 @@ function FlashText({
   className?: string;
 }) {
   const gradients = {
-    primary: "linear-gradient(90deg, #4a8fd9, #e0c0ff, #fff, #e0c0ff, #4a8fd9)",
+    primary: "linear-gradient(90deg, #c9a96e, #e0c0ff, #fff, #e0c0ff, #c9a96e)",
     alt: "linear-gradient(90deg, #ff9eb8, #ffc0d0, #fff, #ffc0d0, #ff9eb8)",
     gold: "linear-gradient(90deg, #f5c97a, #ffe0a0, #fff, #ffe0a0, #f5c97a)",
   };
@@ -196,7 +196,7 @@ export function AboutPage() {
             className="absolute inset-0"
             style={{
               background:
-                "radial-gradient(ellipse at 30% 20%, rgba(74,143,217,0.08) 0%, transparent 50%), radial-gradient(ellipse at 70% 80%, rgba(255,180,170,0.05) 0%, transparent 45%), radial-gradient(ellipse at 50% 50%, rgba(245,201,122,0.03) 0%, transparent 40%), #FAFBFE",
+                "radial-gradient(ellipse at 30% 20%, rgba(201,169,110,0.08) 0%, transparent 50%), radial-gradient(ellipse at 70% 80%, rgba(255,180,170,0.05) 0%, transparent 45%), radial-gradient(ellipse at 50% 50%, rgba(245,201,122,0.03) 0%, transparent 40%), #09090f",
             }}
           />
           {/* Orbiting decorative elements */}
@@ -259,12 +259,12 @@ export function AboutPage() {
 
             <p
               className="text-[10px] tracking-[0.5em] uppercase mb-5 font-medium"
-              style={{ color: "rgba(74,143,217,0.65)" }}
+              style={{ color: "rgba(201,169,110,0.65)" }}
             >
               OUR STORY
             </p>
             <h1
-              className="text-4xl md:text-6xl text-[#1a1a2e] mb-6 font-light leading-[1.1]"
+              className="text-4xl md:text-6xl text-[#f0e6d3] mb-6 font-light leading-[1.1]"
               style={{ fontFamily: "var(--font-display)" }}
             >
               Crafted with{" "}
@@ -276,7 +276,7 @@ export function AboutPage() {
             </h1>
             <p
               className="text-[14px] md:text-[16px] leading-relaxed max-w-xl mx-auto"
-              style={{ color: "rgba(26,26,46,0.55)" }}
+              style={{ color: "rgba(240,230,211,0.55)" }}
             >
               XI Eleven XVI Sixteen is a{" "}
               <FlashText variant="gold">luxury fashion house</FlashText>{" "}
@@ -300,8 +300,8 @@ export function AboutPage() {
         <section
           className="py-20 px-6 relative overflow-hidden"
           style={{
-            background: "linear-gradient(#FAFBFE, #f0f4f8 40%, #FAFBFE 100%)",
-            borderTop: "1px solid rgba(0,40,80,0.06)",
+            background: "linear-gradient(#09090f, #0d0d14 40%, #09090f 100%)",
+            borderTop: "1px solid rgba(201,169,110,0.06)",
           }}
         >
           {/* Ambient glow */}
@@ -323,28 +323,28 @@ export function AboutPage() {
               <div
                 className="inline-flex items-center gap-2 px-4 py-1.5 mb-6"
                 style={{
-                  background: "rgba(74,143,217,0.05)",
-                  border: "1px solid rgba(74,143,217,0.12)",
+                  background: "rgba(201,169,110,0.05)",
+                  border: "1px solid rgba(201,169,110,0.12)",
                   borderRadius: "10px",
                 }}
               >
-                <span style={{ color: "#4a8fd9" }}>✦</span>
+                <span style={{ color: "#c9a96e" }}>✦</span>
                 <span
                   className="text-[10px] tracking-[0.3em] uppercase font-medium"
-                  style={{ color: "rgba(74,143,217,0.65)" }}
+                  style={{ color: "rgba(201,169,110,0.65)" }}
                 >
                   COUTURE, REDEFINED
                 </span>
               </div>
               <h2
-                className="text-3xl md:text-4xl text-[#1a1a2e] mb-4 font-light"
+                className="text-3xl md:text-4xl text-[#f0e6d3] mb-4 font-light"
                 style={{ fontFamily: "var(--font-display)" }}
               >
                 Made <FlashText variant="alt">Exclusively</FlashText> for You
               </h2>
               <p
                 className="text-[14px] max-w-2xl mx-auto leading-relaxed"
-                style={{ color: "rgba(26,26,46,0.42)" }}
+                style={{ color: "rgba(240,230,211,0.42)" }}
               >
                 When you place an order with XI · XVI, something{" "}
                 <FlashText variant="gold">extraordinary</FlashText>{" "}
@@ -383,7 +383,7 @@ export function AboutPage() {
                   className="p-6 text-center group"
                   style={{
                     background: "rgba(255,240,230,0.02)",
-                    border: "1px solid rgba(0,40,80,0.06)",
+                    border: "1px solid rgba(201,169,110,0.06)",
                     borderRadius: "16px",
                     animation: "about-glow-breathe 6s ease-in-out infinite",
                     animationDelay: item.delay,
@@ -391,29 +391,29 @@ export function AboutPage() {
                   }}
                   onMouseEnter={(e) => {
                     e.currentTarget.style.borderColor = "rgba(196,141,255,0.2)";
-                    e.currentTarget.style.background = "rgba(74,143,217,0.04)";
+                    e.currentTarget.style.background = "rgba(201,169,110,0.04)";
                   }}
                   onMouseLeave={(e) => {
-                    e.currentTarget.style.borderColor = "rgba(0,40,80,0.06)";
+                    e.currentTarget.style.borderColor = "rgba(201,169,110,0.06)";
                     e.currentTarget.style.background = "rgba(255,240,230,0.02)";
                   }}
                 >
                   <span className="text-2xl block mb-3">{item.icon}</span>
                   <span
                     className="text-[10px] tracking-[0.3em] uppercase font-bold"
-                    style={{ color: "rgba(74,143,217,0.55)" }}
+                    style={{ color: "rgba(201,169,110,0.55)" }}
                   >
                     STEP {item.step}
                   </span>
                   <h3
-                    className="text-lg text-[#1a1a2e] mt-2 mb-3 font-medium"
+                    className="text-lg text-[#f0e6d3] mt-2 mb-3 font-medium"
                     style={{ fontFamily: "var(--font-display)" }}
                   >
                     {item.title}
                   </h3>
                   <p
                     className="text-[12px] leading-relaxed"
-                    style={{ color: "rgba(26,26,46,0.38)" }}
+                    style={{ color: "rgba(240,230,211,0.38)" }}
                   >
                     {item.desc}
                   </p>
@@ -426,7 +426,7 @@ export function AboutPage() {
         {/* ── Sustainability ── */}
         <section
           className="py-20 px-6 relative overflow-hidden"
-          style={{ borderTop: "1px solid rgba(0,40,80,0.06)" }}
+          style={{ borderTop: "1px solid rgba(201,169,110,0.06)" }}
         >
           <div
             className="absolute"
@@ -449,19 +449,19 @@ export function AboutPage() {
             </div>
             <p
               className="text-[10px] tracking-[0.5em] uppercase mb-5 font-medium"
-              style={{ color: "rgba(74,143,217,0.55)" }}
+              style={{ color: "rgba(201,169,110,0.55)" }}
             >
               SUSTAINABILITY
             </p>
             <h2
-              className="text-3xl md:text-4xl text-[#1a1a2e] mb-6 font-light"
+              className="text-3xl md:text-4xl text-[#f0e6d3] mb-6 font-light"
               style={{ fontFamily: "var(--font-display)" }}
             >
               <FlashText variant="primary">Zero Waste</FlashText> by Design
             </h2>
             <p
               className="text-[14px] leading-relaxed mb-10"
-              style={{ color: "rgba(26,26,46,0.42)" }}
+              style={{ color: "rgba(240,230,211,0.42)" }}
             >
               The fashion industry produces over{" "}
               <FlashText variant="alt">92 million tons</FlashText>{" "}
@@ -484,10 +484,10 @@ export function AboutPage() {
                   style={{ animation: `about-count-pulse 3s ease-in-out infinite ${i * 0.5}s` }}
                 >
                   <p
-                    className="text-3xl font-light text-[#1a1a2e] mb-1"
+                    className="text-3xl font-light text-[#f0e6d3] mb-1"
                     style={{
                       fontFamily: "var(--font-display)",
-                      background: "linear-gradient(135deg, #4a8fd9, #ff9eb8)",
+                      background: "linear-gradient(135deg, #c9a96e, #ff9eb8)",
                       WebkitBackgroundClip: "text",
                       WebkitTextFillColor: "transparent",
                       backgroundClip: "text",
@@ -497,7 +497,7 @@ export function AboutPage() {
                   </p>
                   <p
                     className="text-[10px] tracking-[0.1em] uppercase"
-                    style={{ color: "rgba(26,26,46,0.35)" }}
+                    style={{ color: "rgba(240,230,211,0.35)" }}
                   >
                     {stat.label}
                   </p>
@@ -511,8 +511,8 @@ export function AboutPage() {
         <section
           className="py-20 px-6 relative overflow-hidden"
           style={{
-            background: "linear-gradient(#FAFBFE, #f0f4f8 40%, #FAFBFE 100%)",
-            borderTop: "1px solid rgba(0,40,80,0.06)",
+            background: "linear-gradient(#09090f, #0d0d14 40%, #09090f 100%)",
+            borderTop: "1px solid rgba(201,169,110,0.06)",
           }}
         >
           <Sparkles />
@@ -527,7 +527,7 @@ export function AboutPage() {
               fontFamily: "var(--font-display)",
               fontWeight: 200,
               letterSpacing: "0.1em",
-              color: "rgba(74,143,217,0.015)",
+              color: "rgba(201,169,110,0.015)",
               whiteSpace: "nowrap",
             }}
           >
@@ -538,21 +538,21 @@ export function AboutPage() {
             <div className="text-center mb-14">
               <p
                 className="text-[10px] tracking-[0.5em] uppercase mb-5 font-medium"
-                style={{ color: "rgba(74,143,217,0.55)" }}
+                style={{ color: "rgba(201,169,110,0.55)" }}
               >
                 THE MEANING BEHIND THE NAME
               </p>
               <h2
-                className="text-3xl md:text-5xl text-[#1a1a2e] mb-4 font-light"
+                className="text-3xl md:text-5xl text-[#f0e6d3] mb-4 font-light"
                 style={{ fontFamily: "var(--font-display)" }}
               >
                 <FlashText variant="primary">XI</FlashText>
-                <span style={{ color: "rgba(26,26,46,0.25)", margin: "0 12px" }}>·</span>
+                <span style={{ color: "rgba(240,230,211,0.25)", margin: "0 12px" }}>·</span>
                 <FlashText variant="alt">XVI</FlashText>
               </h2>
               <p
                 className="text-[14px] max-w-xl mx-auto leading-relaxed"
-                style={{ color: "rgba(26,26,46,0.42)" }}
+                style={{ color: "rgba(240,230,211,0.42)" }}
               >
                 Our name is a cipher — rooted in{" "}
                 <FlashText variant="gold">numerology</FlashText>,
@@ -568,8 +568,8 @@ export function AboutPage() {
               <div
                 className="p-8 relative overflow-hidden"
                 style={{
-                  background: "rgba(74,143,217,0.03)",
-                  border: "1px solid rgba(74,143,217,0.08)",
+                  background: "rgba(201,169,110,0.03)",
+                  border: "1px solid rgba(201,169,110,0.08)",
                   borderRadius: "20px",
                   animation: "about-glow-breathe 6s ease-in-out infinite",
                 }}
@@ -584,10 +584,10 @@ export function AboutPage() {
                   }}
                 />
                 <h3
-                  className="text-5xl font-light text-[#1a1a2e] mb-2"
+                  className="text-5xl font-light text-[#f0e6d3] mb-2"
                   style={{
                     fontFamily: "var(--font-display)",
-                    background: "linear-gradient(135deg, #4a8fd9, #e0c0ff)",
+                    background: "linear-gradient(135deg, #c9a96e, #e0c0ff)",
                     backgroundSize: "200% 100%",
                     animation: "about-shimmer 4s linear infinite",
                     WebkitBackgroundClip: "text",
@@ -599,13 +599,13 @@ export function AboutPage() {
                 </h3>
                 <p
                   className="text-[10px] tracking-[0.3em] uppercase mb-4 font-semibold"
-                  style={{ color: "rgba(74,143,217,0.6)" }}
+                  style={{ color: "rgba(201,169,110,0.6)" }}
                 >
                   THE MASTER NUMBER
                 </p>
                 <p
                   className="text-[13px] leading-relaxed"
-                  style={{ color: "rgba(26,26,46,0.45)" }}
+                  style={{ color: "rgba(240,230,211,0.45)" }}
                 >
                   In numerology, 11 is a{" "}
                   <FlashText variant="primary">Master Number</FlashText>{" "}
@@ -642,7 +642,7 @@ export function AboutPage() {
                   }}
                 />
                 <h3
-                  className="text-5xl font-light text-[#1a1a2e] mb-2"
+                  className="text-5xl font-light text-[#f0e6d3] mb-2"
                   style={{
                     fontFamily: "var(--font-display)",
                     background: "linear-gradient(135deg, #ff9eb8, #f5c97a)",
@@ -663,7 +663,7 @@ export function AboutPage() {
                 </p>
                 <p
                   className="text-[13px] leading-relaxed"
-                  style={{ color: "rgba(26,26,46,0.45)" }}
+                  style={{ color: "rgba(240,230,211,0.45)" }}
                 >
                   The number 16 carries the vibration of{" "}
                   <FlashText variant="alt">transformation</FlashText> and{" "}
@@ -684,7 +684,7 @@ export function AboutPage() {
               className="mt-10 p-8 text-center relative overflow-hidden"
               style={{
                 background: "rgba(255,240,230,0.02)",
-                border: "1px solid rgba(0,40,80,0.06)",
+                border: "1px solid rgba(201,169,110,0.06)",
                 borderRadius: "20px",
               }}
             >
@@ -695,7 +695,7 @@ export function AboutPage() {
                   className="text-2xl"
                   style={{
                     fontFamily: "var(--font-display)",
-                    background: "linear-gradient(135deg, #4a8fd9, #ff9eb8, #f5c97a)",
+                    background: "linear-gradient(135deg, #c9a96e, #ff9eb8, #f5c97a)",
                     backgroundSize: "200% 100%",
                     animation: "about-shimmer 3s linear infinite",
                     WebkitBackgroundClip: "text",
@@ -710,13 +710,13 @@ export function AboutPage() {
               </div>
               <p
                 className="text-[10px] tracking-[0.3em] uppercase mb-4 font-semibold"
-                style={{ color: "rgba(74,143,217,0.5)" }}
+                style={{ color: "rgba(201,169,110,0.5)" }}
               >
                 TOGETHER: 11 + 16 = 27 → 2 + 7 = 9
               </p>
               <p
                 className="text-[14px] leading-relaxed max-w-2xl mx-auto"
-                style={{ color: "rgba(26,26,46,0.45)" }}
+                style={{ color: "rgba(240,230,211,0.45)" }}
               >
                 The sum of our name reduces to{" "}
                 <FlashText variant="gold">9</FlashText> —
@@ -738,18 +738,18 @@ export function AboutPage() {
         {/* ── Core Values ── */}
         <section
           className="py-20 px-6 relative"
-          style={{ borderTop: "1px solid rgba(0,40,80,0.06)" }}
+          style={{ borderTop: "1px solid rgba(201,169,110,0.06)" }}
         >
           <RevealSection className="max-w-4xl mx-auto">
             <div className="text-center mb-14">
               <p
                 className="text-[10px] tracking-[0.5em] uppercase mb-5 font-medium"
-                style={{ color: "rgba(74,143,217,0.55)" }}
+                style={{ color: "rgba(201,169,110,0.55)" }}
               >
                 WHAT WE STAND FOR
               </p>
               <h2
-                className="text-3xl md:text-4xl text-[#1a1a2e] mb-4 font-light"
+                className="text-3xl md:text-4xl text-[#f0e6d3] mb-4 font-light"
                 style={{ fontFamily: "var(--font-display)" }}
               >
                 Our <FlashText variant="gold">Values</FlashText>
@@ -792,17 +792,17 @@ export function AboutPage() {
                   className="flex gap-4 p-6 group"
                   style={{
                     background: "rgba(255,240,230,0.02)",
-                    border: "1px solid rgba(0,40,80,0.06)",
+                    border: "1px solid rgba(201,169,110,0.06)",
                     borderRadius: "16px",
                     transition: "border-color 0.4s, background 0.4s, transform 0.3s",
                   }}
                   onMouseEnter={(e) => {
                     e.currentTarget.style.borderColor = "rgba(196,141,255,0.15)";
-                    e.currentTarget.style.background = "rgba(74,143,217,0.03)";
+                    e.currentTarget.style.background = "rgba(201,169,110,0.03)";
                     e.currentTarget.style.transform = "translateY(-2px)";
                   }}
                   onMouseLeave={(e) => {
-                    e.currentTarget.style.borderColor = "rgba(0,40,80,0.06)";
+                    e.currentTarget.style.borderColor = "rgba(201,169,110,0.06)";
                     e.currentTarget.style.background = "rgba(255,240,230,0.02)";
                     e.currentTarget.style.transform = "translateY(0)";
                   }}
@@ -810,7 +810,7 @@ export function AboutPage() {
                   <span className="text-xl shrink-0">{value.icon}</span>
                   <div>
                     <h3
-                      className="text-[14px] text-[#1a1a2e] font-medium mb-2"
+                      className="text-[14px] text-[#f0e6d3] font-medium mb-2"
                       style={{ fontFamily: "var(--font-display)" }}
                     >
                       <FlashText variant={value.variant}>{value.flashWord}</FlashText>{" "}
@@ -818,7 +818,7 @@ export function AboutPage() {
                     </h3>
                     <p
                       className="text-[12px] leading-relaxed"
-                      style={{ color: "rgba(26,26,46,0.38)" }}
+                      style={{ color: "rgba(240,230,211,0.38)" }}
                     >
                       {value.desc}
                     </p>
@@ -833,8 +833,8 @@ export function AboutPage() {
         <section
           className="py-24 px-6 text-center relative overflow-hidden"
           style={{
-            background: "linear-gradient(#FAFBFE, #f0f4f8 50%, #FAFBFE 100%)",
-            borderTop: "1px solid rgba(0,40,80,0.06)",
+            background: "linear-gradient(#09090f, #0d0d14 50%, #09090f 100%)",
+            borderTop: "1px solid rgba(201,169,110,0.06)",
           }}
         >
           <Sparkles />
@@ -871,29 +871,29 @@ export function AboutPage() {
             </div>
             <p
               className="text-[10px] tracking-[0.5em] uppercase mb-4"
-              style={{ color: "rgba(74,143,217,0.5)" }}
+              style={{ color: "rgba(201,169,110,0.5)" }}
             >
               YOUR PIECE AWAITS
             </p>
             <h2
-              className="text-3xl md:text-4xl text-[#1a1a2e] mb-4 font-light"
+              className="text-3xl md:text-4xl text-[#f0e6d3] mb-4 font-light"
               style={{ fontFamily: "var(--font-display)" }}
             >
               Experience the <FlashText variant="gold">Collection</FlashText>
             </h2>
             <p
               className="text-[14px] mb-8 max-w-md mx-auto"
-              style={{ color: "rgba(26,26,46,0.38)" }}
+              style={{ color: "rgba(240,230,211,0.38)" }}
             >
               Every piece is made <FlashText variant="alt">exclusively for you</FlashText> — a modern take on couture
               that's kinder to the planet.
             </p>
             <Link
               to="/shop"
-              className="inline-block px-12 py-3.5 text-[11px] tracking-[0.25em] uppercase font-bold text-[#1a1a2e] transition-all glass-shimmer"
+              className="inline-block px-12 py-3.5 text-[11px] tracking-[0.25em] uppercase font-bold text-[#f0e6d3] transition-all glass-shimmer"
               style={{
                 background:
-                  "linear-gradient(135deg, #4a8fd9 0%, #ff9eb8 50%, #f5c97a 100%)",
+                  "linear-gradient(135deg, #c9a96e 0%, #ff9eb8 50%, #f5c97a 100%)",
                 backgroundSize: "200% 100%",
                 animation: "gradient-loop 6s ease-in-out infinite",
                 borderRadius: "12px",

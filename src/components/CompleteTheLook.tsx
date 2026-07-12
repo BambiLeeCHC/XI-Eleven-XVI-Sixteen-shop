@@ -65,7 +65,7 @@ function Section({
     <div className={className}>
       <h2
         className="text-[11px] tracking-[0.25em] uppercase font-semibold mb-6"
-        style={{ color: "rgba(74,143,217,0.55)" }}
+        style={{ color: "rgba(201,169,110,0.55)" }}
       >
         {title}
       </h2>
@@ -80,8 +80,8 @@ function Section({
               className="aspect-[3/4] overflow-hidden mb-3 transition-all group-hover:scale-[1.02]"
               style={{
                 borderRadius: "12px",
-                border: "1px solid rgba(0,40,80,0.08)",
-                background: "rgba(74,143,217,0.02)",
+                border: "1px solid rgba(201,169,110,0.08)",
+                background: "rgba(201,169,110,0.02)",
               }}
             >
               {product.images[0] && (
@@ -96,13 +96,13 @@ function Section({
             </div>
             <p
               className="text-[12px] font-medium truncate"
-              style={{ color: "rgba(26,26,46,0.6)" }}
+              style={{ color: "rgba(240,230,211,0.6)" }}
             >
               {product.name}
             </p>
             <p
               className="text-[12px]"
-              style={{ color: "rgba(26,26,46,0.35)" }}
+              style={{ color: "rgba(240,230,211,0.35)" }}
             >
               ${(product.price / 100).toFixed(2)}
             </p>

@@ -90,15 +90,15 @@ export function StyleAssistant() {
             className="px-4 py-3 flex items-center justify-between"
             style={{
               borderBottom: "1px solid rgba(168, 85, 247, 0.15)",
-              background: "linear-gradient(135deg, rgba(168,85,247,0.08) 0%, rgba(74,143,217,0.04) 100%)",
+              background: "linear-gradient(135deg, rgba(168,85,247,0.08) 0%, rgba(201,169,110,0.04) 100%)",
             }}
           >
             <div className="flex items-center gap-2.5">
               <div className="w-7 h-7 rounded-full flex items-center justify-center" style={{ background: "linear-gradient(135deg, #a855f7 0%, #7c3aed 100%)" }}>
-                <span className="text-white text-xs">✦</span>
+                <span className="text-[#f0e6d3] text-xs">✦</span>
               </div>
               <div>
-                <span className="text-[11px] tracking-[0.15em] uppercase text-[#1a1a2e]/80 font-semibold block leading-tight">
+                <span className="text-[11px] tracking-[0.15em] uppercase text-[#f0e6d3]/80 font-semibold block leading-tight">
                   Style Concierge
                 </span>
                 <span className="text-[9px] text-purple-400/60 tracking-wider uppercase">XI · XVI</span>
@@ -107,7 +107,7 @@ export function StyleAssistant() {
             <button
               type="button"
               onClick={() => setIsOpen(false)}
-              className="text-[#1a1a2e]/40 hover:text-[#1a1a2e]/70 transition-colors p-1"
+              className="text-[#f0e6d3]/40 hover:text-[#f0e6d3]/70 transition-colors p-1"
             >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M18 6L6 18M6 6l12 12" />
@@ -201,12 +201,12 @@ export function StyleAssistant() {
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 placeholder="Ask about sizing, fabrics, styling..."
-                className="flex-1 bg-white/5 border border-white/10 text-[#1a1a2e]/85 placeholder-white/25 px-3.5 py-2.5 text-sm outline-none focus:border-purple-400/40 transition-colors rounded-xl"
+                className="flex-1 bg-white/5 border border-white/10 text-[#f0e6d3]/85 placeholder-white/25 px-3.5 py-2.5 text-sm outline-none focus:border-purple-400/40 transition-colors rounded-xl"
               />
               <button
                 type="submit"
                 disabled={isLoading || !input.trim()}
-                className="px-3.5 py-2.5 text-sm font-bold text-white disabled:opacity-25 transition-all rounded-xl cursor-pointer"
+                className="px-3.5 py-2.5 text-sm font-bold text-[#f0e6d3] disabled:opacity-25 transition-all rounded-xl cursor-pointer"
                 style={{ background: "linear-gradient(135deg, #a855f7, #7c3aed)" }}
               >
                 →

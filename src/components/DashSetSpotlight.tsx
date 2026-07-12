@@ -22,9 +22,9 @@ export function DashSetSpotlight() {
     <section
       className="relative overflow-hidden"
       style={{
-        background: "linear-gradient(135deg, #FAFBFE 0%, #1a0f20 40%, #FAFBFE 100%)",
-        borderTop: "1px solid rgba(0,40,80,0.06)",
-        borderBottom: "1px solid rgba(0,40,80,0.06)",
+        background: "linear-gradient(135deg, #09090f 0%, #1a0f20 40%, #09090f 100%)",
+        borderTop: "1px solid rgba(201,169,110,0.06)",
+        borderBottom: "1px solid rgba(201,169,110,0.06)",
       }}
     >
       {/* Subtle ambient glow */}
@@ -32,7 +32,7 @@ export function DashSetSpotlight() {
         className="absolute inset-0 pointer-events-none"
         style={{
           background:
-            "radial-gradient(ellipse at 30% 50%, rgba(74,143,217,0.06) 0%, transparent 60%), radial-gradient(ellipse at 70% 50%, rgba(255,180,200,0.04) 0%, transparent 50%)",
+            "radial-gradient(ellipse at 30% 50%, rgba(201,169,110,0.06) 0%, transparent 60%), radial-gradient(ellipse at 70% 50%, rgba(255,180,200,0.04) 0%, transparent 50%)",
         }}
       />
 
@@ -46,7 +46,7 @@ export function DashSetSpotlight() {
                 maxWidth: "480px",
                 width: "100%",
                 boxShadow:
-                  "0 20px 60px rgba(0,0,0,0.5), 0 0 80px rgba(74,143,217,0.08)",
+                  "0 20px 60px rgba(0,0,0,0.5), 0 0 80px rgba(201,169,110,0.08)",
                 border: "1px solid rgba(200,160,255,0.1)",
               }}
             >
@@ -71,7 +71,7 @@ export function DashSetSpotlight() {
           <div className="flex-1 text-center md:text-left">
             <p
               className="text-[9px] tracking-[0.4em] uppercase font-medium mb-3"
-              style={{ color: "rgba(74,143,217,0.5)" }}
+              style={{ color: "rgba(201,169,110,0.5)" }}
             >
               ✦ FEATURED SET
             </p>
@@ -90,7 +90,7 @@ export function DashSetSpotlight() {
             <p
               className="text-[15px] md:text-[17px] italic mb-6"
               style={{
-                color: "rgba(74,143,217,0.65)",
+                color: "rgba(201,169,110,0.65)",
                 fontFamily: "var(--font-display)",
               }}
             >
@@ -99,7 +99,7 @@ export function DashSetSpotlight() {
 
             <p
               className="text-[12px] md:text-[13px] leading-relaxed mb-8 max-w-sm mx-auto md:mx-0"
-              style={{ color: "rgba(26,26,46,0.38)" }}
+              style={{ color: "rgba(240,230,211,0.38)" }}
             >
               Our signature all-over Dachshund print across the B-Lift Sports
               Bra and L-Flow Leggings — a matching set designed for those who
@@ -129,7 +129,7 @@ export function DashSetSpotlight() {
                   >
                     <div
                       className="relative overflow-hidden"
-                      style={{ height: "150px", background: "#f5f8fd" }}
+                      style={{ height: "150px", background: "#0d0d14" }}
                     >
                       <img
                         src={product.images[0]}
@@ -141,13 +141,13 @@ export function DashSetSpotlight() {
                     <div className="p-2.5">
                       <p
                         className="text-[10px] font-bold tracking-[0.06em] uppercase mb-0.5"
-                        style={{ color: "rgba(26,26,46,0.65)" }}
+                        style={{ color: "rgba(240,230,211,0.65)" }}
                       >
                         {label}
                       </p>
                       <p
                         className="text-[10px]"
-                        style={{ color: "rgba(26,26,46,0.3)" }}
+                        style={{ color: "rgba(240,230,211,0.3)" }}
                       >
                         ${(product.price / 100).toFixed(2)}
                       </p>
@@ -162,11 +162,11 @@ export function DashSetSpotlight() {
               className="inline-block px-8 py-3 text-[11px] tracking-[0.2em] uppercase font-bold transition-all duration-300"
               style={{
                 background:
-                  "linear-gradient(135deg, rgba(74,143,217,0.85) 0%, rgba(255,158,184,0.85) 100%)",
+                  "linear-gradient(135deg, rgba(201,169,110,0.85) 0%, rgba(255,158,184,0.85) 100%)",
                 color: "white",
                 borderRadius: "10px",
                 boxShadow:
-                  "0 4px 20px rgba(74,143,217,0.25), 0 0 40px rgba(255,158,184,0.1)",
+                  "0 4px 20px rgba(201,169,110,0.25), 0 0 40px rgba(255,158,184,0.1)",
               }}
             >
               SHOP THE SET

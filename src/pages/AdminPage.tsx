@@ -124,7 +124,7 @@ function Sidebar({
           <div className="w-7 h-7 rounded bg-amber-500/20 flex items-center justify-center">
             <Settings className="w-4 h-4 text-amber-400" />
           </div>
-          <span className="text-sm font-medium tracking-wide text-white/90">
+          <span className="text-sm font-medium tracking-wide text-[#f0e6d3]/90">
             Admin
           </span>
         </div>
@@ -139,8 +139,8 @@ function Sidebar({
               onClick={() => onSelect(item.id)}
               className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-md text-[13px] transition-all ${
                 isActive
-                  ? "bg-white/[0.08] text-white"
-                  : "text-white/40 hover:text-white/70 hover:bg-white/[0.04]"
+                  ? "bg-white/[0.08] text-[#f0e6d3]"
+                  : "text-[#f0e6d3]/40 hover:text-[#f0e6d3]/70 hover:bg-white/[0.04]"
               }`}
             >
               <Icon className="w-4 h-4" />
@@ -179,7 +179,7 @@ function StatCard({
   return (
     <div className="bg-white/[0.03] border border-white/[0.06] rounded-lg p-4">
       <div className="flex items-center justify-between mb-3">
-        <span className="text-[11px] tracking-wider uppercase text-white/40">
+        <span className="text-[11px] tracking-wider uppercase text-[#f0e6d3]/40">
           {label}
         </span>
         <div
@@ -188,7 +188,7 @@ function StatCard({
           <Icon className="w-4 h-4" />
         </div>
       </div>
-      <div className="text-xl font-semibold text-white/90">{value}</div>
+      <div className="text-xl font-semibold text-[#f0e6d3]/90">{value}</div>
     </div>
   );
 }
@@ -207,7 +207,7 @@ function StatusBadge({ status }: { status: string }) {
   return (
     <span
       className={`px-2 py-0.5 rounded-full text-[11px] font-medium border ${
-        styles[status] || "bg-white/5 text-white/50 border-white/10"
+        styles[status] || "bg-white/5 text-[#f0e6d3]/50 border-white/10"
       }`}
     >
       {status}
@@ -246,7 +246,7 @@ function DashboardTab() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-lg font-medium text-white/90">Dashboard</h1>
+      <h1 className="text-lg font-medium text-[#f0e6d3]/90">Dashboard</h1>
 
       {/* Stat Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
@@ -308,7 +308,7 @@ function DashboardTab() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         {/* Revenue Chart */}
         <div className="lg:col-span-2 bg-white/[0.03] border border-white/[0.06] rounded-lg p-4">
-          <h3 className="text-[11px] tracking-wider uppercase text-white/40 mb-4">
+          <h3 className="text-[11px] tracking-wider uppercase text-[#f0e6d3]/40 mb-4">
             Revenue (Last 30 Days)
           </h3>
           {revenueData.length > 0 ? (
@@ -339,7 +339,7 @@ function DashboardTab() {
               </BarChart>
             </ResponsiveContainer>
           ) : (
-            <div className="h-60 flex items-center justify-center text-white/20 text-sm">
+            <div className="h-60 flex items-center justify-center text-[#f0e6d3]/20 text-sm">
               No revenue data yet
             </div>
           )}
@@ -347,7 +347,7 @@ function DashboardTab() {
 
         {/* Category Pie */}
         <div className="bg-white/[0.03] border border-white/[0.06] rounded-lg p-4">
-          <h3 className="text-[11px] tracking-wider uppercase text-white/40 mb-4">
+          <h3 className="text-[11px] tracking-wider uppercase text-[#f0e6d3]/40 mb-4">
             Revenue by Category
           </h3>
           {categoryData.length > 0 ? (
@@ -392,8 +392,8 @@ function DashboardTab() {
                         backgroundColor: CHART_COLORS[i % CHART_COLORS.length],
                       }}
                     />
-                    <span className="text-white/50">{d.name}</span>
-                    <span className="ml-auto text-white/70">
+                    <span className="text-[#f0e6d3]/50">{d.name}</span>
+                    <span className="ml-auto text-[#f0e6d3]/70">
                       ${d.value.toFixed(0)}
                     </span>
                   </div>
@@ -401,7 +401,7 @@ function DashboardTab() {
               </div>
             </>
           ) : (
-            <div className="h-48 flex items-center justify-center text-white/20 text-sm">
+            <div className="h-48 flex items-center justify-center text-[#f0e6d3]/20 text-sm">
               No data yet
             </div>
           )}
@@ -411,7 +411,7 @@ function DashboardTab() {
       {/* Top Products */}
       {stats.topProducts.length > 0 && (
         <div className="bg-white/[0.03] border border-white/[0.06] rounded-lg p-4">
-          <h3 className="text-[11px] tracking-wider uppercase text-white/40 mb-3">
+          <h3 className="text-[11px] tracking-wider uppercase text-[#f0e6d3]/40 mb-3">
             Top Products
           </h3>
           <div className="space-y-2">
@@ -421,14 +421,14 @@ function DashboardTab() {
                 className="flex items-center justify-between py-1.5 border-b border-white/[0.04] last:border-0"
               >
                 <div className="flex items-center gap-3">
-                  <span className="text-white/20 text-xs w-4">{i + 1}</span>
-                  <span className="text-sm text-white/70">{p.name}</span>
+                  <span className="text-[#f0e6d3]/20 text-xs w-4">{i + 1}</span>
+                  <span className="text-sm text-[#f0e6d3]/70">{p.name}</span>
                 </div>
                 <div className="flex items-center gap-4">
-                  <span className="text-xs text-white/40">
+                  <span className="text-xs text-[#f0e6d3]/40">
                     {p.units} units
                   </span>
-                  <span className="text-sm font-medium text-white/80">
+                  <span className="text-sm font-medium text-[#f0e6d3]/80">
                     ${(p.revenue / 100).toFixed(2)}
                   </span>
                 </div>
@@ -468,28 +468,28 @@ function OrdersTab() {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h1 className="text-lg font-medium text-white/90">Orders</h1>
-        <span className="text-xs text-white/30">{orders.length} total</span>
+        <h1 className="text-lg font-medium text-[#f0e6d3]/90">Orders</h1>
+        <span className="text-xs text-[#f0e6d3]/30">{orders.length} total</span>
       </div>
 
       {/* Filters */}
       <div className="flex gap-3">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/20" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#f0e6d3]/20" />
           <input
             type="text"
             placeholder="Search by email, order ID, or product..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full bg-white/[0.04] border border-white/[0.08] rounded-md pl-9 pr-3 py-2 text-sm text-white/80 placeholder-white/20 focus:outline-none focus:border-white/20"
+            className="w-full bg-white/[0.04] border border-white/[0.08] rounded-md pl-9 pr-3 py-2 text-sm text-[#f0e6d3]/80 placeholder-white/20 focus:outline-none focus:border-white/20"
           />
         </div>
         <div className="flex items-center gap-1 bg-white/[0.04] border border-white/[0.08] rounded-md px-2">
-          <Filter className="w-3.5 h-3.5 text-white/20" />
+          <Filter className="w-3.5 h-3.5 text-[#f0e6d3]/20" />
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="bg-transparent text-sm text-white/60 py-2 pr-2 focus:outline-none"
+            className="bg-transparent text-sm text-[#f0e6d3]/60 py-2 pr-2 focus:outline-none"
           >
             {statuses.map((s) => (
               <option key={s} value={s} className="bg-[#1a1a1a]">
@@ -509,7 +509,7 @@ function OrdersTab() {
                 (h) => (
                   <th
                     key={h}
-                    className="px-4 py-2.5 text-left text-[10px] tracking-wider uppercase text-white/30 font-medium"
+                    className="px-4 py-2.5 text-left text-[10px] tracking-wider uppercase text-[#f0e6d3]/30 font-medium"
                   >
                     {h}
                   </th>
@@ -520,7 +520,7 @@ function OrdersTab() {
           <tbody>
             {filtered.length === 0 ? (
               <tr>
-                <td colSpan={6} className="px-4 py-8 text-center text-white/20 text-sm">
+                <td colSpan={6} className="px-4 py-8 text-center text-[#f0e6d3]/20 text-sm">
                   No orders found
                 </td>
               </tr>
@@ -530,24 +530,24 @@ function OrdersTab() {
                   key={order._id}
                   className="border-b border-white/[0.04] hover:bg-white/[0.02] transition-colors"
                 >
-                  <td className="px-4 py-3 text-xs text-white/50">
+                  <td className="px-4 py-3 text-xs text-[#f0e6d3]/50">
                     {format(new Date(order._creationTime), "MMM d, yyyy")}
                     <br />
-                    <span className="text-white/25">
+                    <span className="text-[#f0e6d3]/25">
                       {format(new Date(order._creationTime), "h:mm a")}
                     </span>
                   </td>
                   <td className="px-4 py-3">
-                    <div className="text-sm text-white/70">{order.email}</div>
-                    <div className="text-[11px] text-white/25">
+                    <div className="text-sm text-[#f0e6d3]/70">{order.email}</div>
+                    <div className="text-[11px] text-[#f0e6d3]/25">
                       {order.shippingAddress?.name || "—"}
                     </div>
                   </td>
-                  <td className="px-4 py-3 text-xs text-white/50">
+                  <td className="px-4 py-3 text-xs text-[#f0e6d3]/50">
                     {order.items?.length || 0} item
                     {(order.items?.length || 0) !== 1 ? "s" : ""}
                   </td>
-                  <td className="px-4 py-3 text-sm font-medium text-white/80">
+                  <td className="px-4 py-3 text-sm font-medium text-[#f0e6d3]/80">
                     ${(order.total / 100).toFixed(2)}
                   </td>
                   <td className="px-4 py-3">
@@ -556,7 +556,7 @@ function OrdersTab() {
                   <td className="px-4 py-3">
                     <button
                       onClick={() => setSelectedOrder(order)}
-                      className="text-white/30 hover:text-white/70 transition-colors"
+                      className="text-[#f0e6d3]/30 hover:text-[#f0e6d3]/70 transition-colors"
                     >
                       <Eye className="w-4 h-4" />
                     </button>
@@ -612,14 +612,14 @@ function OrderDetailModal({
       <div className="bg-[#111] border border-white/[0.08] rounded-xl w-full max-w-2xl max-h-[85vh] overflow-y-auto">
         <div className="flex items-center justify-between p-5 border-b border-white/[0.06]">
           <div>
-            <h2 className="text-sm font-medium text-white/90">Order Details</h2>
-            <p className="text-[11px] text-white/30 mt-0.5 font-mono">
+            <h2 className="text-sm font-medium text-[#f0e6d3]/90">Order Details</h2>
+            <p className="text-[11px] text-[#f0e6d3]/30 mt-0.5 font-mono">
               {order._id}
             </p>
           </div>
           <button
             onClick={onClose}
-            className="text-white/30 hover:text-white/70"
+            className="text-[#f0e6d3]/30 hover:text-[#f0e6d3]/70"
           >
             <X className="w-5 h-5" />
           </button>
@@ -629,16 +629,16 @@ function OrderDetailModal({
           {/* Customer + Status */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="text-[10px] tracking-wider uppercase text-white/30">
+              <label className="text-[10px] tracking-wider uppercase text-[#f0e6d3]/30">
                 Customer
               </label>
-              <p className="text-sm text-white/80 mt-1">{order.email}</p>
+              <p className="text-sm text-[#f0e6d3]/80 mt-1">{order.email}</p>
             </div>
             <div>
-              <label className="text-[10px] tracking-wider uppercase text-white/30">
+              <label className="text-[10px] tracking-wider uppercase text-[#f0e6d3]/30">
                 Date
               </label>
-              <p className="text-sm text-white/80 mt-1">
+              <p className="text-sm text-[#f0e6d3]/80 mt-1">
                 {format(new Date(order._creationTime), "MMM d, yyyy · h:mm a")}
               </p>
             </div>
@@ -646,7 +646,7 @@ function OrderDetailModal({
 
           {/* Items */}
           <div>
-            <label className="text-[10px] tracking-wider uppercase text-white/30">
+            <label className="text-[10px] tracking-wider uppercase text-[#f0e6d3]/30">
               Items
             </label>
             <div className="mt-2 space-y-2">
@@ -663,14 +663,14 @@ function OrderDetailModal({
                     />
                   )}
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm text-white/70 truncate">
+                    <p className="text-sm text-[#f0e6d3]/70 truncate">
                       {item.productName}
                     </p>
-                    <p className="text-[11px] text-white/30">
+                    <p className="text-[11px] text-[#f0e6d3]/30">
                       Size: {item.size} · Qty: {item.quantity}
                     </p>
                   </div>
-                  <p className="text-sm text-white/60">
+                  <p className="text-sm text-[#f0e6d3]/60">
                     ${((item.priceAtPurchase * item.quantity) / 100).toFixed(2)}
                   </p>
                 </div>
@@ -680,15 +680,15 @@ function OrderDetailModal({
 
           {/* Totals */}
           <div className="bg-white/[0.03] rounded-md p-3 space-y-1.5">
-            <div className="flex justify-between text-xs text-white/40">
+            <div className="flex justify-between text-xs text-[#f0e6d3]/40">
               <span>Subtotal</span>
               <span>${(order.subtotal / 100).toFixed(2)}</span>
             </div>
-            <div className="flex justify-between text-xs text-white/40">
+            <div className="flex justify-between text-xs text-[#f0e6d3]/40">
               <span>Shipping</span>
               <span>${(order.shipping / 100).toFixed(2)}</span>
             </div>
-            <div className="flex justify-between text-sm font-medium text-white/80 pt-1.5 border-t border-white/[0.06]">
+            <div className="flex justify-between text-sm font-medium text-[#f0e6d3]/80 pt-1.5 border-t border-white/[0.06]">
               <span>Total</span>
               <span>${(order.total / 100).toFixed(2)}</span>
             </div>
@@ -697,10 +697,10 @@ function OrderDetailModal({
           {/* Shipping Address */}
           {order.shippingAddress && (
             <div>
-              <label className="text-[10px] tracking-wider uppercase text-white/30">
+              <label className="text-[10px] tracking-wider uppercase text-[#f0e6d3]/30">
                 Shipping Address
               </label>
-              <div className="mt-1 text-sm text-white/60 leading-relaxed">
+              <div className="mt-1 text-sm text-[#f0e6d3]/60 leading-relaxed">
                 <p>{order.shippingAddress.name}</p>
                 <p>{order.shippingAddress.address1}</p>
                 {order.shippingAddress.address2 && (
@@ -713,7 +713,7 @@ function OrderDetailModal({
                 </p>
                 <p>{order.shippingAddress.countryCode}</p>
                 {order.shippingAddress.phone && (
-                  <p className="mt-1 text-white/40">
+                  <p className="mt-1 text-[#f0e6d3]/40">
                     📞 {order.shippingAddress.phone}
                   </p>
                 )}
@@ -725,16 +725,16 @@ function OrderDetailModal({
           <div className="grid grid-cols-2 gap-4 text-[11px]">
             {order.stripeCheckoutSessionId && (
               <div>
-                <span className="text-white/25">Stripe Session:</span>{" "}
-                <span className="text-white/50 font-mono break-all">
+                <span className="text-[#f0e6d3]/25">Stripe Session:</span>{" "}
+                <span className="text-[#f0e6d3]/50 font-mono break-all">
                   {order.stripeCheckoutSessionId}
                 </span>
               </div>
             )}
             {order.printfulOrderId && (
               <div>
-                <span className="text-white/25">Printful Order:</span>{" "}
-                <span className="text-white/50 font-mono">
+                <span className="text-[#f0e6d3]/25">Printful Order:</span>{" "}
+                <span className="text-[#f0e6d3]/50 font-mono">
                   {order.printfulOrderId}
                 </span>
               </div>
@@ -743,18 +743,18 @@ function OrderDetailModal({
 
           {/* Update Status */}
           <div className="border-t border-white/[0.06] pt-4 space-y-3">
-            <label className="text-[10px] tracking-wider uppercase text-white/30">
+            <label className="text-[10px] tracking-wider uppercase text-[#f0e6d3]/30">
               Update Order
             </label>
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="text-[10px] text-white/25 mb-1 block">
+                <label className="text-[10px] text-[#f0e6d3]/25 mb-1 block">
                   Status
                 </label>
                 <select
                   value={newStatus}
                   onChange={(e) => setNewStatus(e.target.value)}
-                  className="w-full bg-white/[0.04] border border-white/[0.08] rounded-md px-3 py-2 text-sm text-white/70 focus:outline-none"
+                  className="w-full bg-white/[0.04] border border-white/[0.08] rounded-md px-3 py-2 text-sm text-[#f0e6d3]/70 focus:outline-none"
                 >
                   {[
                     "pending",
@@ -771,7 +771,7 @@ function OrderDetailModal({
                 </select>
               </div>
               <div>
-                <label className="text-[10px] text-white/25 mb-1 block">
+                <label className="text-[10px] text-[#f0e6d3]/25 mb-1 block">
                   Fulfillment Stage
                 </label>
                 <select
@@ -783,7 +783,7 @@ function OrderDetailModal({
                     else if (stage === "printful_fulfilled" || stage === "printful_processing") setNewStatus("fulfilled");
                     else setNewStatus("paid");
                   }}
-                  className="w-full bg-white/[0.04] border border-white/[0.08] rounded-md px-3 py-2 text-sm text-white/70 focus:outline-none"
+                  className="w-full bg-white/[0.04] border border-white/[0.08] rounded-md px-3 py-2 text-sm text-[#f0e6d3]/70 focus:outline-none"
                 >
                   <option value="payment_received" className="bg-[#1a1a1a]">Payment Received</option>
                   <option value="sent_to_printful" className="bg-[#1a1a1a]">Sent to Production</option>
@@ -796,7 +796,7 @@ function OrderDetailModal({
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="text-[10px] text-white/25 mb-1 block">
+                <label className="text-[10px] text-[#f0e6d3]/25 mb-1 block">
                   Tracking Number
                 </label>
                 <input
@@ -804,22 +804,22 @@ function OrderDetailModal({
                   value={trackingNumber}
                   onChange={(e) => setTrackingNumber(e.target.value)}
                   placeholder="Optional"
-                  className="w-full bg-white/[0.04] border border-white/[0.08] rounded-md px-3 py-2 text-sm text-white/70 placeholder-white/15 focus:outline-none"
+                  className="w-full bg-white/[0.04] border border-white/[0.08] rounded-md px-3 py-2 text-sm text-[#f0e6d3]/70 placeholder-white/15 focus:outline-none"
                 />
               </div>
               <div>
-                <label className="text-[10px] text-white/25 mb-1 block">
+                <label className="text-[10px] text-[#f0e6d3]/25 mb-1 block">
                   Carrier
                 </label>
                 <input
                   type="text"
                   placeholder="e.g. USPS, FedEx"
-                  className="w-full bg-white/[0.04] border border-white/[0.08] rounded-md px-3 py-2 text-sm text-white/70 placeholder-white/15 focus:outline-none"
+                  className="w-full bg-white/[0.04] border border-white/[0.08] rounded-md px-3 py-2 text-sm text-[#f0e6d3]/70 placeholder-white/15 focus:outline-none"
                 />
               </div>
             </div>
             <div>
-              <label className="text-[10px] text-white/25 mb-1 block">
+              <label className="text-[10px] text-[#f0e6d3]/25 mb-1 block">
                 Tracking URL
               </label>
               <input
@@ -827,7 +827,7 @@ function OrderDetailModal({
                 value={trackingUrl}
                 onChange={(e) => setTrackingUrl(e.target.value)}
                 placeholder="https://..."
-                className="w-full bg-white/[0.04] border border-white/[0.08] rounded-md px-3 py-2 text-sm text-white/70 placeholder-white/15 focus:outline-none"
+                className="w-full bg-white/[0.04] border border-white/[0.08] rounded-md px-3 py-2 text-sm text-[#f0e6d3]/70 placeholder-white/15 focus:outline-none"
               />
             </div>
             <button
@@ -897,21 +897,21 @@ function ProductsTab() {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h1 className="text-lg font-medium text-white/90">Products</h1>
-        <span className="text-xs text-white/30">
+        <h1 className="text-lg font-medium text-[#f0e6d3]/90">Products</h1>
+        <span className="text-xs text-[#f0e6d3]/30">
           {products.filter((p: any) => p.isActive).length} active /{" "}
           {products.length} total
         </span>
       </div>
 
       <div className="relative">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/20" />
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#f0e6d3]/20" />
         <input
           type="text"
           placeholder="Search products..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="w-full bg-white/[0.04] border border-white/[0.08] rounded-md pl-9 pr-3 py-2 text-sm text-white/80 placeholder-white/20 focus:outline-none focus:border-white/20"
+          className="w-full bg-white/[0.04] border border-white/[0.08] rounded-md pl-9 pr-3 py-2 text-sm text-[#f0e6d3]/80 placeholder-white/20 focus:outline-none focus:border-white/20"
         />
       </div>
 
@@ -930,7 +930,7 @@ function ProductsTab() {
               <div className="p-4 space-y-3">
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="text-[10px] text-white/25 block mb-1">
+                    <label className="text-[10px] text-[#f0e6d3]/25 block mb-1">
                       Name
                     </label>
                     <input
@@ -939,12 +939,12 @@ function ProductsTab() {
                       onChange={(e) =>
                         setEditForm({ ...editForm, name: e.target.value })
                       }
-                      className="w-full bg-white/[0.04] border border-white/[0.08] rounded px-3 py-1.5 text-sm text-white/80 focus:outline-none"
+                      className="w-full bg-white/[0.04] border border-white/[0.08] rounded px-3 py-1.5 text-sm text-[#f0e6d3]/80 focus:outline-none"
                     />
                   </div>
                   <div className="grid grid-cols-3 gap-2">
                     <div>
-                      <label className="text-[10px] text-white/25 block mb-1">
+                      <label className="text-[10px] text-[#f0e6d3]/25 block mb-1">
                         Price ($)
                       </label>
                       <input
@@ -954,11 +954,11 @@ function ProductsTab() {
                         onChange={(e) =>
                           setEditForm({ ...editForm, price: e.target.value })
                         }
-                        className="w-full bg-white/[0.04] border border-white/[0.08] rounded px-3 py-1.5 text-sm text-white/80 focus:outline-none"
+                        className="w-full bg-white/[0.04] border border-white/[0.08] rounded px-3 py-1.5 text-sm text-[#f0e6d3]/80 focus:outline-none"
                       />
                     </div>
                     <div>
-                      <label className="text-[10px] text-white/25 block mb-1">
+                      <label className="text-[10px] text-[#f0e6d3]/25 block mb-1">
                         Category
                       </label>
                       <select
@@ -966,7 +966,7 @@ function ProductsTab() {
                         onChange={(e) =>
                           setEditForm({ ...editForm, category: e.target.value })
                         }
-                        className="w-full bg-white/[0.04] border border-white/[0.08] rounded px-2 py-1.5 text-sm text-white/70 focus:outline-none"
+                        className="w-full bg-white/[0.04] border border-white/[0.08] rounded px-2 py-1.5 text-sm text-[#f0e6d3]/70 focus:outline-none"
                       >
                         {["Tops", "Bottoms", "Dresses", "Activewear"].map(
                           (c) => (
@@ -978,7 +978,7 @@ function ProductsTab() {
                       </select>
                     </div>
                     <div>
-                      <label className="text-[10px] text-white/25 block mb-1">
+                      <label className="text-[10px] text-[#f0e6d3]/25 block mb-1">
                         Gender
                       </label>
                       <select
@@ -986,7 +986,7 @@ function ProductsTab() {
                         onChange={(e) =>
                           setEditForm({ ...editForm, gender: e.target.value })
                         }
-                        className="w-full bg-white/[0.04] border border-white/[0.08] rounded px-2 py-1.5 text-sm text-white/70 focus:outline-none"
+                        className="w-full bg-white/[0.04] border border-white/[0.08] rounded px-2 py-1.5 text-sm text-[#f0e6d3]/70 focus:outline-none"
                       >
                         {["men", "women", "unisex"].map((g) => (
                           <option key={g} value={g} className="bg-[#1a1a1a]">
@@ -998,7 +998,7 @@ function ProductsTab() {
                   </div>
                 </div>
                 <div>
-                  <label className="text-[10px] text-white/25 block mb-1">
+                  <label className="text-[10px] text-[#f0e6d3]/25 block mb-1">
                     Description
                   </label>
                   <textarea
@@ -1007,11 +1007,11 @@ function ProductsTab() {
                     onChange={(e) =>
                       setEditForm({ ...editForm, description: e.target.value })
                     }
-                    className="w-full bg-white/[0.04] border border-white/[0.08] rounded px-3 py-1.5 text-sm text-white/80 focus:outline-none resize-none"
+                    className="w-full bg-white/[0.04] border border-white/[0.08] rounded px-3 py-1.5 text-sm text-[#f0e6d3]/80 focus:outline-none resize-none"
                   />
                 </div>
                 <div className="flex items-center justify-between">
-                  <label className="flex items-center gap-2 text-sm text-white/60">
+                  <label className="flex items-center gap-2 text-sm text-[#f0e6d3]/60">
                     <input
                       type="checkbox"
                       checked={editForm.isActive}
@@ -1028,7 +1028,7 @@ function ProductsTab() {
                   <div className="flex gap-2">
                     <button
                       onClick={() => setEditingId(null)}
-                      className="px-3 py-1.5 text-xs text-white/40 hover:text-white/60"
+                      className="px-3 py-1.5 text-xs text-[#f0e6d3]/40 hover:text-[#f0e6d3]/60"
                     >
                       Cancel
                     </button>
@@ -1051,7 +1051,7 @@ function ProductsTab() {
                 />
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
-                    <p className="text-sm text-white/80 truncate">
+                    <p className="text-sm text-[#f0e6d3]/80 truncate">
                       {product.name}
                     </p>
                     {!product.isActive && (
@@ -1060,18 +1060,18 @@ function ProductsTab() {
                       </span>
                     )}
                   </div>
-                  <p className="text-[11px] text-white/30">
+                  <p className="text-[11px] text-[#f0e6d3]/30">
                     {product.category} · {product.gender} ·{" "}
                     {product.sizes?.length || 0} sizes ·{" "}
                     {product.images?.length || 0} images
                   </p>
                 </div>
-                <span className="text-sm font-medium text-white/70 tabular-nums">
+                <span className="text-sm font-medium text-[#f0e6d3]/70 tabular-nums">
                   ${(product.price / 100).toFixed(2)}
                 </span>
                 <button
                   onClick={() => startEdit(product)}
-                  className="text-white/20 hover:text-white/60 transition-colors p-1"
+                  className="text-[#f0e6d3]/20 hover:text-[#f0e6d3]/60 transition-colors p-1"
                 >
                   <Edit className="w-4 h-4" />
                 </button>
@@ -1107,18 +1107,18 @@ function CustomersTab({
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h1 className="text-lg font-medium text-white/90">Customers</h1>
-        <span className="text-xs text-white/30">{customers.length} total</span>
+        <h1 className="text-lg font-medium text-[#f0e6d3]/90">Customers</h1>
+        <span className="text-xs text-[#f0e6d3]/30">{customers.length} total</span>
       </div>
 
       <div className="relative">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/20" />
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#f0e6d3]/20" />
         <input
           type="text"
           placeholder="Search by name or email..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="w-full bg-white/[0.04] border border-white/[0.08] rounded-md pl-9 pr-3 py-2 text-sm text-white/80 placeholder-white/20 focus:outline-none focus:border-white/20"
+          className="w-full bg-white/[0.04] border border-white/[0.08] rounded-md pl-9 pr-3 py-2 text-sm text-[#f0e6d3]/80 placeholder-white/20 focus:outline-none focus:border-white/20"
         />
       </div>
 
@@ -1130,7 +1130,7 @@ function CustomersTab({
                 (h) => (
                   <th
                     key={h}
-                    className="px-4 py-2.5 text-left text-[10px] tracking-wider uppercase text-white/30 font-medium"
+                    className="px-4 py-2.5 text-left text-[10px] tracking-wider uppercase text-[#f0e6d3]/30 font-medium"
                   >
                     {h}
                   </th>
@@ -1141,7 +1141,7 @@ function CustomersTab({
           <tbody>
             {filtered.length === 0 ? (
               <tr>
-                <td colSpan={6} className="px-4 py-8 text-center text-white/20 text-sm">
+                <td colSpan={6} className="px-4 py-8 text-center text-[#f0e6d3]/20 text-sm">
                   No customers yet
                 </td>
               </tr>
@@ -1153,14 +1153,14 @@ function CustomersTab({
                 >
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-full bg-white/[0.06] flex items-center justify-center text-xs text-white/40">
+                      <div className="w-8 h-8 rounded-full bg-white/[0.06] flex items-center justify-center text-xs text-[#f0e6d3]/40">
                         {(customer.name || customer.email || "?")[0]?.toUpperCase()}
                       </div>
                       <div>
-                        <p className="text-sm text-white/70">
+                        <p className="text-sm text-[#f0e6d3]/70">
                           {customer.name || "—"}
                         </p>
-                        <p className="text-[11px] text-white/30">
+                        <p className="text-[11px] text-[#f0e6d3]/30">
                           {customer.email}
                         </p>
                       </div>
@@ -1171,19 +1171,19 @@ function CustomersTab({
                       className={`px-2 py-0.5 rounded-full text-[10px] font-medium ${
                         customer.role === "admin"
                           ? "bg-amber-500/10 text-amber-400 border border-amber-500/20"
-                          : "bg-white/5 text-white/30 border border-white/10"
+                          : "bg-white/5 text-[#f0e6d3]/30 border border-white/10"
                       }`}
                     >
                       {customer.role || "customer"}
                     </span>
                   </td>
-                  <td className="px-4 py-3 text-sm text-white/60">
+                  <td className="px-4 py-3 text-sm text-[#f0e6d3]/60">
                     {customer.orderCount}
                   </td>
-                  <td className="px-4 py-3 text-sm text-white/60">
+                  <td className="px-4 py-3 text-sm text-[#f0e6d3]/60">
                     ${(customer.totalSpent / 100).toFixed(2)}
                   </td>
-                  <td className="px-4 py-3 text-xs text-white/40">
+                  <td className="px-4 py-3 text-xs text-[#f0e6d3]/40">
                     {customer.lastOrderDate
                       ? format(new Date(customer.lastOrderDate), "MMM d, yyyy")
                       : "—"}
@@ -1191,7 +1191,7 @@ function CustomersTab({
                   <td className="px-4 py-3">
                     <button
                       onClick={() => onSelectCustomer(customer._id)}
-                      className="text-white/30 hover:text-amber-400 transition-colors text-xs"
+                      className="text-[#f0e6d3]/30 hover:text-amber-400 transition-colors text-xs"
                     >
                       CRM →
                     </button>
@@ -1225,13 +1225,13 @@ function CrmTab({ preselectedCustomerId }: { preselectedCustomerId?: string }) {
 
   return (
     <div className="space-y-4">
-      <h1 className="text-lg font-medium text-white/90">CRM</h1>
+      <h1 className="text-lg font-medium text-[#f0e6d3]/90">CRM</h1>
 
       <div className="grid grid-cols-3 gap-4">
         {/* Customer List */}
         <div className="bg-white/[0.03] border border-white/[0.06] rounded-lg">
           <div className="p-3 border-b border-white/[0.06]">
-            <p className="text-[11px] tracking-wider uppercase text-white/30">
+            <p className="text-[11px] tracking-wider uppercase text-[#f0e6d3]/30">
               Customers
             </p>
           </div>
@@ -1246,21 +1246,21 @@ function CrmTab({ preselectedCustomerId }: { preselectedCustomerId?: string }) {
                     : "hover:bg-white/[0.02]"
                 }`}
               >
-                <div className="w-7 h-7 rounded-full bg-white/[0.06] flex items-center justify-center text-[10px] text-white/40 shrink-0">
+                <div className="w-7 h-7 rounded-full bg-white/[0.06] flex items-center justify-center text-[10px] text-[#f0e6d3]/40 shrink-0">
                   {(c.name || c.email || "?")[0]?.toUpperCase()}
                 </div>
                 <div className="min-w-0">
-                  <p className="text-xs text-white/70 truncate">
+                  <p className="text-xs text-[#f0e6d3]/70 truncate">
                     {c.name || c.email || "Unknown"}
                   </p>
-                  <p className="text-[10px] text-white/25 truncate">
+                  <p className="text-[10px] text-[#f0e6d3]/25 truncate">
                     {c.orderCount} orders · ${(c.totalSpent / 100).toFixed(0)}
                   </p>
                 </div>
               </button>
             ))}
             {customers.length === 0 && (
-              <p className="p-4 text-center text-white/20 text-xs">
+              <p className="p-4 text-center text-[#f0e6d3]/20 text-xs">
                 No customers yet
               </p>
             )}
@@ -1273,7 +1273,7 @@ function CrmTab({ preselectedCustomerId }: { preselectedCustomerId?: string }) {
             <CrmDetail customer={selectedCustomer} />
           ) : (
             <div className="h-full bg-white/[0.03] border border-white/[0.06] rounded-lg flex items-center justify-center">
-              <p className="text-white/20 text-sm">
+              <p className="text-[#f0e6d3]/20 text-sm">
                 Select a customer to view CRM details
               </p>
             </div>
@@ -1316,15 +1316,15 @@ function CrmDetail({ customer }: { customer: any }) {
       <div className="bg-white/[0.03] border border-white/[0.06] rounded-lg p-4">
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-full bg-white/[0.06] flex items-center justify-center text-lg text-white/40">
+            <div className="w-12 h-12 rounded-full bg-white/[0.06] flex items-center justify-center text-lg text-[#f0e6d3]/40">
               {(customer.name || customer.email || "?")[0]?.toUpperCase()}
             </div>
             <div>
-              <h2 className="text-sm font-medium text-white/90">
+              <h2 className="text-sm font-medium text-[#f0e6d3]/90">
                 {customer.name || "Unknown"}
               </h2>
-              <p className="text-xs text-white/40">{customer.email}</p>
-              <div className="flex items-center gap-3 mt-1 text-[11px] text-white/30">
+              <p className="text-xs text-[#f0e6d3]/40">{customer.email}</p>
+              <div className="flex items-center gap-3 mt-1 text-[11px] text-[#f0e6d3]/30">
                 <span>{customer.orderCount} orders</span>
                 <span>·</span>
                 <span>
@@ -1349,7 +1349,7 @@ function CrmDetail({ customer }: { customer: any }) {
               className={`px-2.5 py-1 rounded text-[10px] font-medium transition-colors ${
                 customer.role === "admin"
                   ? "bg-amber-500/20 text-amber-400 hover:bg-amber-500/30"
-                  : "bg-white/5 text-white/30 hover:bg-white/10"
+                  : "bg-white/5 text-[#f0e6d3]/30 hover:bg-white/10"
               }`}
             >
               {customer.role === "admin" ? "Remove Admin" : "Make Admin"}
@@ -1362,7 +1362,7 @@ function CrmDetail({ customer }: { customer: any }) {
           {tags.map((tag: string, i: number) => (
             <span
               key={i}
-              className="flex items-center gap-1 px-2 py-0.5 bg-white/[0.06] rounded-full text-[10px] text-white/50"
+              className="flex items-center gap-1 px-2 py-0.5 bg-white/[0.06] rounded-full text-[10px] text-[#f0e6d3]/50"
             >
               <Tag className="w-2.5 h-2.5" />
               {tag}
@@ -1373,7 +1373,7 @@ function CrmDetail({ customer }: { customer: any }) {
                     tags: tags.filter((_: any, j: number) => j !== i),
                   })
                 }
-                className="ml-0.5 text-white/20 hover:text-white/50"
+                className="ml-0.5 text-[#f0e6d3]/20 hover:text-[#f0e6d3]/50"
               >
                 ×
               </button>
@@ -1397,7 +1397,7 @@ function CrmDetail({ customer }: { customer: any }) {
               value={newTag}
               onChange={(e) => setNewTag(e.target.value)}
               placeholder="+ Add tag"
-              className="bg-transparent text-[10px] text-white/40 placeholder-white/15 w-16 focus:w-24 focus:outline-none transition-all"
+              className="bg-transparent text-[10px] text-[#f0e6d3]/40 placeholder-white/15 w-16 focus:w-24 focus:outline-none transition-all"
             />
           </form>
         </div>
@@ -1414,8 +1414,8 @@ function CrmDetail({ customer }: { customer: any }) {
                 onClick={() => setNoteType(t.id)}
                 className={`flex items-center gap-1 px-2 py-1 rounded text-[10px] transition-colors ${
                   noteType === t.id
-                    ? "bg-white/[0.08] text-white/70"
-                    : "text-white/25 hover:text-white/50"
+                    ? "bg-white/[0.08] text-[#f0e6d3]/70"
+                    : "text-[#f0e6d3]/25 hover:text-[#f0e6d3]/50"
                 }`}
               >
                 <Icon className="w-3 h-3" />
@@ -1430,7 +1430,7 @@ function CrmDetail({ customer }: { customer: any }) {
             value={newNote}
             onChange={(e) => setNewNote(e.target.value)}
             placeholder="Add a note about this customer..."
-            className="flex-1 bg-white/[0.04] border border-white/[0.08] rounded-md px-3 py-2 text-sm text-white/70 placeholder-white/15 focus:outline-none resize-none"
+            className="flex-1 bg-white/[0.04] border border-white/[0.08] rounded-md px-3 py-2 text-sm text-[#f0e6d3]/70 placeholder-white/15 focus:outline-none resize-none"
           />
           <button
             disabled={!newNote.trim()}
@@ -1453,7 +1453,7 @@ function CrmDetail({ customer }: { customer: any }) {
 
       {/* Notes Timeline */}
       <div className="space-y-2">
-        <h3 className="text-[11px] tracking-wider uppercase text-white/30">
+        <h3 className="text-[11px] tracking-wider uppercase text-[#f0e6d3]/30">
           Activity ({notes?.length || 0})
         </h3>
         {notes?.map((note: any) => {
@@ -1465,27 +1465,27 @@ function CrmDetail({ customer }: { customer: any }) {
               className="flex gap-3 bg-white/[0.03] border border-white/[0.06] rounded-lg p-3"
             >
               <div className="w-7 h-7 rounded-md bg-white/[0.06] flex items-center justify-center shrink-0">
-                <Icon className="w-3.5 h-3.5 text-white/30" />
+                <Icon className="w-3.5 h-3.5 text-[#f0e6d3]/30" />
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-0.5">
-                  <span className="text-[10px] font-medium text-white/50">
+                  <span className="text-[10px] font-medium text-[#f0e6d3]/50">
                     {typeInfo.label}
                   </span>
-                  <span className="text-[10px] text-white/20">
+                  <span className="text-[10px] text-[#f0e6d3]/20">
                     by {note.adminName}
                   </span>
-                  <span className="text-[10px] text-white/15 ml-auto">
+                  <span className="text-[10px] text-[#f0e6d3]/15 ml-auto">
                     {format(new Date(note.createdAt), "MMM d, h:mm a")}
                   </span>
                 </div>
-                <p className="text-xs text-white/60 whitespace-pre-wrap">
+                <p className="text-xs text-[#f0e6d3]/60 whitespace-pre-wrap">
                   {note.note}
                 </p>
               </div>
               <button
                 onClick={() => deleteNote({ noteId: note._id })}
-                className="text-white/10 hover:text-red-400 transition-colors self-start"
+                className="text-[#f0e6d3]/10 hover:text-red-400 transition-colors self-start"
               >
                 <Trash2 className="w-3 h-3" />
               </button>
@@ -1493,7 +1493,7 @@ function CrmDetail({ customer }: { customer: any }) {
           );
         })}
         {(!notes || notes.length === 0) && (
-          <p className="text-center text-white/15 text-xs py-6">
+          <p className="text-center text-[#f0e6d3]/15 text-xs py-6">
             No notes yet — add one above
           </p>
         )}
@@ -1538,16 +1538,16 @@ function NewsletterTab() {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h1 className="text-lg font-medium text-white/90">
+        <h1 className="text-lg font-medium text-[#f0e6d3]/90">
           Newsletter Subscribers
         </h1>
         <div className="flex items-center gap-3">
-          <span className="text-xs text-white/30">
+          <span className="text-xs text-[#f0e6d3]/30">
             {subscribers.length} subscribers
           </span>
           <button
             onClick={handleExport}
-            className="px-3 py-1.5 bg-white/[0.06] rounded-md text-xs text-white/50 hover:text-white/80 transition-colors"
+            className="px-3 py-1.5 bg-white/[0.06] rounded-md text-xs text-[#f0e6d3]/50 hover:text-[#f0e6d3]/80 transition-colors"
           >
             Export CSV
           </button>
@@ -1555,13 +1555,13 @@ function NewsletterTab() {
       </div>
 
       <div className="relative">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/20" />
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#f0e6d3]/20" />
         <input
           type="text"
           placeholder="Search subscribers..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="w-full bg-white/[0.04] border border-white/[0.08] rounded-md pl-9 pr-3 py-2 text-sm text-white/80 placeholder-white/20 focus:outline-none focus:border-white/20"
+          className="w-full bg-white/[0.04] border border-white/[0.08] rounded-md pl-9 pr-3 py-2 text-sm text-[#f0e6d3]/80 placeholder-white/20 focus:outline-none focus:border-white/20"
         />
       </div>
 
@@ -1569,13 +1569,13 @@ function NewsletterTab() {
         <table className="w-full">
           <thead>
             <tr className="border-b border-white/[0.06]">
-              <th className="px-4 py-2.5 text-left text-[10px] tracking-wider uppercase text-white/30 font-medium">
+              <th className="px-4 py-2.5 text-left text-[10px] tracking-wider uppercase text-[#f0e6d3]/30 font-medium">
                 Email
               </th>
-              <th className="px-4 py-2.5 text-left text-[10px] tracking-wider uppercase text-white/30 font-medium">
+              <th className="px-4 py-2.5 text-left text-[10px] tracking-wider uppercase text-[#f0e6d3]/30 font-medium">
                 Subscribed
               </th>
-              <th className="px-4 py-2.5 text-right text-[10px] tracking-wider uppercase text-white/30 font-medium">
+              <th className="px-4 py-2.5 text-right text-[10px] tracking-wider uppercase text-[#f0e6d3]/30 font-medium">
                 Actions
               </th>
             </tr>
@@ -1586,16 +1586,16 @@ function NewsletterTab() {
                 key={sub._id}
                 className="border-b border-white/[0.04] hover:bg-white/[0.02]"
               >
-                <td className="px-4 py-2.5 text-sm text-white/70">
+                <td className="px-4 py-2.5 text-sm text-[#f0e6d3]/70">
                   {sub.email}
                 </td>
-                <td className="px-4 py-2.5 text-xs text-white/40">
+                <td className="px-4 py-2.5 text-xs text-[#f0e6d3]/40">
                   {format(new Date(sub.subscribedAt), "MMM d, yyyy")}
                 </td>
                 <td className="px-4 py-2.5 text-right">
                   <button
                     onClick={() => removeSubscriber({ subscriberId: sub._id })}
-                    className="text-white/15 hover:text-red-400 transition-colors"
+                    className="text-[#f0e6d3]/15 hover:text-red-400 transition-colors"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
                   </button>
@@ -1660,14 +1660,14 @@ function SettingsTab() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-lg font-medium text-white/90">Settings</h1>
+      <h1 className="text-lg font-medium text-[#f0e6d3]/90">Settings</h1>
 
       {/* ── Admin Privilege Management ─────────────────────────────── */}
       <div className="bg-white/[0.03] border border-white/[0.06] rounded-lg p-5 space-y-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <UserCheck className="w-4 h-4 text-amber-400/60" />
-            <h3 className="text-[11px] tracking-wider uppercase text-white/30">
+            <h3 className="text-[11px] tracking-wider uppercase text-[#f0e6d3]/30">
               Admin Privileges
             </h3>
           </div>
@@ -1675,7 +1675,7 @@ function SettingsTab() {
             onClick={() => { setShowAddAdmin(!showAddAdmin); setSearch(""); }}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
               showAddAdmin
-                ? "bg-white/[0.08] text-white/60"
+                ? "bg-white/[0.08] text-[#f0e6d3]/60"
                 : "bg-amber-500/15 text-amber-400 hover:bg-amber-500/25"
             }`}
           >
@@ -1696,7 +1696,7 @@ function SettingsTab() {
         {/* Current Admins */}
         <div className="space-y-1">
           {admins.length === 0 && (
-            <p className="text-xs text-white/20 py-2">No admin users</p>
+            <p className="text-xs text-[#f0e6d3]/20 py-2">No admin users</p>
           )}
           {admins.map((admin: any) => (
             <div
@@ -1708,8 +1708,8 @@ function SettingsTab() {
                   {(admin.name || admin.email || "?")[0]?.toUpperCase()}
                 </div>
                 <div>
-                  <p className="text-sm text-white/80">{admin.name || "—"}</p>
-                  <p className="text-[11px] text-white/30">{admin.email}</p>
+                  <p className="text-sm text-[#f0e6d3]/80">{admin.name || "—"}</p>
+                  <p className="text-[11px] text-[#f0e6d3]/30">{admin.email}</p>
                 </div>
               </div>
               <div className="flex items-center gap-2">
@@ -1728,7 +1728,7 @@ function SettingsTab() {
                     </button>
                     <button
                       onClick={() => setConfirmRemove(null)}
-                      className="px-2 py-0.5 rounded text-[10px] bg-white/5 text-white/30 hover:bg-white/10 transition-colors"
+                      className="px-2 py-0.5 rounded text-[10px] bg-white/5 text-[#f0e6d3]/30 hover:bg-white/10 transition-colors"
                     >
                       No
                     </button>
@@ -1749,17 +1749,17 @@ function SettingsTab() {
         {/* Add Admin Panel */}
         {showAddAdmin && (
           <div className="border border-amber-500/10 bg-amber-500/[0.03] rounded-lg p-4 space-y-3 animate-in slide-in-from-top-2">
-            <p className="text-xs text-white/40">
+            <p className="text-xs text-[#f0e6d3]/40">
               Search registered users by name or email to grant admin privileges.
             </p>
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-white/20" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#f0e6d3]/20" />
               <input
                 type="text"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Search by name or email..."
-                className="w-full bg-white/[0.05] border border-white/[0.08] rounded-md pl-9 pr-3 py-2 text-sm text-white/80 placeholder-white/20 focus:outline-none focus:border-amber-500/30"
+                className="w-full bg-white/[0.05] border border-white/[0.08] rounded-md pl-9 pr-3 py-2 text-sm text-[#f0e6d3]/80 placeholder-white/20 focus:outline-none focus:border-amber-500/30"
                 autoFocus
               />
             </div>
@@ -1768,7 +1768,7 @@ function SettingsTab() {
             {search.trim() && (
               <div className="max-h-56 overflow-y-auto space-y-1 rounded-md">
                 {filteredNonAdmins.length === 0 ? (
-                  <p className="text-xs text-white/20 text-center py-3">
+                  <p className="text-xs text-[#f0e6d3]/20 text-center py-3">
                     No matching users found
                   </p>
                 ) : (
@@ -1778,14 +1778,14 @@ function SettingsTab() {
                       className="flex items-center justify-between py-2 px-3 rounded-md bg-white/[0.02] border border-white/[0.04] hover:border-white/[0.08] transition-colors"
                     >
                       <div className="flex items-center gap-3">
-                        <div className="w-7 h-7 rounded-full bg-white/[0.06] flex items-center justify-center text-[11px] text-white/40">
+                        <div className="w-7 h-7 rounded-full bg-white/[0.06] flex items-center justify-center text-[11px] text-[#f0e6d3]/40">
                           {(user.name || user.email || "?")[0]?.toUpperCase()}
                         </div>
                         <div>
-                          <p className="text-sm text-white/70">
+                          <p className="text-sm text-[#f0e6d3]/70">
                             {user.name || "—"}
                           </p>
-                          <p className="text-[10px] text-white/30">
+                          <p className="text-[10px] text-[#f0e6d3]/30">
                             {user.email}
                           </p>
                         </div>
@@ -1802,7 +1802,7 @@ function SettingsTab() {
                           </button>
                           <button
                             onClick={() => setConfirmGrant(null)}
-                            className="px-2 py-1 rounded text-[10px] bg-white/5 text-white/30 hover:bg-white/10 transition-colors"
+                            className="px-2 py-1 rounded text-[10px] bg-white/5 text-[#f0e6d3]/30 hover:bg-white/10 transition-colors"
                           >
                             No
                           </button>
@@ -1826,29 +1826,29 @@ function SettingsTab() {
 
       {/* ── Store Info ─────────────────────────────────────────────── */}
       <div className="bg-white/[0.03] border border-white/[0.06] rounded-lg p-5 space-y-3">
-        <h3 className="text-[11px] tracking-wider uppercase text-white/30">
+        <h3 className="text-[11px] tracking-wider uppercase text-[#f0e6d3]/30">
           Store Information
         </h3>
         <div className="grid grid-cols-2 gap-4 text-sm">
           <div>
-            <label className="text-[10px] text-white/25">Brand</label>
-            <p className="text-white/60">XI Eleven XVI Sixteen</p>
+            <label className="text-[10px] text-[#f0e6d3]/25">Brand</label>
+            <p className="text-[#f0e6d3]/60">XI Eleven XVI Sixteen</p>
           </div>
           <div>
-            <label className="text-[10px] text-white/25">Contact</label>
-            <p className="text-white/60">xixvi1116@icloud.com</p>
+            <label className="text-[10px] text-[#f0e6d3]/25">Contact</label>
+            <p className="text-[#f0e6d3]/60">xixvi1116@icloud.com</p>
           </div>
           <div>
-            <label className="text-[10px] text-white/25">Store URL</label>
-            <p className="text-white/60 break-all">
+            <label className="text-[10px] text-[#f0e6d3]/25">Store URL</label>
+            <p className="text-[#f0e6d3]/60 break-all">
               xi-xvi-store-b70b82f5.viktor.space
             </p>
           </div>
           <div>
-            <label className="text-[10px] text-white/25">
+            <label className="text-[10px] text-[#f0e6d3]/25">
               Printful Store ID
             </label>
-            <p className="text-white/60">17855930</p>
+            <p className="text-[#f0e6d3]/60">17855930</p>
           </div>
         </div>
       </div>
@@ -1911,18 +1911,18 @@ function ShippingTab() {
 
   return (
     <div className="max-w-4xl">
-      <h2 className="text-xl text-white font-semibold mb-6">Shipping & Fulfillment</h2>
+      <h2 className="text-xl text-[#f0e6d3] font-semibold mb-6">Shipping & Fulfillment</h2>
 
       {/* Settings Card */}
       <div className="p-6 mb-8 rounded-xl" style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)" }}>
-        <h3 className="text-sm text-white/70 uppercase tracking-wider mb-5">Shipping Settings</h3>
+        <h3 className="text-sm text-[#f0e6d3]/70 uppercase tracking-wider mb-5">Shipping Settings</h3>
 
         <div className="space-y-4">
           {/* Free Standard */}
           <div className="flex items-center justify-between py-2">
             <div>
-              <p className="text-sm text-white/80">Free Standard Shipping</p>
-              <p className="text-xs text-white/30">Offer free standard shipping on all orders</p>
+              <p className="text-sm text-[#f0e6d3]/80">Free Standard Shipping</p>
+              <p className="text-xs text-[#f0e6d3]/30">Offer free standard shipping on all orders</p>
             </div>
             <button
               onClick={() => setFreeStandard(!freeStandard)}
@@ -1936,8 +1936,8 @@ function ShippingTab() {
           {/* Expedited Options */}
           <div className="flex items-center justify-between py-2">
             <div>
-              <p className="text-sm text-white/80">Show Expedited Options</p>
-              <p className="text-xs text-white/30">Display expedited shipping at checkout (from Printful rates)</p>
+              <p className="text-sm text-[#f0e6d3]/80">Show Expedited Options</p>
+              <p className="text-xs text-[#f0e6d3]/30">Display expedited shipping at checkout (from Printful rates)</p>
             </div>
             <button
               onClick={() => setShowExpedited(!showExpedited)}
@@ -1951,8 +1951,8 @@ function ShippingTab() {
           {/* Fulfillment Time */}
           <div className="flex items-center justify-between py-2">
             <div>
-              <p className="text-sm text-white/80">Production Time (days)</p>
-              <p className="text-xs text-white/30">Made-to-order production window</p>
+              <p className="text-sm text-[#f0e6d3]/80">Production Time (days)</p>
+              <p className="text-xs text-[#f0e6d3]/30">Made-to-order production window</p>
             </div>
             <div className="flex items-center gap-2">
               <input
@@ -1962,7 +1962,7 @@ function ShippingTab() {
                 className="w-14 text-center text-sm rounded-lg py-1.5"
                 style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", color: "white" }}
               />
-              <span className="text-white/30 text-xs">to</span>
+              <span className="text-[#f0e6d3]/30 text-xs">to</span>
               <input
                 type="number"
                 value={fulfillMax}
@@ -1976,7 +1976,7 @@ function ShippingTab() {
 
         <button
           onClick={handleSave}
-          className="mt-6 px-6 py-2.5 text-xs tracking-wider uppercase font-bold text-white rounded-lg transition-all"
+          className="mt-6 px-6 py-2.5 text-xs tracking-wider uppercase font-bold text-[#f0e6d3] rounded-lg transition-all"
           style={{
             background: saved
               ? "linear-gradient(135deg, #10b981, #059669)"
@@ -1989,12 +1989,12 @@ function ShippingTab() {
 
       {/* Active Orders / Fulfillment Tracker */}
       <div className="p-6 rounded-xl" style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)" }}>
-        <h3 className="text-sm text-white/70 uppercase tracking-wider mb-5">
+        <h3 className="text-sm text-[#f0e6d3]/70 uppercase tracking-wider mb-5">
           Order Fulfillment ({activeOrders.length} active)
         </h3>
 
         {activeOrders.length === 0 ? (
-          <p className="text-sm text-white/30 py-8 text-center">No active orders requiring fulfillment.</p>
+          <p className="text-sm text-[#f0e6d3]/30 py-8 text-center">No active orders requiring fulfillment.</p>
         ) : (
           <div className="space-y-4">
             {activeOrders.slice(0, 20).map((order: any) => {
@@ -2003,10 +2003,10 @@ function ShippingTab() {
                 <div key={order._id} className="p-4 rounded-lg" style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.04)" }}>
                   <div className="flex items-center justify-between mb-3">
                     <div>
-                      <span className="text-xs text-white/40 font-mono">#{order._id.slice(-8)}</span>
-                      <span className="text-xs text-white/30 ml-3">{order.email}</span>
+                      <span className="text-xs text-[#f0e6d3]/40 font-mono">#{order._id.slice(-8)}</span>
+                      <span className="text-xs text-[#f0e6d3]/30 ml-3">{order.email}</span>
                     </div>
-                    <span className="text-xs text-white/50">
+                    <span className="text-xs text-[#f0e6d3]/50">
                       {format(new Date(order._creationTime), "MMM d, yyyy")}
                     </span>
                   </div>
@@ -2027,7 +2027,7 @@ function ShippingTab() {
                     ))}
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-[10px] text-white/40">
+                    <span className="text-[10px] text-[#f0e6d3]/40">
                       {currentStageIdx >= 0 ? FULFILLMENT_STAGES[currentStageIdx].label : "Unknown"}
                     </span>
                     {order.printfulOrderId && (
@@ -2121,7 +2121,7 @@ function TaxTab() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-lg font-medium text-white/90">Tax & Shipping</h1>
+        <h1 className="text-lg font-medium text-[#f0e6d3]/90">Tax & Shipping</h1>
         <div className="flex items-center gap-2">
           <button
             onClick={() => setShowAdd(!showAdd)}
@@ -2138,30 +2138,30 @@ function TaxTab() {
         <div className="bg-white/[0.03] border border-white/[0.06] rounded-lg p-4">
           <div className="flex items-center gap-2 mb-1">
             <Globe className="w-4 h-4 text-blue-400/50" />
-            <span className="text-[10px] tracking-wider uppercase text-white/30">US States</span>
+            <span className="text-[10px] tracking-wider uppercase text-[#f0e6d3]/30">US States</span>
           </div>
-          <p className="text-xl font-medium text-white/80">{usStateCount}</p>
+          <p className="text-xl font-medium text-[#f0e6d3]/80">{usStateCount}</p>
         </div>
         <div className="bg-white/[0.03] border border-white/[0.06] rounded-lg p-4">
           <div className="flex items-center gap-2 mb-1">
             <Globe className="w-4 h-4 text-purple-400/50" />
-            <span className="text-[10px] tracking-wider uppercase text-white/30">Countries</span>
+            <span className="text-[10px] tracking-wider uppercase text-[#f0e6d3]/30">Countries</span>
           </div>
-          <p className="text-xl font-medium text-white/80">{countryCount}</p>
+          <p className="text-xl font-medium text-[#f0e6d3]/80">{countryCount}</p>
         </div>
         <div className="bg-white/[0.03] border border-white/[0.06] rounded-lg p-4">
           <div className="flex items-center gap-2 mb-1">
             <CheckCircle2 className="w-4 h-4 text-green-400/50" />
-            <span className="text-[10px] tracking-wider uppercase text-white/30">Active</span>
+            <span className="text-[10px] tracking-wider uppercase text-[#f0e6d3]/30">Active</span>
           </div>
-          <p className="text-xl font-medium text-white/80">{enabledCount}</p>
+          <p className="text-xl font-medium text-[#f0e6d3]/80">{enabledCount}</p>
         </div>
       </div>
 
       {/* Seed Defaults */}
       {(usStateCount === 0 || countryCount === 0) && (
         <div className="bg-amber-500/[0.05] border border-amber-500/[0.12] rounded-lg p-4">
-          <p className="text-sm text-white/60 mb-3">
+          <p className="text-sm text-[#f0e6d3]/60 mb-3">
             {usStateCount === 0 && countryCount === 0
               ? "No tax rates configured yet. Seed defaults to get started:"
               : "Seed additional tax rates:"}
@@ -2194,45 +2194,45 @@ function TaxTab() {
       {/* Add New Rate Form */}
       {showAdd && (
         <div className="bg-white/[0.03] border border-white/[0.06] rounded-lg p-4 space-y-3">
-          <h3 className="text-[11px] tracking-wider uppercase text-white/30">Add New Tax Rate</h3>
+          <h3 className="text-[11px] tracking-wider uppercase text-[#f0e6d3]/30">Add New Tax Rate</h3>
           <div className="grid grid-cols-4 gap-3">
             <div>
-              <label className="text-[10px] text-white/25 block mb-1">Type</label>
+              <label className="text-[10px] text-[#f0e6d3]/25 block mb-1">Type</label>
               <select
                 value={newType}
                 onChange={(e) => setNewType(e.target.value as any)}
-                className="w-full bg-white/[0.04] border border-white/[0.08] rounded px-2 py-1.5 text-xs text-white/70"
+                className="w-full bg-white/[0.04] border border-white/[0.08] rounded px-2 py-1.5 text-xs text-[#f0e6d3]/70"
               >
                 <option value="us_state" style={{ background: "#111" }}>US State</option>
                 <option value="country" style={{ background: "#111" }}>Country</option>
               </select>
             </div>
             <div>
-              <label className="text-[10px] text-white/25 block mb-1">Code</label>
+              <label className="text-[10px] text-[#f0e6d3]/25 block mb-1">Code</label>
               <input
                 value={newRegion}
                 onChange={(e) => setNewRegion(e.target.value)}
                 placeholder={newType === "us_state" ? "CA" : "GB"}
-                className="w-full bg-white/[0.04] border border-white/[0.08] rounded px-2 py-1.5 text-xs text-white/70"
+                className="w-full bg-white/[0.04] border border-white/[0.08] rounded px-2 py-1.5 text-xs text-[#f0e6d3]/70"
               />
             </div>
             <div>
-              <label className="text-[10px] text-white/25 block mb-1">Label</label>
+              <label className="text-[10px] text-[#f0e6d3]/25 block mb-1">Label</label>
               <input
                 value={newLabel}
                 onChange={(e) => setNewLabel(e.target.value)}
                 placeholder="California Sales Tax"
-                className="w-full bg-white/[0.04] border border-white/[0.08] rounded px-2 py-1.5 text-xs text-white/70"
+                className="w-full bg-white/[0.04] border border-white/[0.08] rounded px-2 py-1.5 text-xs text-[#f0e6d3]/70"
               />
             </div>
             <div>
-              <label className="text-[10px] text-white/25 block mb-1">Rate (%)</label>
+              <label className="text-[10px] text-[#f0e6d3]/25 block mb-1">Rate (%)</label>
               <div className="flex gap-2">
                 <input
                   value={newRate}
                   onChange={(e) => setNewRate(e.target.value)}
                   placeholder="7.25"
-                  className="flex-1 bg-white/[0.04] border border-white/[0.08] rounded px-2 py-1.5 text-xs text-white/70"
+                  className="flex-1 bg-white/[0.04] border border-white/[0.08] rounded px-2 py-1.5 text-xs text-[#f0e6d3]/70"
                 />
                 <button
                   onClick={handleAdd}
@@ -2258,8 +2258,8 @@ function TaxTab() {
             onClick={() => setFilter(tab.id)}
             className={`px-3 py-1 text-[11px] tracking-wider rounded transition-colors ${
               filter === tab.id
-                ? "bg-white/[0.08] text-white/80"
-                : "text-white/30 hover:text-white/50"
+                ? "bg-white/[0.08] text-[#f0e6d3]/80"
+                : "text-[#f0e6d3]/30 hover:text-[#f0e6d3]/50"
             }`}
           >
             {tab.label}
@@ -2272,18 +2272,18 @@ function TaxTab() {
         <table className="w-full">
           <thead>
             <tr className="border-b border-white/[0.06]">
-              <th className="text-left text-[10px] tracking-wider uppercase text-white/25 px-4 py-3">Region</th>
-              <th className="text-left text-[10px] tracking-wider uppercase text-white/25 px-4 py-3">Label</th>
-              <th className="text-left text-[10px] tracking-wider uppercase text-white/25 px-4 py-3">Type</th>
-              <th className="text-left text-[10px] tracking-wider uppercase text-white/25 px-4 py-3">Rate</th>
-              <th className="text-left text-[10px] tracking-wider uppercase text-white/25 px-4 py-3">Status</th>
-              <th className="text-right text-[10px] tracking-wider uppercase text-white/25 px-4 py-3">Actions</th>
+              <th className="text-left text-[10px] tracking-wider uppercase text-[#f0e6d3]/25 px-4 py-3">Region</th>
+              <th className="text-left text-[10px] tracking-wider uppercase text-[#f0e6d3]/25 px-4 py-3">Label</th>
+              <th className="text-left text-[10px] tracking-wider uppercase text-[#f0e6d3]/25 px-4 py-3">Type</th>
+              <th className="text-left text-[10px] tracking-wider uppercase text-[#f0e6d3]/25 px-4 py-3">Rate</th>
+              <th className="text-left text-[10px] tracking-wider uppercase text-[#f0e6d3]/25 px-4 py-3">Status</th>
+              <th className="text-right text-[10px] tracking-wider uppercase text-[#f0e6d3]/25 px-4 py-3">Actions</th>
             </tr>
           </thead>
           <tbody>
             {filteredSettings.length === 0 && (
               <tr>
-                <td colSpan={6} className="text-center py-8 text-xs text-white/20">
+                <td colSpan={6} className="text-center py-8 text-xs text-[#f0e6d3]/20">
                   No tax rates configured. Use "Seed Defaults" to add standard rates.
                 </td>
               </tr>
@@ -2294,7 +2294,7 @@ function TaxTab() {
                   <span className="text-xs font-mono text-amber-400/60">{setting.region}</span>
                 </td>
                 <td className="px-4 py-2.5">
-                  <span className="text-xs text-white/60">{setting.label}</span>
+                  <span className="text-xs text-[#f0e6d3]/60">{setting.label}</span>
                 </td>
                 <td className="px-4 py-2.5">
                   <span className={`text-[10px] tracking-wider uppercase px-2 py-0.5 rounded ${
@@ -2310,11 +2310,11 @@ function TaxTab() {
                     <input
                       value={editRate}
                       onChange={(e) => setEditRate(e.target.value)}
-                      className="w-20 bg-white/[0.06] border border-white/[0.1] rounded px-2 py-1 text-xs text-white/70"
+                      className="w-20 bg-white/[0.06] border border-white/[0.1] rounded px-2 py-1 text-xs text-[#f0e6d3]/70"
                       autoFocus
                     />
                   ) : (
-                    <span className="text-xs text-white/70 font-medium">
+                    <span className="text-xs text-[#f0e6d3]/70 font-medium">
                       {(setting.rate * 100).toFixed(2)}%
                     </span>
                   )}
@@ -2331,8 +2331,8 @@ function TaxTab() {
                       </>
                     ) : (
                       <>
-                        <ToggleLeft className="w-5 h-5 text-white/20 group-hover:text-white/40" />
-                        <span className="text-[10px] text-white/20">Disabled</span>
+                        <ToggleLeft className="w-5 h-5 text-[#f0e6d3]/20 group-hover:text-[#f0e6d3]/40" />
+                        <span className="text-[10px] text-[#f0e6d3]/20">Disabled</span>
                       </>
                     )}
                   </button>
@@ -2350,7 +2350,7 @@ function TaxTab() {
                         </button>
                         <button
                           onClick={() => setEditingId(null)}
-                          className="p-1 text-white/20 hover:text-white/50 transition-colors"
+                          className="p-1 text-[#f0e6d3]/20 hover:text-[#f0e6d3]/50 transition-colors"
                           title="Cancel"
                         >
                           <X className="w-3.5 h-3.5" />
@@ -2364,7 +2364,7 @@ function TaxTab() {
                             setEditRate((setting.rate * 100).toFixed(2));
                             setEditEnabled(setting.enabled);
                           }}
-                          className="p-1 text-white/20 hover:text-white/50 transition-colors"
+                          className="p-1 text-[#f0e6d3]/20 hover:text-[#f0e6d3]/50 transition-colors"
                           title="Edit rate"
                         >
                           <Edit className="w-3.5 h-3.5" />
@@ -2392,24 +2392,24 @@ function TaxTab() {
 
       {/* Shipping Info */}
       <div className="bg-white/[0.03] border border-white/[0.06] rounded-lg p-4 space-y-3">
-        <h3 className="text-[11px] tracking-wider uppercase text-white/30">
+        <h3 className="text-[11px] tracking-wider uppercase text-[#f0e6d3]/30">
           International Shipping
         </h3>
-        <p className="text-xs text-white/40 leading-relaxed">
+        <p className="text-xs text-[#f0e6d3]/40 leading-relaxed">
           Shipping is handled through Printful's fulfillment network. Rates are calculated in real-time
           at checkout based on the customer's address. Currently shipping to 40+ countries worldwide.
         </p>
         <div className="grid grid-cols-2 gap-3 text-xs">
           <div className="bg-white/[0.02] rounded p-3">
-            <span className="text-white/25 text-[10px] uppercase tracking-wider">Domestic (US)</span>
-            <p className="text-white/60 mt-1">3–7 business days</p>
+            <span className="text-[#f0e6d3]/25 text-[10px] uppercase tracking-wider">Domestic (US)</span>
+            <p className="text-[#f0e6d3]/60 mt-1">3–7 business days</p>
           </div>
           <div className="bg-white/[0.02] rounded p-3">
-            <span className="text-white/25 text-[10px] uppercase tracking-wider">International</span>
-            <p className="text-white/60 mt-1">7–21 business days</p>
+            <span className="text-[#f0e6d3]/25 text-[10px] uppercase tracking-wider">International</span>
+            <p className="text-[#f0e6d3]/60 mt-1">7–21 business days</p>
           </div>
         </div>
-        <p className="text-[10px] text-white/20">
+        <p className="text-[10px] text-[#f0e6d3]/20">
           International orders may be subject to local customs duties and import taxes upon delivery,
           which are the responsibility of the customer.
         </p>
@@ -2425,7 +2425,7 @@ function LoadingState() {
     <div className="flex items-center justify-center h-64">
       <div className="text-center">
         <div className="text-xl mb-2 animate-pulse">✦</div>
-        <p className="text-[11px] tracking-wider uppercase text-white/20">
+        <p className="text-[11px] tracking-wider uppercase text-[#f0e6d3]/20">
           Loading...
         </p>
       </div>
@@ -2447,8 +2447,8 @@ export default function AdminPage() {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <XCircle className="w-12 h-12 text-red-400/40 mx-auto mb-3" />
-          <h1 className="text-lg font-medium text-white/70">Access Denied</h1>
-          <p className="text-sm text-white/30 mt-1">
+          <h1 className="text-lg font-medium text-[#f0e6d3]/70">Access Denied</h1>
+          <p className="text-sm text-[#f0e6d3]/30 mt-1">
             You don't have admin privileges.
           </p>
         </div>

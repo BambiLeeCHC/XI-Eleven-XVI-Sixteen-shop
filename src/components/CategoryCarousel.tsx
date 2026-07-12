@@ -11,10 +11,10 @@ interface CategoryDef {
 }
 
 const CATEGORIES: CategoryDef[] = [
-  { label: "Shop Women", shopLabel: "SHOP WOMEN", filter: { gender: "women" }, accent: "linear-gradient(135deg, #5ba8e6, #4a8fd9)" },
-  { label: "Shop Men", shopLabel: "SHOP MEN", filter: { gender: "men" }, accent: "linear-gradient(135deg, #4a8fd9, #3a7fc9)" },
+  { label: "Shop Women", shopLabel: "SHOP WOMEN", filter: { gender: "women" }, accent: "linear-gradient(135deg, #c9a96e, #e8d5b0)" },
+  { label: "Shop Men", shopLabel: "SHOP MEN", filter: { gender: "men" }, accent: "linear-gradient(135deg, #c9a96e, #a88d54)" },
   { label: "Shop Dresses", shopLabel: "SHOP DRESSES", filter: { category: "Dresses" }, accent: "linear-gradient(135deg, #e88da8, #d67d98)" },
-  { label: "Shop Tops", shopLabel: "SHOP TOPS", filter: { category: "Tops" }, accent: "linear-gradient(135deg, #67b8d4, #57a8c4)" },
+  { label: "Shop Tops", shopLabel: "SHOP TOPS", filter: { category: "Tops" }, accent: "linear-gradient(135deg, #8ab4f8, #6d9ee0)" },
   { label: "Shop Bottoms", shopLabel: "SHOP BOTTOMS", filter: { category: "Bottoms" }, accent: "linear-gradient(135deg, #e8b07a, #d8a06a)" },
   { label: "Shop Activewear", shopLabel: "SHOP ACTIVEWEAR", filter: { category: "Activewear" }, accent: "linear-gradient(135deg, #6dd4a8, #5dc498)" },
 ];
@@ -22,7 +22,7 @@ const CATEGORIES: CategoryDef[] = [
 const CARD_WIDTH = 200;
 const GAP = 16;
 const ITEM_WIDTH = CARD_WIDTH + GAP;
-const SPEED = 0.5; // px per frame (~30px/sec at 60fps)
+const SPEED = 0.5;
 
 function CategoryCard({ cat }: { cat: CategoryDef }) {
   const products = useQuery(api.products.list, {
@@ -44,12 +44,12 @@ function CategoryCard({ cat }: { cat: CategoryDef }) {
         <div
           className="rounded-2xl overflow-hidden transition-all duration-300 group-hover:scale-[1.02] group-hover:shadow-lg"
           style={{
-            background: "#FFFFFF",
-            border: "1px solid rgba(0,40,80,0.06)",
-            boxShadow: "0 2px 16px rgba(0,40,80,0.06), 0 1px 3px rgba(0,0,0,0.04)",
+            background: "#111118",
+            border: "1px solid rgba(201, 169, 110, 0.06)",
+            boxShadow: "0 2px 16px rgba(0, 0, 0, 0.3), 0 1px 3px rgba(0, 0, 0, 0.2)",
           }}
         >
-          <div className="relative" style={{ height: "220px", overflow: "hidden", background: "#f5f8fd" }}>
+          <div className="relative" style={{ height: "220px", overflow: "hidden", background: "#0d0d14" }}>
             {img ? (
               <img
                 src={img}
@@ -60,30 +60,30 @@ function CategoryCard({ cat }: { cat: CategoryDef }) {
             ) : (
               <div
                 className="w-full h-full flex items-center justify-center"
-                style={{ background: "rgba(74,143,217,0.03)" }}
+                style={{ background: "rgba(201, 169, 110, 0.02)" }}
               >
-                <span style={{ color: "rgba(26,26,46,0.2)", fontSize: "12px" }}>Loading...</span>
+                <span style={{ color: "rgba(240, 230, 211, 0.15)", fontSize: "12px" }}>Loading...</span>
               </div>
             )}
             <div
               className="absolute bottom-0 left-0 right-0 h-16 pointer-events-none"
-              style={{ background: "linear-gradient(transparent, rgba(255,255,255,0.6))" }}
+              style={{ background: "linear-gradient(transparent, rgba(17, 17, 24, 0.7))" }}
             />
           </div>
 
           <div className="px-3 py-3 flex items-center justify-between">
             <span
               className="text-[11px] font-bold tracking-[0.06em] uppercase"
-              style={{ color: "#1a1a2e" }}
+              style={{ color: "#f0e6d3" }}
             >
               {cat.shopLabel}
             </span>
             <span
               className="text-[10px] font-semibold tracking-[0.1em] uppercase px-3 py-1.5 rounded-full"
               style={{
-                color: "#4a8fd9",
-                background: "rgba(74,143,217,0.06)",
-                border: "1px solid rgba(74,143,217,0.12)",
+                color: "#c9a96e",
+                background: "rgba(201, 169, 110, 0.06)",
+                border: "1px solid rgba(201, 169, 110, 0.1)",
               }}
             >
               SHOP
@@ -107,7 +107,6 @@ export function CategoryCarousel() {
   const offsetRef = useRef(0);
   const rafRef = useRef<number>(0);
 
-  // Total width of one complete set of cards
   const setWidth = CATEGORIES.length * ITEM_WIDTH;
 
   useEffect(() => {
@@ -119,9 +118,7 @@ export function CategoryCarousel() {
       lastTime = time;
 
       if (!isPaused && trackRef.current) {
-        // Move at constant speed
         offsetRef.current += SPEED * (delta / 16.67);
-        // Reset when one full set has scrolled past
         if (offsetRef.current >= setWidth) {
           offsetRef.current -= setWidth;
         }
@@ -135,14 +132,13 @@ export function CategoryCarousel() {
     return () => cancelAnimationFrame(rafRef.current);
   }, [isPaused, setWidth]);
 
-  // Render 3 copies for seamless loop
   const allCards = [...CATEGORIES, ...CATEGORIES, ...CATEGORIES];
 
   return (
     <section
       className="relative py-6 overflow-hidden"
       style={{
-        background: "linear-gradient(180deg, #FAFBFE 0%, #f0f4f8 100%)",
+        background: "linear-gradient(180deg, #09090f 0%, #0d0d14 100%)",
       }}
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
@@ -153,7 +149,7 @@ export function CategoryCarousel() {
       <div className="max-w-7xl mx-auto px-6 mb-4">
         <span
           className="text-[10px] tracking-[0.35em] uppercase font-semibold"
-          style={{ color: "rgba(26,26,46,0.4)" }}
+          style={{ color: "rgba(201, 169, 110, 0.4)" }}
         >
           Browse Collections
         </span>
@@ -175,11 +171,11 @@ export function CategoryCarousel() {
       {/* Fade edges */}
       <div
         className="absolute left-0 top-0 bottom-0 w-16 pointer-events-none z-10"
-        style={{ background: "linear-gradient(90deg, #FAFBFE, transparent)" }}
+        style={{ background: "linear-gradient(90deg, #09090f, transparent)" }}
       />
       <div
         className="absolute right-0 top-0 bottom-0 w-16 pointer-events-none z-10"
-        style={{ background: "linear-gradient(270deg, #f0f4f8, transparent)" }}
+        style={{ background: "linear-gradient(270deg, #0d0d14, transparent)" }}
       />
     </section>
   );

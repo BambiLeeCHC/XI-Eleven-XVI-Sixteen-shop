@@ -65,7 +65,7 @@ export function ContactPage() {
 
       <div
         className="min-h-screen relative"
-        style={{ background: "linear-gradient(180deg, #f5f8fd 0%, #f0f4f8 40%, #f5f8fd 100%)" }}
+        style={{ background: "linear-gradient(180deg, #0d0d14 0%, #0d0d14 40%, #0d0d14 100%)" }}
       >
         {/* Background glow orbs */}
         <div
@@ -100,7 +100,7 @@ export function ContactPage() {
           <div className="text-center mb-16">
             <p
               className="text-[10px] tracking-[0.4em] uppercase mb-4"
-              style={{ color: "rgba(74,143,217,0.55)" }}
+              style={{ color: "rgba(201,169,110,0.55)" }}
             >
               GET IN TOUCH
             </p>
@@ -108,7 +108,7 @@ export function ContactPage() {
               className="text-4xl md:text-5xl font-bold tracking-wide mb-4"
               style={{
                 fontFamily: "var(--font-display)",
-                background: "linear-gradient(135deg, #fff 0%, rgba(26,26,46,0.85) 50%, rgba(74,143,217,0.7) 100%)",
+                background: "linear-gradient(135deg, #fff 0%, rgba(240,230,211,0.85) 50%, rgba(201,169,110,0.7) 100%)",
                 WebkitBackgroundClip: "text",
                 WebkitTextFillColor: "transparent",
               }}
@@ -120,12 +120,12 @@ export function ContactPage() {
               style={{
                 width: "60px",
                 height: "1px",
-                background: "linear-gradient(90deg, transparent, rgba(74,143,217,0.4), transparent)",
+                background: "linear-gradient(90deg, transparent, rgba(201,169,110,0.4), transparent)",
               }}
             />
             <p
               className="text-[14px] max-w-lg mx-auto leading-relaxed"
-              style={{ color: "rgba(26,26,46,0.45)" }}
+              style={{ color: "rgba(240,230,211,0.45)" }}
             >
               Have a question, collaboration idea, or just want to say hello?
               We'd love to hear from you.
@@ -141,17 +141,17 @@ export function ContactPage() {
                 className="block group"
                 style={{
                   background: "rgba(255,240,230,0.02)",
-                  border: "1px solid rgba(0,40,80,0.08)",
+                  border: "1px solid rgba(201,169,110,0.08)",
                   borderRadius: "16px",
                   padding: "24px",
                   transition: "all 0.3s ease",
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.borderColor = "rgba(74,143,217,0.2)";
-                  e.currentTarget.style.background = "rgba(74,143,217,0.04)";
+                  e.currentTarget.style.borderColor = "rgba(201,169,110,0.2)";
+                  e.currentTarget.style.background = "rgba(201,169,110,0.04)";
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.borderColor = "rgba(0,40,80,0.08)";
+                  e.currentTarget.style.borderColor = "rgba(201,169,110,0.08)";
                   e.currentTarget.style.background = "rgba(255,240,230,0.02)";
                 }}
               >
@@ -161,7 +161,7 @@ export function ContactPage() {
                       width: "36px",
                       height: "36px",
                       borderRadius: "10px",
-                      background: "linear-gradient(135deg, rgba(74,143,217,0.15), rgba(255,158,184,0.08))",
+                      background: "linear-gradient(135deg, rgba(201,169,110,0.15), rgba(255,158,184,0.08))",
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
@@ -172,15 +172,15 @@ export function ContactPage() {
                   </div>
                   <span
                     className="text-[10px] tracking-[0.25em] uppercase font-semibold"
-                    style={{ color: "rgba(74,143,217,0.6)" }}
+                    style={{ color: "rgba(201,169,110,0.6)" }}
                   >
                     Email
                   </span>
                 </div>
-                <p className="text-[13px]" style={{ color: "rgba(26,26,46,0.7)" }}>
+                <p className="text-[13px]" style={{ color: "rgba(240,230,211,0.7)" }}>
                   xixvi1116@icloud.com
                 </p>
-                <p className="text-[11px] mt-1" style={{ color: "rgba(26,26,46,0.3)" }}>
+                <p className="text-[11px] mt-1" style={{ color: "rgba(240,230,211,0.3)" }}>
                   We typically respond within 24 hours
                 </p>
               </a>
@@ -193,7 +193,7 @@ export function ContactPage() {
                 className="block group"
                 style={{
                   background: "rgba(255,240,230,0.02)",
-                  border: "1px solid rgba(0,40,80,0.08)",
+                  border: "1px solid rgba(201,169,110,0.08)",
                   borderRadius: "16px",
                   padding: "24px",
                   transition: "all 0.3s ease",
@@ -203,7 +203,7 @@ export function ContactPage() {
                   e.currentTarget.style.background = "rgba(255,158,184,0.04)";
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.borderColor = "rgba(0,40,80,0.08)";
+                  e.currentTarget.style.borderColor = "rgba(201,169,110,0.08)";
                   e.currentTarget.style.background = "rgba(255,240,230,0.02)";
                 }}
               >
@@ -229,10 +229,10 @@ export function ContactPage() {
                     Instagram
                   </span>
                 </div>
-                <p className="text-[13px]" style={{ color: "rgba(26,26,46,0.7)" }}>
+                <p className="text-[13px]" style={{ color: "rgba(240,230,211,0.7)" }}>
                   @xielevenxvisixteen
                 </p>
-                <p className="text-[11px] mt-1" style={{ color: "rgba(26,26,46,0.3)" }}>
+                <p className="text-[11px] mt-1" style={{ color: "rgba(240,230,211,0.3)" }}>
                   Follow for drops, behind the scenes & more
                 </p>
               </a>
@@ -241,7 +241,7 @@ export function ContactPage() {
               <div
                 style={{
                   background: "rgba(255,240,230,0.02)",
-                  border: "1px solid rgba(0,40,80,0.08)",
+                  border: "1px solid rgba(201,169,110,0.08)",
                   borderRadius: "16px",
                   padding: "24px",
                 }}
@@ -252,7 +252,7 @@ export function ContactPage() {
                       width: "36px",
                       height: "36px",
                       borderRadius: "10px",
-                      background: "linear-gradient(135deg, rgba(245,201,122,0.15), rgba(74,143,217,0.08))",
+                      background: "linear-gradient(135deg, rgba(245,201,122,0.15), rgba(201,169,110,0.08))",
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
@@ -268,10 +268,10 @@ export function ContactPage() {
                     Headquarters
                   </span>
                 </div>
-                <p className="text-[13px]" style={{ color: "rgba(26,26,46,0.7)" }}>
+                <p className="text-[13px]" style={{ color: "rgba(240,230,211,0.7)" }}>
                   XI Eleven XVI Sixteen L.L.C.
                 </p>
-                <p className="text-[11px] mt-1" style={{ color: "rgba(26,26,46,0.3)" }}>
+                <p className="text-[11px] mt-1" style={{ color: "rgba(240,230,211,0.3)" }}>
                   Florida, USA
                 </p>
               </div>
@@ -282,7 +282,7 @@ export function ContactPage() {
               <div
                 style={{
                   background: "rgba(255,240,230,0.02)",
-                  border: "1px solid rgba(0,40,80,0.08)",
+                  border: "1px solid rgba(201,169,110,0.08)",
                   borderRadius: "20px",
                   padding: "32px",
                 }}
@@ -291,12 +291,12 @@ export function ContactPage() {
                   className="text-lg font-semibold mb-1 tracking-wide"
                   style={{
                     fontFamily: "var(--font-display)",
-                    color: "rgba(26,26,46,0.85)",
+                    color: "rgba(240,230,211,0.85)",
                   }}
                 >
                   Send a Message
                 </h2>
-                <p className="text-[12px] mb-8" style={{ color: "rgba(26,26,46,0.3)" }}>
+                <p className="text-[12px] mb-8" style={{ color: "rgba(240,230,211,0.3)" }}>
                   Fill out the form below and we'll get back to you as soon as possible.
                 </p>
 
@@ -315,12 +315,12 @@ export function ContactPage() {
                       className="text-lg font-semibold mb-2"
                       style={{
                         fontFamily: "var(--font-display)",
-                        color: "rgba(26,26,46,0.85)",
+                        color: "rgba(240,230,211,0.85)",
                       }}
                     >
                       Message Sent
                     </h3>
-                    <p className="text-[13px]" style={{ color: "rgba(26,26,46,0.4)" }}>
+                    <p className="text-[13px]" style={{ color: "rgba(240,230,211,0.4)" }}>
                       Thank you for reaching out. We'll be in touch soon.
                     </p>
                   </div>
@@ -331,7 +331,7 @@ export function ContactPage() {
                       <div>
                         <label
                           className="block text-[10px] tracking-[0.2em] uppercase font-semibold mb-2"
-                          style={{ color: "rgba(26,26,46,0.4)" }}
+                          style={{ color: "rgba(240,230,211,0.4)" }}
                         >
                           Name *
                         </label>
@@ -344,17 +344,17 @@ export function ContactPage() {
                           className="w-full text-sm outline-none transition-all"
                           style={{
                             background: "rgba(255,240,230,0.04)",
-                            border: "1px solid rgba(0,40,80,0.1)",
-                            color: "rgba(26,26,46,0.8)",
+                            border: "1px solid rgba(201,169,110,0.1)",
+                            color: "rgba(240,230,211,0.8)",
                             borderRadius: "12px",
                             padding: "14px 16px",
                           }}
                           onFocus={(e) => {
-                            e.currentTarget.style.borderColor = "rgba(74,143,217,0.3)";
-                            e.currentTarget.style.background = "rgba(74,143,217,0.04)";
+                            e.currentTarget.style.borderColor = "rgba(201,169,110,0.3)";
+                            e.currentTarget.style.background = "rgba(201,169,110,0.04)";
                           }}
                           onBlur={(e) => {
-                            e.currentTarget.style.borderColor = "rgba(0,40,80,0.1)";
+                            e.currentTarget.style.borderColor = "rgba(201,169,110,0.1)";
                             e.currentTarget.style.background = "rgba(255,240,230,0.04)";
                           }}
                         />
@@ -364,7 +364,7 @@ export function ContactPage() {
                       <div>
                         <label
                           className="block text-[10px] tracking-[0.2em] uppercase font-semibold mb-2"
-                          style={{ color: "rgba(26,26,46,0.4)" }}
+                          style={{ color: "rgba(240,230,211,0.4)" }}
                         >
                           Email *
                         </label>
@@ -377,17 +377,17 @@ export function ContactPage() {
                           className="w-full text-sm outline-none transition-all"
                           style={{
                             background: "rgba(255,240,230,0.04)",
-                            border: "1px solid rgba(0,40,80,0.1)",
-                            color: "rgba(26,26,46,0.8)",
+                            border: "1px solid rgba(201,169,110,0.1)",
+                            color: "rgba(240,230,211,0.8)",
                             borderRadius: "12px",
                             padding: "14px 16px",
                           }}
                           onFocus={(e) => {
-                            e.currentTarget.style.borderColor = "rgba(74,143,217,0.3)";
-                            e.currentTarget.style.background = "rgba(74,143,217,0.04)";
+                            e.currentTarget.style.borderColor = "rgba(201,169,110,0.3)";
+                            e.currentTarget.style.background = "rgba(201,169,110,0.04)";
                           }}
                           onBlur={(e) => {
-                            e.currentTarget.style.borderColor = "rgba(0,40,80,0.1)";
+                            e.currentTarget.style.borderColor = "rgba(201,169,110,0.1)";
                             e.currentTarget.style.background = "rgba(255,240,230,0.04)";
                           }}
                         />
@@ -398,7 +398,7 @@ export function ContactPage() {
                     <div>
                       <label
                         className="block text-[10px] tracking-[0.2em] uppercase font-semibold mb-2"
-                        style={{ color: "rgba(26,26,46,0.4)" }}
+                        style={{ color: "rgba(240,230,211,0.4)" }}
                       >
                         Subject
                       </label>
@@ -410,17 +410,17 @@ export function ContactPage() {
                         className="w-full text-sm outline-none transition-all"
                         style={{
                           background: "rgba(255,240,230,0.04)",
-                          border: "1px solid rgba(0,40,80,0.1)",
-                          color: "rgba(26,26,46,0.8)",
+                          border: "1px solid rgba(201,169,110,0.1)",
+                          color: "rgba(240,230,211,0.8)",
                           borderRadius: "12px",
                           padding: "14px 16px",
                         }}
                         onFocus={(e) => {
-                          e.currentTarget.style.borderColor = "rgba(74,143,217,0.3)";
-                          e.currentTarget.style.background = "rgba(74,143,217,0.04)";
+                          e.currentTarget.style.borderColor = "rgba(201,169,110,0.3)";
+                          e.currentTarget.style.background = "rgba(201,169,110,0.04)";
                         }}
                         onBlur={(e) => {
-                          e.currentTarget.style.borderColor = "rgba(0,40,80,0.1)";
+                          e.currentTarget.style.borderColor = "rgba(201,169,110,0.1)";
                           e.currentTarget.style.background = "rgba(255,240,230,0.04)";
                         }}
                       />
@@ -430,7 +430,7 @@ export function ContactPage() {
                     <div>
                       <label
                         className="block text-[10px] tracking-[0.2em] uppercase font-semibold mb-2"
-                        style={{ color: "rgba(26,26,46,0.4)" }}
+                        style={{ color: "rgba(240,230,211,0.4)" }}
                       >
                         Message *
                       </label>
@@ -443,18 +443,18 @@ export function ContactPage() {
                         className="w-full text-sm outline-none transition-all resize-none"
                         style={{
                           background: "rgba(255,240,230,0.04)",
-                          border: "1px solid rgba(0,40,80,0.1)",
-                          color: "rgba(26,26,46,0.8)",
+                          border: "1px solid rgba(201,169,110,0.1)",
+                          color: "rgba(240,230,211,0.8)",
                           borderRadius: "12px",
                           padding: "14px 16px",
                           lineHeight: 1.6,
                         }}
                         onFocus={(e) => {
-                          e.currentTarget.style.borderColor = "rgba(74,143,217,0.3)";
-                          e.currentTarget.style.background = "rgba(74,143,217,0.04)";
+                          e.currentTarget.style.borderColor = "rgba(201,169,110,0.3)";
+                          e.currentTarget.style.background = "rgba(201,169,110,0.04)";
                         }}
                         onBlur={(e) => {
-                          e.currentTarget.style.borderColor = "rgba(0,40,80,0.1)";
+                          e.currentTarget.style.borderColor = "rgba(201,169,110,0.1)";
                           e.currentTarget.style.background = "rgba(255,240,230,0.04)";
                         }}
                       />
@@ -464,12 +464,12 @@ export function ContactPage() {
                     <button
                       type="submit"
                       disabled={status === "sending" || !form.name || !form.email || !form.message}
-                      className="self-start px-8 py-3.5 text-[11px] tracking-[0.2em] uppercase font-bold text-[#1a1a2e] transition-all"
+                      className="self-start px-8 py-3.5 text-[11px] tracking-[0.2em] uppercase font-bold text-[#f0e6d3] transition-all"
                       style={{
                         background:
                           status === "sending"
-                            ? "rgba(74,143,217,0.3)"
-                            : "linear-gradient(135deg, #4a8fd9, #ff9eb8)",
+                            ? "rgba(201,169,110,0.3)"
+                            : "linear-gradient(135deg, #c9a96e, #ff9eb8)",
                         borderRadius: "12px",
                         border: "none",
                         cursor: status === "sending" ? "wait" : "pointer",
