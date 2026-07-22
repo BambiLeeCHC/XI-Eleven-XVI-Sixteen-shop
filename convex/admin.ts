@@ -84,10 +84,18 @@ export const updateProduct = mutation({
     sortOrder: v.optional(v.number()),
     category: v.optional(v.string()),
     gender: v.optional(v.string()),
+    rotationImages: v.optional(v.array(v.string())),
   },
   returns: v.null(),
   handler: async (ctx, { productId, ...fields }) => {
     await requireAdmin(ctx);
+    if (
+      fields.rotationImages !== undefined &&
+      fields.rotationImages.length !== 0 &&
+      fields.rotationImages.length !== 8
+    ) {
+      throw new Error("A product rotation must contain exactly eight ordered frames.");
+    }
     const patch: Record<string, unknown> = {};
     for (const [key, value] of Object.entries(fields)) {
       if (value !== undefined) patch[key] = value;

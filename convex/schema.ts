@@ -31,6 +31,11 @@ const schema = defineSchema({
     category: v.string(), // "Tops", "Bottoms", "Dresses", "Activewear"
     gender: v.string(), // "women", "men", "unisex"
     images: v.array(v.string()), // URLs
+    // Exactly eight approved, ordered rotation frames:
+    // front, front-right, right, back-right, back, back-left, left, front-left.
+    // Kept separate from the ordinary gallery so gallery images are never
+    // presented as a 360° sequence.
+    rotationImages: v.optional(v.array(v.string())),
     sizes: v.array(v.string()),
     printfulProductId: v.optional(v.string()),
     printfulVariants: v.optional(v.any()), // variant details from Printful

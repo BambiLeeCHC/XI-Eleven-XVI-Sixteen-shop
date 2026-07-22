@@ -21,9 +21,11 @@ function cleanSizeLabel(size: string): string {
 /* ─── 360° Product Viewer ────────────────────────────────────────── */
 function Product360Viewer({
   images,
+  rotationImages,
   name,
 }: {
   images: string[];
+  rotationImages?: string[];
   name: string;
 }) {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -35,10 +37,21 @@ function Product360Viewer({
   const containerRef = useRef<HTMLDivElement>(null);
   const autoRotateInterval = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  // Skip first image (luxury hero) for 360° rotation — use mockup angles only
-  const angleImages = images.length > 3 ? images.slice(1) : images;
-  const has360 = angleImages.length >= 3;
+  // A true rotation is an explicit, approved eight-frame sequence. Ordinary
+  // gallery images must never be inferred to be a 360° view.
+  const angleImages = rotationImages?.length === 8 ? rotationImages : [];
+  const has360 = angleImages.length === 8;
   const displayImage = is360Mode ? angleImages[currentIndex % angleImages.length] : images[currentIndex];
+
+  // Preload approved frames so entering rotation mode does not flash between
+  // network requests, especially on touch devices.
+  useEffect(() => {
+    if (!has360) return;
+    for (const src of angleImages) {
+      const image = new Image();
+      image.src = src;
+    }
+  }, [angleImages, has360]);
 
   // Auto-rotate logic
   useEffect(() => {
@@ -117,6 +130,7 @@ function Product360Viewer({
           borderRadius: "16px",
           cursor: is360Mode ? (isDragging ? "grabbing" : "grab") : "default",
           userSelect: "none",
+          touchAction: is360Mode ? "none" : "pan-y",
         }}
         onMouseDown={onMouseDown}
         onMouseMove={onMouseMove}
@@ -291,7 +305,7 @@ function Product360Viewer({
             >
               <span style={{ fontSize: "18px", color: "rgba(200,140,255,0.6)" }}>↻</span>
               <span className="text-[8px] tracking-wider uppercase" style={{ color: "rgba(200,140,255,0.5)" }}>
-                360°
+                8-angle 360°
               </span>
             </button>
           )}
@@ -407,7 +421,11 @@ export function ProductPage() {
 
       <div className="grid md:grid-cols-2 gap-12">
         {/* 360° Image Viewer */}
-        <Product360Viewer images={product.images || []} name={product.name} />
+        <Product360Viewer
+          images={product.images || []}
+          rotationImages={product.rotationImages}
+          name={product.name}
+        />
 
         {/* Product Info */}
         <div className="flex flex-col">
