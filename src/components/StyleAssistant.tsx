@@ -64,7 +64,7 @@ export function StyleAssistant() {
         {
           role: "assistant",
           content:
-            "I'm having a brief moment — please try again shortly. In the meantime, feel free to reach out to us at xixvi1116@icloud.com ✦",
+            "I'm having a brief moment — please try again shortly. In the meantime, feel free to reach out to us at support@xixvi.shop ✦",
         },
       ]);
     }

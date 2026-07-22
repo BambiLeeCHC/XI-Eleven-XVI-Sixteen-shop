@@ -12,7 +12,15 @@ http.route({
   method: "POST",
   handler: httpAction(async (ctx, request) => {
     try {
-      const body = await request.json();
+      const rawBody = await request.text();
+      const signature = request.headers.get("stripe-signature");
+      const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+      if (!signature || !webhookSecret) {
+        return new Response("Webhook authentication is not configured", { status: 401 });
+      }
+      const verified = await verifyStripeSignature(rawBody, signature, webhookSecret);
+      if (!verified) return new Response("Invalid signature", { status: 401 });
+      const body = JSON.parse(rawBody);
       const eventType = body?.type;
 
       if (eventType === "checkout.session.completed") {
@@ -105,7 +113,7 @@ http.route({
   path: "/sitemap.xml",
   method: "GET",
   handler: httpAction(async (ctx) => {
-    const SITE = "https://xi-xvi-store-b70b82f5.viktor.space";
+    const SITE = "https://xixvi.shop";
     const today = new Date().toISOString().split("T")[0];
 
     // Static pages
@@ -158,3 +166,27 @@ http.route({
 });
 
 export default http;
+
+async function verifyStripeSignature(body: string, header: string, secret: string) {
+  const parts = Object.fromEntries(header.split(",").map((part) => part.split("=")));
+  const timestamp = parts.t;
+  const expected = parts.v1;
+  if (!timestamp || !expected || Math.abs(Date.now() / 1000 - Number(timestamp)) > 300) return false;
+  const key = await crypto.subtle.importKey(
+    "raw",
+    new TextEncoder().encode(secret),
+    { name: "HMAC", hash: "SHA-256" },
+    false,
+    ["sign"],
+  );
+  const digest = await crypto.subtle.sign(
+    "HMAC",
+    key,
+    new TextEncoder().encode(`${timestamp}.${body}`),
+  );
+  const actual = Array.from(new Uint8Array(digest)).map((b) => b.toString(16).padStart(2, "0")).join("");
+  if (actual.length !== expected.length) return false;
+  let mismatch = 0;
+  for (let i = 0; i < actual.length; i++) mismatch |= actual.charCodeAt(i) ^ expected.charCodeAt(i);
+  return mismatch === 0;
+}

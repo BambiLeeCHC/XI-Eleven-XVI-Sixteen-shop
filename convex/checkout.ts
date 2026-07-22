@@ -405,10 +405,10 @@ export const createPaymentLink = action({
         items: [{ productName, priceInCents, quantity, imageUrl }],
         successUrl:
           (process.env.SITE_URL ??
-            "https://preview-xi-xvi-store-b70b82f5.viktor.space") + "/orders",
+            "https://xixvi.shop") + "/orders",
         cancelUrl:
           (process.env.SITE_URL ??
-            "https://preview-xi-xvi-store-b70b82f5.viktor.space") + "/cart",
+            "https://xixvi.shop") + "/cart",
       }
     );
   },

@@ -44,7 +44,7 @@ export function ContactPage() {
     // Send via mailto fallback (no backend needed)
     const mailtoBody = `Name: ${form.name}%0AEmail: ${form.email}%0ASubject: ${form.subject || "(none)"}%0A%0A${form.message}`;
     window.open(
-      `mailto:xixvi1116@icloud.com?subject=${encodeURIComponent(form.subject || "Contact from XI XVI website")}&body=${mailtoBody}`,
+      `mailto:support@xixvi.shop?subject=${encodeURIComponent(form.subject || "Contact from XI XVI website")}&body=${mailtoBody}`,
       "_self"
     );
 
@@ -137,7 +137,7 @@ export function ContactPage() {
             <div className="md:col-span-1 flex flex-col gap-5">
               {/* Email Card */}
               <a
-                href="mailto:xixvi1116@icloud.com"
+                href="mailto:support@xixvi.shop"
                 className="block group"
                 style={{
                   background: "rgba(255,240,230,0.02)",
@@ -178,7 +178,7 @@ export function ContactPage() {
                   </span>
                 </div>
                 <p className="text-[13px]" style={{ color: "rgba(245,230,220,0.7)" }}>
-                  xixvi1116@icloud.com
+                  support@xixvi.shop
                 </p>
                 <p className="text-[11px] mt-1" style={{ color: "rgba(245,230,220,0.3)" }}>
                   We typically respond within 24 hours

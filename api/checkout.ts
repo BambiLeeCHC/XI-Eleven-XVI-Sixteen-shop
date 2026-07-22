@@ -58,12 +58,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     const params: Record<string, string> = {
       mode: "payment",
+      customer_creation: "always",
       success_url: `${successUrl}?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: cancelUrl,
       "phone_number_collection[enabled]": "true",
       "allow_promotion_codes": "true",
       client_reference_id: orderId,
       "metadata[order_id]": orderId,
+      "payment_intent_data[metadata][order_id]": orderId,
+      "payment_intent_data[receipt_email]": customerEmail || "",
     };
 
     if (customerEmail) params.customer_email = customerEmail;
