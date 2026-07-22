@@ -1,6 +1,7 @@
 import { useQuery } from "convex/react";
 import { Link } from "react-router-dom";
 import { api } from "../../convex/_generated/api";
+import { useSessionId } from "../hooks/useSessionId";
 
 /* ─── Fulfillment stage metadata ─────────────────────────────────────── */
 
@@ -88,7 +89,12 @@ function FulfillmentTracker({ stage, history }: { stage?: string; history?: Arra
 }
 
 export function OrdersPage() {
-  const orders = useQuery(api.orders.listByUser) ?? [];
+  const sessionId = useSessionId();
+  const accountOrders = useQuery(api.orders.listByUser) ?? [];
+  const sessionOrders = useQuery(api.orders.listBySession, { sessionId }) ?? [];
+  const orders = Array.from(
+    new Map([...accountOrders, ...sessionOrders].map((order: any) => [order._id, order])).values(),
+  );
 
   return (
     <div className="max-w-3xl mx-auto px-6 py-12">
@@ -154,6 +160,15 @@ export function OrdersPage() {
                 <span className="text-[11px] text-white/40 uppercase tracking-wider">Total</span>
                 <span className="text-white/80">${(order.total / 100).toFixed(2)}</span>
               </div>
+              {order.status === "paid" && (
+                <div className="mt-4 p-4 rounded-lg" style={{ background: "rgba(34,197,94,0.05)", border: "1px solid rgba(34,197,94,0.12)" }}>
+                  <p className="text-[10px] tracking-[0.15em] uppercase font-semibold text-green-400/70">Receipt</p>
+                  <p className="text-[11px] mt-1 text-white/45">
+                    Payment confirmed · Receipt emailed to {order.email}
+                  </p>
+                  <p className="text-[10px] mt-1 text-white/25">Receipt #{order._id.slice(-8).toUpperCase()}</p>
+                </div>
+              )}
 
               {/* Shipping method */}
               {order.shippingMethod && (
@@ -173,6 +188,9 @@ export function OrdersPage() {
                   📦 Track Package →
                 </a>
               )}
+              <Link to="/contact" className="inline-block mt-3 ml-4 text-[11px] text-white/35 hover:text-white/60 transition-colors">
+                Need help with this order? Contact support →
+              </Link>
             </div>
           ))}
         </div>

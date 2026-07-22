@@ -1,6 +1,6 @@
 import { Helmet } from "react-helmet-async";
 
-const SITE_URL = "https://xi-xvi-store-b70b82f5.viktor.space";
+const SITE_URL = "https://xixvi.shop";
 const BRAND = "XI · XVI";
 const DEFAULT_TITLE = "XI · XVI — Luxury Fashion, Precision Fit";
 const DEFAULT_DESCRIPTION =
@@ -74,7 +74,7 @@ export function buildProductJsonLd(product: {
   category: string;
   _id: string;
 }) {
-  const SITE = "https://xi-xvi-store-b70b82f5.viktor.space";
+  const SITE = "https://xixvi.shop";
   return {
     "@context": "https://schema.org",
     "@type": "Product",
@@ -109,7 +109,7 @@ export function buildProductJsonLd(product: {
 export function buildBreadcrumbJsonLd(
   items: { name: string; url: string }[]
 ) {
-  const SITE = "https://xi-xvi-store-b70b82f5.viktor.space";
+  const SITE = "https://xixvi.shop";
   return {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
@@ -129,7 +129,7 @@ export function buildOrganizationJsonLd() {
     "@type": "Organization",
     name: "XI Eleven XVI Sixteen",
     alternateName: "XI · XVI",
-    url: "https://xi-xvi-store-b70b82f5.viktor.space",
+    url: "https://xixvi.shop",
     logo: "https://decisive-cheetah-451.convex.cloud/api/storage/9f36be32-eae9-430a-ac7e-ab617f632b25",
     sameAs: ["https://www.instagram.com/xielevenxvisixteen/"],
     description:

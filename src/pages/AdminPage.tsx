@@ -1836,12 +1836,12 @@ function SettingsTab() {
           </div>
           <div>
             <label className="text-[10px] text-white/25">Contact</label>
-            <p className="text-white/60">xixvi1116@icloud.com</p>
+            <p className="text-white/60">support@xixvi.shop</p>
           </div>
           <div>
             <label className="text-[10px] text-white/25">Store URL</label>
             <p className="text-white/60 break-all">
-              xi-xvi-store-b70b82f5.viktor.space
+              xixvi.shop
             </p>
           </div>
           <div>

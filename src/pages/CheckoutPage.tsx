@@ -1,5 +1,6 @@
 import { useState, useCallback, useMemo, useEffect } from "react";
 import { useQuery, useAction, useMutation } from "convex/react";
+import { useConvexAuth } from "convex/react";
 import { Link, useNavigate } from "react-router-dom";
 import { api } from "../../convex/_generated/api";
 import { useSessionId } from "../hooks/useSessionId";
@@ -170,6 +171,7 @@ const labelStyle: React.CSSProperties = {
 
 export function CheckoutPage() {
   const sessionId = useSessionId();
+  const { isAuthenticated } = useConvexAuth();
   const cartItems = useQuery(api.cart.getItems, { sessionId }) ?? [];
   const estimateShipping = useAction(api.checkout.estimateShipping);
   const createOrder = useMutation(api.orders.create);
@@ -537,6 +539,16 @@ export function CheckoutPage() {
               >
                 Shipping Information
               </h2>
+              {!isAuthenticated && (
+                <div className="p-3 mb-5 rounded-lg" style={{ background: "rgba(196,141,255,0.05)", border: "1px solid rgba(196,141,255,0.12)" }}>
+                  <p className="text-[11px]" style={{ color: "rgba(245,230,220,0.55)" }}>
+                    Have an account? <Link to="/login" className="text-purple-300">Sign in</Link> before checkout to keep your receipt and live fulfillment tracker in your account.
+                  </p>
+                  <p className="text-[10px] mt-1" style={{ color: "rgba(245,230,220,0.3)" }}>
+                    Guest checkout is available; your receipt will still be emailed by Stripe.
+                  </p>
+                </div>
+              )}
 
               {/* Email */}
               <div className="mb-5">

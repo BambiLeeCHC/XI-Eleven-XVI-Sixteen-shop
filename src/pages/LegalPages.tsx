@@ -86,7 +86,7 @@ export function PrivacyPage() {
           <li>Withdraw consent for marketing communications at any time.</li>
           <li>Lodge a complaint with a supervisory authority.</li>
         </ul>
-        <p>To exercise any of these rights, email us at <a href="mailto:xixvi1116@icloud.com">xixvi1116@icloud.com</a>.</p>
+        <p>To exercise any of these rights, email us at <a href="mailto:support@xixvi.shop">support@xixvi.shop</a>.</p>
 
         <h2>8. California Residents (CCPA)</h2>
         <p>If you are a California resident, you have the right to know what personal information we collect, request deletion of your data, and opt out of the sale of personal information (we do not sell personal data). To submit a request, contact us at the email above. We will verify your identity before processing any request.</p>
@@ -104,7 +104,7 @@ export function PrivacyPage() {
         <p>If you have questions about this Privacy Policy, contact us at:</p>
         <p>
           XI Eleven XVI Sixteen L.L.C.<br />
-          Email: <a href="mailto:xixvi1116@icloud.com">xixvi1116@icloud.com</a><br />
+          Email: <a href="mailto:support@xixvi.shop">support@xixvi.shop</a><br />
           Instagram: <a href="https://instagram.com/xielevenxvisixteen" target="_blank" rel="noopener noreferrer">@xielevenxvisixteen</a>
         </p>
       </LegalWrapper>
@@ -185,7 +185,7 @@ export function TermsPage() {
         <h2>13. Contact</h2>
         <p>
           XI Eleven XVI Sixteen L.L.C.<br />
-          Email: <a href="mailto:xixvi1116@icloud.com">xixvi1116@icloud.com</a><br />
+          Email: <a href="mailto:support@xixvi.shop">support@xixvi.shop</a><br />
           Instagram: <a href="https://instagram.com/xielevenxvisixteen" target="_blank" rel="noopener noreferrer">@xielevenxvisixteen</a>
         </p>
       </LegalWrapper>
@@ -244,7 +244,7 @@ export function ShippingPolicyPage() {
         <h2>8. Contact</h2>
         <p>For shipping questions or concerns, reach out to us at:</p>
         <p>
-          Email: <a href="mailto:xixvi1116@icloud.com">xixvi1116@icloud.com</a><br />
+          Email: <a href="mailto:support@xixvi.shop">support@xixvi.shop</a><br />
           Instagram: <a href="https://instagram.com/xielevenxvisixteen" target="_blank" rel="noopener noreferrer">@xielevenxvisixteen</a>
         </p>
       </LegalWrapper>
@@ -308,7 +308,7 @@ export function ReturnsPage() {
         <h2>8. How to Contact Us</h2>
         <p>For all return and refund inquiries:</p>
         <p>
-          Email: <a href="mailto:xixvi1116@icloud.com">xixvi1116@icloud.com</a><br />
+          Email: <a href="mailto:support@xixvi.shop">support@xixvi.shop</a><br />
           Instagram: <a href="https://instagram.com/xielevenxvisixteen" target="_blank" rel="noopener noreferrer">@xielevenxvisixteen</a>
         </p>
         <p>Please include your order number in all correspondence to help us assist you quickly.</p>

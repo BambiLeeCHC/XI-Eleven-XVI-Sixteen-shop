@@ -294,6 +294,8 @@ export const fulfillWithPrintful = action({
           "X-PF-Store-Id": "17855930",
         },
         body: JSON.stringify({
+          external_id: String(orderId),
+          confirm: true,
           recipient: {
             name: addr.name,
             address1: addr.address1,
