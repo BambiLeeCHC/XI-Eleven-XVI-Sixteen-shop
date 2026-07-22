@@ -133,6 +133,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     });
   } catch (error) {
     console.error("Checkout API error", error);
-    return res.status(500).json({ error: "Unable to create secure checkout" });
+    return res.status(500).json({
+      error: "Unable to create secure checkout",
+      diagnostic: error instanceof Error ? error.message : String(error),
+    });
   }
 }
