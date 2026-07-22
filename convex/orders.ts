@@ -116,6 +116,7 @@ export const updateStatus = mutation({
     trackingNumber: v.optional(v.string()),
     trackingCarrier: v.optional(v.string()),
     fulfillmentStage: v.optional(v.string()),
+    fulfillmentException: v.optional(v.string()),
   },
   returns: v.null(),
   handler: async (ctx, { orderId, ...updates }) => {

@@ -183,6 +183,16 @@ export function OrdersPage() {
                 history={order.fulfillmentHistory}
               />
 
+              {order.fulfillmentException && (
+                <div className="mt-4 p-4 rounded-lg" style={{ background: "rgba(245,158,11,0.06)", border: "1px solid rgba(245,158,11,0.18)" }}>
+                  <p className="text-[10px] tracking-[0.15em] uppercase font-semibold text-amber-300/80">Fulfillment update</p>
+                  <p className="text-[11px] mt-1 text-white/50">{order.fulfillmentException}</p>
+                  <a href={`mailto:support@xixvi.shop?subject=Order ${order._id.slice(-8)} support`} className="inline-block mt-2 text-[10px] text-amber-200/70 hover:text-amber-200">
+                    Contact support@xixvi.shop →
+                  </a>
+                </div>
+              )}
+
               {order.trackingUrl && (
                 <a href={order.trackingUrl} target="_blank" rel="noopener noreferrer" className="inline-block mt-3 text-[11px] text-purple-400 hover:text-purple-300 transition-colors">
                   📦 Track Package →

@@ -869,6 +869,13 @@ function ProductsTab() {
       )
     : sorted;
 
+  const productCost = (product: any) => {
+    const values = (product.printfulVariants || [])
+      .map((variant: any) => Number.parseFloat(variant.price || variant.product?.price || ""))
+      .filter((value: number) => Number.isFinite(value) && value > 0);
+    return values.length ? Math.round(values.reduce((sum: number, value: number) => sum + value, 0) / values.length * 100) : null;
+  };
+
   const startEdit = (product: any) => {
     setEditingId(product._id);
     setEditForm({
@@ -1066,9 +1073,16 @@ function ProductsTab() {
                     {product.images?.length || 0} images
                   </p>
                 </div>
-                <span className="text-sm font-medium text-white/70 tabular-nums">
-                  ${(product.price / 100).toFixed(2)}
-                </span>
+                <div className="text-right">
+                  <span className="text-sm font-medium text-white/70 tabular-nums block">
+                    ${(product.price / 100).toFixed(2)}
+                  </span>
+                  {productCost(product) !== null && (
+                    <span className="text-[9px] text-emerald-400/55 tabular-nums">
+                      Margin ${((product.price - productCost(product)!) / 100).toFixed(2)} · {Math.round(((product.price - productCost(product)!) / product.price) * 100)}%
+                    </span>
+                  )}
+                </div>
                 <button
                   onClick={() => startEdit(product)}
                   className="text-white/20 hover:text-white/60 transition-colors p-1"

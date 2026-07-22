@@ -561,6 +561,11 @@ export function ProductPage() {
               Includes 2–5 business days to make your piece plus standard tracked shipping. Final options are calculated for your address at checkout.
             </p>
           </div>
+          <p className="text-[10px] leading-relaxed mb-4" style={{ color: "rgba(245,230,220,0.30)" }}>
+            {typeof navigator !== "undefined" && !navigator.language.toLowerCase().startsWith("en-us")
+              ? "Fulfilled from the closest available production facility when possible. International orders may be split into multiple tracked packages; local customs duties or import taxes may apply."
+              : "Fulfilled from the closest available production facility when possible. Some orders may arrive in multiple tracked packages."}
+          </p>
 
           {/* Add to Cart */}
           <button

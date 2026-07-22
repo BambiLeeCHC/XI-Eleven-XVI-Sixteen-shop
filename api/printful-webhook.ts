@@ -44,6 +44,16 @@ export default async function handler(req: Request, res: Response) {
         printfulStatus: status,
       });
     }
+  } else if (event.type === "order_failed") {
+    const reason =
+      event.data?.reason ||
+      event.data?.order?.failure_reason ||
+      "Production needs attention. Our support team is reviewing the order.";
+    await convex.mutation(anyApi.orders.updateStatus, {
+      orderId,
+      status: "paid",
+      fulfillmentException: String(reason).slice(0, 300),
+    });
   }
 
   return res.status(200).send("OK");
