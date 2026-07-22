@@ -24,13 +24,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(405).json({ error: "Method not allowed" });
   }
 
-  const keySource = process.env.STRIPE_KEY_B64
+  const encodedKey = process.env.STRIPE_KEY_ENCODED || process.env.STRIPE_KEY_B64;
+  const keySource = encodedKey
     ? "base64"
     : process.env.STRIPE_API_KEY
       ? "encrypted"
       : "legacy";
-  const secretKey = process.env.STRIPE_KEY_B64
-    ? Buffer.from(process.env.STRIPE_KEY_B64, "base64").toString("utf8")
+  const secretKey = encodedKey
+    ? Buffer.from(encodedKey, "base64").toString("utf8")
     : process.env.STRIPE_API_KEY || process.env.STRIPE_SECRET_KEY;
   if (!secretKey) {
     return res.status(500).json({ error: "Payment service is not configured" });
