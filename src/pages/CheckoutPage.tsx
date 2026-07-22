@@ -1,5 +1,5 @@
 import { useState, useCallback, useMemo, useEffect } from "react";
-import { useQuery, useAction } from "convex/react";
+import { useQuery, useAction, useMutation } from "convex/react";
 import { Link, useNavigate } from "react-router-dom";
 import { api } from "../../convex/_generated/api";
 import { useSessionId } from "../hooks/useSessionId";
@@ -172,7 +172,8 @@ export function CheckoutPage() {
   const sessionId = useSessionId();
   const cartItems = useQuery(api.cart.getItems, { sessionId }) ?? [];
   const estimateShipping = useAction(api.checkout.estimateShipping);
-  const createCheckoutSession = useAction(api.checkout.createCheckoutSession);
+  const createOrder = useMutation(api.orders.create);
+  const updateOrderStatus = useMutation(api.orders.updateStatus);
   const navigate = useNavigate();
 
   // Steps: 1 = address, 2 = shipping, 3 = review
@@ -308,48 +309,59 @@ export function CheckoutPage() {
       }));
 
       const baseUrl = window.location.origin;
-      const result = await createCheckoutSession({
-        items,
-        shippingRateInCents: selectedRate.rateInCents,
-        shippingMethodName: `Shipping — ${selectedRate.name}`,
-        taxAmountCents: taxAmount > 0 ? taxAmount : undefined,
-        taxLabel: taxInfo?.label || undefined,
-        customerEmail: address.email,
-        successUrl: `${baseUrl}/orders`,
-        cancelUrl: `${baseUrl}/checkout`,
-        order: {
-          email: address.email,
-          sessionId,
-          items: cartItems.map((item: any) => ({
-            productId: item.productId,
-            productName: item.product.name,
-            size: item.size,
-            quantity: item.quantity,
-            priceAtPurchase: item.product.price,
-            image: item.product.images?.[0] || undefined,
-          })),
-          subtotal,
-          tax: taxAmount || undefined,
-          taxRate: taxInfo?.rate,
-          taxRegion: taxInfo?.region,
-          shipping: selectedRate.rateInCents,
-          total,
-          currency: "usd",
-          shippingMethod: selectedRate.name,
-          shippingAddress: {
-            name: `${address.firstName} ${address.lastName}`.trim(),
-            address1: address.address1,
-            address2: address.address2 || undefined,
-            city: address.city,
-            stateCode: address.stateCode || "-",
-            countryCode: address.countryCode,
-            zip: address.zip,
-            phone: address.phone || undefined,
-          },
+      const orderId = await createOrder({
+        email: address.email,
+        sessionId,
+        items: cartItems.map((item: any) => ({
+          productId: item.productId,
+          productName: item.product.name,
+          size: item.size,
+          quantity: item.quantity,
+          priceAtPurchase: item.product.price,
+          image: item.product.images?.[0] || undefined,
+        })),
+        subtotal,
+        tax: taxAmount || undefined,
+        taxRate: taxInfo?.rate,
+        taxRegion: taxInfo?.region,
+        shipping: selectedRate.rateInCents,
+        total,
+        currency: "usd",
+        shippingMethod: selectedRate.name,
+        shippingAddress: {
+          name: `${address.firstName} ${address.lastName}`.trim(),
+          address1: address.address1,
+          address2: address.address2 || undefined,
+          city: address.city,
+          stateCode: address.stateCode || "-",
+          countryCode: address.countryCode,
+          zip: address.zip,
+          phone: address.phone || undefined,
         },
       });
+      const response = await fetch("/api/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          items,
+          shippingRateInCents: selectedRate.rateInCents,
+          shippingMethodName: `Shipping — ${selectedRate.name}`,
+          taxAmountCents: taxAmount > 0 ? taxAmount : undefined,
+          taxLabel: taxInfo?.label || undefined,
+          customerEmail: address.email,
+          successUrl: `${baseUrl}/orders`,
+          cancelUrl: `${baseUrl}/checkout`,
+          orderId,
+        }),
+      });
+      const result = await response.json();
 
-      if (result?.url) {
+      if (response.ok && result?.url && result?.sessionId) {
+        await updateOrderStatus({
+          orderId,
+          status: "pending",
+          stripeCheckoutSessionId: result.sessionId,
+        });
         window.location.href = result.url;
       } else {
         setError(result?.error || "Unable to create checkout. Please try again.");
@@ -359,7 +371,7 @@ export function CheckoutPage() {
     } finally {
       setLoading(false);
     }
-  }, [cartItems, selectedRate, address, createCheckoutSession, sessionId, subtotal, taxAmount, taxInfo, total]);
+  }, [cartItems, selectedRate, address, createOrder, updateOrderStatus, sessionId, subtotal, taxAmount, taxInfo, total]);
 
   /* ─── Redirect if cart empty ───────────────────────────────────────── */
 
