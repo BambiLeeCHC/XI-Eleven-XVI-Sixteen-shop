@@ -234,7 +234,7 @@ export function ClosetHero() {
 
           .mannequin-unit img {
             width: auto;
-            height: min(56svh, 500px, calc((100vw - 12px) / 1.374));
+            height: min(56svh, 500px, calc(72.78vw - 8.73px));
             max-width: none;
           }
 
