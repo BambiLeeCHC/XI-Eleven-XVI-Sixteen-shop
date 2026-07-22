@@ -24,7 +24,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(405).json({ error: "Method not allowed" });
   }
 
-  const encodedKey = process.env.STRIPE_KEY_ENCODED || process.env.STRIPE_KEY_B64;
+  const encodedKey =
+    process.env.STRIPE_KEY_ENCODED_V2 ||
+    process.env.STRIPE_KEY_ENCODED ||
+    process.env.STRIPE_KEY_B64;
   const keySource = encodedKey
     ? "base64"
     : process.env.STRIPE_API_KEY
