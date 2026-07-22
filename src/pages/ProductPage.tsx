@@ -355,6 +355,26 @@ export function ProductPage() {
     setTimeout(() => setAdded(false), 2000);
   };
 
+  const variantForSize = (size: string) =>
+    (product.printfulVariants || []).find((variant: any) => {
+      const variantSize = variant.size || variant.name?.split(" - ").pop();
+      return cleanSizeLabel(variantSize || "") === cleanSizeLabel(size);
+    });
+  const isSizeAvailable = (size: string) => {
+    const variant = variantForSize(size);
+    return Boolean(
+      variant?.id &&
+      variant?.is_ignored !== true &&
+      variant?.availability_status !== "out_of_stock" &&
+      variant?.availability_status !== "discontinued",
+    );
+  };
+  const deliveryStart = new Date();
+  deliveryStart.setDate(deliveryStart.getDate() + 6);
+  const deliveryEnd = new Date();
+  deliveryEnd.setDate(deliveryEnd.getDate() + 12);
+  const deliveryWindow = `${deliveryStart.toLocaleDateString("en-US", { month: "short", day: "numeric" })}–${deliveryEnd.toLocaleDateString("en-US", { month: "short", day: "numeric" })}`;
+
   const productSeo = getProductSEO(product);
   const productJsonLd = buildProductJsonLd(product);
   const breadcrumbLd = buildBreadcrumbJsonLd([
@@ -496,11 +516,14 @@ export function ProductPage() {
                 SIZE
               </p>
               <div className="flex flex-wrap gap-2">
-                {product.sizes.map((size: string) => (
+                {product.sizes.map((size: string) => {
+                  const available = isSizeAvailable(size);
+                  return (
                   <button
                     type="button"
                     key={size}
-                    onClick={() => setSelectedSize(size)}
+                    onClick={() => available && setSelectedSize(size)}
+                    disabled={!available}
                     className="px-4 py-2 text-[11px] tracking-wider uppercase transition-all"
                     style={{
                       color: selectedSize === size ? "white" : "rgba(245,230,220,0.45)",
@@ -513,14 +536,31 @@ export function ProductPage() {
                           ? "1px solid rgba(200,140,255,0.3)"
                           : "1px solid rgba(240,210,190,0.1)",
                       borderRadius: "10px",
+                      opacity: available ? 1 : 0.32,
+                      textDecoration: available ? "none" : "line-through",
+                      cursor: available ? "pointer" : "not-allowed",
                     }}
+                    title={available ? `Select ${cleanSizeLabel(size)}` : "Currently unavailable"}
                   >
                     {cleanSizeLabel(size)}
                   </button>
-                ))}
+                  );
+                })}
               </div>
+              <p className="text-[9px] mt-2" style={{ color: "rgba(245,230,220,0.28)" }}>
+                Unavailable variants cannot be added to cart.
+              </p>
             </div>
           )}
+
+          <div className="mb-4 px-4 py-3 rounded-xl" style={{ background: "rgba(16,185,129,0.045)", border: "1px solid rgba(16,185,129,0.13)" }}>
+            <p className="text-[10px] tracking-[0.13em] uppercase font-semibold" style={{ color: "rgba(110,231,183,0.75)" }}>
+              Estimated delivery {deliveryWindow}
+            </p>
+            <p className="text-[10px] mt-1" style={{ color: "rgba(245,230,220,0.34)" }}>
+              Includes 2–5 business days to make your piece plus standard tracked shipping. Final options are calculated for your address at checkout.
+            </p>
+          </div>
 
           {/* Add to Cart */}
           <button

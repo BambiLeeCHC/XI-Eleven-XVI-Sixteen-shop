@@ -103,6 +103,8 @@ const schema = defineSchema({
       note: v.optional(v.string()),
     }))),
     printfulStatus: v.optional(v.string()),
+    giftMessage: v.optional(v.string()),
+    fulfillmentException: v.optional(v.string()),
   })
     .index("by_session", ["sessionId"])
     .index("by_user", ["userId"])

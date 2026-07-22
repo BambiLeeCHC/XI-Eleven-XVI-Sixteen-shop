@@ -201,6 +201,7 @@ export function CheckoutPage() {
   // Shipping state
   const [shippingRates, setShippingRates] = useState<ShippingRate[]>([]);
   const [selectedRate, setSelectedRate] = useState<ShippingRate | null>(null);
+  const [giftMessage, setGiftMessage] = useState("");
 
   // Tax state
   const [taxInfo, setTaxInfo] = useState<TaxInfo | null>(null);
@@ -331,6 +332,7 @@ export function CheckoutPage() {
         total,
         currency: "usd",
         shippingMethod: selectedRate.name,
+        giftMessage: giftMessage.trim() || undefined,
         shippingAddress: {
           name: `${address.firstName} ${address.lastName}`.trim(),
           address1: address.address1,
@@ -550,6 +552,19 @@ export function CheckoutPage() {
                   </p>
                 </div>
               )}
+
+              <div className="mb-5">
+                <label style={labelStyle}>Gift message <span style={{ opacity: 0.45 }}>(optional)</span></label>
+                <textarea
+                  rows={3}
+                  maxLength={250}
+                  placeholder="Add a note for the recipient. No prices will appear on the packing slip."
+                  value={giftMessage}
+                  onChange={(e) => setGiftMessage(e.target.value)}
+                  style={{ ...inputStyle, resize: "vertical" }}
+                />
+                <p className="text-[9px] mt-1 text-right" style={{ color: "rgba(245,230,220,0.25)" }}>{giftMessage.length}/250</p>
+              </div>
 
               {/* Email */}
               <div className="mb-5">

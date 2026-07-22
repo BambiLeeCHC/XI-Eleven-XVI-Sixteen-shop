@@ -39,6 +39,7 @@ export const create = mutation({
     total: v.number(),
     currency: v.string(),
     shippingMethod: v.optional(v.string()),
+    giftMessage: v.optional(v.string()),
     shippingAddress: v.optional(
       v.object({
         name: v.string(),
@@ -308,6 +309,13 @@ export const fulfillWithPrintful = action({
             phone: addr.phone || undefined,
           },
           items: printfulItems,
+          packing_slip: {
+            email: "support@xixvi.shop",
+            message: order.giftMessage || "Made exclusively for you by XI · XVI.",
+            logo_url: "https://xixvi.shop/icon-512.png",
+            store_name: "XI · XVI",
+            custom_order_id: String(orderId).slice(-8).toUpperCase(),
+          },
         }),
       });
 
