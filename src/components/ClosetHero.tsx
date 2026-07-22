@@ -210,11 +210,11 @@ export function ClosetHero() {
             width: 100%;
             left: 0;
             transform: none;
-            display: grid;
-            grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+            display: flex;
+            justify-content: center;
             align-items: end;
-            padding: 0 12px 66px;
-            column-gap: 4px;
+            padding: 0 4px 66px;
+            gap: 4px;
           }
 
           .store-bg {
@@ -229,17 +229,17 @@ export function ClosetHero() {
             bottom: auto;
             transform: none;
             min-width: 0;
-            justify-self: stretch;
+            flex: 0 0 auto;
           }
 
           .mannequin-unit img {
-            width: 100%;
-            height: auto;
-            max-height: min(56svh, 500px);
+            width: auto;
+            height: min(56svh, 500px, calc((100vw - 12px) / 1.374));
+            max-width: none;
           }
 
-          .mannequin-women-unit { grid-column: 1; }
-          .mannequin-men-unit { grid-column: 2; }
+          .mannequin-women-unit,
+          .mannequin-men-unit { flex-shrink: 0; }
           .pedestal {
             width: min(150px, 85%);
             height: 22px;
