@@ -127,7 +127,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     if (!stripeResponse.ok) {
       console.error("Stripe checkout error", session?.error?.type);
-      return res.status(502).json({ error: "Unable to create secure checkout" });
+      return res.status(502).json({
+        error: "Unable to create secure checkout",
+        diagnostic: session?.error?.message || session?.error?.type || "Stripe rejected checkout",
+      });
     }
 
     return res.status(200).json({
