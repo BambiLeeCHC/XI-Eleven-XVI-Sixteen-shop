@@ -28,11 +28,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     process.env.STRIPE_KEY_ENCODED_V2 ||
     process.env.STRIPE_KEY_ENCODED ||
     process.env.STRIPE_KEY_B64;
-  const keySource = encodedKey
-    ? "base64"
-    : process.env.STRIPE_API_KEY
-      ? "encrypted"
-      : "legacy";
   const secretKey = encodedKey
     ? Buffer.from(encodedKey, "base64").toString("utf8")
     : process.env.STRIPE_API_KEY || process.env.STRIPE_SECRET_KEY;
@@ -138,10 +133,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     if (!stripeResponse.ok) {
       console.error("Stripe checkout error", session?.error?.type);
-      return res.status(502).json({
-        error: "Unable to create secure checkout",
-        diagnostic: `${keySource}: ${session?.error?.message || session?.error?.type || "Stripe rejected checkout"}`,
-      });
+      return res.status(502).json({ error: "Unable to create secure checkout" });
     }
 
     return res.status(200).json({
@@ -151,9 +143,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     });
   } catch (error) {
     console.error("Checkout API error", error);
-    return res.status(500).json({
-      error: "Unable to create secure checkout",
-      diagnostic: error instanceof Error ? error.message : String(error),
-    });
+    return res.status(500).json({ error: "Unable to create secure checkout" });
   }
 }
