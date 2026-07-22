@@ -30,6 +30,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   try {
+    const normalizedSecretKey = secretKey
+      .replace(/^['"]|['"]$/g, "")
+      .replace(/[^\x20-\x7E]/g, "")
+      .trim();
     const {
       items,
       shippingRateInCents,
@@ -114,7 +118,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const stripeResponse = await fetch(`${STRIPE_BASE}/checkout/sessions`, {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${secretKey}`,
+        Authorization: `Bearer ${normalizedSecretKey}`,
         "Content-Type": "application/x-www-form-urlencoded",
       },
       body: new URLSearchParams(params).toString(),
