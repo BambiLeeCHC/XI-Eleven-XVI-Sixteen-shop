@@ -317,6 +317,36 @@ export function CheckoutPage() {
         customerEmail: address.email,
         successUrl: `${baseUrl}/orders`,
         cancelUrl: `${baseUrl}/checkout`,
+        order: {
+          email: address.email,
+          sessionId,
+          items: cartItems.map((item: any) => ({
+            productId: item.productId,
+            productName: item.product.name,
+            size: item.size,
+            quantity: item.quantity,
+            priceAtPurchase: item.product.price,
+            image: item.product.images?.[0] || undefined,
+          })),
+          subtotal,
+          tax: taxAmount || undefined,
+          taxRate: taxInfo?.rate,
+          taxRegion: taxInfo?.region,
+          shipping: selectedRate.rateInCents,
+          total,
+          currency: "usd",
+          shippingMethod: selectedRate.name,
+          shippingAddress: {
+            name: `${address.firstName} ${address.lastName}`.trim(),
+            address1: address.address1,
+            address2: address.address2 || undefined,
+            city: address.city,
+            stateCode: address.stateCode || "-",
+            countryCode: address.countryCode,
+            zip: address.zip,
+            phone: address.phone || undefined,
+          },
+        },
       });
 
       if (result?.url) {
@@ -329,7 +359,7 @@ export function CheckoutPage() {
     } finally {
       setLoading(false);
     }
-  }, [cartItems, selectedRate, address, createCheckoutSession, taxAmount, taxInfo]);
+  }, [cartItems, selectedRate, address, createCheckoutSession, sessionId, subtotal, taxAmount, taxInfo, total]);
 
   /* ─── Redirect if cart empty ───────────────────────────────────────── */
 

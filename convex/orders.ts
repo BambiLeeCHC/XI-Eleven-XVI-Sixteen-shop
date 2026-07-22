@@ -59,10 +59,10 @@ export const create = mutation({
       ...args,
       userId: userId ?? undefined,
       status: "pending",
-      fulfillmentStage: "payment_received",
+      fulfillmentStage: "awaiting_payment",
       fulfillmentHistory: [
         {
-          stage: "payment_received",
+          stage: "awaiting_payment",
           timestamp: Date.now(),
           note: "Order placed — awaiting payment confirmation",
         },
@@ -146,6 +146,7 @@ export const updateStatus = mutation({
 
 function getFulfillmentNote(stage: string): string {
   switch (stage) {
+    case "awaiting_payment": return "Order placed — awaiting payment confirmation";
     case "payment_received": return "Payment confirmed";
     case "sent_to_printful": return "Order sent to production partner";
     case "printful_processing": return "Your piece is being crafted — made exclusively for you";
@@ -155,6 +156,20 @@ function getFulfillmentNote(stage: string): string {
     default: return stage;
   }
 }
+
+// ─── Internal: attach Stripe Checkout session ───────────────────────────
+
+export const attachStripeCheckoutSession = internalMutation({
+  args: {
+    orderId: v.id("orders"),
+    stripeCheckoutSessionId: v.string(),
+  },
+  returns: v.null(),
+  handler: async (ctx, { orderId, stripeCheckoutSessionId }) => {
+    await ctx.db.patch(orderId, { stripeCheckoutSessionId });
+    return null;
+  },
+});
 
 // ─── Get by Stripe session ──────────────────────────────────────────────
 

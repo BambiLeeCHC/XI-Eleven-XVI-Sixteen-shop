@@ -251,10 +251,48 @@ export const createCheckoutSession = action({
     customerEmail: v.optional(v.string()),
     successUrl: v.string(),
     cancelUrl: v.string(),
+    order: v.object({
+      email: v.string(),
+      sessionId: v.string(),
+      items: v.array(
+        v.object({
+          productId: v.id("products"),
+          productName: v.string(),
+          size: v.string(),
+          quantity: v.number(),
+          priceAtPurchase: v.number(),
+          image: v.optional(v.string()),
+        })
+      ),
+      subtotal: v.number(),
+      tax: v.optional(v.number()),
+      taxRate: v.optional(v.number()),
+      taxRegion: v.optional(v.string()),
+      shipping: v.number(),
+      total: v.number(),
+      currency: v.string(),
+      shippingMethod: v.optional(v.string()),
+      shippingAddress: v.object({
+        name: v.string(),
+        address1: v.string(),
+        address2: v.optional(v.string()),
+        city: v.string(),
+        stateCode: v.string(),
+        countryCode: v.string(),
+        zip: v.string(),
+        phone: v.optional(v.string()),
+      }),
+    }),
   },
   returns: v.any(),
-  handler: async (_ctx, args) => {
+  handler: async (ctx, args) => {
     try {
+      const orderId = await ctx.runMutation(
+        // @ts-ignore Generated API types update when Convex deploys this function.
+        "orders:create" as any,
+        args.order
+      );
+
       const params: Record<string, string> = {
         mode: "payment",
         "success_url": args.successUrl + "?session_id={CHECKOUT_SESSION_ID}",
@@ -327,6 +365,14 @@ export const createCheckoutSession = action({
       // Use Checkout Session for better tracking
       console.log("Stripe params:", JSON.stringify(Object.keys(params)));
       const session = await stripePost("/checkout/sessions", params);
+      await ctx.runMutation(
+        // @ts-ignore Generated API types update when Convex deploys this function.
+        "orders:attachStripeCheckoutSession" as any,
+        {
+          orderId,
+          stripeCheckoutSessionId: session.id,
+        }
+      );
       console.log("Stripe session created:", session.id, "url:", session.url?.substring(0, 50));
 
       return { success: true, url: session.url, sessionId: session.id };
