@@ -175,6 +175,11 @@ export function CartPage() {
           PROCEED TO CHECKOUT
         </button>
         <p className="text-center text-[10px] mt-3" style={{ color: "rgba(245,230,220,0.2)" }}>Secure checkout powered by Stripe</p>
+        <div className="flex flex-wrap justify-center gap-x-4 gap-y-2 mt-4">
+          {["🔒 SSL Encrypted", "✦ Free Standard Shipping", "📦 Tracked Delivery", "🪡 Made to Order"].map((badge) => (
+            <span key={badge} className="text-[9px] tracking-[0.08em] uppercase" style={{ color: "rgba(245,230,220,0.32)" }}>{badge}</span>
+          ))}
+        </div>
       </div>
     </div>
     </>

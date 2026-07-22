@@ -1089,6 +1089,20 @@ export function CheckoutPage() {
         {/* Right Column — Order Summary (sticky) */}
         <div className="lg:sticky lg:top-8 lg:self-start">
           <div className="p-5" style={glassCard}>
+            <div className="grid grid-cols-2 gap-2 mb-5">
+              {[
+                ["🔒", "SSL Encrypted"],
+                ["◇", "Secure Stripe Checkout"],
+                ["✦", "Free Standard Shipping"],
+                ["📦", "Tracked Delivery"],
+                ["🪡", "Made to Order"],
+              ].map(([icon, label]) => (
+                <div key={label} className="flex items-center gap-2 px-2.5 py-2 rounded-lg" style={{ background: "rgba(255,240,230,0.025)", border: "1px solid rgba(240,210,190,0.07)" }}>
+                  <span className="text-[12px]">{icon}</span>
+                  <span className="text-[8px] tracking-[0.08em] uppercase font-semibold" style={{ color: "rgba(245,230,220,0.42)" }}>{label}</span>
+                </div>
+              ))}
+            </div>
             <h3
               className="text-[11px] tracking-[0.2em] uppercase font-bold mb-5"
               style={{ color: "rgba(245,230,220,0.55)" }}
