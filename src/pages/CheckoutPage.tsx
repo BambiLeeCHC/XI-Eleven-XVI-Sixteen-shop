@@ -34,6 +34,7 @@ interface ShippingRate {
   fulfillmentMaxDays: number;
   totalMinDays: number | null;
   totalMaxDays: number | null;
+  speedLabel?: string;
 }
 
 interface TaxInfo {
@@ -802,6 +803,15 @@ export function CheckoutPage() {
                             )}
                           </div>
                           <div>
+                            <span
+                              className="inline-block text-[9px] tracking-[0.12em] uppercase font-bold mb-1 px-2 py-0.5 rounded-full"
+                              style={{
+                                color: rate.rateInCents === 0 ? "rgba(74,222,128,0.8)" : "rgba(196,141,255,0.85)",
+                                background: rate.rateInCents === 0 ? "rgba(34,197,94,0.08)" : "rgba(196,141,255,0.08)",
+                              }}
+                            >
+                              {rate.speedLabel || (rate.rateInCents === 0 ? "FREE STANDARD" : "EXPEDITED")}
+                            </span>
                             <p
                               className="text-[13px] font-medium"
                               style={{
@@ -838,7 +848,7 @@ export function CheckoutPage() {
                               : "rgba(245,230,220,0.55)",
                           }}
                         >
-                          ${parseFloat(rate.rate).toFixed(2)}
+                          {rate.rateInCents === 0 ? "FREE" : `$${parseFloat(rate.rate).toFixed(2)}`}
                         </span>
                       </div>
                     </button>

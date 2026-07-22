@@ -191,7 +191,7 @@ export const estimateShipping = action({
       const FULFILLMENT_MIN = 2;
       const FULFILLMENT_MAX = 5;
 
-      const rates = apiResult.result.map((rate: PrintfulShippingRate) => {
+      const normalizedRates = apiResult.result.map((rate: PrintfulShippingRate) => {
         const minTransit: number | null =
           rate.minDeliveryDays ?? rate.min_delivery_days ?? null;
         const maxTransit: number | null =
@@ -210,6 +210,7 @@ export const estimateShipping = action({
           rateInCents: isStandard ? 0 : originalRateCents,
           originalRateCents,
           isFreeShipping: isStandard,
+          speedLabel: isStandard ? "FREE" : "EXPEDITED",
           currency: rate.currency || "USD",
           transitMinDays: minTransit,
           transitMaxDays: maxTransit,
@@ -221,6 +222,23 @@ export const estimateShipping = action({
             maxTransit !== null ? FULFILLMENT_MAX + maxTransit : null,
         };
       });
+      // Printful can return multiple names for effectively identical services.
+      // Keep all genuinely different speed/price options, but collapse duplicates.
+      const unique = new Map<string, (typeof normalizedRates)[number]>();
+      for (const rate of normalizedRates) {
+        const key = `${rate.rateInCents}:${rate.totalMinDays}:${rate.totalMaxDays}`;
+        if (!unique.has(key)) unique.set(key, rate);
+      }
+      const rates = [...unique.values()]
+        .sort((a, b) => a.rateInCents - b.rateInCents || (a.totalMaxDays ?? 999) - (b.totalMaxDays ?? 999))
+        .map((rate, index, all) => ({
+          ...rate,
+          speedLabel: rate.isFreeShipping
+            ? "FREE STANDARD"
+            : index === all.length - 1 && all.length > 2
+              ? "FASTEST"
+              : "FASTER",
+        }));
 
       return { success: true, rates, resolvedItems: resolvedRaw };
     } catch (error) {
@@ -522,4 +540,3 @@ export const calculateShipping = action({
     }
   },
 });
-
