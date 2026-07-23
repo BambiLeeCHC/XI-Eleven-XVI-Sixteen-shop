@@ -8,6 +8,7 @@ import { SEO, buildProductJsonLd, buildBreadcrumbJsonLd } from "../components/SE
 import { getProductSEO } from "../data/seoMeta";
 import { CompleteTheLook } from "../components/CompleteTheLook";
 import { ProductFitGuide } from "../components/ProductFitGuide";
+import { getProductRotation } from "../data/productRotations";
 
 /** Extract just the size label from a variant name like "D-SLIP DRESS [BLACK] / XS" → "XS" */
 function cleanSizeLabel(size: string): string {
@@ -43,15 +44,15 @@ function Product360Viewer({
   const has360 = angleImages.length === 8;
   const displayImage = is360Mode ? angleImages[currentIndex % angleImages.length] : images[currentIndex];
 
-  // Preload approved frames so entering rotation mode does not flash between
-  // network requests, especially on touch devices.
+  // Keep rotation frames off the network until the shopper explicitly opens
+  // 360° mode, then warm the remaining frames for smooth dragging.
   useEffect(() => {
-    if (!has360) return;
+    if (!is360Mode || !has360) return;
     for (const src of angleImages) {
       const image = new Image();
       image.src = src;
     }
-  }, [angleImages, has360]);
+  }, [angleImages, has360, is360Mode]);
 
   // Auto-rotate logic
   useEffect(() => {
@@ -123,6 +124,8 @@ function Product360Viewer({
       {/* Main Image */}
       <div
         ref={containerRef}
+        role="region"
+        aria-label={`${name} product gallery${has360 ? " with 360 degree view" : ""}`}
         className="aspect-[3/4] overflow-hidden mb-4 relative group"
         style={{
           background: "linear-gradient(145deg, rgba(255,240,230,0.03), rgba(200,160,220,0.02))",
@@ -143,8 +146,10 @@ function Product360Viewer({
         {displayImage ? (
           <img
             src={displayImage}
-            alt={name}
-            className="w-full h-full object-cover pointer-events-none"
+            alt={is360Mode ? `${name}, angle ${currentIndex + 1} of 8` : name}
+            className={`w-full h-full pointer-events-none ${
+              is360Mode ? "object-contain" : "object-cover"
+            }`}
             style={{ borderRadius: "15px" }}
             draggable={false}
           />
@@ -179,7 +184,7 @@ function Product360Viewer({
 
             {/* Angle indicator dots */}
             <div
-              className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5"
+              className="absolute bottom-4 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
               style={{
                 background: "rgba(0,0,0,0.5)",
                 backdropFilter: "blur(8px)",
@@ -187,27 +192,39 @@ function Product360Viewer({
                 padding: "6px 10px",
               }}
             >
-              {angleImages.map((_, i) => (
-                <button
-                  key={i}
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setCurrentIndex(i);
-                    setIsAutoRotating(false);
-                  }}
-                  className="transition-all duration-200"
-                  style={{
-                    width: i === currentIndex % angleImages.length ? "16px" : "6px",
-                    height: "6px",
-                    borderRadius: "3px",
-                    background:
-                      i === currentIndex % angleImages.length
-                        ? "linear-gradient(135deg, #c48dff, #ff9eb8)"
-                        : "rgba(255,255,255,0.3)",
-                  }}
-                />
-              ))}
+              <input
+                type="range"
+                min="0"
+                max={angleImages.length - 1}
+                step="1"
+                value={currentIndex % angleImages.length}
+                aria-label={`Rotate ${name}`}
+                onChange={(event) => {
+                  setCurrentIndex(Number(event.target.value));
+                  setIsAutoRotating(false);
+                }}
+                onPointerDown={(event) => event.stopPropagation()}
+                onMouseDown={(event) => event.stopPropagation()}
+                onTouchStart={(event) => event.stopPropagation()}
+                className="w-40 accent-[#c48dff]"
+              />
+              <div className="flex gap-1.5" aria-hidden="true">
+                {angleImages.map((_, i) => (
+                  <span
+                    key={i}
+                    className="transition-all duration-200"
+                    style={{
+                      width: i === currentIndex % angleImages.length ? "16px" : "6px",
+                      height: "6px",
+                      borderRadius: "3px",
+                      background:
+                        i === currentIndex % angleImages.length
+                          ? "linear-gradient(135deg, #c48dff, #ff9eb8)"
+                          : "rgba(255,255,255,0.3)",
+                    }}
+                  />
+                ))}
+              </div>
             </div>
 
             {/* Close 360 button */}
@@ -254,7 +271,7 @@ function Product360Viewer({
           <button
             type="button"
             onClick={enter360}
-            className="absolute bottom-4 right-4 flex items-center gap-2 px-4 py-2 transition-all opacity-0 group-hover:opacity-100"
+            className="absolute bottom-4 right-4 flex items-center gap-2 px-4 py-2 transition-all"
             style={{
               background: "rgba(0,0,0,0.65)",
               backdropFilter: "blur(12px)",
@@ -270,7 +287,7 @@ function Product360Viewer({
       </div>
 
       {/* Thumbnail Strip (hidden in 360 mode) */}
-      {!is360Mode && images.length > 1 && (
+      {!is360Mode && (images.length > 1 || has360) && (
         <div className="flex gap-2 overflow-x-auto pb-1">
           {images.map((img, i) => (
             <button
@@ -423,7 +440,11 @@ export function ProductPage() {
         {/* 360° Image Viewer */}
         <Product360Viewer
           images={product.images || []}
-          rotationImages={product.rotationImages}
+          rotationImages={
+            product.rotationImages?.length === 8
+              ? product.rotationImages
+              : getProductRotation(product.name)
+          }
           name={product.name}
         />
 
