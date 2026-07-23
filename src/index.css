@@ -151,7 +151,7 @@ body {
   position: absolute;
   inset: 0;
   z-index: 0;
-  background: url("/store-panoramic.jpg") center 48% / cover no-repeat;
+  background: url("/store-showroom-merchandised.webp") center center / cover no-repeat;
 }
 
 .sky-ceiling {
@@ -406,28 +406,144 @@ body {
 .tryon-product-link { padding: 9px 14px; color: #07111a; border-radius: 999px; background: #7dd3fc; font-size: 8px; font-weight: 800; letter-spacing: .15em; }
 .tryon-note { margin: 0; padding: 5px 14px 7px; color: rgba(255,255,255,.38); background: rgba(4,10,22,.72); font-size: 7px; text-align: center; letter-spacing: .08em; }
 
+/* The rendered showroom carries the physical merchandising. These overlays
+   make the glass closet walls feel interactive without covering the clothes. */
+.holo-closet { top: 5%; bottom: 18%; width: 28%; transform: none; }
+.holo-closet-women { left: 0; }
+.holo-closet-men { right: 0; }
+.holo-hotspot {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  border: 0;
+  color: white;
+  background: transparent;
+  cursor: pointer;
+}
+.holo-hotspot::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  border: 1px solid color-mix(in srgb, var(--holo-accent, #88d8ff) 35%, transparent);
+  background: linear-gradient(115deg, rgba(255,255,255,.02), rgba(100,190,255,.05));
+  box-shadow: inset 0 0 34px rgba(120,210,255,.08);
+  transition: opacity .35s ease;
+}
+.holo-closet-women .holo-hotspot { --holo-accent: #ff82c9; }
+.holo-closet-men .holo-hotspot { --holo-accent: #72d2ff; }
+.holo-hotspot:hover::before, .holo-hotspot:focus-visible::before { opacity: 1; }
+.holo-hotspot:focus-visible { outline: 1px solid var(--holo-accent); outline-offset: -4px; }
+.holo-screen-scan {
+  position: absolute;
+  left: 4%;
+  right: 4%;
+  top: -10%;
+  height: 12%;
+  opacity: 0;
+  background: linear-gradient(180deg, transparent, color-mix(in srgb, var(--holo-accent) 22%, transparent), transparent);
+  transition: opacity .25s ease;
+}
+.holo-hotspot:hover .holo-screen-scan, .holo-hotspot:focus-visible .holo-screen-scan {
+  opacity: 1;
+  animation: holo-screen-read 3.2s linear infinite;
+}
+@keyframes holo-screen-read { to { transform: translateY(900%); } }
+.holo-corner {
+  position: absolute;
+  width: 26px;
+  height: 26px;
+  opacity: 0;
+  transition: opacity .25s ease;
+}
+.holo-corner-one { top: 6%; left: 7%; border-top: 1px solid var(--holo-accent); border-left: 1px solid var(--holo-accent); }
+.holo-corner-two { right: 7%; bottom: 6%; border-right: 1px solid var(--holo-accent); border-bottom: 1px solid var(--holo-accent); }
+.holo-hotspot:hover .holo-corner, .holo-hotspot:focus-visible .holo-corner { opacity: .75; }
+.holo-interaction-label {
+  position: absolute;
+  left: 50%;
+  bottom: 7%;
+  transform: translate(-50%, 8px);
+  display: block;
+  min-width: 148px;
+  padding: 9px 12px;
+  opacity: 0;
+  border: 1px solid color-mix(in srgb, var(--holo-accent) 45%, transparent);
+  border-radius: 999px;
+  background: rgba(3,7,15,.68);
+  box-shadow: 0 0 24px color-mix(in srgb, var(--holo-accent) 18%, transparent);
+  backdrop-filter: blur(12px);
+  transition: .3s ease;
+}
+.holo-hotspot:hover .holo-interaction-label, .holo-hotspot:focus-visible .holo-interaction-label { opacity: 1; transform: translate(-50%, 0); }
+.holo-interaction-label b { display: block; color: var(--holo-accent); font-size: 8px; letter-spacing: .17em; }
+.holo-interaction-label small { display: block; margin-top: 3px; color: rgba(255,255,255,.62); font-size: 6px; letter-spacing: .12em; }
+
+.mirror-stage {
+  position: relative;
+  min-height: 0;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 50% 72%, color-mix(in srgb, var(--mirror-accent) 18%, transparent), transparent 28%),
+    linear-gradient(135deg, #02050c, #071425 50%, #02050c);
+}
+.mirror-grid {
+  position: absolute;
+  inset: 0;
+  opacity: .38;
+  background-image:
+    linear-gradient(color-mix(in srgb, var(--mirror-accent) 14%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in srgb, var(--mirror-accent) 14%, transparent) 1px, transparent 1px);
+  background-size: 36px 36px;
+  mask-image: radial-gradient(circle, black, transparent 72%);
+}
+.mirror-rings {
+  position: absolute;
+  left: 50%;
+  bottom: 6%;
+  width: min(44vw, 480px);
+  aspect-ratio: 1;
+  transform: translateX(-50%) rotateX(70deg);
+  border: 1px solid color-mix(in srgb, var(--mirror-accent) 70%, transparent);
+  border-radius: 50%;
+  box-shadow: 0 0 35px color-mix(in srgb, var(--mirror-accent) 28%, transparent), inset 0 0 35px color-mix(in srgb, var(--mirror-accent) 18%, transparent);
+}
+.mirror-mannequin {
+  position: absolute;
+  z-index: 3;
+  left: 50%;
+  bottom: 2%;
+  transform: translateX(-50%);
+  height: 92%;
+  max-width: 52%;
+  object-fit: contain;
+  filter: drop-shadow(0 0 22px color-mix(in srgb, var(--mirror-accent) 25%, transparent));
+}
+.mirror-readout { position: absolute; z-index: 5; top: 22%; color: rgba(255,255,255,.45); font-size: 7px; letter-spacing: .18em; }
+.mirror-readout b { display: block; margin-top: 5px; color: var(--mirror-accent); font-size: 11px; }
+.mirror-readout-left { left: 7%; }
+.mirror-readout-right { right: 7%; text-align: right; }
+.mirror-product-rail { display: flex; align-items: center; justify-content: center; gap: 10px; padding: 9px 14px; background: rgba(4,10,22,.82); }
+.mirror-product { display: flex; align-items: center; gap: 6px; width: min(18%, 160px); color: rgba(255,255,255,.6); font-size: 7px; letter-spacing: .08em; }
+.mirror-product img { width: 34px; height: 34px; object-fit: cover; border: 1px solid color-mix(in srgb, var(--mirror-accent) 32%, transparent); border-radius: 4px; }
+
 @media (max-width: 820px) {
   .store-hero { height: min(800px, calc(100svh - 118px)); min-height: 620px; }
   .store-bg { background-position: center bottom; }
   .sky-ceiling { left: 3%; right: 3%; height: 20%; clip-path: polygon(20% 0, 80% 0, 70% 100%, 30% 100%); }
   .rear-sky-panel { display: none; }
-  .holo-closet { top: 15%; bottom: 31%; width: 27%; }
+  .holo-closet { top: 8%; bottom: 28%; width: 30%; }
   .holo-closet-women { left: 0; }
   .holo-closet-men { right: 0; }
-  .holo-glass { padding: 7% 5%; }
-  .holo-heading small, .folded-meta { display: none; }
-  .folded-product { display: block; padding: 3px; }
-  .folded-stack { height: 82%; }
-  .mannequin-unit { bottom: 8%; }
-  .mannequin-unit img { height: min(54vh, 470px); max-width: 49vw; }
-  .mannequin-women-unit { left: 34%; }
-  .mannequin-men-unit { left: 66%; }
   .showroom-cta-women { left: 29%; }
   .showroom-cta-men { left: 71%; }
   .showroom-instruction { bottom: 2%; font-size: 6px; letter-spacing: .1em; }
   .tryon-shell { inset: 1%; }
   .tryon-controls { flex-wrap: wrap; justify-content: center; padding: 8px; }
-  .tryon-garment { width: 58%; }
+  .mirror-product span { display: none; }
+  .mirror-product { width: auto; }
+  .mirror-readout { display: none; }
+  .mirror-mannequin { max-width: 88%; }
 }
 
 @media (prefers-reduced-motion: reduce) {

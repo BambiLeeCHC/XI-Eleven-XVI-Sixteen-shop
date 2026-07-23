@@ -1,165 +1,94 @@
-import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-
-type StoreProduct = {
-  _id: string;
-  name: string;
-  gender: string;
-  images?: string[];
-  price?: number;
-};
 
 type ClosetSide = "women" | "men";
 
+const MIRROR_PRODUCTS = {
+  women: [
+    ["D-Slip Dress [Black]", "https://files.cdn.printful.com/files/643/643fe98a15860efe432874d55096fcb4_preview.png"],
+    ["B-Lift Sports Bra [Ivory]", "https://files.cdn.printful.com/files/336/336ad99d58f0773b9d808759e5bbfba3_preview.png"],
+    ["L-Flow Yoga Leggings [Onyx]", "https://files.cdn.printful.com/files/c15/c15470469965f47041126eee252e1b51_preview.png"],
+  ],
+  men: [
+    ["J-Glitch Jersey [Black]", "https://files.cdn.printful.com/files/d3e/d3eafe96e16d5a3d6770d74ce93c7033_preview.png"],
+    ["S-Glitch 6.3” Shorts [Black]", "https://files.cdn.printful.com/files/3ba/3bab909a91cf850af641465b79f6377f_preview.png"],
+    ["T-Icon Oversized Tee", "https://files.cdn.printful.com/files/229/229bc6690aeddc92647f2fb6bb83e122_preview.png"],
+  ],
+} as const;
+
 export function HolographicCloset({
   side,
-  products,
-  onTryOn,
+  onActivate,
 }: {
   side: ClosetSide;
-  products: StoreProduct[];
-  onTryOn: (product: StoreProduct) => void;
+  onActivate: () => void;
 }) {
-  const selected = products.slice(0, 5);
-  const accent = side === "women" ? "#ff78bf" : "#67c8ff";
-
   return (
     <aside className={`holo-closet holo-closet-${side}`} aria-label={`${side}'s holographic closet`}>
-      <div className="holo-glass" style={{ "--holo-accent": accent } as React.CSSProperties}>
-        <div className="holo-scan" />
-        <div className="holo-heading">
-          <span>{side === "women" ? "11" : "16"}</span>
-          <small>LIVE WARDROBE</small>
-        </div>
-        <div className="holo-shelves">
-          {selected.map((product, index) => (
-            <button
-              type="button"
-              className="folded-product"
-              key={product._id}
-              onClick={() => onTryOn(product)}
-              aria-label={`Open virtual try-on for ${product.name}`}
-            >
-              <span className="folded-stack">
-                <img src={product.images?.[0]} alt="" loading={index > 2 ? "lazy" : "eager"} />
-              </span>
-              <span className="folded-meta">
-                <b>{product.name}</b>
-                <em>TOUCH TO TRY ON</em>
-              </span>
-            </button>
-          ))}
-        </div>
-      </div>
+      <button type="button" className="holo-hotspot" onClick={onActivate}>
+        <span className="holo-corner holo-corner-one" />
+        <span className="holo-corner holo-corner-two" />
+        <span className="holo-screen-scan" />
+        <span className="holo-interaction-label">
+          <b>{side === "women" ? "11" : "16"} / LIVE WARDROBE</b>
+          <small>TOUCH TO ACTIVATE MIRROR</small>
+        </span>
+      </button>
     </aside>
   );
 }
 
 export function VirtualTryOn({
-  product,
+  side,
   onClose,
 }: {
-  product: StoreProduct;
+  side: ClosetSide;
   onClose: () => void;
 }) {
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const [stream, setStream] = useState<MediaStream | null>(null);
-  const [cameraError, setCameraError] = useState("");
-  const [scale, setScale] = useState(1);
-  const [x, setX] = useState(0);
-  const [y, setY] = useState(0);
-
-  const startCamera = async () => {
-    setCameraError("");
-    try {
-      const nextStream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: "user", width: { ideal: 1280 }, height: { ideal: 720 } },
-        audio: false,
-      });
-      setStream(nextStream);
-    } catch {
-      setCameraError("Camera access was not available. You can still preview the product on the mirror.");
-    }
-  };
-
-  useEffect(() => {
-    let initialStream: MediaStream | null = null;
-    navigator.mediaDevices
-      .getUserMedia({
-        video: { facingMode: "user", width: { ideal: 1280 }, height: { ideal: 720 } },
-        audio: false,
-      })
-      .then((nextStream) => {
-        initialStream = nextStream;
-        setStream(nextStream);
-      })
-      .catch(() => {
-        setCameraError("Camera access was not available. You can still preview the product on the mirror.");
-      });
-    return () => initialStream?.getTracks().forEach((track) => track.stop());
-  }, []);
-
-  useEffect(() => {
-    if (videoRef.current && stream) videoRef.current.srcObject = stream;
-    return () => stream?.getTracks().forEach((track) => track.stop());
-  }, [stream]);
+  const accent = side === "women" ? "#ff84c8" : "#78d4ff";
+  const mannequin = side === "women" ? "/mannequin-women-v37.png" : "/mannequin-men-v31.png";
 
   return (
-    <div className="tryon-shell" role="dialog" aria-modal="true" aria-label={`Virtual try-on: ${product.name}`}>
+    <div
+      className="tryon-shell"
+      role="dialog"
+      aria-modal="true"
+      aria-label={`${side}'s live mirror visual preview`}
+      style={{ "--mirror-accent": accent } as React.CSSProperties}
+    >
       <div className="tryon-topbar">
         <div>
-          <span>XI · XVI / LIVE MIRROR</span>
-          <strong>{product.name}</strong>
+          <span>XI · XVI / HOLOGRAPHIC SCREEN</span>
+          <strong>LIVE MIRROR — {side.toUpperCase()}</strong>
         </div>
-        <button type="button" onClick={onClose} aria-label="Close virtual try-on">×</button>
+        <button type="button" onClick={onClose} aria-label="Close live mirror">×</button>
       </div>
 
-      <div className="tryon-stage">
-        {stream ? (
-          <video ref={videoRef} autoPlay playsInline muted />
-        ) : (
-          <div className="tryon-camera-placeholder">
-            <span>LIVE MIRROR</span>
-            <p>{cameraError || "Requesting camera access…"}</p>
-            {cameraError && <button type="button" onClick={startCamera}>TRY CAMERA AGAIN</button>}
+      <div className="mirror-stage">
+        <div className="mirror-grid" />
+        <div className="mirror-rings" />
+        <img className="mirror-mannequin" src={mannequin} alt={`${side}'s XI XVI mannequin preview`} />
+        <div className="mirror-readout mirror-readout-left">
+          <span>GARMENT MAP</span>
+          <b>ACTIVE</b>
+        </div>
+        <div className="mirror-readout mirror-readout-right">
+          <span>VISUAL SESSION</span>
+          <b>01 / 16</b>
+        </div>
+      </div>
+
+      <div className="mirror-product-rail">
+        {MIRROR_PRODUCTS[side].map(([name, image]) => (
+          <div className="mirror-product" key={name}>
+            <img src={image} alt="" />
+            <span>{name}</span>
           </div>
-        )}
-        <img
-          className="tryon-garment"
-          src={product.images?.[0]}
-          alt={product.name}
-          style={{ transform: `translate(calc(-50% + ${x}px), calc(-50% + ${y}px)) scale(${scale})` }}
-        />
-        <div className="tryon-reticle" aria-hidden="true" />
-      </div>
-
-      <div className="tryon-controls">
-        <div className="tryon-nudge">
-          <button type="button" onClick={() => setY((v) => v - 12)} aria-label="Move garment up">↑</button>
-          <button type="button" onClick={() => setX((v) => v - 12)} aria-label="Move garment left">←</button>
-          <button type="button" onClick={() => { setX(0); setY(0); setScale(1); }} aria-label="Reset garment">◆</button>
-          <button type="button" onClick={() => setX((v) => v + 12)} aria-label="Move garment right">→</button>
-          <button type="button" onClick={() => setY((v) => v + 12)} aria-label="Move garment down">↓</button>
-        </div>
-        <label>
-          SCALE
-          <input
-            type="range"
-            min="0.55"
-            max="1.8"
-            step="0.05"
-            value={scale}
-            onChange={(event) => setScale(Number(event.target.value))}
-          />
-        </label>
-        <Link
-          to={product._id.startsWith("printful-") ? "/shop" : `/product/${product._id}`}
-          className="tryon-product-link"
-        >
-          VIEW PRODUCT
+        ))}
+        <Link to={`/shop?gender=${side}`} className="tryon-product-link">
+          EXPLORE COLLECTION
         </Link>
       </div>
-      <p className="tryon-note">Camera-assisted visual preview. Fit and scale are approximate.</p>
+      <p className="tryon-note">Concept visualization of the in-store holographic mirror experience.</p>
     </div>
   );
 }
