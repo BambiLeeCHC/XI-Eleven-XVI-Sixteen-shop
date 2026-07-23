@@ -63,9 +63,9 @@ export function StoreHeader() {
             <div className="flex items-center gap-2 sm:gap-4 shrink-0">
               <Link to="/" className="flex items-center gap-3 group shrink-0">
                 <img
-                  src="https://decisive-cheetah-451.convex.cloud/api/storage/9f36be32-eae9-430a-ac7e-ab617f632b25"
+                  src="/xixvi-gold-shield.png"
                   alt="XI XVI — Eleven Sixteen"
-                  className="h-10 sm:h-12 w-auto object-contain drop-shadow-[0_0_8px_rgba(200,170,100,0.3)]"
+                  className="h-14 sm:h-16 w-auto object-contain drop-shadow-[0_0_10px_rgba(220,175,70,0.45)]"
                 />
               </Link>
 

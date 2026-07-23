@@ -151,43 +151,50 @@ body {
   position: absolute;
   inset: 0;
   z-index: 0;
-  background: url("/store-showroom-merchandised.webp") center center / cover no-repeat;
+  background: url("/store-showroom-reference.jpg") center center / cover no-repeat;
 }
 
 .sky-ceiling {
   position: absolute;
   z-index: 1;
   top: 0;
-  left: 19.5%;
-  right: 19.5%;
-  height: 22.5%;
+  left: 25.5%;
+  right: 25.5%;
+  height: 20.5%;
   overflow: hidden;
-  clip-path: polygon(8% 0, 92% 0, 82% 100%, 18% 100%);
-  filter: saturate(1.15);
+  clip-path: polygon(0 0, 100% 0, 74% 100%, 26% 100%);
+  filter: saturate(1.08) brightness(.96);
+  box-shadow: inset 0 0 28px rgba(0,0,0,.34), inset 0 -4px 8px rgba(210,235,255,.28);
 }
 
 .sky-ceiling-mask {
   position: absolute;
   inset: 0;
   z-index: 8;
-  background: linear-gradient(180deg, transparent 55%, rgba(4, 6, 14, 0.24));
-  box-shadow: inset 0 0 30px rgba(190, 225, 255, 0.18);
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.04), transparent 55%, rgba(2, 6, 18, 0.2)),
+    radial-gradient(circle at center, transparent 1.2px, rgba(0,3,12,.4) 1.55px);
+  background-size: auto, 5px 5px;
+  box-shadow: inset 0 0 34px rgba(1,4,12,.5), inset 0 -2px 5px rgba(220,240,255,.36);
 }
 
 .rear-sky-panel {
   position: absolute;
   top: 27%;
-  width: 9.6%;
-  height: 30%;
+  width: 8.9%;
+  height: 28.5%;
   z-index: 2;
   overflow: hidden;
   opacity: 0.94;
-  box-shadow: 0 0 20px rgba(80, 160, 255, 0.2);
+  border: 1px solid rgba(205,230,255,.34);
+  background: #07101f;
+  box-shadow: inset 0 0 18px rgba(0,0,0,.45), 0 0 8px rgba(80,160,255,.16);
+  clip-path: polygon(2% 0, 98% 0, 100% 2%, 100% 98%, 98% 100%, 2% 100%, 0 98%, 0 2%);
 }
 
-.rear-sky-left { left: 37.2%; }
-.rear-sky-right { right: 35.8%; }
-.rear-sky-panel .dsky-bar { transform: scale(1.8); }
+.rear-sky-left { left: 37.1%; }
+.rear-sky-right { right: 36.2%; }
+.rear-sky-panel .dsky-bar { transform: scale(1.03); }
 
 .store-vignette {
   position: absolute;
@@ -408,7 +415,7 @@ body {
 
 /* The rendered showroom carries the physical merchandising. These overlays
    make the glass closet walls feel interactive without covering the clothes. */
-.holo-closet { top: 5%; bottom: 18%; width: 28%; transform: none; }
+.holo-closet { top: 4%; bottom: 18%; width: 28%; transform: none; }
 .holo-closet-women { left: 0; }
 .holo-closet-men { right: 0; }
 .holo-hotspot {
@@ -420,13 +427,101 @@ body {
   background: transparent;
   cursor: pointer;
 }
+.closet-merchandise {
+  position: absolute;
+  inset: 1.5%;
+  z-index: 1;
+  display: grid;
+  grid-template-rows: 52% 48%;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--holo-accent) 58%, transparent);
+  background:
+    linear-gradient(115deg, color-mix(in srgb, var(--holo-accent) 10%, #02040a), rgba(1,3,9,.93) 48%, color-mix(in srgb, var(--holo-accent) 9%, #02040a));
+  box-shadow:
+    inset 0 0 24px color-mix(in srgb, var(--holo-accent) 14%, transparent),
+    0 0 13px color-mix(in srgb, var(--holo-accent) 20%, transparent);
+}
+.closet-hanging-rail {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 1px;
+  align-items: end;
+  padding: 7% 3% 2%;
+  border-bottom: 1px solid color-mix(in srgb, var(--holo-accent) 36%, transparent);
+  background: linear-gradient(180deg, rgba(255,255,255,.025), transparent);
+}
+.holo-closet-women .closet-hanging-rail { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+.closet-hanging-rail::before {
+  content: "";
+  position: absolute;
+  top: 9%;
+  left: 4%;
+  right: 4%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(245,250,255,.65), transparent);
+  box-shadow: 0 0 7px var(--holo-accent);
+}
+.closet-hanging-product {
+  position: relative;
+  display: block;
+  min-width: 0;
+  height: 92%;
+  overflow: hidden;
+}
+.closet-hanger {
+  position: absolute;
+  z-index: 2;
+  top: 0;
+  left: 50%;
+  width: 50%;
+  height: 10%;
+  transform: translateX(-50%);
+  border-top: 1px solid rgba(255,255,255,.72);
+  clip-path: polygon(50% 0, 100% 100%, 0 100%);
+}
+.closet-hanging-product img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 5px rgba(0,0,0,.7)) saturate(1.08);
+}
+.closet-folded-shelves {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 1px 3px;
+  align-content: stretch;
+  padding: 2.5% 3%;
+  background:
+    repeating-linear-gradient(180deg, transparent 0 32%, color-mix(in srgb, var(--holo-accent) 26%, transparent) 32.4% 33%, transparent 33.4% 65%, color-mix(in srgb, var(--holo-accent) 26%, transparent) 65.4% 66%, transparent 66.4%);
+}
+.holo-closet-women .closet-folded-shelves { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.closet-folded-product {
+  position: relative;
+  display: block;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  border-radius: 2px;
+  background: rgba(255,255,255,.025);
+  box-shadow: 0 3px 0 color-mix(in srgb, var(--holo-accent) 13%, transparent), 0 5px 5px rgba(0,0,0,.36);
+}
+.closet-folded-product img {
+  width: 100%;
+  height: 150%;
+  object-fit: cover;
+  object-position: center 30%;
+  transform: translateY(-18%) scaleY(.72);
+  filter: saturate(1.08) contrast(1.03);
+}
 .holo-hotspot::before {
   content: "";
   position: absolute;
   inset: 0;
   opacity: 0;
   border: 1px solid color-mix(in srgb, var(--holo-accent, #88d8ff) 35%, transparent);
-  background: linear-gradient(115deg, rgba(255,255,255,.02), rgba(100,190,255,.05));
+  z-index: 2;
+  background: linear-gradient(115deg, rgba(255,255,255,.02), rgba(100,190,255,.035));
   box-shadow: inset 0 0 34px rgba(120,210,255,.08);
   transition: opacity .35s ease;
 }
@@ -442,6 +537,7 @@ body {
   height: 12%;
   opacity: 0;
   background: linear-gradient(180deg, transparent, color-mix(in srgb, var(--holo-accent) 22%, transparent), transparent);
+  z-index: 4;
   transition: opacity .25s ease;
 }
 .holo-hotspot:hover .holo-screen-scan, .holo-hotspot:focus-visible .holo-screen-scan {
@@ -453,6 +549,7 @@ body {
   position: absolute;
   width: 26px;
   height: 26px;
+  z-index: 5;
   opacity: 0;
   transition: opacity .25s ease;
 }
@@ -464,6 +561,7 @@ body {
   left: 50%;
   bottom: 7%;
   transform: translate(-50%, 8px);
+  z-index: 6;
   display: block;
   min-width: 148px;
   padding: 9px 12px;
@@ -526,6 +624,54 @@ body {
 .mirror-product-rail { display: flex; align-items: center; justify-content: center; gap: 10px; padding: 9px 14px; background: rgba(4,10,22,.82); }
 .mirror-product { display: flex; align-items: center; gap: 6px; width: min(18%, 160px); color: rgba(255,255,255,.6); font-size: 7px; letter-spacing: .08em; }
 .mirror-product img { width: 34px; height: 34px; object-fit: cover; border: 1px solid color-mix(in srgb, var(--mirror-accent) 32%, transparent); border-radius: 4px; }
+
+.showroom-brand-wall {
+  position: absolute;
+  z-index: 9;
+  top: 26%;
+  left: 45.3%;
+  width: 9.4%;
+  height: 22%;
+  display: grid;
+  place-items: center;
+  padding: .7%;
+  background: rgba(255,255,255,.92);
+  box-shadow: 0 0 12px rgba(255,255,255,.7);
+}
+.showroom-brand-wall img { width: 100%; height: 100%; object-fit: contain; }
+
+.sky-mannequin {
+  position: absolute;
+  bottom: 6.5%;
+  width: min(19vw, 255px);
+  height: min(62vh, 590px);
+  transform: translateX(-50%);
+  filter: drop-shadow(0 12px 16px rgba(0,0,0,.32));
+  pointer-events: none;
+}
+.sky-mannequin-women { left: 43%; }
+.sky-mannequin-men { left: 57%; }
+.sky-mannequin > img, .sky-mannequin-finish {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.sky-mannequin > img { z-index: 1; opacity: .86; filter: saturate(1.04) contrast(1.02); }
+.sky-mannequin-finish {
+  z-index: 2;
+  overflow: hidden;
+  opacity: .62;
+  mix-blend-mode: screen;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+}
+.sky-mannequin-finish .dsky-bar { transform: scale(1.8); }
 
 @media (max-width: 820px) {
   .store-hero { height: min(800px, calc(100svh - 118px)); min-height: 620px; }
