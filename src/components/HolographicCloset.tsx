@@ -1,5 +1,4 @@
 import { Link } from "react-router-dom";
-import { SHOWROOM_CATALOG } from "../data/showroomCatalog";
 
 type ClosetSide = "women" | "men";
 
@@ -23,29 +22,9 @@ export function HolographicCloset({
   side: ClosetSide;
   onActivate: () => void;
 }) {
-  const products = SHOWROOM_CATALOG.filter((product) => product.gender === side);
-  const hangingCount = side === "women" ? 5 : 6;
-
   return (
     <aside className={`holo-closet holo-closet-${side}`} aria-label={`${side}'s holographic closet`}>
       <button type="button" className="holo-hotspot" onClick={onActivate}>
-        <span className="closet-merchandise" aria-label={`${products.length} exact Printful products`}>
-          <span className="closet-hanging-rail">
-            {products.slice(0, hangingCount).map((product) => (
-              <span className="closet-hanging-product" key={product.printfulId}>
-                <span className="closet-hanger" />
-                <img src={product.src} alt={product.name} title={product.name} />
-              </span>
-            ))}
-          </span>
-          <span className="closet-folded-shelves">
-            {products.slice(hangingCount).map((product) => (
-              <span className="closet-folded-product" key={product.printfulId}>
-                <img src={product.src} alt={product.name} title={product.name} />
-              </span>
-            ))}
-          </span>
-        </span>
         <span className="holo-corner holo-corner-one" />
         <span className="holo-corner holo-corner-two" />
         <span className="holo-screen-scan" />
