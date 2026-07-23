@@ -1,320 +1,74 @@
+import { useQuery } from "convex/react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
+import { api } from "../../convex/_generated/api";
 import { DynamicSkyBar } from "./DynamicSkyBar";
+import { HolographicCloset, VirtualTryOn } from "./HolographicCloset";
 
-/* ═══════════════════════════════════════════════════════════
-   CLOSET HERO — Luxury Retail Store V38b
+type StoreProduct = {
+  _id: string;
+  name: string;
+  gender: string;
+  images?: string[];
+  price?: number;
+};
 
-   STATIC LAYOUT: Mannequins stay full-size (620px) always.
-   MOBILE: Mannequins reposition to viewport; store BG crops.
-   SKY CEILING: Full-width dynamic sky extending from navbar.
-   PEDESTALS: Mannequin feet planted ON the pedestals.
-   ═══════════════════════════════════════════════════════════ */
+// Current Printful storefront thumbnails provide a resilient first-paint
+// fallback while Convex loads. The live query replaces these immediately.
+const PRINTFUL_FALLBACK: StoreProduct[] = [
+  { _id: "printful-d-slip-black", name: "D-Slip Dress [Black]", gender: "women", images: ["https://files.cdn.printful.com/files/643/643fe98a15860efe432874d55096fcb4_preview.png"] },
+  { _id: "printful-b-lift-ivory", name: "B-Lift Sports Bra [Ivory]", gender: "women", images: ["https://files.cdn.printful.com/files/336/336ad99d58f0773b9d808759e5bbfba3_preview.png"] },
+  { _id: "printful-l-flow-onyx", name: "L-Flow Yoga Leggings [Onyx]", gender: "women", images: ["https://files.cdn.printful.com/files/c15/c15470469965f47041126eee252e1b51_preview.png"] },
+  { _id: "printful-d-slip-pink", name: "D-Slip Dress [Pink Lace]", gender: "women", images: ["https://files.cdn.printful.com/files/20b/20b6927a956db2aeb5e15f1a5c0afa00_preview.png"] },
+  { _id: "printful-b-lift-dash", name: "B-Lift Sports Bra [Dash Black]", gender: "women", images: ["https://files.cdn.printful.com/files/c68/c68beea948bc52fe97edfc2d0c232516_preview.png"] },
+  { _id: "printful-j-glitch-black", name: "J-Glitch Jersey [Black]", gender: "men", images: ["https://files.cdn.printful.com/files/d3e/d3eafe96e16d5a3d6770d74ce93c7033_preview.png"] },
+  { _id: "printful-s-glitch-ice", name: "S-Glitch 2.5” Shorts [Ice]", gender: "men", images: ["https://files.cdn.printful.com/files/429/429fb7477665914edfeec995b9949254_preview.png"] },
+  { _id: "printful-j-glitch-volt", name: "J-Glitch Jersey [Volt]", gender: "men", images: ["https://files.cdn.printful.com/files/e78/e788e9e146a5a79bcf7fa0feda5ce992_preview.png"] },
+  { _id: "printful-s-glitch-black", name: "S-Glitch 6.3” Shorts [Black]", gender: "men", images: ["https://files.cdn.printful.com/files/3ba/3bab909a91cf850af641465b79f6377f_preview.png"] },
+  { _id: "printful-t-icon", name: "T-Icon Oversized Tee", gender: "men", images: ["https://files.cdn.printful.com/files/229/229bc6690aeddc92647f2fb6bb83e122_preview.png"] },
+];
 
 export function ClosetHero() {
+  const liveProducts = useQuery(api.products.list, {}) as StoreProduct[] | undefined;
+  const products = liveProducts?.length ? liveProducts : PRINTFUL_FALLBACK;
+  const [tryOnProduct, setTryOnProduct] = useState<StoreProduct | null>(null);
+  const women = products.filter((product) => product.gender === "women");
+  const men = products.filter((product) => product.gender === "men");
+
   return (
-    <>
-      <style>{`
-        /* ── Outer frame ── */
-        .store-hero {
-          position: relative;
-          width: 100%;
-          height: 100vh;
-          max-height: 920px;
-          min-height: 600px;
-          overflow: hidden;
-          background: #050510;
-        }
+    <section className="store-hero" aria-label="XI XVI interactive virtual showroom">
+      <div className="store-bg" />
 
-        /* ── Background: centered fixed-width ── */
-        .store-bg {
-          position: absolute;
-          top: 0;
-          left: 50%;
-          transform: translateX(-50%);
-          width: 1400px;
-          height: 100%;
-          background-image: url('/store-panoramic.jpg');
-          background-size: cover;
-          background-position: center 48%;
-          background-repeat: no-repeat;
-          z-index: 1;
-        }
-
-        /* ── Sky Ceiling — FULL WIDTH, seamless from navbar ── */
-        .sky-ceiling {
-          position: absolute;
-          top: 0; left: 0; right: 0;
-          height: 18%;
-          z-index: 2;
-          overflow: hidden;
-        }
-        .sky-ceiling-fade {
-          position: absolute;
-          bottom: 0; left: 0; right: 0;
-          height: 50%;
-          z-index: 3;
-          pointer-events: none;
-          background: linear-gradient(
-            180deg,
-            transparent 0%,
-            rgba(5,5,20,0.3) 40%,
-            rgba(5,5,20,0.75) 100%
-          );
-        }
-        .sky-ceiling-led {
-          position: absolute;
-          inset: 0;
-          z-index: 4;
-          pointer-events: none;
-          background-image: radial-gradient(
-            circle at center,
-            transparent 1.1px,
-            rgba(0, 2, 8, 0.68) 1.3px
-          );
-          background-size: 4px 4px;
-        }
-
-        .store-vignette {
-          position: absolute;
-          inset: 0;
-          z-index: 5;
-          pointer-events: none;
-          background: radial-gradient(ellipse at 50% 50%, transparent 50%, rgba(0,0,0,0.15) 100%);
-        }
-
-        /* ═══ STATIC STAGE — 1400px centered ═══ */
-        .store-stage {
-          position: absolute;
-          top: 0;
-          left: 50%;
-          transform: translateX(-50%);
-          width: 1400px;
-          height: 100%;
-          z-index: 10;
-          pointer-events: none;
-        }
-
-        /* ── Mannequin + Pedestal unit ── */
-        .mannequin-unit {
-          position: absolute;
-          bottom: 10px;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          pointer-events: none;
-        }
-
-        .mannequin-unit img {
-          height: min(620px, 68vh);
-          width: auto;
-          max-width: 100%;
-          object-fit: contain;
-          filter: drop-shadow(0 4px 30px rgba(0,0,0,0.5))
-                  drop-shadow(0 0 40px rgba(0,0,0,0.25));
-        }
-
-        /* ── Pedestal — wide circular platform ── */
-        .pedestal {
-          width: 200px;
-          height: 30px;
-          margin-top: -22px;
-          border-radius: 50%;
-          background: linear-gradient(
-            180deg,
-            rgba(220,195,130,0.55) 0%,
-            rgba(184,148,63,0.65) 25%,
-            rgba(120,95,35,0.55) 55%,
-            rgba(40,30,10,0.75) 100%
-          );
-          box-shadow:
-            0 3px 18px rgba(184,148,63,0.35),
-            0 8px 36px rgba(0,0,0,0.5),
-            inset 0 2px 5px rgba(255,220,130,0.35),
-            0 0 25px rgba(184,148,63,0.12);
-          flex-shrink: 0;
-          position: relative;
-          z-index: 1;
-        }
-
-        /* Women's — ~33% of 1400 = 462 (DESKTOP) */
-        .mannequin-women-unit {
-          left: 462px;
-          transform: translateX(-50%);
-        }
-
-        /* Men's — ~62% of 1400 = 868 (DESKTOP) */
-        .mannequin-men-unit {
-          left: 868px;
-          transform: translateX(-50%);
-        }
-
-        /* ── CTA Buttons ── */
-        .store-cta-wrap {
-          position: absolute;
-          bottom: 0;
-          z-index: 15;
-          pointer-events: auto;
-          transform: translateX(-50%);
-        }
-        .store-cta-women-wrap { left: 462px; }
-        .store-cta-men-wrap { left: 868px; }
-
-        .store-cta {
-          display: inline-block;
-          padding: 10px 32px;
-          font-size: 10px;
-          letter-spacing: 0.28em;
-          text-transform: uppercase;
-          font-weight: 600;
-          color: rgba(255,255,255,0.92);
-          background: rgba(5,5,10,0.55);
-          backdrop-filter: blur(20px);
-          -webkit-backdrop-filter: blur(20px);
-          border: 1px solid rgba(184,148,63,0.35);
-          border-radius: 6px;
-          text-decoration: none;
-          transition: all 0.35s ease;
-          white-space: nowrap;
-          pointer-events: auto;
-        }
-        .store-cta:hover {
-          background: rgba(184,148,63,0.2);
-          border-color: rgba(184,148,63,0.6);
-          color: #fff;
-          transform: translateY(-2px);
-          box-shadow: 0 6px 32px rgba(184,148,63,0.2);
-        }
-
-        .store-bottom-fade {
-          position: absolute;
-          bottom: 0; left: 0; right: 0;
-          height: 3%;
-          z-index: 12;
-          pointer-events: none;
-          background: linear-gradient(transparent, rgba(5,5,8,0.2));
-        }
-
-        /* ═══════════════════════════════════════════════════
-           MOBILE / PORTRAIT — Fluid, balanced composition.
-           ═══════════════════════════════════════════════════ */
-
-        @media (max-width: 768px) {
-          .store-hero {
-            height: min(820px, calc(100svh - 92px));
-            min-height: 620px;
-          }
-
-          .sky-ceiling { height: 20%; }
-
-          .store-stage {
-            width: 100%;
-            left: 0;
-            transform: none;
-            display: flex;
-            justify-content: center;
-            align-items: end;
-            padding: 0 4px 66px;
-            gap: 4px;
-          }
-
-          .store-bg {
-            width: 100%;
-            background-size: auto 100%;
-            background-position: center bottom;
-          }
-
-          .mannequin-unit {
-            position: relative;
-            left: auto;
-            bottom: auto;
-            transform: none;
-            min-width: 0;
-            flex: 0 0 auto;
-          }
-
-          .mannequin-unit img {
-            width: auto;
-            height: min(56svh, 500px, calc(72.78vw - 8.73px));
-            max-width: none;
-          }
-
-          .mannequin-women-unit,
-          .mannequin-men-unit { flex-shrink: 0; }
-          .pedestal {
-            width: min(150px, 85%);
-            height: 22px;
-            margin-top: -15px;
-          }
-          .store-cta-wrap { bottom: 18px; }
-          .store-cta-women-wrap { left: 25%; }
-          .store-cta-men-wrap { left: 75%; }
-          .store-cta {
-            padding: 8px 14px;
-            font-size: 9px;
-            letter-spacing: 0.14em;
-          }
-        }
-
-        /* ── Small phones (≤430px) ── */
-        @media (max-width: 430px) {
-          .store-hero {
-            height: min(760px, calc(100svh - 92px));
-            min-height: 580px;
-          }
-          .store-cta {
-            padding: 7px 11px;
-            font-size: 8px;
-          }
-        }
-
-        /* ── Landscape mobile (short viewport) ── */
-        @media (max-height: 500px) {
-          .store-hero {
-            min-height: 450px;
-          }
-          .sky-ceiling {
-            height: 22%;
-          }
-        }
-      `}</style>
-
-      <div className="store-hero">
-        <div className="store-bg" />
-
-        {/* Sky Ceiling — full width, seamless from navbar */}
-        <div className="sky-ceiling">
-          <DynamicSkyBar />
-          <div className="sky-ceiling-led" />
-          <div className="sky-ceiling-fade" />
-        </div>
-
-        <div className="store-vignette" />
-
-        {/* ═══ STATIC STAGE ═══ */}
-        <div className="store-stage">
-          {/* Women's mannequin on pedestal */}
-          <div className="mannequin-unit mannequin-women-unit">
-            <img src="/mannequin-women-v37.png" alt="Women's Collection" />
-            <div className="pedestal" />
-          </div>
-
-          {/* Men's mannequin on pedestal */}
-          <div className="mannequin-unit mannequin-men-unit">
-            <img src="/mannequin-men-v31.png" alt="Men's Collection" />
-            <div className="pedestal" />
-          </div>
-
-          {/* CTAs */}
-          <div className="store-cta-wrap store-cta-women-wrap">
-            <Link to="/shop?gender=women" className="store-cta">Shop Women</Link>
-          </div>
-          <div className="store-cta-wrap store-cta-men-wrap">
-            <Link to="/shop?gender=men" className="store-cta">Shop Men</Link>
-          </div>
-        </div>
-
-        <div className="store-bottom-fade" />
+      <div className="sky-ceiling" title="Live local sky ceiling">
+        <DynamicSkyBar />
+        <div className="sky-ceiling-mask" />
       </div>
-    </>
+
+      <div className="rear-sky-panel rear-sky-left"><DynamicSkyBar /></div>
+      <div className="rear-sky-panel rear-sky-right"><DynamicSkyBar /></div>
+
+      <HolographicCloset side="women" products={women} onTryOn={setTryOnProduct} />
+      <HolographicCloset side="men" products={men} onTryOn={setTryOnProduct} />
+
+      <div className="store-vignette" />
+      <div className="store-stage">
+        <div className="mannequin-unit mannequin-women-unit">
+          <img src="/mannequin-women-v37.png" alt="Women's collection mannequin" />
+          <div className="podium" />
+        </div>
+        <div className="mannequin-unit mannequin-men-unit">
+          <img src="/mannequin-men-v31.png" alt="Men's collection mannequin" />
+          <div className="podium" />
+        </div>
+        <Link to="/shop?gender=women" className="showroom-cta showroom-cta-women">SHOP WOMEN</Link>
+        <Link to="/shop?gender=men" className="showroom-cta showroom-cta-men">SHOP MEN</Link>
+      </div>
+
+      <div className="showroom-instruction">
+        <span className="showroom-pulse" />
+        TOUCH A HOLOGRAPHIC CLOSET TO ENTER THE LIVE MIRROR
+      </div>
+      {tryOnProduct && <VirtualTryOn product={tryOnProduct} onClose={() => setTryOnProduct(null)} />}
+    </section>
   );
 }

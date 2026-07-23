@@ -131,13 +131,33 @@ export function DynamicSkyBar() {
       } catch {}
     };
 
+    const locateByNetwork = async () => {
+      try {
+        const cached = sessionStorage.getItem("xixvi-weather-location");
+        if (cached) {
+          const { latitude, longitude } = JSON.parse(cached);
+          await fetchWeather(latitude, longitude);
+          return;
+        }
+        const response = await fetch("https://ipwho.is/");
+        const location = await response.json();
+        if (typeof location?.latitude === "number" && typeof location?.longitude === "number") {
+          sessionStorage.setItem("xixvi-weather-location", JSON.stringify({
+            latitude: location.latitude,
+            longitude: location.longitude,
+          }));
+          await fetchWeather(location.latitude, location.longitude);
+        }
+      } catch {}
+    };
+
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (pos) => fetchWeather(pos.coords.latitude, pos.coords.longitude),
-        () => {},
+        () => void locateByNetwork(),
         { timeout: 4000, maximumAge: 600000 }
       );
-    }
+    } else void locateByNetwork();
   }, []);
 
   const isNight = phase === "night";

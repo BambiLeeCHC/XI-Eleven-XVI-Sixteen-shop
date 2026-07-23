@@ -5,6 +5,7 @@ import { Link, useLocation } from "react-router-dom";
 import { api } from "../../convex/_generated/api";
 import { useSessionId } from "../hooks/useSessionId";
 import { SearchOverlay } from "./SearchOverlay";
+import { DynamicSkyBar } from "./DynamicSkyBar";
 
 export function StoreHeader() {
   const location = useLocation();
@@ -47,9 +48,13 @@ export function StoreHeader() {
         </p>
       </div>
 
-      {/* Main Nav — Gradient Loop */}
+      {/* Main Nav — continuous with the visitor's local sky */}
       <header className="relative z-30">
-        <div className="gradient-loop-nav relative">
+        <div className="relative overflow-hidden" style={{ background: "#050710" }}>
+          <div className="absolute inset-0 opacity-80 pointer-events-none" aria-hidden="true">
+            <DynamicSkyBar />
+          </div>
+          <div className="absolute inset-0 pointer-events-none" style={{ background: "linear-gradient(90deg, rgba(3,5,12,.76), rgba(3,5,12,.34) 50%, rgba(3,5,12,.76))" }} />
           <div
             className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 h-[82px] flex items-center justify-between"
             style={{ background: "transparent" }}
