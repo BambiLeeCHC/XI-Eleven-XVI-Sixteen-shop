@@ -10,14 +10,16 @@ export function ClosetHero() {
 
   return (
     <section className="store-hero" aria-label="XI XVI interactive virtual showroom">
-      <div className="store-bg" />
-
-      <div className="sky-ceiling" title="Live local sky ceiling">
+      <div className="hero-sky-underlay" aria-hidden="true">
         <DynamicSkyBar />
-        <div className="sky-ceiling-mask" />
       </div>
-      <div className="rear-sky-panel rear-sky-left"><DynamicSkyBar /></div>
-      <div className="rear-sky-panel rear-sky-right"><DynamicSkyBar /></div>
+      <div className="store-bg" />
+      <div className="hero-mannequin hero-mannequin-women" aria-hidden="true">
+        <img src="/mannequin-women-v37.png" alt="" />
+      </div>
+      <div className="hero-mannequin hero-mannequin-men" aria-hidden="true">
+        <img src="/mannequin-men-v31.png" alt="" />
+      </div>
 
       <button
         type="button"

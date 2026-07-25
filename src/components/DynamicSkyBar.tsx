@@ -383,7 +383,7 @@ export function DynamicSkyBar() {
         }
       `}</style>
 
-      <div className="dsky-bar" ref={containerRef}>
+      <div className={`dsky-bar dsky-${phase} dsky-weather-${weather}`} ref={containerRef}>
         {/* Sky gradient */}
         <div
           className="dsky-sky dsky-hum"

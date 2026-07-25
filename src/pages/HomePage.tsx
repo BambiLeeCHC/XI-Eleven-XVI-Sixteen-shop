@@ -51,7 +51,7 @@ function CategoryCarousel() {
   };
 
   return (
-    <section style={{ background: "#050508", padding: "48px 0 56px" }}>
+    <section className="category-lucite-section" style={{ background: "#050508", padding: "48px 0 56px" }}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 mb-8">
         <div className="flex items-center gap-3">
           <span style={{ color: "rgba(184,148,63,0.5)" }}>✦</span>
@@ -157,7 +157,11 @@ function ProductCarousel({ baseName, accentColor }: { baseName: string; accentCo
    ═══════════════════════════════════════════════════════ */
 function BraSpotlight() {
   return (
-    <section className="relative overflow-hidden" style={{ background: "#050508" }}>
+    <section className="closet-section closet-section-women relative overflow-hidden" style={{ background: "#050508" }}>
+      <div className="closet-section-sign closet-section-sign-women" aria-hidden="true">
+        <strong>11</strong>
+        <span>{"// ILLUMINATION"}</span>
+      </div>
       <style>{`
         @keyframes bra-glow-pulse {
           0%, 100% { box-shadow: 0 0 40px rgba(184,148,63,0.06), inset 0 0 60px rgba(184,148,63,0.03); }
@@ -252,7 +256,11 @@ function BraSpotlight() {
    ═══════════════════════════════════════════════════════ */
 function ShortsSpotlight() {
   return (
-    <section className="relative overflow-hidden" style={{ background: "#060610" }}>
+    <section className="closet-section closet-section-men relative overflow-hidden" style={{ background: "#060610" }}>
+      <div className="closet-section-sign closet-section-sign-men" aria-hidden="true">
+        <strong>16</strong>
+        <span>{"// REINVENTION"}</span>
+      </div>
       <style>{`
         @keyframes shorts-glow-pulse {
           0%, 100% { box-shadow: 0 0 40px rgba(100,160,255,0.06), inset 0 0 60px rgba(100,160,255,0.03); }
@@ -460,7 +468,7 @@ function NewsletterSection() {
   };
 
   return (
-    <section className="relative py-20 px-6 overflow-hidden" style={{ background: "#050508" }}>
+    <section className="newsletter-lucite-section relative py-20 px-6 overflow-hidden" style={{ background: "#050508" }}>
       <div className="absolute inset-0 opacity-30">
         <img src="/store-panoramic.jpg" alt="" className="w-full h-full object-cover" style={{ filter: "blur(20px) brightness(0.3)" }} />
       </div>
