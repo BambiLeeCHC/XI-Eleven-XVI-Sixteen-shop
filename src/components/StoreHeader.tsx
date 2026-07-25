@@ -159,7 +159,7 @@ export function StoreHeader() {
                       className="relative px-4 py-2 text-[10px] tracking-[0.2em] uppercase font-semibold text-white overflow-hidden transition-all duration-300 glass-panel-sm hover:border-white/20"
                       style={{
                         background: "linear-gradient(135deg, rgba(36,139,212,0.08), rgba(255,190,170,0.05))",
-                        border: "1px solid rgba(240, 210, 190, 0.12)",
+                        border: "1px solid rgba(92,155,205,0.22)",
                         borderRadius: "8px",
                       }}
                     >
@@ -174,7 +174,7 @@ export function StoreHeader() {
                     className="relative px-4 py-2 text-[10px] tracking-[0.2em] uppercase font-semibold text-white overflow-hidden transition-all duration-300 glass-panel-sm hover:border-white/20"
                     style={{
                       background: "linear-gradient(135deg, rgba(36,139,212,0.08), rgba(255,190,170,0.05))",
-                      border: "1px solid rgba(240, 210, 190, 0.12)",
+                      border: "1px solid rgba(92,155,205,0.22)",
                       borderRadius: "8px",
                     }}
                   >

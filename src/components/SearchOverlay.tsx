@@ -69,7 +69,7 @@ export function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
         className="absolute top-0 left-0 right-0 max-h-[80vh] overflow-hidden flex flex-col"
         style={{
           background: "linear-gradient(180deg, #0e0a0f 0%, #0c080e 100%)",
-          borderBottom: "1px solid rgba(240, 210, 190, 0.08)",
+          borderBottom: "1px solid rgba(92,155,205,0.18)",
         }}
       >
         {/* Search input row */}
@@ -111,7 +111,7 @@ export function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
                     onClick={() => setQuery(term)}
                     className="px-4 py-2 text-[10px] tracking-[0.15em] uppercase text-white/40 rounded-full transition-colors hover:text-white/60"
                     style={{
-                      border: "1px solid rgba(240, 210, 190, 0.08)",
+                      border: "1px solid rgba(92,155,205,0.18)",
                     }}
                   >
                     {term}

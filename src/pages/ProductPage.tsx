@@ -129,7 +129,7 @@ function Product360Viewer({
         className="aspect-[3/4] overflow-hidden mb-4 relative group"
         style={{
           background: "linear-gradient(145deg, rgba(255,240,230,0.03), rgba(200,160,220,0.02))",
-          border: "1px solid rgba(240, 210, 190, 0.08)",
+          border: "1px solid rgba(92,155,205,0.18)",
           borderRadius: "16px",
           cursor: is360Mode ? (isDragging ? "grabbing" : "grab") : "default",
           userSelect: "none",

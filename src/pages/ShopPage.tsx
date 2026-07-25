@@ -44,11 +44,11 @@ export function ShopPage() {
     <div className="min-h-[80vh]">
       {/* Page Header */}
       <div className="pt-12 pb-8 px-6 text-center">
-        <p className="text-[10px] tracking-[0.3em] uppercase mb-2" style={{ color: "rgba(245, 200, 170, 0.45)" }}>COLLECTION</p>
-        <h1 className="text-4xl md:text-6xl font-light text-white mb-2" style={{ fontFamily: "var(--font-display)" }}>
+        <p className="text-[10px] tracking-[0.3em] uppercase mb-2" style={{ color: "rgba(36,139,212,0.7)" }}>COLLECTION</p>
+        <h1 className="text-4xl md:text-6xl font-light text-[#16223a] mb-2" style={{ fontFamily: "var(--font-display)" }}>
           {title}
         </h1>
-        <p className="text-[12px]" style={{ color: "rgba(245, 230, 220, 0.28)" }}>{count} piece{count !== 1 ? "s" : ""}</p>
+        <p className="text-[12px]" style={{ color: "rgba(21,36,61,0.4)" }}>{count} piece{count !== 1 ? "s" : ""}</p>
       </div>
 
       {/* Category Filters */}
@@ -70,13 +70,13 @@ export function ShopPage() {
               }}
               className="px-4 py-2 text-[10px] tracking-[0.2em] uppercase font-semibold transition-all"
               style={{
-                color: isActive ? "white" : "rgba(245, 230, 220, 0.4)",
+                color: isActive ? "#16223a" : "rgba(21,36,61,0.55)",
                 background: isActive
                   ? "linear-gradient(135deg, rgba(36,139,212,0.12), rgba(85,191,255,0.08))"
                   : "transparent",
                 border: isActive
                   ? "1px solid rgba(200, 140, 255, 0.25)"
-                  : "1px solid rgba(240, 210, 190, 0.1)",
+                  : "1px solid rgba(92,155,205,0.2)",
                 borderRadius: "10px",
               }}
             >
@@ -100,8 +100,8 @@ export function ShopPage() {
           </div>
         ) : products.length === 0 ? (
           <div className="text-center py-20">
-            <p className="text-[14px]" style={{ color: "rgba(245, 230, 220, 0.4)" }}>No products found.</p>
-            <p className="text-[12px] mt-2" style={{ color: "rgba(245, 230, 220, 0.22)" }}>Check back soon — new pieces dropping regularly.</p>
+            <p className="text-[14px]" style={{ color: "rgba(21,36,61,0.55)" }}>No products found.</p>
+            <p className="text-[12px] mt-2" style={{ color: "rgba(21,36,61,0.28)" }}>Check back soon — new pieces dropping regularly.</p>
           </div>
         ) : (
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
@@ -115,7 +115,7 @@ export function ShopPage() {
                   className="aspect-[3/4] overflow-hidden mb-3 relative"
                   style={{
                     background: "linear-gradient(145deg, rgba(255,240,230,0.03), rgba(200,160,220,0.02))",
-                    border: "1px solid rgba(240, 210, 190, 0.08)",
+                    border: "1px solid rgba(92,155,205,0.18)",
                     borderRadius: "14px",
                   }}
                 >
@@ -128,7 +128,7 @@ export function ShopPage() {
                     />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center">
-                      <span className="text-4xl" style={{ color: "rgba(245, 230, 220, 0.1)" }}>✦</span>
+                      <span className="text-4xl" style={{ color: "rgba(21,36,61,0.08)" }}>✦</span>
                     </div>
                   )}
                   {/* Glass hover overlay */}
@@ -140,10 +140,10 @@ export function ShopPage() {
                     }}
                   />
                 </div>
-                <h3 className="text-[12px] tracking-[0.1em] uppercase font-medium transition-colors" style={{ color: "rgba(245, 230, 220, 0.65)" }}>
+                <h3 className="text-[12px] tracking-[0.1em] uppercase font-medium transition-colors" style={{ color: "rgba(21,36,61,0.78)" }}>
                   {product.name}
                 </h3>
-                <p className="text-[12px] mt-1" style={{ color: "rgba(245, 230, 220, 0.35)" }}>
+                <p className="text-[12px] mt-1" style={{ color: "rgba(21,36,61,0.5)" }}>
                   ${(product.price / 100).toFixed(2)}
                 </p>
               </Link>

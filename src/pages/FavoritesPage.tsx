@@ -36,7 +36,7 @@ export default function FavoritesPage() {
     <div className="max-w-6xl mx-auto px-6 lg:px-12 py-12">
       <h1
         className="text-2xl font-light tracking-[0.15em] uppercase mb-2"
-        style={{ color: "rgba(245, 230, 220, 0.9)" }}
+        style={{ color: "rgba(21,36,61,0.95)" }}
       >
         My Favorites
       </h1>
@@ -71,7 +71,7 @@ export default function FavoritesPage() {
               className="group relative rounded-xl overflow-hidden cursor-pointer"
               style={{
                 background: "linear-gradient(135deg, rgba(20,15,25,0.9), rgba(15,12,18,0.95))",
-                border: "1px solid rgba(240, 210, 190, 0.06)",
+                border: "1px solid rgba(92,155,205,0.15)",
               }}
             >
               {/* Remove favorite button */}

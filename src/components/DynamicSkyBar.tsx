@@ -186,18 +186,45 @@ export function DynamicSkyBar() {
     return "rgba(255,255,255,0.6)";
   }, [phase, isNight, isDusk, isDawn]);
 
-  /* Deterministic star positions */
+  /* Deterministic star positions — dense starfield for night sky */
   const stars = useMemo(() => {
     const rng = seededRng(42);
     const result = [];
-    for (let i = 0; i < 60; i++) {
+    /* 120 stars: mix of tiny background stars + medium + a few bright ones */
+    for (let i = 0; i < 120; i++) {
+      const r = rng();
+      const isBright = r > 0.92;      /* ~8% bright stars */
+      const isMedium = r > 0.65;      /* ~27% medium */
+      /* rest are tiny background stars */
+      const tint = rng();
       result.push({
         left: rng() * 100,
         top: rng() * 100,
-        size: rng() > 0.8 ? 2.5 : rng() > 0.5 ? 1.5 : 1,
-        delay: rng() * 5,
-        dur: 2 + rng() * 4,
-        brightness: 0.4 + rng() * 0.6,
+        size: isBright ? 2.5 + rng() * 1.5 : isMedium ? 1.5 + rng() * 0.8 : 0.6 + rng() * 0.6,
+        delay: rng() * 6,
+        dur: isBright ? 3 + rng() * 3 : 2 + rng() * 4,
+        brightness: isBright ? 0.85 + rng() * 0.15 : isMedium ? 0.5 + rng() * 0.4 : 0.25 + rng() * 0.35,
+        /* Some stars have a subtle color tint */
+        color: isBright
+          ? (tint > 0.7 ? "rgba(180,200,255,1)" : tint > 0.4 ? "rgba(255,230,200,1)" : "#fff")
+          : "#fff",
+      });
+    }
+    return result;
+  }, []);
+
+  /* Shooting stars — occasional streaks across the sky */
+  const shootingStars = useMemo(() => {
+    const rng = seededRng(314);
+    const result = [];
+    for (let i = 0; i < 4; i++) {
+      result.push({
+        startX: 10 + rng() * 80,
+        startY: 5 + rng() * 40,
+        angle: 15 + rng() * 30,
+        delay: 5 + rng() * 25,    /* stagger across 30 seconds */
+        dur: 0.6 + rng() * 0.8,
+        length: 40 + rng() * 60,
       });
     }
     return result;
@@ -309,6 +336,11 @@ export function DynamicSkyBar() {
             rgba(0, 2, 8, 0.68) 1.3px
           );
           background-size: 4px 4px;
+          transition: opacity 3s ease;
+        }
+        /* Reduce LED overlay at night so stars pop */
+        .dsky-night .dsky-led {
+          opacity: 0.6;
         }
 
         /* Horizontal shimmer — smooth marquee flow */
@@ -387,6 +419,15 @@ export function DynamicSkyBar() {
         @keyframes dsky-moon-glow {
           0%, 100% { box-shadow: 0 0 12px 4px rgba(200,210,240,0.3), 0 0 30px 8px rgba(160,180,220,0.15); }
           50% { box-shadow: 0 0 16px 6px rgba(200,210,240,0.4), 0 0 40px 12px rgba(160,180,220,0.2); }
+        }
+
+        /* Shooting star streak */
+        @keyframes dsky-shoot {
+          0%   { opacity: 0; transform: translateX(0) rotate(var(--angle, 25deg)); }
+          8%   { opacity: 1; }
+          25%  { opacity: 0.6; }
+          40%  { opacity: 0; transform: translateX(80px) rotate(var(--angle, 25deg)); }
+          100% { opacity: 0; }
         }
       `}</style>
 
@@ -617,13 +658,36 @@ export function DynamicSkyBar() {
                   top: `${s.top}%`,
                   width: s.size,
                   height: s.size,
-                  opacity: isDusk ? 0.2 : s.brightness,
+                  opacity: isDusk ? 0.15 : s.brightness,
+                  background: s.color,
                   boxShadow:
-                    s.size > 1.5
-                      ? `0 0 ${s.size * 2}px rgba(180,200,255,0.5), 0 0 ${s.size * 4}px rgba(140,170,255,0.2)`
-                      : "none",
+                    s.size > 2
+                      ? `0 0 ${s.size * 3}px rgba(180,200,255,0.6), 0 0 ${s.size * 6}px rgba(140,170,255,0.25)`
+                      : s.size > 1.2
+                        ? `0 0 ${s.size * 2}px rgba(200,215,255,0.35)`
+                        : "none",
                   animation: `dsky-twinkle ${s.dur}s ease-in-out infinite`,
                   animationDelay: `${s.delay}s`,
+                }}
+              />
+            ))}
+            {/* Shooting stars — brief streaks */}
+            {isNight && weather !== "rain" && weather !== "storm" && shootingStars.map((ss, i) => (
+              <div
+                key={`ss${i}`}
+                className="dsky-shooting-star"
+                style={{
+                  position: "absolute",
+                  left: `${ss.startX}%`,
+                  top: `${ss.startY}%`,
+                  width: ss.length,
+                  height: 1.5,
+                  background: "linear-gradient(90deg, rgba(255,255,255,0.9) 0%, rgba(180,200,255,0.4) 40%, transparent 100%)",
+                  borderRadius: "1px",
+                  transform: `rotate(${ss.angle}deg)`,
+                  animation: `dsky-shoot ${ss.dur}s ease-out infinite`,
+                  animationDelay: `${ss.delay}s`,
+                  opacity: 0,
                 }}
               />
             ))}
