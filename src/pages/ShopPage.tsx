@@ -72,7 +72,7 @@ export function ShopPage() {
               style={{
                 color: isActive ? "white" : "rgba(245, 230, 220, 0.4)",
                 background: isActive
-                  ? "linear-gradient(135deg, rgba(200,140,255,0.12), rgba(255,158,184,0.08))"
+                  ? "linear-gradient(135deg, rgba(36,139,212,0.12), rgba(85,191,255,0.08))"
                   : "transparent",
                 border: isActive
                   ? "1px solid rgba(200, 140, 255, 0.25)"

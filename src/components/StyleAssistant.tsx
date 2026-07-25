@@ -90,7 +90,7 @@ export function StyleAssistant() {
             className="px-4 py-3 flex items-center justify-between"
             style={{
               borderBottom: "1px solid rgba(168, 85, 247, 0.15)",
-              background: "linear-gradient(135deg, rgba(168,85,247,0.08) 0%, rgba(200,140,255,0.04) 100%)",
+              background: "linear-gradient(135deg, rgba(168,85,247,0.08) 0%, rgba(36,139,212,0.04) 100%)",
             }}
           >
             <div className="flex items-center gap-2.5">

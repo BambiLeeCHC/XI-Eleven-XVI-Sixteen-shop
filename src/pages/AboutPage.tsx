@@ -196,7 +196,7 @@ export function AboutPage() {
             className="absolute inset-0"
             style={{
               background:
-                "radial-gradient(ellipse at 30% 20%, rgba(200,140,255,0.08) 0%, transparent 50%), radial-gradient(ellipse at 70% 80%, rgba(255,180,170,0.05) 0%, transparent 45%), radial-gradient(ellipse at 50% 50%, rgba(245,201,122,0.03) 0%, transparent 40%), #0e0a0f",
+                "radial-gradient(ellipse at 30% 20%, rgba(36,139,212,0.08) 0%, transparent 50%), radial-gradient(ellipse at 70% 80%, rgba(255,180,170,0.05) 0%, transparent 45%), radial-gradient(ellipse at 50% 50%, rgba(245,201,122,0.03) 0%, transparent 40%), #0e0a0f",
             }}
           />
           {/* Orbiting decorative elements */}
@@ -276,7 +276,7 @@ export function AboutPage() {
             </h1>
             <p
               className="text-[14px] md:text-[16px] leading-relaxed max-w-xl mx-auto"
-              style={{ color: "rgba(245,230,220,0.55)" }}
+              style={{ color: "rgba(21,36,61,0.7)" }}
             >
               XI Eleven XVI Sixteen is a{" "}
               <FlashText variant="gold">luxury fashion house</FlashText>{" "}
@@ -301,7 +301,7 @@ export function AboutPage() {
           className="py-20 px-6 relative overflow-hidden"
           style={{
             background: "linear-gradient(#0e0a0f, #140e18 40%, #0e0a0f 100%)",
-            borderTop: "1px solid rgba(240,210,190,0.06)",
+            borderTop: "1px solid rgba(92,155,205,0.15)",
           }}
         >
           {/* Ambient glow */}
@@ -323,12 +323,12 @@ export function AboutPage() {
               <div
                 className="inline-flex items-center gap-2 px-4 py-1.5 mb-6"
                 style={{
-                  background: "rgba(200,140,255,0.05)",
-                  border: "1px solid rgba(200,140,255,0.12)",
+                  background: "rgba(36,139,212,0.05)",
+                  border: "1px solid rgba(36,139,212,0.12)",
                   borderRadius: "10px",
                 }}
               >
-                <span style={{ color: "#c48dff" }}>✦</span>
+                <span style={{ color: "#248bd4" }}>✦</span>
                 <span
                   className="text-[10px] tracking-[0.3em] uppercase font-medium"
                   style={{ color: "rgba(200,160,220,0.65)" }}
@@ -344,7 +344,7 @@ export function AboutPage() {
               </h2>
               <p
                 className="text-[14px] max-w-2xl mx-auto leading-relaxed"
-                style={{ color: "rgba(245,230,220,0.42)" }}
+                style={{ color: "rgba(21,36,61,0.58)" }}
               >
                 When you place an order with XI · XVI, something{" "}
                 <FlashText variant="gold">extraordinary</FlashText>{" "}
@@ -383,7 +383,7 @@ export function AboutPage() {
                   className="p-6 text-center group"
                   style={{
                     background: "rgba(255,240,230,0.02)",
-                    border: "1px solid rgba(240,210,190,0.06)",
+                    border: "1px solid rgba(92,155,205,0.15)",
                     borderRadius: "16px",
                     animation: "about-glow-breathe 6s ease-in-out infinite",
                     animationDelay: item.delay,
@@ -391,17 +391,17 @@ export function AboutPage() {
                   }}
                   onMouseEnter={(e) => {
                     e.currentTarget.style.borderColor = "rgba(196,141,255,0.2)";
-                    e.currentTarget.style.background = "rgba(200,140,255,0.04)";
+                    e.currentTarget.style.background = "rgba(36,139,212,0.04)";
                   }}
                   onMouseLeave={(e) => {
-                    e.currentTarget.style.borderColor = "rgba(240,210,190,0.06)";
+                    e.currentTarget.style.borderColor = "rgba(92,155,205,0.15)";
                     e.currentTarget.style.background = "rgba(255,240,230,0.02)";
                   }}
                 >
                   <span className="text-2xl block mb-3">{item.icon}</span>
                   <span
                     className="text-[10px] tracking-[0.3em] uppercase font-bold"
-                    style={{ color: "rgba(200,140,255,0.55)" }}
+                    style={{ color: "rgba(36,139,212,0.65)" }}
                   >
                     STEP {item.step}
                   </span>
@@ -413,7 +413,7 @@ export function AboutPage() {
                   </h3>
                   <p
                     className="text-[12px] leading-relaxed"
-                    style={{ color: "rgba(245,230,220,0.38)" }}
+                    style={{ color: "rgba(21,36,61,0.52)" }}
                   >
                     {item.desc}
                   </p>
@@ -426,7 +426,7 @@ export function AboutPage() {
         {/* ── Sustainability ── */}
         <section
           className="py-20 px-6 relative overflow-hidden"
-          style={{ borderTop: "1px solid rgba(240,210,190,0.06)" }}
+          style={{ borderTop: "1px solid rgba(92,155,205,0.15)" }}
         >
           <div
             className="absolute"
@@ -461,7 +461,7 @@ export function AboutPage() {
             </h2>
             <p
               className="text-[14px] leading-relaxed mb-10"
-              style={{ color: "rgba(245,230,220,0.42)" }}
+              style={{ color: "rgba(21,36,61,0.58)" }}
             >
               The fashion industry produces over{" "}
               <FlashText variant="alt">92 million tons</FlashText>{" "}
@@ -487,7 +487,7 @@ export function AboutPage() {
                     className="text-3xl font-light text-white mb-1"
                     style={{
                       fontFamily: "var(--font-display)",
-                      background: "linear-gradient(135deg, #c48dff, #ff9eb8)",
+                      background: "linear-gradient(135deg, #248bd4, #55bfff)",
                       WebkitBackgroundClip: "text",
                       WebkitTextFillColor: "transparent",
                       backgroundClip: "text",
@@ -497,7 +497,7 @@ export function AboutPage() {
                   </p>
                   <p
                     className="text-[10px] tracking-[0.1em] uppercase"
-                    style={{ color: "rgba(245,230,220,0.35)" }}
+                    style={{ color: "rgba(21,36,61,0.5)" }}
                   >
                     {stat.label}
                   </p>
@@ -512,7 +512,7 @@ export function AboutPage() {
           className="py-20 px-6 relative overflow-hidden"
           style={{
             background: "linear-gradient(#0e0a0f, #140e18 40%, #0e0a0f 100%)",
-            borderTop: "1px solid rgba(240,210,190,0.06)",
+            borderTop: "1px solid rgba(92,155,205,0.15)",
           }}
         >
           <Sparkles />
@@ -547,12 +547,12 @@ export function AboutPage() {
                 style={{ fontFamily: "var(--font-display)" }}
               >
                 <FlashText variant="primary">XI</FlashText>
-                <span style={{ color: "rgba(245,230,220,0.25)", margin: "0 12px" }}>·</span>
+                <span style={{ color: "rgba(21,36,61,0.32)", margin: "0 12px" }}>·</span>
                 <FlashText variant="alt">XVI</FlashText>
               </h2>
               <p
                 className="text-[14px] max-w-xl mx-auto leading-relaxed"
-                style={{ color: "rgba(245,230,220,0.42)" }}
+                style={{ color: "rgba(21,36,61,0.58)" }}
               >
                 Our name is a cipher — rooted in{" "}
                 <FlashText variant="gold">numerology</FlashText>,
@@ -568,8 +568,8 @@ export function AboutPage() {
               <div
                 className="p-8 relative overflow-hidden"
                 style={{
-                  background: "rgba(200,140,255,0.03)",
-                  border: "1px solid rgba(200,140,255,0.08)",
+                  background: "rgba(36,139,212,0.03)",
+                  border: "1px solid rgba(36,139,212,0.08)",
                   borderRadius: "20px",
                   animation: "about-glow-breathe 6s ease-in-out infinite",
                 }}
@@ -605,7 +605,7 @@ export function AboutPage() {
                 </p>
                 <p
                   className="text-[13px] leading-relaxed"
-                  style={{ color: "rgba(245,230,220,0.45)" }}
+                  style={{ color: "rgba(21,36,61,0.6)" }}
                 >
                   In numerology, 11 is a{" "}
                   <FlashText variant="primary">Master Number</FlashText>{" "}
@@ -638,7 +638,7 @@ export function AboutPage() {
                   style={{
                     width: 80,
                     height: 80,
-                    background: "radial-gradient(circle at top right, rgba(255,158,184,0.08), transparent 70%)",
+                    background: "radial-gradient(circle at top right, rgba(85,191,255,0.08), transparent 70%)",
                   }}
                 />
                 <h3
@@ -663,7 +663,7 @@ export function AboutPage() {
                 </p>
                 <p
                   className="text-[13px] leading-relaxed"
-                  style={{ color: "rgba(245,230,220,0.45)" }}
+                  style={{ color: "rgba(21,36,61,0.6)" }}
                 >
                   The number 16 carries the vibration of{" "}
                   <FlashText variant="alt">transformation</FlashText> and{" "}
@@ -684,7 +684,7 @@ export function AboutPage() {
               className="mt-10 p-8 text-center relative overflow-hidden"
               style={{
                 background: "rgba(255,240,230,0.02)",
-                border: "1px solid rgba(240,210,190,0.06)",
+                border: "1px solid rgba(92,155,205,0.15)",
                 borderRadius: "20px",
               }}
             >
@@ -716,7 +716,7 @@ export function AboutPage() {
               </p>
               <p
                 className="text-[14px] leading-relaxed max-w-2xl mx-auto"
-                style={{ color: "rgba(245,230,220,0.45)" }}
+                style={{ color: "rgba(21,36,61,0.6)" }}
               >
                 The sum of our name reduces to{" "}
                 <FlashText variant="gold">9</FlashText> —
@@ -738,7 +738,7 @@ export function AboutPage() {
         {/* ── Core Values ── */}
         <section
           className="py-20 px-6 relative"
-          style={{ borderTop: "1px solid rgba(240,210,190,0.06)" }}
+          style={{ borderTop: "1px solid rgba(92,155,205,0.15)" }}
         >
           <RevealSection className="max-w-4xl mx-auto">
             <div className="text-center mb-14">
@@ -792,17 +792,17 @@ export function AboutPage() {
                   className="flex gap-4 p-6 group"
                   style={{
                     background: "rgba(255,240,230,0.02)",
-                    border: "1px solid rgba(240,210,190,0.06)",
+                    border: "1px solid rgba(92,155,205,0.15)",
                     borderRadius: "16px",
                     transition: "border-color 0.4s, background 0.4s, transform 0.3s",
                   }}
                   onMouseEnter={(e) => {
                     e.currentTarget.style.borderColor = "rgba(196,141,255,0.15)";
-                    e.currentTarget.style.background = "rgba(200,140,255,0.03)";
+                    e.currentTarget.style.background = "rgba(36,139,212,0.03)";
                     e.currentTarget.style.transform = "translateY(-2px)";
                   }}
                   onMouseLeave={(e) => {
-                    e.currentTarget.style.borderColor = "rgba(240,210,190,0.06)";
+                    e.currentTarget.style.borderColor = "rgba(92,155,205,0.15)";
                     e.currentTarget.style.background = "rgba(255,240,230,0.02)";
                     e.currentTarget.style.transform = "translateY(0)";
                   }}
@@ -818,7 +818,7 @@ export function AboutPage() {
                     </h3>
                     <p
                       className="text-[12px] leading-relaxed"
-                      style={{ color: "rgba(245,230,220,0.38)" }}
+                      style={{ color: "rgba(21,36,61,0.52)" }}
                     >
                       {value.desc}
                     </p>
@@ -834,7 +834,7 @@ export function AboutPage() {
           className="py-24 px-6 text-center relative overflow-hidden"
           style={{
             background: "linear-gradient(#0e0a0f, #140e18 50%, #0e0a0f 100%)",
-            borderTop: "1px solid rgba(240,210,190,0.06)",
+            borderTop: "1px solid rgba(92,155,205,0.15)",
           }}
         >
           <Sparkles />
@@ -883,7 +883,7 @@ export function AboutPage() {
             </h2>
             <p
               className="text-[14px] mb-8 max-w-md mx-auto"
-              style={{ color: "rgba(245,230,220,0.38)" }}
+              style={{ color: "rgba(21,36,61,0.52)" }}
             >
               Every piece is made <FlashText variant="alt">exclusively for you</FlashText> — a modern take on couture
               that's kinder to the planet.

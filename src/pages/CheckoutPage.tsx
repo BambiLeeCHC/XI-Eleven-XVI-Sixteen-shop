@@ -141,16 +141,16 @@ function getDeliveryDateRange(rate: ShippingRate): string {
 
 const glassCard: React.CSSProperties = {
   background: "rgba(255,240,230,0.03)",
-  border: "1px solid rgba(240,210,190,0.08)",
+  border: "1px solid rgba(92,155,205,0.18)",
   borderRadius: "14px",
   backdropFilter: "blur(8px)",
 };
 
 const inputStyle: React.CSSProperties = {
   background: "rgba(255,240,230,0.04)",
-  border: "1px solid rgba(240,210,190,0.12)",
+  border: "1px solid rgba(92,155,205,0.22)",
   borderRadius: "10px",
-  color: "rgba(245,230,220,0.85)",
+  color: "rgba(21,36,61,0.92)",
   fontSize: "13px",
   padding: "12px 14px",
   outline: "none",
@@ -159,7 +159,7 @@ const inputStyle: React.CSSProperties = {
 };
 
 const labelStyle: React.CSSProperties = {
-  color: "rgba(245,230,220,0.45)",
+  color: "rgba(21,36,61,0.6)",
   fontSize: "10px",
   letterSpacing: "0.15em",
   textTransform: "uppercase" as const,
@@ -391,7 +391,7 @@ export function CheckoutPage() {
         </h2>
         <p
           className="text-[13px] mb-6"
-          style={{ color: "rgba(245,230,220,0.38)" }}
+          style={{ color: "rgba(21,36,61,0.52)" }}
         >
           Add some pieces before checking out.
         </p>
@@ -400,8 +400,8 @@ export function CheckoutPage() {
           className="px-8 py-3 text-[11px] tracking-[0.2em] uppercase font-bold text-white transition-all glass-shimmer"
           style={{
             background:
-              "linear-gradient(135deg, rgba(200,140,255,0.12), rgba(255,190,170,0.08))",
-            border: "1px solid rgba(240,210,190,0.12)",
+              "linear-gradient(135deg, rgba(36,139,212,0.12), rgba(255,190,170,0.08))",
+            border: "1px solid rgba(92,155,205,0.22)",
             borderRadius: "12px",
           }}
         >
@@ -452,7 +452,7 @@ export function CheckoutPage() {
           type="button"
           onClick={() => (step > 1 ? setStep(step - 1) : navigate("/cart"))}
           className="flex items-center gap-1 text-[11px] tracking-[0.1em] uppercase transition-colors"
-          style={{ color: "rgba(245,230,220,0.4)" }}
+          style={{ color: "rgba(21,36,61,0.55)" }}
         >
           <svg
             width="16"
@@ -491,14 +491,14 @@ export function CheckoutPage() {
                 style={{
                   background:
                     step >= num
-                      ? "linear-gradient(135deg, #c48dff, #ff9eb8)"
+                      ? "linear-gradient(135deg, #248bd4, #55bfff)"
                       : "rgba(255,240,230,0.06)",
                   color:
-                    step >= num ? "white" : "rgba(245,230,220,0.3)",
+                    step >= num ? "white" : "rgba(21,36,61,0.42)",
                   border:
                     step >= num
                       ? "none"
-                      : "1px solid rgba(240,210,190,0.1)",
+                      : "1px solid rgba(92,155,205,0.2)",
                 }}
               >
                 {step > num ? "✓" : num}
@@ -508,8 +508,8 @@ export function CheckoutPage() {
                 style={{
                   color:
                     step >= num
-                      ? "rgba(245,230,220,0.65)"
-                      : "rgba(245,230,220,0.25)",
+                      ? "rgba(21,36,61,0.78)"
+                      : "rgba(21,36,61,0.32)",
                 }}
               >
                 {label}
@@ -521,8 +521,8 @@ export function CheckoutPage() {
                 style={{
                   background:
                     step > num
-                      ? "linear-gradient(90deg, #c48dff, #ff9eb8)"
-                      : "rgba(240,210,190,0.08)",
+                      ? "linear-gradient(90deg, #248bd4, #55bfff)"
+                      : "rgba(92,155,205,0.18)",
                 }}
               />
             )}
@@ -538,16 +538,16 @@ export function CheckoutPage() {
             <div className="p-5 sm:p-7" style={glassCard}>
               <h2
                 className="text-[11px] tracking-[0.2em] uppercase font-bold mb-6"
-                style={{ color: "rgba(245,230,220,0.55)" }}
+                style={{ color: "rgba(21,36,61,0.7)" }}
               >
                 Shipping Information
               </h2>
               {!isAuthenticated && (
                 <div className="p-3 mb-5 rounded-lg" style={{ background: "rgba(196,141,255,0.05)", border: "1px solid rgba(196,141,255,0.12)" }}>
-                  <p className="text-[11px]" style={{ color: "rgba(245,230,220,0.55)" }}>
+                  <p className="text-[11px]" style={{ color: "rgba(21,36,61,0.7)" }}>
                     Have an account? <Link to="/login" className="text-purple-300">Sign in</Link> before checkout to keep your receipt and live fulfillment tracker in your account.
                   </p>
-                  <p className="text-[10px] mt-1" style={{ color: "rgba(245,230,220,0.3)" }}>
+                  <p className="text-[10px] mt-1" style={{ color: "rgba(21,36,61,0.42)" }}>
                     Guest checkout is available; your receipt will still be emailed by Stripe.
                   </p>
                 </div>
@@ -563,7 +563,7 @@ export function CheckoutPage() {
                   onChange={(e) => setGiftMessage(e.target.value)}
                   style={{ ...inputStyle, resize: "vertical" }}
                 />
-                <p className="text-[9px] mt-1 text-right" style={{ color: "rgba(245,230,220,0.25)" }}>{giftMessage.length}/250</p>
+                <p className="text-[9px] mt-1 text-right" style={{ color: "rgba(21,36,61,0.32)" }}>{giftMessage.length}/250</p>
               </div>
 
               {/* Email */}
@@ -737,7 +737,7 @@ export function CheckoutPage() {
                   <span className="text-[13px] mt-0.5">🏛️</span>
                   <p
                     className="text-[11px] leading-relaxed"
-                    style={{ color: "rgba(245,230,220,0.5)" }}
+                    style={{ color: "rgba(21,36,61,0.65)" }}
                   >
                     {taxInfo.label}: {taxInfo.ratePercent}% (${(taxInfo.taxCents / 100).toFixed(2)})
                     will be added at checkout
@@ -764,13 +764,13 @@ export function CheckoutPage() {
             <div className="p-5 sm:p-7" style={glassCard}>
               <h2
                 className="text-[11px] tracking-[0.2em] uppercase font-bold mb-2"
-                style={{ color: "rgba(245,230,220,0.55)" }}
+                style={{ color: "rgba(21,36,61,0.7)" }}
               >
                 Choose Shipping Method
               </h2>
               <p
                 className="text-[11px] mb-6"
-                style={{ color: "rgba(245,230,220,0.3)" }}
+                style={{ color: "rgba(21,36,61,0.42)" }}
               >
                 Shipping to {address.firstName} {address.lastName},{" "}
                 {address.city}, {address.stateCode} {address.zip},{" "}
@@ -792,7 +792,7 @@ export function CheckoutPage() {
                           : "rgba(255,240,230,0.02)",
                         border: isSelected
                           ? "1.5px solid rgba(196,141,255,0.35)"
-                          : "1px solid rgba(240,210,190,0.08)",
+                          : "1px solid rgba(92,155,205,0.18)",
                         borderRadius: "12px",
                       }}
                     >
@@ -804,7 +804,7 @@ export function CheckoutPage() {
                             style={{
                               border: isSelected
                                 ? "2px solid #c48dff"
-                                : "2px solid rgba(240,210,190,0.15)",
+                                : "2px solid rgba(92,155,205,0.25)",
                             }}
                           >
                             {isSelected && (
@@ -812,7 +812,7 @@ export function CheckoutPage() {
                                 className="w-2.5 h-2.5 rounded-full"
                                 style={{
                                   background:
-                                    "linear-gradient(135deg, #c48dff, #ff9eb8)",
+                                    "linear-gradient(135deg, #248bd4, #55bfff)",
                                 }}
                               />
                             )}
@@ -831,8 +831,8 @@ export function CheckoutPage() {
                               className="text-[13px] font-medium"
                               style={{
                                 color: isSelected
-                                  ? "rgba(245,230,220,0.9)"
-                                  : "rgba(245,230,220,0.65)",
+                                  ? "rgba(21,36,61,0.95)"
+                                  : "rgba(21,36,61,0.78)",
                               }}
                             >
                               {rate.name}
@@ -840,7 +840,7 @@ export function CheckoutPage() {
                             <p
                               className="text-[11px] mt-1"
                               style={{
-                                color: "rgba(245,230,220,0.35)",
+                                color: "rgba(21,36,61,0.5)",
                               }}
                             >
                               Est. delivery: {getDeliveryEstimate(rate)}
@@ -859,8 +859,8 @@ export function CheckoutPage() {
                           className="text-[13px] font-semibold shrink-0"
                           style={{
                             color: isSelected
-                              ? "rgba(245,230,220,0.9)"
-                              : "rgba(245,230,220,0.55)",
+                              ? "rgba(21,36,61,0.95)"
+                              : "rgba(21,36,61,0.7)",
                           }}
                         >
                           {rate.rateInCents === 0 ? "FREE" : `$${parseFloat(rate.rate).toFixed(2)}`}
@@ -895,7 +895,7 @@ export function CheckoutPage() {
                 </svg>
                 <p
                   className="text-[11px] leading-relaxed"
-                  style={{ color: "rgba(245,230,220,0.4)" }}
+                  style={{ color: "rgba(21,36,61,0.55)" }}
                 >
                   Each piece is made-to-order. Production takes 2–5 business
                   days before shipping. Delivery estimates above include both
@@ -923,7 +923,7 @@ export function CheckoutPage() {
             <div className="p-5 sm:p-7" style={glassCard}>
               <h2
                 className="text-[11px] tracking-[0.2em] uppercase font-bold mb-6"
-                style={{ color: "rgba(245,230,220,0.55)" }}
+                style={{ color: "rgba(21,36,61,0.7)" }}
               >
                 Review Your Order
               </h2>
@@ -933,14 +933,14 @@ export function CheckoutPage() {
                 className="p-4 mb-5"
                 style={{
                   background: "rgba(255,240,230,0.02)",
-                  border: "1px solid rgba(240,210,190,0.06)",
+                  border: "1px solid rgba(92,155,205,0.15)",
                   borderRadius: "10px",
                 }}
               >
                 <div className="flex items-center justify-between mb-2">
                   <span
                     className="text-[10px] tracking-[0.15em] uppercase font-semibold"
-                    style={{ color: "rgba(245,230,220,0.4)" }}
+                    style={{ color: "rgba(21,36,61,0.55)" }}
                   >
                     Ship to
                   </span>
@@ -955,20 +955,20 @@ export function CheckoutPage() {
                 </div>
                 <p
                   className="text-[13px]"
-                  style={{ color: "rgba(245,230,220,0.75)" }}
+                  style={{ color: "rgba(21,36,61,0.88)" }}
                 >
                   {address.firstName} {address.lastName}
                 </p>
                 <p
                   className="text-[12px]"
-                  style={{ color: "rgba(245,230,220,0.45)" }}
+                  style={{ color: "rgba(21,36,61,0.6)" }}
                 >
                   {address.address1}
                   {address.address2 ? `, ${address.address2}` : ""}
                 </p>
                 <p
                   className="text-[12px]"
-                  style={{ color: "rgba(245,230,220,0.45)" }}
+                  style={{ color: "rgba(21,36,61,0.6)" }}
                 >
                   {address.city}, {address.stateCode} {address.zip},{" "}
                   {COUNTRIES.find(c => c.code === address.countryCode)?.name || address.countryCode}
@@ -976,7 +976,7 @@ export function CheckoutPage() {
                 {address.email && (
                   <p
                     className="text-[11px] mt-1"
-                    style={{ color: "rgba(245,230,220,0.3)" }}
+                    style={{ color: "rgba(21,36,61,0.42)" }}
                   >
                     {address.email}
                   </p>
@@ -989,14 +989,14 @@ export function CheckoutPage() {
                   className="p-4 mb-5"
                   style={{
                     background: "rgba(255,240,230,0.02)",
-                    border: "1px solid rgba(240,210,190,0.06)",
+                    border: "1px solid rgba(92,155,205,0.15)",
                     borderRadius: "10px",
                   }}
                 >
                   <div className="flex items-center justify-between mb-2">
                     <span
                       className="text-[10px] tracking-[0.15em] uppercase font-semibold"
-                      style={{ color: "rgba(245,230,220,0.4)" }}
+                      style={{ color: "rgba(21,36,61,0.55)" }}
                     >
                       Shipping Method
                     </span>
@@ -1011,7 +1011,7 @@ export function CheckoutPage() {
                   </div>
                   <p
                     className="text-[13px]"
-                    style={{ color: "rgba(245,230,220,0.75)" }}
+                    style={{ color: "rgba(21,36,61,0.88)" }}
                   >
                     {selectedRate.name}
                   </p>
@@ -1032,7 +1032,7 @@ export function CheckoutPage() {
                       className="w-14 h-16 overflow-hidden shrink-0"
                       style={{
                         background: "rgba(255,240,230,0.03)",
-                        border: "1px solid rgba(240,210,190,0.06)",
+                        border: "1px solid rgba(92,155,205,0.15)",
                         borderRadius: "8px",
                       }}
                     >
@@ -1046,7 +1046,7 @@ export function CheckoutPage() {
                       ) : (
                         <div className="w-full h-full flex items-center justify-center">
                           <span
-                            style={{ color: "rgba(245,230,220,0.1)" }}
+                            style={{ color: "rgba(21,36,61,0.08)" }}
                           >
                             ✦
                           </span>
@@ -1056,20 +1056,20 @@ export function CheckoutPage() {
                     <div className="flex-1 min-w-0">
                       <p
                         className="text-[12px] font-medium truncate"
-                        style={{ color: "rgba(245,230,220,0.7)" }}
+                        style={{ color: "rgba(21,36,61,0.82)" }}
                       >
                         {item.product.name}
                       </p>
                       <p
                         className="text-[11px]"
-                        style={{ color: "rgba(245,230,220,0.35)" }}
+                        style={{ color: "rgba(21,36,61,0.5)" }}
                       >
                         Size: {item.size} · Qty: {item.quantity}
                       </p>
                     </div>
                     <span
                       className="text-[12px] shrink-0"
-                      style={{ color: "rgba(245,230,220,0.6)" }}
+                      style={{ color: "rgba(21,36,61,0.75)" }}
                     >
                       $
                       {(
@@ -1093,7 +1093,7 @@ export function CheckoutPage() {
 
               <p
                 className="text-center text-[10px] mt-3"
-                style={{ color: "rgba(245,230,220,0.18)" }}
+                style={{ color: "rgba(21,36,61,0.22)" }}
               >
                 You'll be redirected to Stripe for secure payment
               </p>
@@ -1114,13 +1114,13 @@ export function CheckoutPage() {
               ].map(([icon, label]) => (
                 <div key={label} className="flex items-center gap-2 px-2.5 py-2 rounded-lg" style={{ background: "rgba(255,240,230,0.025)", border: "1px solid rgba(240,210,190,0.07)" }}>
                   <span className="text-[12px]">{icon}</span>
-                  <span className="text-[8px] tracking-[0.08em] uppercase font-semibold" style={{ color: "rgba(245,230,220,0.42)" }}>{label}</span>
+                  <span className="text-[8px] tracking-[0.08em] uppercase font-semibold" style={{ color: "rgba(21,36,61,0.58)" }}>{label}</span>
                 </div>
               ))}
             </div>
             <h3
               className="text-[11px] tracking-[0.2em] uppercase font-bold mb-5"
-              style={{ color: "rgba(245,230,220,0.55)" }}
+              style={{ color: "rgba(21,36,61,0.7)" }}
             >
               Order Summary
             </h3>
@@ -1128,7 +1128,7 @@ export function CheckoutPage() {
             {/* Items list */}
             <div
               className="space-y-3 mb-5 pb-5"
-              style={{ borderBottom: "1px solid rgba(240,210,190,0.06)" }}
+              style={{ borderBottom: "1px solid rgba(92,155,205,0.15)" }}
             >
               {cartItems.map((item: any) => (
                 <div key={item._id} className="flex gap-3">
@@ -1136,7 +1136,7 @@ export function CheckoutPage() {
                     className="relative w-12 h-14 overflow-hidden shrink-0"
                     style={{
                       background: "rgba(255,240,230,0.03)",
-                      border: "1px solid rgba(240,210,190,0.06)",
+                      border: "1px solid rgba(92,155,205,0.15)",
                       borderRadius: "8px",
                     }}
                   >
@@ -1153,7 +1153,7 @@ export function CheckoutPage() {
                         className="absolute -top-1 -right-1 w-4 h-4 rounded-full text-[9px] flex items-center justify-center font-bold"
                         style={{
                           background:
-                            "linear-gradient(135deg, #c48dff, #ff9eb8)",
+                            "linear-gradient(135deg, #248bd4, #55bfff)",
                           color: "white",
                         }}
                       >
@@ -1164,20 +1164,20 @@ export function CheckoutPage() {
                   <div className="flex-1 min-w-0">
                     <p
                       className="text-[11px] font-medium truncate"
-                      style={{ color: "rgba(245,230,220,0.6)" }}
+                      style={{ color: "rgba(21,36,61,0.75)" }}
                     >
                       {item.product.name}
                     </p>
                     <p
                       className="text-[10px]"
-                      style={{ color: "rgba(245,230,220,0.3)" }}
+                      style={{ color: "rgba(21,36,61,0.42)" }}
                     >
                       {item.size}
                     </p>
                   </div>
                   <span
                     className="text-[11px] shrink-0"
-                    style={{ color: "rgba(245,230,220,0.5)" }}
+                    style={{ color: "rgba(21,36,61,0.65)" }}
                   >
                     $
                     {((item.product.price * item.quantity) / 100).toFixed(
@@ -1193,13 +1193,13 @@ export function CheckoutPage() {
               <div className="flex justify-between">
                 <span
                   className="text-[11px]"
-                  style={{ color: "rgba(245,230,220,0.4)" }}
+                  style={{ color: "rgba(21,36,61,0.55)" }}
                 >
                   Subtotal
                 </span>
                 <span
                   className="text-[12px]"
-                  style={{ color: "rgba(245,230,220,0.65)" }}
+                  style={{ color: "rgba(21,36,61,0.78)" }}
                 >
                   ${(subtotal / 100).toFixed(2)}
                 </span>
@@ -1209,7 +1209,7 @@ export function CheckoutPage() {
               <div className="flex justify-between">
                 <span
                   className="text-[11px]"
-                  style={{ color: "rgba(245,230,220,0.4)" }}
+                  style={{ color: "rgba(21,36,61,0.55)" }}
                 >
                   {taxInfo && taxInfo.taxCents > 0
                     ? `Tax (${taxInfo.ratePercent}%)`
@@ -1219,7 +1219,7 @@ export function CheckoutPage() {
                   className="text-[12px]"
                   style={{
                     color: taxAmount > 0
-                      ? "rgba(245,230,220,0.65)"
+                      ? "rgba(21,36,61,0.78)"
                       : "rgba(200,160,220,0.45)",
                   }}
                 >
@@ -1234,7 +1234,7 @@ export function CheckoutPage() {
               <div className="flex justify-between">
                 <span
                   className="text-[11px]"
-                  style={{ color: "rgba(245,230,220,0.4)" }}
+                  style={{ color: "rgba(21,36,61,0.55)" }}
                 >
                   Shipping
                 </span>
@@ -1242,7 +1242,7 @@ export function CheckoutPage() {
                   className="text-[12px]"
                   style={{
                     color: selectedRate
-                      ? "rgba(245,230,220,0.65)"
+                      ? "rgba(21,36,61,0.78)"
                       : "rgba(200,160,220,0.45)",
                   }}
                 >
@@ -1256,12 +1256,12 @@ export function CheckoutPage() {
             <div
               className="flex justify-between items-center mt-4 pt-4"
               style={{
-                borderTop: "1px solid rgba(240,210,190,0.08)",
+                borderTop: "1px solid rgba(92,155,205,0.18)",
               }}
             >
               <span
                 className="text-[11px] uppercase tracking-wider font-semibold"
-                style={{ color: "rgba(245,230,220,0.6)" }}
+                style={{ color: "rgba(21,36,61,0.75)" }}
               >
                 Total
               </span>
@@ -1288,7 +1288,7 @@ export function CheckoutPage() {
                 </p>
                 <p
                   className="text-[13px] mt-1 font-medium"
-                  style={{ color: "rgba(245,230,220,0.75)" }}
+                  style={{ color: "rgba(21,36,61,0.88)" }}
                 >
                   {getDeliveryDateRange(selectedRate)}
                 </p>
@@ -1307,7 +1307,7 @@ export function CheckoutPage() {
                 <span className="text-[11px]">{icon}</span>
                 <span
                   className="text-[9px] tracking-[0.1em] uppercase"
-                  style={{ color: "rgba(245,230,220,0.2)" }}
+                  style={{ color: "rgba(21,36,61,0.25)" }}
                 >
                   {text}
                 </span>

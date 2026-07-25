@@ -22,7 +22,7 @@ export default function FavoritesPage() {
           to="/login"
           className="px-8 py-3 text-[11px] tracking-[0.2em] uppercase font-semibold text-white rounded-lg transition-all"
           style={{
-            background: "linear-gradient(135deg, rgba(200,140,255,0.15), rgba(255,190,170,0.1))",
+            background: "linear-gradient(135deg, rgba(36,139,212,0.15), rgba(255,190,170,0.1))",
             border: "1px solid rgba(240, 210, 190, 0.15)",
           }}
         >
@@ -56,7 +56,7 @@ export default function FavoritesPage() {
             to="/shop"
             className="inline-block px-8 py-3 text-[11px] tracking-[0.2em] uppercase font-semibold text-white rounded-lg transition-all hover:scale-105"
             style={{
-              background: "linear-gradient(135deg, rgba(200,140,255,0.15), rgba(255,190,170,0.1))",
+              background: "linear-gradient(135deg, rgba(36,139,212,0.15), rgba(255,190,170,0.1))",
               border: "1px solid rgba(240, 210, 190, 0.15)",
             }}
           >
