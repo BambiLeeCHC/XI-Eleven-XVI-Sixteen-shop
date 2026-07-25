@@ -73,9 +73,12 @@ export function StoreFooter() {
       <div className="max-w-7xl mx-auto px-6 lg:px-12 py-12 grid grid-cols-1 md:grid-cols-4 gap-8">
         <div>
           <div className="flex items-center gap-2 mb-4">
-            <span className="text-2xl font-bold tracking-wider text-white" style={{ fontFamily: "var(--font-display)" }}>
-              XI · XVI
-            </span>
+            <img
+              src="/xixvi-footer-shield.png"
+              alt="XI XVI — Eleven Sixteen"
+              className="w-auto"
+              style={{ height: 84 }}
+            />
           </div>
           <p className="text-[12px] leading-relaxed" style={{ color: "rgba(245,230,220,0.3)" }}>
             Luxury fashion, made exclusively for you. Zero waste. Zero compromise. Every piece crafted on demand.
