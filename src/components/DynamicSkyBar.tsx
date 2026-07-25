@@ -112,9 +112,9 @@ export function DynamicSkyBar() {
   const [weather, setWeather] = useState<WeatherCondition>("clear");
   const containerRef = useRef<HTMLDivElement>(null);
 
-  /* Update phase every minute */
+  /* Update phase every 30 seconds for smoother transitions */
   useEffect(() => {
-    const t = setInterval(() => setPhase(getSkyPhase()), 60_000);
+    const t = setInterval(() => setPhase(getSkyPhase()), 30_000);
     return () => clearInterval(t);
   }, []);
 
@@ -169,21 +169,21 @@ export function DynamicSkyBar() {
   const showMoon = isNight;
   const isRaining = weather === "rain" || weather === "storm";
 
-  /* Cloud color by phase */
+  /* Cloud color by phase — richer, more visible */
   const cloudColor = useMemo(() => {
-    if (isNight) return "rgba(112,145,185,0.38)";
-    if (isDusk) return "rgba(200,150,160,0.5)";
-    if (isDawn) return "rgba(255,200,150,0.55)";
-    if (isRaining) return "rgba(140,150,165,0.6)";
-    return "rgba(255,255,255,0.65)";
+    if (isNight) return "rgba(130,160,200,0.45)";
+    if (isDusk) return "rgba(220,160,170,0.6)";
+    if (isDawn) return "rgba(255,210,160,0.65)";
+    if (isRaining) return "rgba(155,165,180,0.7)";
+    return "rgba(255,255,255,0.75)";
   }, [phase, isNight, isDusk, isDawn, isRaining]);
 
-  /* Bright highlight color for cloud tops */
+  /* Bright highlight color for cloud tops — more vivid */
   const cloudHighlight = useMemo(() => {
-    if (isNight) return "rgba(50,60,90,0.3)";
-    if (isDusk) return "rgba(255,180,150,0.35)";
-    if (isDawn) return "rgba(255,230,180,0.4)";
-    return "rgba(255,255,255,0.45)";
+    if (isNight) return "rgba(70,85,120,0.4)";
+    if (isDusk) return "rgba(255,195,165,0.5)";
+    if (isDawn) return "rgba(255,240,195,0.55)";
+    return "rgba(255,255,255,0.6)";
   }, [phase, isNight, isDusk, isDawn]);
 
   /* Deterministic star positions */
@@ -222,18 +222,18 @@ export function DynamicSkyBar() {
   const cloudDefs = useMemo(() => {
     const rng = seededRng(77);
     const result = [];
-    /* 18 clouds across 3 depth layers — more visible, slower drift */
-    for (let i = 0; i < 18; i++) {
-      const layer = i < 6 ? "back" : i < 12 ? "mid" : "front";
-      const baseScale = layer === "back" ? 0.6 + rng() * 0.4 : layer === "mid" ? 0.8 + rng() * 0.6 : 1.1 + rng() * 0.7;
-      const baseSpeed = layer === "back" ? 120 + rng() * 50 : layer === "mid" ? 80 + rng() * 40 : 55 + rng() * 25;
-      const baseOpacity = layer === "back" ? 0.3 + rng() * 0.2 : layer === "mid" ? 0.4 + rng() * 0.25 : 0.55 + rng() * 0.3;
+    /* 22 clouds across 3 depth layers — bolder, more visible drift */
+    for (let i = 0; i < 22; i++) {
+      const layer = i < 7 ? "back" : i < 14 ? "mid" : "front";
+      const baseScale = layer === "back" ? 0.7 + rng() * 0.5 : layer === "mid" ? 1.0 + rng() * 0.7 : 1.3 + rng() * 0.9;
+      const baseSpeed = layer === "back" ? 90 + rng() * 40 : layer === "mid" ? 60 + rng() * 30 : 40 + rng() * 20;
+      const baseOpacity = layer === "back" ? 0.35 + rng() * 0.25 : layer === "mid" ? 0.5 + rng() * 0.3 : 0.65 + rng() * 0.25;
       result.push({
-        y: 15 + rng() * 50,
+        y: 10 + rng() * 60,
         scale: baseScale,
         speed: baseSpeed,
         delay: -(rng() * baseSpeed),
-        opacity: weather === "cloudy" ? baseOpacity + 0.2 : baseOpacity,
+        opacity: weather === "cloudy" ? Math.min(baseOpacity + 0.2, 0.95) : baseOpacity,
         layer,
       });
     }
@@ -257,12 +257,19 @@ export function DynamicSkyBar() {
         .dsky-sky {
           position: absolute;
           inset: 0;
+          transition: background-image 3s ease, filter 3s ease;
         }
 
-        /* Cloud drift animation */
+        /* Cloud drift animation — continuous horizontal flow */
         @keyframes dsky-drift {
           0%   { transform: translateX(750px); }
           100% { transform: translateX(-250px); }
+        }
+
+        /* Subtle vertical bob for organic feel */
+        @keyframes dsky-bob {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-3px); }
         }
 
         /* Star twinkle */
@@ -522,7 +529,7 @@ export function DynamicSkyBar() {
               width: "100%",
               height: "100%",
               overflow: "visible",
-              opacity: 0.16,
+              opacity: 0.55,
             }}
           >
             <defs>

@@ -15,10 +15,10 @@ export function ClosetHero() {
       </div>
       <div className="store-bg" />
       <div className="hero-mannequin hero-mannequin-women" aria-hidden="true">
-        <img src="/mannequin-women-v37.png" alt="" />
+        <img src="/mannequin-women-v37-2x.png" alt="" />
       </div>
       <div className="hero-mannequin hero-mannequin-men" aria-hidden="true">
-        <img src="/mannequin-men-v31.png" alt="" />
+        <img src="/mannequin-men-v31-2x.png" alt="" />
       </div>
 
       <button
