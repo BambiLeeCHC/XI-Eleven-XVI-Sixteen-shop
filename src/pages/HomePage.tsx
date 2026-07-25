@@ -3,92 +3,18 @@ import { useQuery, useMutation } from "convex/react";
 import { useRef, useState } from "react";
 import { SEO, buildOrganizationJsonLd } from "../components/SEO";
 import { ClosetHero } from "../components/ClosetHero";
+import { DynamicSkyBar } from "../components/DynamicSkyBar";
 import { PAGE_SEO } from "../data/seoMeta";
 import { api } from "../../convex/_generated/api";
 
-/* ═══════════════════════════════════════════════════════
-   LED PIXEL STRIP DIVIDER — synced with DynamicSkyBar
-   ═══════════════════════════════════════════════════════ */
-type SkyPhase = "night" | "dawn" | "day" | "dusk";
-function getSkyPhase(): SkyPhase {
-  const h = new Date().getHours();
-  if (h >= 5 && h < 7) return "dawn";
-  if (h >= 7 && h < 18) return "day";
-  if (h >= 18 && h < 20) return "dusk";
-  return "night";
-}
-
-function skyLedColors(phase: SkyPhase) {
-  switch (phase) {
-    case "day": return {
-      bg: "linear-gradient(180deg, #0a1e4a, #154080, #1e58a0, #154080, #0a1e4a)",
-      flow: `linear-gradient(90deg,
-        rgba(30,70,160,0.3) 0%, rgba(50,120,220,0.5) 8%, rgba(80,160,255,0.65) 16%,
-        rgba(120,200,255,0.5) 24%, rgba(50,120,200,0.3) 32%, rgba(30,80,180,0.15) 48%,
-        rgba(50,120,200,0.3) 64%, rgba(80,160,255,0.65) 76%, rgba(120,200,255,0.5) 84%,
-        rgba(50,120,220,0.5) 92%, rgba(30,70,160,0.3) 100%)`,
-      glow: "rgba(100,180,255,0.5)",
-    };
-    case "dawn": return {
-      bg: "linear-gradient(180deg, #1a0828, #2a1040, #3a1848, #2a1040, #1a0828)",
-      flow: `linear-gradient(90deg,
-        rgba(160,60,60,0.3) 0%, rgba(220,100,50,0.5) 8%, rgba(255,140,60,0.65) 16%,
-        rgba(255,180,100,0.5) 24%, rgba(200,80,50,0.3) 32%, rgba(160,40,80,0.15) 48%,
-        rgba(200,80,50,0.3) 64%, rgba(255,140,60,0.65) 76%, rgba(255,180,100,0.5) 84%,
-        rgba(220,100,50,0.5) 92%, rgba(160,60,60,0.3) 100%)`,
-      glow: "rgba(255,150,80,0.5)",
-    };
-    case "dusk": return {
-      bg: "linear-gradient(180deg, #0a0818, #1a1235, #2a1848, #1a1235, #0a0818)",
-      flow: `linear-gradient(90deg,
-        rgba(100,30,120,0.3) 0%, rgba(160,50,100,0.5) 8%, rgba(200,80,120,0.65) 16%,
-        rgba(220,120,100,0.5) 24%, rgba(140,40,100,0.3) 32%, rgba(80,30,100,0.15) 48%,
-        rgba(140,40,100,0.3) 64%, rgba(200,80,120,0.65) 76%, rgba(220,120,100,0.5) 84%,
-        rgba(160,50,100,0.5) 92%, rgba(100,30,120,0.3) 100%)`,
-      glow: "rgba(200,100,160,0.5)",
-    };
-    case "night": return {
-      bg: "linear-gradient(180deg, #020208, #05050f, #080818, #05050f, #020208)",
-      flow: `linear-gradient(90deg,
-        rgba(20,30,80,0.3) 0%, rgba(30,50,120,0.4) 8%, rgba(40,60,140,0.5) 16%,
-        rgba(60,80,160,0.4) 24%, rgba(30,40,100,0.25) 32%, rgba(20,25,70,0.12) 48%,
-        rgba(30,40,100,0.25) 64%, rgba(40,60,140,0.5) 76%, rgba(60,80,160,0.4) 84%,
-        rgba(30,50,120,0.4) 92%, rgba(20,30,80,0.3) 100%)`,
-      glow: "rgba(60,80,160,0.4)",
-    };
-  }
-}
-
 function LedStripDivider() {
-  const phase = getSkyPhase();
-  const c = skyLedColors(phase);
-  const showStars = phase === "night" || phase === "dusk";
-  const stars = showStars ? Array.from({ length: 24 }, (_, i) => ({
-    left: `${(i * 4.17 + (i % 3) * 1.3 + 0.8) % 100}%`,
-    top: `${4 + ((i * 7 + 3) % 20)}px`,
-    size: 1.2 + (i % 3) * 0.5,
-    delay: `${(i * 0.38) % 4}s`,
-    dur: `${1.6 + (i % 4) * 0.4}s`,
-    bright: phase === "night" ? 0.85 : 0.55,
-  })) : [];
-
   return (
-    <div style={{ position: "relative", zIndex: 30 }}>
-      <style>{`
-        @keyframes led-flow { 0% { background-position: 0% 50%; } 100% { background-position: 200% 50%; } }
-        @keyframes led-marquee { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
-        @keyframes led-star-twinkle { 0%, 100% { opacity: 0.15; transform: scale(0.7); } 50% { opacity: 1; transform: scale(1.2); } }
-      `}</style>
-      <div style={{ height: "36px", background: c.bg, position: "relative", overflow: "hidden", marginLeft: "-16px", marginRight: "-16px" }}>
-        <div style={{ position: "absolute", inset: "3px 0", background: c.flow, backgroundSize: "200% 100%", animation: "led-flow 3s linear infinite", zIndex: 1 }} />
-        {stars.map((s, i) => (
-          <div key={i} style={{ position: "absolute", left: s.left, top: s.top, width: `${s.size}px`, height: `${s.size}px`, borderRadius: "50%", background: "white", boxShadow: `0 0 ${s.size + 1}px rgba(255,255,255,${s.bright})`, animation: `led-star-twinkle ${s.dur} ease-in-out ${s.delay} infinite`, zIndex: 6, pointerEvents: "none" }} />
-        ))}
-        <div style={{ position: "absolute", inset: 0, zIndex: 2, background: `linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.06) 15%, rgba(255,255,255,0.12) 50%, rgba(255,255,255,0.06) 85%, transparent 100%)`, backgroundSize: "200% 100%", animation: "led-marquee 4s ease-in-out infinite" }} />
-        <div style={{ position: "absolute", inset: 0, zIndex: 3, pointerEvents: "none", backgroundImage: "radial-gradient(circle at center, transparent 1.1px, rgba(0, 2, 8, 0.72) 1.3px)", backgroundSize: "4px 4px" }} />
-        <div style={{ position: "absolute", inset: 0, zIndex: 4, pointerEvents: "none", background: "repeating-linear-gradient(0deg, transparent 0px, transparent 3px, rgba(0,0,0,0.05) 3px, rgba(0,0,0,0.05) 4px)" }} />
-        <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: "1px", background: `linear-gradient(90deg, transparent 10%, ${c.glow} 30%, ${c.glow} 50%, ${c.glow} 70%, transparent 90%)`, zIndex: 5 }} />
-        <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: "1px", background: `linear-gradient(90deg, transparent 10%, ${c.glow} 30%, ${c.glow} 50%, ${c.glow} 70%, transparent 90%)`, zIndex: 5 }} />
+    <div className="sky-ribbon" aria-label="Live local weather sky">
+      <DynamicSkyBar />
+      <div className="sky-ribbon-glass" />
+      <div className="sky-ribbon-label">
+        <span>LIVE SKY</span>
+        <span>LOCAL TIME · LOCAL WEATHER</span>
       </div>
     </div>
   );
@@ -622,7 +548,7 @@ export function HomePage() {
         url="/"
         jsonLd={buildOrganizationJsonLd()}
       />
-      <div>
+      <div className="home-lucite">
         {/* ── CLOSET HERO — Split-screen showroom ── */}
         <ClosetHero />
 

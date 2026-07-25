@@ -5,9 +5,9 @@ import { StyleAssistant } from "./StyleAssistant";
 
 export function StoreLayout() {
   return (
-    <div className="flex flex-col min-h-screen" style={{ background: "#0a0a0a" }}>
+    <div className="store-shell flex flex-col min-h-screen">
       <StoreHeader />
-      <main className="flex-1">
+      <main className="store-main flex-1">
         <Outlet />
       </main>
       <StoreFooter />

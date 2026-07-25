@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { DynamicSkyBar } from "./DynamicSkyBar";
-import { HolographicCloset, VirtualTryOn } from "./HolographicCloset";
+import { VirtualTryOn } from "./HolographicCloset";
 
 type ClosetSide = "women" | "men";
 
@@ -18,12 +18,23 @@ export function ClosetHero() {
       </div>
       <div className="rear-sky-panel rear-sky-left"><DynamicSkyBar /></div>
       <div className="rear-sky-panel rear-sky-right"><DynamicSkyBar /></div>
-      <div className="showroom-live-mannequin-sky" aria-hidden="true">
-        <DynamicSkyBar />
-      </div>
 
-      <HolographicCloset side="women" onActivate={() => setActiveMirror("women")} />
-      <HolographicCloset side="men" onActivate={() => setActiveMirror("men")} />
+      <button
+        type="button"
+        className="showroom-hotspot showroom-hotspot-women"
+        onClick={() => setActiveMirror("women")}
+        aria-label="Open the women's holographic closet"
+      >
+        <span>{"11 // ILLUMINATION"}</span>
+      </button>
+      <button
+        type="button"
+        className="showroom-hotspot showroom-hotspot-men"
+        onClick={() => setActiveMirror("men")}
+        aria-label="Open the men's holographic closet"
+      >
+        <span>{"16 // REINVENTION"}</span>
+      </button>
 
       <div className="store-vignette" />
       <div className="store-stage">
