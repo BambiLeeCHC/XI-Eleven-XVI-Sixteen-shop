@@ -5,6 +5,7 @@ import { Link, useLocation } from "react-router-dom";
 import { api } from "../../convex/_generated/api";
 import { useSessionId } from "../hooks/useSessionId";
 import { SearchOverlay } from "./SearchOverlay";
+import { DynamicSkyBar } from "./DynamicSkyBar";
 
 export function StoreHeader() {
   const location = useLocation();
@@ -35,21 +36,25 @@ export function StoreHeader() {
     <>
       {/* Announcement Bar */}
       <div
-        className="w-full py-2 px-4 text-center relative overflow-hidden"
+        className="store-announcement w-full py-2 px-4 text-center relative overflow-hidden"
         style={{
-          background: "linear-gradient(90deg, #0e0a0f 0%, #16111a 50%, #0e0a0f 100%)",
-          borderBottom: "1px solid rgba(240, 210, 190, 0.08)",
+          background: "linear-gradient(90deg, rgba(255,190,226,.92), rgba(255,255,255,.96) 50%, rgba(177,225,255,.92))",
+          borderBottom: "1px solid rgba(255,255,255,.72)",
         }}
       >
         <div className="announcement-pulse absolute inset-0 pointer-events-none" />
-        <p className="text-[10px] tracking-[0.3em] uppercase relative z-10" style={{ color: "rgba(245, 200, 170, 0.7)" }}>
+        <p className="text-[10px] tracking-[0.3em] uppercase relative z-10" style={{ color: "rgba(48,60,92,.72)" }}>
           ✦ FREE STANDARD SHIPPING ON EVERY ORDER ✦
         </p>
       </div>
 
-      {/* Main Nav — Gradient Loop */}
+      {/* Main Nav — continuous with the visitor's local sky */}
       <header className="relative z-30">
-        <div className="gradient-loop-nav relative">
+        <div className="store-sky-nav relative overflow-hidden" style={{ background: "#78bce8" }}>
+          <div className="absolute inset-0 opacity-100 pointer-events-none" aria-hidden="true">
+            <DynamicSkyBar />
+          </div>
+          <div className="absolute inset-0 pointer-events-none" style={{ background: "linear-gradient(90deg, rgba(7,18,42,.56), rgba(255,255,255,.04) 50%, rgba(7,18,42,.56))" }} />
           <div
             className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 h-[82px] flex items-center justify-between"
             style={{ background: "transparent" }}
@@ -58,9 +63,9 @@ export function StoreHeader() {
             <div className="flex items-center gap-2 sm:gap-4 shrink-0">
               <Link to="/" className="flex items-center gap-3 group shrink-0">
                 <img
-                  src="https://decisive-cheetah-451.convex.cloud/api/storage/9f36be32-eae9-430a-ac7e-ab617f632b25"
+                  src="/xixvi-gold-shield.png"
                   alt="XI XVI — Eleven Sixteen"
-                  className="h-10 sm:h-12 w-auto object-contain drop-shadow-[0_0_8px_rgba(200,170,100,0.3)]"
+                  className="h-14 sm:h-16 w-auto object-contain drop-shadow-[0_0_10px_rgba(220,175,70,0.45)]"
                 />
               </Link>
 
@@ -217,10 +222,10 @@ export function StoreHeader() {
 
           {/* Slide-in panel */}
           <div
-            className="absolute top-0 right-0 w-[280px] h-full flex flex-col"
+            className="store-mobile-menu absolute top-0 right-0 w-[280px] h-full flex flex-col"
             style={{
-              background: "linear-gradient(180deg, #0e0a0f 0%, #0a0a0a 100%)",
-              borderLeft: "1px solid rgba(240, 210, 190, 0.08)",
+              background: "linear-gradient(180deg, rgba(247,251,255,.97), rgba(239,246,255,.97))",
+              borderLeft: "1px solid rgba(118,180,235,.28)",
             }}
           >
             {/* Close button */}

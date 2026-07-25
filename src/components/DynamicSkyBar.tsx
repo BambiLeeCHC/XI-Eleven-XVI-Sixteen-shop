@@ -27,7 +27,7 @@ function getSkyGradient(phase: SkyPhase, weather: WeatherCondition): string {
       case "day":   return "linear-gradient(180deg, #2a3545 0%, #3d4d5e 20%, #4a5a6a 40%, #556270 60%, #6d7a88 80%, #8a939e 100%)";
       case "dawn":  return "linear-gradient(180deg, #1a1530 0%, #3a2545 20%, #5a3858 40%, #7a5060 70%, #9a7878 100%)";
       case "dusk":  return "linear-gradient(180deg, #0f0f20 0%, #1e1835 20%, #352848 40%, #504060 70%, #6a6070 100%)";
-      case "night": return "linear-gradient(180deg, #04040a 0%, #08080e 20%, #0c0c18 40%, #0f0f1a 70%, #0a0a14 100%)";
+      case "night": return "linear-gradient(180deg, #061126 0%, #0a1c38 24%, #102b50 48%, #173c69 72%, #1e4e7e 100%)";
     }
   }
   if (weather === "cloudy") {
@@ -35,7 +35,7 @@ function getSkyGradient(phase: SkyPhase, weather: WeatherCondition): string {
       case "day":   return "linear-gradient(180deg, #3a5575 0%, #4a6888 20%, #5e7ea0 40%, #7898b5 60%, #8eacc5 80%, #a5c0d5 100%)";
       case "dawn":  return "linear-gradient(180deg, #1a1540 0%, #3d2850 20%, #6a4558 40%, #a06858 70%, #c89870 100%)";
       case "dusk":  return "linear-gradient(180deg, #0f0f28 0%, #252040 20%, #3a2850 40%, #6a4868 70%, #8a6878 100%)";
-      case "night": return "linear-gradient(180deg, #06060e 0%, #0a0a15 20%, #121220 40%, #1a1a28 70%, #0e0e18 100%)";
+      case "night": return "linear-gradient(180deg, #071329 0%, #0c2140 22%, #153258 48%, #244a72 74%, #315f87 100%)";
     }
   }
   /* Clear sky — rich blue depth */
@@ -43,7 +43,7 @@ function getSkyGradient(phase: SkyPhase, weather: WeatherCondition): string {
     case "day":   return "linear-gradient(180deg, #0a1e4a 0%, #0e2a60 12%, #154080 25%, #1e58a0 38%, #2870b8 50%, #3a88cc 62%, #55a0dd 75%, #78bce8 88%, #a0d4f2 100%)";
     case "dawn":  return "linear-gradient(180deg, #0e0828 0%, #2a1040 15%, #5a1e48 30%, #9a4040 45%, #cc7048 60%, #e89858 75%, #f5be72 90%, #fad888 100%)";
     case "dusk":  return "linear-gradient(180deg, #060810 0%, #0e0e20 12%, #1a1235 25%, #3a1848 38%, #6b2850 50%, #a84848 62%, #d4784a 75%, #f0a858 90%, #f5c070 100%)";
-    case "night": return "linear-gradient(180deg, #020208 0%, #05050f 15%, #080818 30%, #0a0e20 45%, #0c1228 60%, #0a0e20 75%, #080818 90%, #050510 100%)";
+    case "night": return "linear-gradient(180deg, #040b1b 0%, #07162f 15%, #0b2244 30%, #11325a 48%, #184473 66%, #245a8e 84%, #3472a3 100%)";
   }
 }
 
@@ -131,13 +131,33 @@ export function DynamicSkyBar() {
       } catch {}
     };
 
+    const locateByNetwork = async () => {
+      try {
+        const cached = sessionStorage.getItem("xixvi-weather-location");
+        if (cached) {
+          const { latitude, longitude } = JSON.parse(cached);
+          await fetchWeather(latitude, longitude);
+          return;
+        }
+        const response = await fetch("https://ipwho.is/");
+        const location = await response.json();
+        if (typeof location?.latitude === "number" && typeof location?.longitude === "number") {
+          sessionStorage.setItem("xixvi-weather-location", JSON.stringify({
+            latitude: location.latitude,
+            longitude: location.longitude,
+          }));
+          await fetchWeather(location.latitude, location.longitude);
+        }
+      } catch {}
+    };
+
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (pos) => fetchWeather(pos.coords.latitude, pos.coords.longitude),
-        () => {},
+        () => void locateByNetwork(),
         { timeout: 4000, maximumAge: 600000 }
       );
-    }
+    } else void locateByNetwork();
   }, []);
 
   const isNight = phase === "night";
@@ -151,7 +171,7 @@ export function DynamicSkyBar() {
 
   /* Cloud color by phase */
   const cloudColor = useMemo(() => {
-    if (isNight) return "rgba(30,40,65,0.5)";
+    if (isNight) return "rgba(112,145,185,0.38)";
     if (isDusk) return "rgba(200,150,160,0.5)";
     if (isDawn) return "rgba(255,200,150,0.55)";
     if (isRaining) return "rgba(140,150,165,0.6)";
@@ -363,9 +383,22 @@ export function DynamicSkyBar() {
         }
       `}</style>
 
-      <div className="dsky-bar" ref={containerRef}>
+      <div className={`dsky-bar dsky-${phase} dsky-weather-${weather}`} ref={containerRef}>
         {/* Sky gradient */}
-        <div className="dsky-sky dsky-hum" style={{ background: getSkyGradient(phase, weather) }}>
+        <div
+          className="dsky-sky dsky-hum"
+          style={{
+            backgroundImage: `${getSkyGradient(phase, weather)}, url("/dynamic-sky-clouds.jpg")`,
+            backgroundBlendMode:
+              weather === "rain" || weather === "storm"
+                ? "multiply"
+                : phase === "night"
+                  ? "multiply"
+                  : "soft-light",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+          }}
+        >
 
           {/* ── Sun (day + dawn) ── */}
           {showSun && weather !== "rain" && weather !== "storm" && (
@@ -480,6 +513,7 @@ export function DynamicSkyBar() {
 
           {/* ── Cloud layers (SVG for detailed shapes) ── */}
           <svg
+            className="dsky-clouds"
             viewBox="0 0 500 100"
             preserveAspectRatio="none"
             style={{
@@ -488,6 +522,7 @@ export function DynamicSkyBar() {
               width: "100%",
               height: "100%",
               overflow: "visible",
+              opacity: 0.16,
             }}
           >
             <defs>
