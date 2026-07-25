@@ -1081,23 +1081,35 @@ body {
 }
 
 .store-sky-nav {
+  isolation: isolate;
   border-bottom: 1px solid rgba(255,255,255,.7);
   box-shadow: 0 10px 30px rgba(48,119,171,.16);
 }
 
-.store-sky-nav .dsky-led,
-.sky-ceiling .dsky-led,
-.rear-sky-panel .dsky-led,
-.sky-ribbon .dsky-led {
-  opacity: .28;
-  background-size: 7px 7px;
+.store-sky-nav::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  pointer-events: none;
+  border-top: 1px solid rgba(255,255,255,.58);
+  border-bottom: 1px solid rgba(255,255,255,.72);
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.18), transparent 32%, transparent 72%, rgba(255,255,255,.12)),
+    linear-gradient(90deg, rgba(255,255,255,.12), transparent 18%, transparent 82%, rgba(255,255,255,.12));
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.58), inset 0 -1px 0 rgba(61,126,170,.16);
+  backdrop-filter: blur(.45px) saturate(1.04);
 }
 
-.store-sky-nav .dsky-scanlines,
-.sky-ceiling .dsky-scanlines,
-.rear-sky-panel .dsky-scanlines,
-.sky-ribbon .dsky-scanlines {
-  opacity: .2;
+.dsky-led,
+.dsky-scanlines,
+.dsky-marquee,
+.dsky-clouds {
+  display: none !important;
+}
+
+.dsky-hum {
+  animation: none !important;
 }
 
 .store-hero {
@@ -1125,10 +1137,14 @@ body {
 
 .sky-ceiling-mask {
   background:
-    linear-gradient(180deg, rgba(255,255,255,.03), transparent 70%, rgba(120,190,235,.08)),
-    radial-gradient(circle at center, transparent 1.8px, rgba(11,36,68,.12) 2px);
-  background-size: auto, 7px 7px;
-  box-shadow: inset 0 0 20px rgba(255,255,255,.2);
+    linear-gradient(180deg, rgba(255,255,255,.2), transparent 18%, transparent 74%, rgba(255,255,255,.14)),
+    linear-gradient(90deg, rgba(255,255,255,.13), transparent 18%, transparent 82%, rgba(255,255,255,.13));
+  border: 1px solid rgba(255,255,255,.7);
+  box-shadow:
+    inset 0 0 0 5px rgba(245,251,255,.08),
+    inset 0 0 18px rgba(255,255,255,.2),
+    0 3px 12px rgba(51,118,162,.14);
+  backdrop-filter: blur(.35px) saturate(1.04);
 }
 
 .rear-sky-panel {
@@ -1141,8 +1157,28 @@ body {
   box-shadow: inset 0 0 16px rgba(26,91,139,.14);
 }
 
+.rear-sky-panel::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 8;
+  pointer-events: none;
+  border: 1px solid rgba(255,255,255,.64);
+  background:
+    linear-gradient(135deg, rgba(255,255,255,.18), transparent 28%, transparent 68%, rgba(255,255,255,.1)),
+    linear-gradient(90deg, rgba(255,255,255,.08), transparent 35%);
+  box-shadow:
+    inset 0 0 0 4px rgba(244,251,255,.06),
+    inset 0 0 14px rgba(255,255,255,.14),
+    0 0 10px rgba(48,132,187,.12);
+  backdrop-filter: blur(.35px) saturate(1.04);
+}
+
 .rear-sky-left { left: 32.1%; }
 .rear-sky-right { right: 32.2%; }
+.rear-sky-panel .dsky-sky { background-size: auto 100% !important; }
+.rear-sky-left .dsky-sky { background-position: 24% center !important; }
+.rear-sky-right .dsky-sky { background-position: 76% center !important; }
 
 .showroom-live-mannequin-sky {
   opacity: .2;
@@ -1233,7 +1269,15 @@ body {
   inset: 0;
   z-index: 7;
   pointer-events: none;
-  background: linear-gradient(90deg, rgba(255,255,255,.22), transparent 22%, transparent 78%, rgba(255,255,255,.22));
+  border-top: 1px solid rgba(255,255,255,.78);
+  border-bottom: 1px solid rgba(255,255,255,.62);
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.19), transparent 30%, transparent 70%, rgba(255,255,255,.12)),
+    linear-gradient(90deg, rgba(255,255,255,.2), transparent 16%, transparent 84%, rgba(255,255,255,.2));
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.58),
+    inset 0 -1px 0 rgba(65,140,190,.14);
+  backdrop-filter: blur(.4px) saturate(1.04);
 }
 
 .sky-ribbon-label {
