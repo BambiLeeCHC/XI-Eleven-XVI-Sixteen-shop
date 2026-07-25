@@ -130,7 +130,7 @@ export function StoreHeader() {
                 {cartCount > 0 && (
                   <span
                     className="absolute -top-0.5 -right-0.5 min-w-[16px] h-[16px] px-1 rounded-full text-[8px] flex items-center justify-center text-white font-bold"
-                    style={{ background: "linear-gradient(135deg, #c48dff, #ff9eb8)" }}
+                    style={{ background: "linear-gradient(135deg, #248bd4, #55bfff)" }}
                   >
                     {cartCount}
                   </span>
@@ -158,7 +158,7 @@ export function StoreHeader() {
                       type="button"
                       className="relative px-4 py-2 text-[10px] tracking-[0.2em] uppercase font-semibold text-white overflow-hidden transition-all duration-300 glass-panel-sm hover:border-white/20"
                       style={{
-                        background: "linear-gradient(135deg, rgba(200,140,255,0.08), rgba(255,190,170,0.05))",
+                        background: "linear-gradient(135deg, rgba(36,139,212,0.08), rgba(255,190,170,0.05))",
                         border: "1px solid rgba(240, 210, 190, 0.12)",
                         borderRadius: "8px",
                       }}
@@ -173,7 +173,7 @@ export function StoreHeader() {
                     type="button"
                     className="relative px-4 py-2 text-[10px] tracking-[0.2em] uppercase font-semibold text-white overflow-hidden transition-all duration-300 glass-panel-sm hover:border-white/20"
                     style={{
-                      background: "linear-gradient(135deg, rgba(200,140,255,0.08), rgba(255,190,170,0.05))",
+                      background: "linear-gradient(135deg, rgba(36,139,212,0.08), rgba(255,190,170,0.05))",
                       border: "1px solid rgba(240, 210, 190, 0.12)",
                       borderRadius: "8px",
                     }}
@@ -320,7 +320,7 @@ function MobileNavLink({
       {badge !== undefined && (
         <span
           className="min-w-[20px] h-[20px] px-1.5 rounded-full text-[9px] flex items-center justify-center text-white font-bold"
-          style={{ background: "linear-gradient(135deg, #c48dff, #ff9eb8)" }}
+          style={{ background: "linear-gradient(135deg, #248bd4, #55bfff)" }}
         >
           {badge}
         </span>

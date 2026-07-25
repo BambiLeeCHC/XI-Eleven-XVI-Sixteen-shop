@@ -20,7 +20,7 @@ const SPOTLIGHTS: SpotlightConfig[] = [
     subtitle: "Six shades of effortless elegance",
     colorLine: "Available in 6 colors that drape like a dream — from classic Black to bold Red to delicate Pink Lace.",
     gender: "women",
-    gradient: "linear-gradient(135deg, rgba(200,140,255,0.15) 0%, rgba(255,158,184,0.12) 50%, rgba(245,200,170,0.08) 100%)",
+    gradient: "linear-gradient(135deg, rgba(36,139,212,0.15) 0%, rgba(255,158,184,0.12) 50%, rgba(245,200,170,0.08) 100%)",
     btnColor: "rgba(200,140,255,0.9)",
   },
   {
@@ -29,7 +29,7 @@ const SPOTLIGHTS: SpotlightConfig[] = [
     subtitle: "Six bold colors. Zero compromises.",
     colorLine: "Available in 6 statement colors — from stealth Black to electric Volt to icy cool.",
     gender: "men",
-    gradient: "linear-gradient(135deg, rgba(100,180,255,0.15) 0%, rgba(140,255,200,0.08) 50%, rgba(200,140,255,0.06) 100%)",
+    gradient: "linear-gradient(135deg, rgba(100,180,255,0.15) 0%, rgba(140,255,200,0.08) 50%, rgba(36,139,212,0.06) 100%)",
     btnColor: "rgba(120,180,255,0.9)",
   },
 ];
@@ -73,13 +73,13 @@ function VariantCard({ product }: { product: { _id: string; name: string; images
         <div className="p-3">
           <p
             className="text-[10px] font-bold tracking-[0.08em] uppercase mb-0.5"
-            style={{ color: "rgba(245,230,220,0.65)" }}
+            style={{ color: "rgba(21,36,61,0.78)" }}
           >
             {color || product.name}
           </p>
           <p
             className="text-[11px] font-medium"
-            style={{ color: "rgba(245,230,220,0.3)" }}
+            style={{ color: "rgba(21,36,61,0.42)" }}
           >
             ${(product.price / 100).toFixed(2)}
           </p>
@@ -140,7 +140,7 @@ function VariantCarousel({ variants }: { variants: { _id: string; name: string; 
       <div className="max-w-7xl mx-auto px-6 mb-3">
         <span
           className="text-[10px] tracking-[0.3em] uppercase font-semibold"
-          style={{ color: "rgba(245,230,220,0.35)" }}
+          style={{ color: "rgba(21,36,61,0.5)" }}
         >
           All Colors
         </span>
@@ -230,7 +230,7 @@ function Spotlight({ config }: { config: SpotlightConfig }) {
           <div className="flex-1 text-center md:text-left">
             <p
               className="text-[9px] tracking-[0.4em] uppercase font-medium mb-3"
-              style={{ color: "rgba(245,230,220,0.4)" }}
+              style={{ color: "rgba(21,36,61,0.55)" }}
             >
               ✦ {config.gender === "women" ? "WOMEN'S COLLECTION" : "MEN'S COLLECTION"}
             </p>
@@ -246,13 +246,13 @@ function Spotlight({ config }: { config: SpotlightConfig }) {
             </h3>
             <p
               className="text-[15px] font-light mb-2"
-              style={{ color: "rgba(245,230,220,0.65)" }}
+              style={{ color: "rgba(21,36,61,0.78)" }}
             >
               {config.subtitle}
             </p>
             <p
               className="text-[12px] leading-relaxed mb-6 max-w-sm"
-              style={{ color: "rgba(245,230,220,0.35)" }}
+              style={{ color: "rgba(21,36,61,0.5)" }}
             >
               {config.colorLine}
             </p>

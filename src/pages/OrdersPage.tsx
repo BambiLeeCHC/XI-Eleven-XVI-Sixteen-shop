@@ -19,7 +19,7 @@ function FulfillmentTracker({ stage, history }: { stage?: string; history?: Arra
   const currentIdx = STAGES.findIndex((s) => s.key === stage);
 
   return (
-    <div className="mt-4 pt-4" style={{ borderTop: "1px solid rgba(200,140,255,0.08)" }}>
+    <div className="mt-4 pt-4" style={{ borderTop: "1px solid rgba(36,139,212,0.08)" }}>
       <p className="text-[10px] tracking-[0.15em] uppercase font-semibold mb-3" style={{ color: "rgba(200,160,220,0.5)" }}>
         Fulfillment Progress
       </p>
@@ -33,14 +33,14 @@ function FulfillmentTracker({ stage, history }: { stage?: string; history?: Arra
                 className="flex items-center justify-center w-7 h-7 rounded-full text-[11px] transition-all"
                 style={{
                   background: isComplete
-                    ? "linear-gradient(135deg, rgba(200,140,255,0.25), rgba(255,158,184,0.2))"
+                    ? "linear-gradient(135deg, rgba(36,139,212,0.25), rgba(255,158,184,0.2))"
                     : "rgba(255,240,230,0.04)",
                   border: isCurrent
-                    ? "2px solid rgba(200,140,255,0.5)"
+                    ? "2px solid rgba(36,139,212,0.6)"
                     : isComplete
-                      ? "1px solid rgba(200,140,255,0.15)"
-                      : "1px solid rgba(240,210,190,0.06)",
-                  boxShadow: isCurrent ? "0 0 10px rgba(200,140,255,0.2)" : "none",
+                      ? "1px solid rgba(36,139,212,0.15)"
+                      : "1px solid rgba(92,155,205,0.15)",
+                  boxShadow: isCurrent ? "0 0 10px rgba(36,139,212,0.2)" : "none",
                 }}
                 title={s.label}
               >
@@ -51,8 +51,8 @@ function FulfillmentTracker({ stage, history }: { stage?: string; history?: Arra
                   className="w-3 h-[2px]"
                   style={{
                     background: i < currentIdx
-                      ? "linear-gradient(90deg, rgba(200,140,255,0.3), rgba(255,158,184,0.25))"
-                      : "rgba(240,210,190,0.06)",
+                      ? "linear-gradient(90deg, rgba(36,139,212,0.3), rgba(255,158,184,0.25))"
+                      : "rgba(92,155,205,0.15)",
                   }}
                 />
               )}
@@ -65,7 +65,7 @@ function FulfillmentTracker({ stage, history }: { stage?: string; history?: Arra
         <p className="text-[11px]" style={{ color: "rgba(200,160,220,0.6)" }}>
           {STAGES[currentIdx].icon} {STAGES[currentIdx].label}
           {stage === "printful_processing" && (
-            <span style={{ color: "rgba(245,230,220,0.35)" }}> — Your piece is being crafted exclusively for you</span>
+            <span style={{ color: "rgba(21,36,61,0.5)" }}> — Your piece is being crafted exclusively for you</span>
           )}
         </p>
       )}
@@ -74,10 +74,10 @@ function FulfillmentTracker({ stage, history }: { stage?: string; history?: Arra
         <div className="mt-3 space-y-1">
           {history.slice().reverse().slice(0, 3).map((h, i) => (
             <div key={i} className="flex items-start gap-2">
-              <span className="text-[9px] shrink-0 mt-0.5" style={{ color: "rgba(245,230,220,0.2)" }}>
+              <span className="text-[9px] shrink-0 mt-0.5" style={{ color: "rgba(21,36,61,0.25)" }}>
                 {new Date(h.timestamp).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
               </span>
-              <span className="text-[10px]" style={{ color: "rgba(245,230,220,0.3)" }}>
+              <span className="text-[10px]" style={{ color: "rgba(21,36,61,0.42)" }}>
                 {h.note}
               </span>
             </div>
@@ -122,7 +122,7 @@ export function OrdersPage() {
               className="p-6"
               style={{
                 background: "rgba(255,240,230,0.02)",
-                border: "1px solid rgba(240,210,190,0.06)",
+                border: "1px solid rgba(92,155,205,0.15)",
                 borderRadius: "16px",
               }}
             >
@@ -130,7 +130,7 @@ export function OrdersPage() {
                 <div>
                   <p className="text-[10px] tracking-wider uppercase text-white/40">Order</p>
                   <p className="text-[12px] text-white/60 font-mono">{order._id.slice(-8)}</p>
-                  <p className="text-[10px] mt-1" style={{ color: "rgba(245,230,220,0.25)" }}>
+                  <p className="text-[10px] mt-1" style={{ color: "rgba(21,36,61,0.32)" }}>
                     {new Date(order._creationTime).toLocaleDateString("en-US", {
                       month: "long",
                       day: "numeric",
@@ -172,7 +172,7 @@ export function OrdersPage() {
 
               {/* Shipping method */}
               {order.shippingMethod && (
-                <p className="text-[10px] mt-2" style={{ color: "rgba(245,230,220,0.3)" }}>
+                <p className="text-[10px] mt-2" style={{ color: "rgba(21,36,61,0.42)" }}>
                   Shipping: {order.shippingMethod}
                 </p>
               )}

@@ -155,7 +155,7 @@ function Product360Viewer({
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center">
-            <span style={{ color: "rgba(245,230,220,0.1)" }} className="text-6xl">
+            <span style={{ color: "rgba(21,36,61,0.08)" }} className="text-6xl">
               ✦
             </span>
           </div>
@@ -171,7 +171,7 @@ function Product360Viewer({
                 background: "rgba(0,0,0,0.65)",
                 backdropFilter: "blur(12px)",
                 borderRadius: "20px",
-                border: "1px solid rgba(200,140,255,0.2)",
+                border: "1px solid rgba(36,139,212,0.2)",
               }}
             >
               <span className="text-[18px]" style={{ animation: isAutoRotating ? "spin360 2s linear infinite" : "none" }}>
@@ -219,7 +219,7 @@ function Product360Viewer({
                       borderRadius: "3px",
                       background:
                         i === currentIndex % angleImages.length
-                          ? "linear-gradient(135deg, #c48dff, #ff9eb8)"
+                          ? "linear-gradient(135deg, #248bd4, #55bfff)"
                           : "rgba(255,255,255,0.3)",
                     }}
                   />
@@ -276,7 +276,7 @@ function Product360Viewer({
               background: "rgba(0,0,0,0.65)",
               backdropFilter: "blur(12px)",
               borderRadius: "20px",
-              border: "1px solid rgba(200,140,255,0.25)",
+              border: "1px solid rgba(36,139,212,0.25)",
               color: "white",
             }}
           >
@@ -298,8 +298,8 @@ function Product360Viewer({
               style={{
                 border:
                   i === currentIndex
-                    ? "2px solid rgba(200,140,255,0.4)"
-                    : "1px solid rgba(240,210,190,0.1)",
+                    ? "2px solid rgba(36,139,212,0.6)"
+                    : "1px solid rgba(92,155,205,0.2)",
                 borderRadius: "10px",
                 background: "rgba(255,240,230,0.02)",
               }}
@@ -315,13 +315,13 @@ function Product360Viewer({
               onClick={enter360}
               className="w-16 h-20 flex-shrink-0 flex flex-col items-center justify-center gap-1 transition-all"
               style={{
-                border: "1px solid rgba(200,140,255,0.2)",
+                border: "1px solid rgba(36,139,212,0.2)",
                 borderRadius: "10px",
-                background: "linear-gradient(135deg, rgba(200,140,255,0.06), rgba(255,158,184,0.04))",
+                background: "linear-gradient(135deg, rgba(36,139,212,0.06), rgba(85,191,255,0.04))",
               }}
             >
-              <span style={{ fontSize: "18px", color: "rgba(200,140,255,0.6)" }}>↻</span>
-              <span className="text-[8px] tracking-wider uppercase" style={{ color: "rgba(200,140,255,0.5)" }}>
+              <span style={{ fontSize: "18px", color: "rgba(36,139,212,0.75)" }}>↻</span>
+              <span className="text-[8px] tracking-wider uppercase" style={{ color: "rgba(36,139,212,0.7)" }}>
                 8-angle 360°
               </span>
             </button>
@@ -356,7 +356,7 @@ export function ProductPage() {
   if (product === undefined) {
     return (
       <div className="min-h-[80vh] flex items-center justify-center">
-        <div className="animate-pulse" style={{ color: "rgba(245,230,220,0.3)" }}>
+        <div className="animate-pulse" style={{ color: "rgba(21,36,61,0.42)" }}>
           Loading...
         </div>
       </div>
@@ -366,8 +366,8 @@ export function ProductPage() {
   if (!product) {
     return (
       <div className="min-h-[80vh] flex items-center justify-center flex-col gap-4">
-        <p style={{ color: "rgba(245,230,220,0.5)" }}>Product not found.</p>
-        <Link to="/shop" className="text-[12px] tracking-wider uppercase" style={{ color: "#c48dff" }}>
+        <p style={{ color: "rgba(21,36,61,0.65)" }}>Product not found.</p>
+        <Link to="/shop" className="text-[12px] tracking-wider uppercase" style={{ color: "#248bd4" }}>
           ← Back to Shop
         </Link>
       </div>
@@ -430,7 +430,7 @@ export function ProductPage() {
         <Link
           to="/shop"
           className="text-[11px] tracking-[0.15em] uppercase transition-colors"
-          style={{ color: "rgba(245,230,220,0.38)" }}
+          style={{ color: "rgba(21,36,61,0.52)" }}
         >
           ← Back to Collection
         </Link>
@@ -450,7 +450,7 @@ export function ProductPage() {
 
         {/* Product Info */}
         <div className="flex flex-col">
-          <p className="text-[10px] tracking-[0.3em] uppercase mb-2" style={{ color: "rgba(200,140,255,0.55)" }}>
+          <p className="text-[10px] tracking-[0.3em] uppercase mb-2" style={{ color: "rgba(36,139,212,0.75)" }}>
             {product.category}
           </p>
           <h1
@@ -459,7 +459,7 @@ export function ProductPage() {
           >
             {product.name}
           </h1>
-          <p className="text-2xl mb-6" style={{ color: "rgba(245,230,220,0.75)" }}>
+          <p className="text-2xl mb-6" style={{ color: "rgba(21,36,61,0.88)" }}>
             ${(product.price / 100).toFixed(2)}
           </p>
 
@@ -472,18 +472,18 @@ export function ProductPage() {
               borderRadius: "16px",
               border: activeTab === "fit"
                 ? "1px solid rgba(200,180,160,0.3)"
-                : "1px solid rgba(240,210,190,0.08)",
+                : "1px solid rgba(92,155,205,0.18)",
               padding: "0",
               marginBottom: "24px",
               transition: "all 0.35s ease",
               boxShadow: activeTab === "fit"
-                ? "0 8px 40px rgba(200,140,255,0.08), 0 2px 12px rgba(0,0,0,0.1)"
+                ? "0 8px 40px rgba(36,139,212,0.08), 0 2px 12px rgba(0,0,0,0.1)"
                 : "none",
               overflow: "hidden",
             }}
           >
             {/* Tab buttons */}
-            <div className="flex gap-0" style={{ borderBottom: activeTab === "fit" ? "1px solid rgba(180,160,140,0.15)" : "1px solid rgba(240,210,190,0.06)" }}>
+            <div className="flex gap-0" style={{ borderBottom: activeTab === "fit" ? "1px solid rgba(36,139,212,0.35)" : "1px solid rgba(92,155,205,0.15)" }}>
               <button
                 type="button"
                 onClick={() => setActiveTab("details")}
@@ -491,7 +491,7 @@ export function ProductPage() {
                 style={{
                   color: activeTab === "details"
                     ? (activeTab === "fit" ? "rgba(30,25,20,0.8)" : "white")
-                    : (activeTab === "fit" ? "rgba(30,25,20,0.35)" : "rgba(245,230,220,0.35)"),
+                    : (activeTab === "fit" ? "rgba(30,25,20,0.35)" : "rgba(21,36,61,0.5)"),
                   background: "transparent",
                   border: "none",
                   cursor: "pointer",
@@ -500,7 +500,7 @@ export function ProductPage() {
                 Details
                 {activeTab === "details" && (
                   <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-3/4 h-[2.5px]"
-                    style={{ background: "linear-gradient(90deg, #c48dff, #ff9eb8)", borderRadius: "2px" }} />
+                    style={{ background: "linear-gradient(90deg, #248bd4, #55bfff)", borderRadius: "2px" }} />
                 )}
               </button>
               <button
@@ -510,17 +510,17 @@ export function ProductPage() {
                 style={{
                   color: activeTab === "fit"
                     ? "rgba(30,25,20,0.9)"
-                    : "rgba(245,230,220,0.35)",
+                    : "rgba(21,36,61,0.5)",
                   background: "transparent",
                   border: "none",
                   cursor: "pointer",
                 }}
               >
                 <span>Fit Guide</span>
-                <span className="text-[9px]" style={{ color: activeTab === "fit" ? "rgba(160,100,220,0.7)" : "rgba(200,140,255,0.4)" }}>✦</span>
+                <span className="text-[9px]" style={{ color: activeTab === "fit" ? "rgba(36,139,212,0.85)" : "rgba(36,139,212,0.6)" }}>✦</span>
                 {activeTab === "fit" && (
                   <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-3/4 h-[2.5px]"
-                    style={{ background: "linear-gradient(90deg, #c48dff, #ff9eb8)", borderRadius: "2px" }} />
+                    style={{ background: "linear-gradient(90deg, #248bd4, #55bfff)", borderRadius: "2px" }} />
                 )}
               </button>
             </div>
@@ -528,7 +528,7 @@ export function ProductPage() {
             {/* Tab Content */}
             <div style={{ padding: activeTab === "fit" ? "20px 16px" : "16px 16px" }}>
               {activeTab === "details" ? (
-                <p className="text-[14px] leading-relaxed whitespace-pre-line" style={{ color: "rgba(245,230,220,0.4)" }}>
+                <p className="text-[14px] leading-relaxed whitespace-pre-line" style={{ color: "rgba(21,36,61,0.55)" }}>
                   {product.description}
                 </p>
               ) : (
@@ -550,7 +550,7 @@ export function ProductPage() {
             <div className="mb-8">
               <p
                 className="text-[10px] tracking-[0.25em] uppercase font-semibold mb-3"
-                style={{ color: "rgba(245,230,220,0.45)" }}
+                style={{ color: "rgba(21,36,61,0.6)" }}
               >
                 SIZE
               </p>
@@ -565,15 +565,15 @@ export function ProductPage() {
                     disabled={!available}
                     className="px-4 py-2 text-[11px] tracking-wider uppercase transition-all"
                     style={{
-                      color: selectedSize === size ? "white" : "rgba(245,230,220,0.45)",
+                      color: selectedSize === size ? "white" : "rgba(21,36,61,0.6)",
                       background:
                         selectedSize === size
-                          ? "linear-gradient(135deg, rgba(200,140,255,0.15), rgba(255,158,184,0.08))"
+                          ? "linear-gradient(135deg, rgba(36,139,212,0.15), rgba(85,191,255,0.08))"
                           : "transparent",
                       border:
                         selectedSize === size
-                          ? "1px solid rgba(200,140,255,0.3)"
-                          : "1px solid rgba(240,210,190,0.1)",
+                          ? "1px solid rgba(36,139,212,0.3)"
+                          : "1px solid rgba(92,155,205,0.2)",
                       borderRadius: "10px",
                       opacity: available ? 1 : 0.32,
                       textDecoration: available ? "none" : "line-through",
@@ -586,21 +586,21 @@ export function ProductPage() {
                   );
                 })}
               </div>
-              <p className="text-[9px] mt-2" style={{ color: "rgba(245,230,220,0.28)" }}>
+              <p className="text-[9px] mt-2" style={{ color: "rgba(21,36,61,0.4)" }}>
                 Unavailable variants cannot be added to cart.
               </p>
             </div>
           )}
 
           <div className="mb-4 px-4 py-3 rounded-xl" style={{ background: "rgba(16,185,129,0.045)", border: "1px solid rgba(16,185,129,0.13)" }}>
-            <p className="text-[10px] tracking-[0.13em] uppercase font-semibold" style={{ color: "rgba(110,231,183,0.75)" }}>
+            <p className="text-[10px] tracking-[0.13em] uppercase font-semibold" style={{ color: "rgba(22,163,74,0.9)" }}>
               Estimated delivery {deliveryWindow}
             </p>
-            <p className="text-[10px] mt-1" style={{ color: "rgba(245,230,220,0.34)" }}>
+            <p className="text-[10px] mt-1" style={{ color: "rgba(21,36,61,0.48)" }}>
               Includes 2–5 business days to make your piece plus standard tracked shipping. Final options are calculated for your address at checkout.
             </p>
           </div>
-          <p className="text-[10px] leading-relaxed mb-4" style={{ color: "rgba(245,230,220,0.30)" }}>
+          <p className="text-[10px] leading-relaxed mb-4" style={{ color: "rgba(21,36,61,0.42)" }}>
             {typeof navigator !== "undefined" && !navigator.language.toLowerCase().startsWith("en-us")
               ? "Fulfilled from the closest available production facility when possible. International orders may be split into multiple tracked packages; local customs duties or import taxes may apply."
               : "Fulfilled from the closest available production facility when possible. Some orders may arrive in multiple tracked packages."}
@@ -621,7 +621,7 @@ export function ProductPage() {
               borderRadius: "12px",
               boxShadow: added
                 ? "0 4px 20px rgba(16,185,129,0.3)"
-                : "0 4px 24px rgba(200,140,255,0.25), 0 1px 3px rgba(0,0,0,0.2)",
+                : "0 4px 24px rgba(36,139,212,0.25), 0 1px 3px rgba(0,0,0,0.2)",
               letterSpacing: "0.25em",
             }}
           >
@@ -631,35 +631,35 @@ export function ProductPage() {
           {/* Trust signals */}
           {/* Made for You callout */}
           <div className="flex items-start gap-3 mt-6 p-4" style={{
-            background: "rgba(200,140,255,0.04)",
-            border: "1px solid rgba(200,140,255,0.08)",
+            background: "rgba(36,139,212,0.04)",
+            border: "1px solid rgba(36,139,212,0.08)",
             borderRadius: "12px",
           }}>
             <span className="text-base shrink-0 mt-0.5">✦</span>
             <div>
-              <p className="text-[11px] font-semibold tracking-[0.1em] uppercase mb-1" style={{ color: "rgba(200,160,220,0.7)" }}>Made Exclusively for You</p>
-              <p className="text-[10px] leading-relaxed" style={{ color: "rgba(245,230,220,0.35)" }}>
+              <p className="text-[11px] font-semibold tracking-[0.1em] uppercase mb-1" style={{ color: "rgba(36,139,212,0.85)" }}>Made Exclusively for You</p>
+              <p className="text-[10px] leading-relaxed" style={{ color: "rgba(21,36,61,0.5)" }}>
                 This piece is crafted on demand — produced the moment you order, just for you. No mass production, no waste. Production takes 2–5 business days.
               </p>
             </div>
           </div>
 
-          <div className="flex gap-6 mt-6 pt-5" style={{ borderTop: "1px solid rgba(240,210,190,0.08)" }}>
+          <div className="flex gap-6 mt-6 pt-5" style={{ borderTop: "1px solid rgba(92,155,205,0.18)" }}>
             <div className="flex items-center gap-2">
               <span className="text-sm">📦</span>
-              <span className="text-[10px]" style={{ color: "rgba(245,230,220,0.38)" }}>
+              <span className="text-[10px]" style={{ color: "rgba(21,36,61,0.52)" }}>
                 Free Shipping
               </span>
             </div>
             <div className="flex items-center gap-2">
               <span className="text-sm">🪡</span>
-              <span className="text-[10px]" style={{ color: "rgba(245,230,220,0.38)" }}>
+              <span className="text-[10px]" style={{ color: "rgba(21,36,61,0.52)" }}>
                 Made to Order
               </span>
             </div>
             <div className="flex items-center gap-2">
               <span className="text-sm">🔒</span>
-              <span className="text-[10px]" style={{ color: "rgba(245,230,220,0.38)" }}>
+              <span className="text-[10px]" style={{ color: "rgba(21,36,61,0.52)" }}>
                 Secure Checkout
               </span>
             </div>

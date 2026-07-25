@@ -1994,7 +1994,7 @@ function ShippingTab() {
           style={{
             background: saved
               ? "linear-gradient(135deg, #10b981, #059669)"
-              : "linear-gradient(135deg, #c48dff, #ff9eb8)",
+              : "linear-gradient(135deg, #248bd4, #55bfff)",
           }}
         >
           {saved ? "✓ SAVED" : "SAVE SETTINGS"}

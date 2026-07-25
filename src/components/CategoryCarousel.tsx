@@ -63,7 +63,7 @@ function CategoryCard({ cat }: { cat: CategoryDef }) {
                 className="w-full h-full flex items-center justify-center"
                 style={{ background: "rgba(255,255,255,0.03)" }}
               >
-                <span style={{ color: "rgba(245,230,220,0.15)", fontSize: "12px" }}>Loading...</span>
+                <span style={{ color: "rgba(21,36,61,0.18)", fontSize: "12px" }}>Loading...</span>
               </div>
             )}
             <div
@@ -75,14 +75,14 @@ function CategoryCard({ cat }: { cat: CategoryDef }) {
           <div className="px-3 py-3 flex items-center justify-between">
             <span
               className="text-[11px] font-bold tracking-[0.06em] uppercase"
-              style={{ color: "rgba(245,230,220,0.65)" }}
+              style={{ color: "rgba(21,36,61,0.78)" }}
             >
               {cat.shopLabel}
             </span>
             <span
               className="text-[10px] font-semibold tracking-[0.1em] uppercase px-3 py-1.5 rounded-full"
               style={{
-                color: "rgba(245,230,220,0.5)",
+                color: "rgba(21,36,61,0.65)",
                 background: "rgba(255,240,230,0.06)",
                 border: "1px solid rgba(200,160,255,0.1)",
               }}
@@ -154,7 +154,7 @@ export function CategoryCarousel() {
       <div className="max-w-7xl mx-auto px-6 mb-4">
         <span
           className="text-[10px] tracking-[0.35em] uppercase font-semibold"
-          style={{ color: "rgba(245,230,220,0.4)" }}
+          style={{ color: "rgba(21,36,61,0.55)" }}
         >
           Browse Collections
         </span>

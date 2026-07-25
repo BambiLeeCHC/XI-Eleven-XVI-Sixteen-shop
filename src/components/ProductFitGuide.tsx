@@ -218,16 +218,16 @@ export function ProductFitGuide({ product, externalSize, onSizeSelect, lightMode
     fitNoteText: "rgba(30,25,20,0.35)", badgeBg: "rgba(255,255,255,0.85)",
     badgeText: "rgba(140,80,200,0.7)", modelText: "rgba(255,255,255,0.6)",
   } : {
-    text: "rgba(245,230,220,0.8)", textMuted: "rgba(245,230,220,0.4)", textFaint: "rgba(245,230,220,0.25)",
-    accent: "rgba(200,140,255,0.7)", accentFaint: "rgba(200,140,255,0.08)", accentBorder: "rgba(200,140,255,0.2)",
-    border: "rgba(240,210,190,0.06)", cardBg: "rgba(255,240,230,0.02)", activeBg: "rgba(200,140,255,0.05)",
-    btnActive: "linear-gradient(135deg, rgba(200,140,255,0.15), rgba(255,158,184,0.08))",
-    btnBorder: "1px solid rgba(200,140,255,0.3)", btnInactive: "1px solid rgba(240,210,190,0.1)",
-    sizeActive: "white", sizeInactive: "rgba(245,230,220,0.45)",
-    highlight: "rgba(245,230,220,0.8)", colHighlight: "rgba(200,140,255,0.05)",
-    fitNote: "rgba(200,140,255,0.03)", fitNoteBorder: "rgba(200,140,255,0.06)",
-    fitNoteText: "rgba(245,230,220,0.32)", badgeBg: "rgba(0,0,0,0.7)",
-    badgeText: "rgba(200,140,255,0.7)", modelText: "rgba(245,230,220,0.3)",
+    text: "rgba(21,36,61,0.9)", textMuted: "rgba(21,36,61,0.55)", textFaint: "rgba(21,36,61,0.32)",
+    accent: "rgba(36,139,212,0.8)", accentFaint: "rgba(36,139,212,0.08)", accentBorder: "rgba(36,139,212,0.2)",
+    border: "rgba(92,155,205,0.15)", cardBg: "rgba(255,240,230,0.02)", activeBg: "rgba(36,139,212,0.05)",
+    btnActive: "linear-gradient(135deg, rgba(36,139,212,0.15), rgba(85,191,255,0.08))",
+    btnBorder: "1px solid rgba(36,139,212,0.3)", btnInactive: "1px solid rgba(92,155,205,0.2)",
+    sizeActive: "white", sizeInactive: "rgba(21,36,61,0.6)",
+    highlight: "rgba(21,36,61,0.9)", colHighlight: "rgba(36,139,212,0.05)",
+    fitNote: "rgba(36,139,212,0.03)", fitNoteBorder: "rgba(36,139,212,0.06)",
+    fitNoteText: "rgba(21,36,61,0.44)", badgeBg: "rgba(0,0,0,0.7)",
+    badgeText: "rgba(36,139,212,0.8)", modelText: "rgba(21,36,61,0.42)",
   };
 
   useEffect(() => {
@@ -357,7 +357,7 @@ export function ProductFitGuide({ product, externalSize, onSizeSelect, lightMode
           background: "radial-gradient(ellipse at center, rgba(30,25,35,0.9), rgba(0,0,0,0.95))",
           borderRadius: "16px",
           overflow: "hidden",
-          border: "1px solid rgba(200,140,255,0.08)",
+          border: "1px solid rgba(36,139,212,0.08)",
           aspectRatio: "2 / 3",
         }}
       >
@@ -432,7 +432,7 @@ export function ProductFitGuide({ product, externalSize, onSizeSelect, lightMode
             borderRadius: "8px", padding: "4px 12px",
             transition: "opacity 0.3s",
           }}>
-            <span style={{ fontSize: "9px", color: "rgba(200,140,255,0.7)", letterSpacing: "0.05em" }}>
+            <span style={{ fontSize: "9px", color: "rgba(36,139,212,0.8)", letterSpacing: "0.05em" }}>
               {fitDesc}
             </span>
           </div>
