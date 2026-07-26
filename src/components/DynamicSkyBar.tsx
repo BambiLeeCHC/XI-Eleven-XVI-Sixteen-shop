@@ -166,7 +166,7 @@ export function DynamicSkyBar() {
   const isDay = phase === "day";
   const showStars = isNight || isDusk;  /* No twinkle during day or dawn */
   const showSun = isDay || isDawn;
-  const showMoon = isNight;
+  // Moon removed per request
   const isRaining = weather === "rain" || weather === "storm";
 
   /* Cloud color by phase — richer, more visible */
@@ -451,6 +451,7 @@ export function DynamicSkyBar() {
           {/* ── Sun (day + dawn) ── */}
           {showSun && weather !== "rain" && weather !== "storm" && (
             <div
+              className="dsky-sun-wrap"
               style={{
                 position: "absolute",
                 right: `${100 - sunPos.x}%`,
@@ -518,46 +519,7 @@ export function DynamicSkyBar() {
             </div>
           )}
 
-          {/* ── Moon (night) ── */}
-          {showMoon && weather !== "rain" && weather !== "storm" && (
-            <div
-              style={{
-                position: "absolute",
-                right: "12%",
-                top: "20%",
-                width: 14,
-                height: 14,
-                borderRadius: "50%",
-                background: "radial-gradient(circle at 35% 35%, #e8eaf0 0%, #c8cce0 50%, #a8b0c8 100%)",
-                animation: "dsky-moon-glow 5s ease-in-out infinite",
-                zIndex: 1,
-              }}
-            >
-              {/* Crater details */}
-              <div
-                style={{
-                  position: "absolute",
-                  top: "30%",
-                  left: "25%",
-                  width: 3,
-                  height: 3,
-                  borderRadius: "50%",
-                  background: "rgba(150,155,180,0.3)",
-                }}
-              />
-              <div
-                style={{
-                  position: "absolute",
-                  top: "55%",
-                  left: "55%",
-                  width: 2,
-                  height: 2,
-                  borderRadius: "50%",
-                  background: "rgba(150,155,180,0.25)",
-                }}
-              />
-            </div>
-          )}
+          {/* Moon removed per request */}
 
           {/* ── Cloud layers (SVG for detailed shapes) ── */}
           <svg
