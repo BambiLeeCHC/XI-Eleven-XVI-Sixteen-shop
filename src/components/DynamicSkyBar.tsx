@@ -678,14 +678,7 @@ export function DynamicSkyBar() {
         {/* Storm lightning */}
         {weather === "storm" && <div className="dsky-lightning" />}
 
-        {/* LED pixel grid */}
-        <div className="dsky-led" />
-
-        {/* Marquee shimmer flow */}
-        <div className="dsky-marquee" />
-
-        {/* Scan lines */}
-        <div className="dsky-scanlines" />
+        {/* LED, marquee, scanlines removed — clean sky only */}
       </div>
     </>
   );
