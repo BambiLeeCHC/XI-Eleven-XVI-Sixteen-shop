@@ -610,7 +610,7 @@ export function DynamicSkyBar() {
 
         {/* Stars — night & dusk */}
         {showStars && (
-          <div style={{ position: "absolute", inset: 0, zIndex: 1 }}>
+          <div className="dsky-stars-wrap" style={{ position: "absolute", inset: 0, zIndex: 1 }}>
             {stars.map((s, i) => (
               <div
                 key={`s${i}`}
