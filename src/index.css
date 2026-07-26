@@ -1108,8 +1108,9 @@ body {
   display: none !important;
 }
 
-/* Hide sun rays / decorative elements in the nav bar to prevent cone-shape artifacts */
-.store-sky-nav .dsky-sun-wrap {
+/* Hide decorative sky elements in the nav bar — keep only the gradient */
+.store-sky-nav .dsky-sun-wrap,
+.store-sky-nav .dsky-stars-wrap {
   display: none !important;
 }
 
