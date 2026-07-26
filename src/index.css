@@ -1108,6 +1108,11 @@ body {
   display: none !important;
 }
 
+/* Hide sun rays / decorative elements in the nav bar to prevent cone-shape artifacts */
+.store-sky-nav .dsky-sun-wrap {
+  display: none !important;
+}
+
 .dsky-hum {
   animation: none !important;
 }
