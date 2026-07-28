@@ -88,6 +88,14 @@ export function StoreHeader() {
                 >
                   Men
                 </Link>
+                <Link
+                  to="/journal"
+                  className={`px-3 py-2 text-[11px] tracking-[0.18em] uppercase font-semibold transition-all ${
+                    location.pathname.startsWith("/journal") ? "text-white" : "text-white/50 hover:text-white"
+                  }`}
+                >
+                  Journal
+                </Link>
               </nav>
             </div>
 
@@ -253,6 +261,7 @@ export function StoreHeader() {
 
               <MobileNavLink to="/favorites" label="FAVORITES" badge={favCount > 0 ? favCount : undefined} />
               <MobileNavLink to="/cart" label="CART" badge={cartCount > 0 ? cartCount : undefined} />
+              <MobileNavLink to="/journal" label="THE JOURNAL" />
               <MobileNavLink to="/about" label="ABOUT" />
               <MobileNavLink to="/size-guide" label="SIZE GUIDE" />
 

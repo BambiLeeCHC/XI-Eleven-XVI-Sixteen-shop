@@ -37,6 +37,7 @@ export function StoreFooter() {
           <h4 className="text-[10px] tracking-[0.3em] uppercase font-semibold mb-4" style={{ color: "rgba(21,36,61,0.6)" }}>HELP</h4>
           <div className="flex flex-col gap-2">
             <Link to="/about" className="text-[12px] transition-colors" style={{ color: "rgba(21,36,61,0.42)" }}>Our Story</Link>
+            <Link to="/journal" className="text-[12px] transition-colors" style={{ color: "rgba(21,36,61,0.42)" }}>The Journal</Link>
             <Link to="/size-guide" className="text-[12px] transition-colors" style={{ color: "rgba(21,36,61,0.42)" }}>Size Guide</Link>
             <Link to="/profile" className="text-[12px] transition-colors" style={{ color: "rgba(21,36,61,0.42)" }}>My Profile</Link>
             <Link to="/orders" className="text-[12px] transition-colors" style={{ color: "rgba(21,36,61,0.42)" }}>Orders</Link>

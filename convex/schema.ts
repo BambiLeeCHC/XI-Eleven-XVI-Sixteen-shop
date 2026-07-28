@@ -162,6 +162,25 @@ const schema = defineSchema({
     .index("by_user", ["userId"])
     .index("by_user_product", ["userId", "productId"]),
 
+  // Journal (blog) posts — authored from the admin panel
+  blogPosts: defineTable({
+    title: v.string(),
+    slug: v.string(),
+    excerpt: v.string(),
+    content: v.string(), // rich HTML from the admin editor
+    coverImage: v.optional(v.string()),
+    category: v.string(), // "Manifesto" | "Sustainability" | "Ritual" | "Numerology" | "Style"
+    tags: v.array(v.string()),
+    author: v.string(),
+    status: v.string(), // "draft" | "published"
+    publishedAt: v.optional(v.number()),
+    updatedAt: v.number(),
+    readMinutes: v.number(),
+    featured: v.boolean(),
+  })
+    .index("by_slug", ["slug"])
+    .index("by_status", ["status"]),
+
   // Shipping settings — admin-configurable shipping rules
   shippingSettings: defineTable({
     key: v.string(), // "free_standard", "standard_label", "expedited_enabled", "expedited_markup", etc.
