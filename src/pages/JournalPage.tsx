@@ -3,10 +3,11 @@ import { Link } from "react-router-dom";
 import { SEO } from "../components/SEO";
 import { DockPanel, DockTab } from "../components/journal/DockPanel";
 import { AlmanacCalendar, ElevenSixteenStrip } from "../components/journal/Almanac";
-import { DailyDraw } from "../components/journal/DailyDraw";
+import { DrawThree } from "../components/journal/DrawThree";
 import { DailyCode } from "../components/journal/DailyCode";
+import { JournalSky } from "../components/journal/JournalSky";
 import { ShareRow } from "../components/journal/ShareRow";
-import { drawOfTheDay } from "../lib/ritual";
+import { spreadOfTheDay } from "../lib/ritual";
 import { usePublishedPosts, type JournalPost } from "../lib/journalData";
 
 type Dock = "almanac" | "draw" | "code" | null;
@@ -51,7 +52,7 @@ export function JournalPage() {
   const [dock, setDock] = useState<Dock>(null);
   const [category, setCategory] = useState("All");
   const { posts } = usePublishedPosts();
-  const draw = drawOfTheDay();
+  const spread = useMemo(() => spreadOfTheDay(), []);
 
   const categories = useMemo(() => {
     const set = new Set<string>();
@@ -69,125 +70,115 @@ export function JournalPage() {
 
   return (
     <div className="journal-page">
+      <JournalSky />
+
       <SEO
-        title="The Journal — Almanac, Daily Code & Daily Draw"
-        description="The XI · XVI Journal: the brand manifesto, the 11:16 Almanac calendar, a daily code on sustainability and self-empowerment, and a daily draw from the 22-card XI·XVI Arcana."
+        title="The Journal — Almanac, Daily Code & The Draw"
+        description="The XI · XVI Journal: the brand manifesto, the 11:16 Almanac calendar, a daily code on sustainability and self-empowerment, and a three-card draw from the XI·XVI house deck."
         url="/journal"
       />
 
-      {/* ── Hero ───────────────────────────────────────────────── */}
-      <header className="journal-hero">
-        <div className="journal-hero__aura" aria-hidden="true" />
-        <p className="journal-hero__eyebrow">XI · XVI — Est. 11:16</p>
-        <h1 className="journal-hero__title">The Journal</h1>
-        <p className="journal-hero__sub">
-          A house record of manifesto, material and ritual. Time, kept at 11:16.
-        </p>
-      </header>
+      <div className="journal-stack">
+        {/* ── Hero card ─────────────────────────────────────────── */}
+        <header className="journal-hero journal-surface">
+          <div className="journal-hero__aura" aria-hidden="true" />
+          <p className="journal-hero__eyebrow">XI · XVI — Est. 11:16</p>
+          <h1 className="journal-hero__title">The Journal</h1>
+          <p className="journal-hero__sub">
+            A house record of manifesto, material and ritual. Time, kept at 11:16.
+          </p>
+        </header>
 
-      {/* ── Docked at the top: the 11:16 strip ─────────────────── */}
-      <ElevenSixteenStrip onOpenAlmanac={() => setDock("almanac")} />
+        {/* ── The 11:16 strip ───────────────────────────────────── */}
+        <ElevenSixteenStrip onOpenAlmanac={() => setDock("almanac")} />
 
-      {/* ── Docked ritual tiles (top, always visible) ──────────── */}
-      <section className="journal-tiles">
-        <button className="journal-tile journal-tile--almanac" onClick={() => toggle("almanac")}>
-          <span className="journal-tile__glyph" aria-hidden="true">◍</span>
-          <span className="journal-tile__label">The Almanac</span>
-          <span className="journal-tile__desc">Calendar · moon · your two 11:16s</span>
-          <span className="journal-tile__cta">Open ✦</span>
-        </button>
-        <button className="journal-tile journal-tile--code" onClick={() => toggle("code")}>
-          <span className="journal-tile__glyph" aria-hidden="true">✦</span>
-          <span className="journal-tile__label">The Daily Code</span>
-          <span className="journal-tile__desc">
-            <DailyCode compact />
-          </span>
-          <span className="journal-tile__cta">Read today's line ✦</span>
-        </button>
-        <button className="journal-tile journal-tile--draw" onClick={() => toggle("draw")}>
-          <span className="journal-tile__glyph" aria-hidden="true">{draw.card.glyph}</span>
-          <span className="journal-tile__label">The Daily Draw</span>
-          <span className="journal-tile__desc">XI·XVI Arcana · one card, once a day</span>
-          <span className="journal-tile__cta">Draw ✦</span>
-        </button>
-      </section>
+        {/* ── Ritual cards ──────────────────────────────────────── */}
+        <section className="journal-tiles">
+          <button className="journal-tile journal-tile--almanac journal-surface" onClick={() => toggle("almanac")}>
+            <span className="journal-tile__glyph" aria-hidden="true">◍</span>
+            <span className="journal-tile__label">The Almanac</span>
+            <span className="journal-tile__desc">Calendar · moon · your two 11:16s</span>
+            <span className="journal-tile__cta">Open ✦</span>
+          </button>
+          <button className="journal-tile journal-tile--code journal-surface" onClick={() => toggle("code")}>
+            <span className="journal-tile__glyph" aria-hidden="true">✦</span>
+            <span className="journal-tile__label">The Daily Code</span>
+            <span className="journal-tile__desc">
+              <DailyCode compact />
+            </span>
+            <span className="journal-tile__cta">Read today's line ✦</span>
+          </button>
+          <button className="journal-tile journal-tile--draw journal-surface" onClick={() => toggle("draw")}>
+            <span className="journal-tile__deck" aria-hidden="true">
+              <i /><i /><i />
+            </span>
+            <span className="journal-tile__label">The Draw</span>
+            <span className="journal-tile__desc">
+              Three cards from the house deck — {spread.map((s) => s.slotName.replace("The ", "")).join(" · ")}
+            </span>
+            <span className="journal-tile__cta">Draw three ✦</span>
+          </button>
+        </section>
 
-      {/* ── Body: rails flanking the feed ──────────────────────── */}
-      <div className="journal-body">
-        {/* Left rail */}
-        <div className="journal-rail journal-rail--left">
-          <DockTab
-            label="Almanac"
-            glyph="◍"
-            accent="#5c9bcd"
-            active={dock === "almanac"}
-            onClick={() => toggle("almanac")}
-          />
-        </div>
-
-        <div className="journal-feed">
-          <div className="journal-feed__filters">
-            {categories.map((c) => (
-              <button
-                key={c}
-                className={`journal-chip ${category === c ? "is-active" : ""}`}
-                onClick={() => setCategory(c)}
-              >
-                {c}
-              </button>
-            ))}
+        {/* ── Body: rails flanking the feed ─────────────────────── */}
+        <div className="journal-body">
+          <div className="journal-rail journal-rail--left">
+            <DockTab
+              label="Almanac"
+              glyph="◍"
+              accent="#5c9bcd"
+              active={dock === "almanac"}
+              onClick={() => toggle("almanac")}
+            />
           </div>
 
-          {posts === undefined ? (
-            <div className="journal-empty">Opening the archive…</div>
-          ) : visible.length === 0 ? (
-            <div className="journal-empty">
-              No entries in this section yet. The first piece is on its way.
+          <div className="journal-feed">
+            <div className="journal-feed__filters">
+              {categories.map((c) => (
+                <button
+                  key={c}
+                  className={`journal-chip ${category === c ? "is-active" : ""}`}
+                  onClick={() => setCategory(c)}
+                >
+                  {c}
+                </button>
+              ))}
             </div>
-          ) : (
-            <>
-              {lead && <PostCard post={lead} featured />}
-              <div className="journal-grid">
-                {rest.map((p) => (
-                  <PostCard key={p._id} post={p} />
-                ))}
+
+            {posts === undefined ? (
+              <div className="journal-empty journal-surface">Opening the archive…</div>
+            ) : visible.length === 0 ? (
+              <div className="journal-empty journal-surface">
+                No entries in this section yet. The first piece is on its way.
               </div>
-            </>
-          )}
-
-          {/* Mobile: the rituals stacked under the feed too */}
-          <div className="journal-mobile-rituals">
-            <div className="journal-inline-card">
-              <h3>The Daily Code</h3>
-              <DailyCode />
-            </div>
-            <div className="journal-inline-card">
-              <h3>The Daily Draw</h3>
-              <DailyDraw />
-            </div>
-            <div className="journal-inline-card">
-              <h3>The Almanac</h3>
-              <AlmanacCalendar />
-            </div>
+            ) : (
+              <>
+                {lead && <PostCard post={lead} featured />}
+                <div className="journal-grid">
+                  {rest.map((p) => (
+                    <PostCard key={p._id} post={p} />
+                  ))}
+                </div>
+              </>
+            )}
           </div>
-        </div>
 
-        {/* Right rail */}
-        <div className="journal-rail journal-rail--right">
-          <DockTab
-            label="Daily Draw"
-            glyph="✧"
-            accent="#c48dff"
-            active={dock === "draw"}
-            onClick={() => toggle("draw")}
-          />
-          <DockTab
-            label="Daily Code"
-            glyph="✦"
-            accent="#f5c97a"
-            active={dock === "code"}
-            onClick={() => toggle("code")}
-          />
+          <div className="journal-rail journal-rail--right">
+            <DockTab
+              label="The Draw"
+              glyph="✧"
+              accent="#c48dff"
+              active={dock === "draw"}
+              onClick={() => toggle("draw")}
+            />
+            <DockTab
+              label="Daily Code"
+              glyph="✦"
+              accent="#f5c97a"
+              active={dock === "code"}
+              onClick={() => toggle("code")}
+            />
+          </div>
         </div>
       </div>
 
@@ -206,12 +197,13 @@ export function JournalPage() {
       <DockPanel
         open={dock === "draw"}
         onClose={() => setDock(null)}
-        title="The Daily Draw"
-        eyebrow="XI·XVI Arcana"
+        title="The Draw"
+        eyebrow="Three cards · the house deck"
         side="right"
+        size="wide"
         accent="#c48dff"
       >
-        <DailyDraw />
+        <DrawThree />
       </DockPanel>
 
       <DockPanel

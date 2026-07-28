@@ -4,7 +4,8 @@ import { SEO } from "../components/SEO";
 import { ShareRow } from "../components/journal/ShareRow";
 import { DockPanel, DockTab } from "../components/journal/DockPanel";
 import { AlmanacCalendar, ElevenSixteenStrip } from "../components/journal/Almanac";
-import { DailyDraw } from "../components/journal/DailyDraw";
+import { DrawThree } from "../components/journal/DrawThree";
+import { JournalSky } from "../components/journal/JournalSky";
 import { DailyCode } from "../components/journal/DailyCode";
 import { usePostBySlug, usePublishedPosts } from "../lib/journalData";
 
@@ -18,7 +19,7 @@ export function JournalPostPage() {
   const toggle = (d: Dock) => setDock((cur) => (cur === d ? null : d));
 
   if (post === undefined) {
-    return <div className="journal-empty py-24">Opening the entry…</div>;
+    return <div className="journal-empty py-24 mx-4 my-16">Opening the entry…</div>;
   }
   if (post === null) {
     return (
@@ -37,6 +38,7 @@ export function JournalPostPage() {
 
   return (
     <div className="journal-page">
+      <JournalSky />
       <SEO
         title={post.title}
         description={post.excerpt}
@@ -54,6 +56,7 @@ export function JournalPostPage() {
         }}
       />
 
+      <div className="journal-stack">
       <ElevenSixteenStrip onOpenAlmanac={() => setDock("almanac")} />
 
       <div className="journal-body">
@@ -61,7 +64,7 @@ export function JournalPostPage() {
           <DockTab label="Almanac" glyph="◍" accent="#5c9bcd" active={dock === "almanac"} onClick={() => toggle("almanac")} />
         </div>
 
-        <article className="journal-article">
+        <article className="journal-article journal-surface">
           <Link to="/journal" className="journal-article__back">← The Journal</Link>
           <p className="journal-article__cat">{post.category}</p>
           <h1 className="journal-article__title">{post.title}</h1>
@@ -118,16 +121,17 @@ export function JournalPostPage() {
         </article>
 
         <div className="journal-rail journal-rail--right">
-          <DockTab label="Daily Draw" glyph="✧" accent="#c48dff" active={dock === "draw"} onClick={() => toggle("draw")} />
+          <DockTab label="The Draw" glyph="✧" accent="#c48dff" active={dock === "draw"} onClick={() => toggle("draw")} />
           <DockTab label="Daily Code" glyph="✦" accent="#f5c97a" active={dock === "code"} onClick={() => toggle("code")} />
         </div>
+      </div>
       </div>
 
       <DockPanel open={dock === "almanac"} onClose={() => setDock(null)} title="The XI·XVI Almanac" eyebrow="Calendar & time" side="left" accent="#5c9bcd">
         <AlmanacCalendar />
       </DockPanel>
-      <DockPanel open={dock === "draw"} onClose={() => setDock(null)} title="The Daily Draw" eyebrow="XI·XVI Arcana" side="right" accent="#c48dff">
-        <DailyDraw />
+      <DockPanel open={dock === "draw"} onClose={() => setDock(null)} title="The Draw" eyebrow="Three cards · the house deck" side="right" size="wide" accent="#c48dff">
+        <DrawThree />
       </DockPanel>
       <DockPanel open={dock === "code"} onClose={() => setDock(null)} title="The Daily Code" eyebrow="Sustainability & self-empowerment" side="right" accent="#f5c97a">
         <DailyCode />
