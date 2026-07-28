@@ -102,8 +102,7 @@ export function StoreHeader() {
                     location.pathname.startsWith("/journal") ? "is-active" : ""
                   }`}
                 >
-                  <span className="nav-blog-flash__burst" aria-hidden="true" />
-                  <span className="nav-blog-flash__label">Blog</span>
+                  <span className="nav-blog-flash__label" data-text="Blog">Blog</span>
                 </Link>
               </nav>
             </div>
@@ -222,6 +221,45 @@ export function StoreHeader() {
               </button>
             </div>
           </div>
+
+          {/* Category quick links — mobile + landscape strip */}
+          <nav className="md:hidden relative z-10 flex items-center justify-center gap-1 px-2 pb-2 -mt-2">
+            <Link
+              to="/shop?gender=women"
+              className={`px-2.5 py-1 text-[10px] tracking-[0.16em] uppercase font-semibold transition-all ${
+                location.search.includes("women") ? "text-white" : "text-white/55"
+              }`}
+            >
+              Women
+            </Link>
+            <span className="w-px h-3 bg-white/[0.14]" />
+            <Link
+              to="/shop?gender=men"
+              className={`px-2.5 py-1 text-[10px] tracking-[0.16em] uppercase font-semibold transition-all ${
+                location.search.includes("men") && !location.search.includes("women") ? "text-white" : "text-white/55"
+              }`}
+            >
+              Men
+            </Link>
+            <span className="w-px h-3 bg-white/[0.14]" />
+            <Link
+              to="/about"
+              className={`px-2.5 py-1 text-[10px] tracking-[0.16em] uppercase font-semibold transition-all ${
+                location.pathname.startsWith("/about") ? "text-white" : "text-white/55"
+              }`}
+            >
+              About
+            </Link>
+            <span className="w-px h-3 bg-white/[0.14]" />
+            <Link
+              to="/journal"
+              className={`nav-blog-flash px-2.5 py-1 text-[10px] tracking-[0.16em] uppercase font-semibold ${
+                location.pathname.startsWith("/journal") ? "is-active" : ""
+              }`}
+            >
+              <span className="nav-blog-flash__label" data-text="Blog">Blog</span>
+            </Link>
+          </nav>
         </div>
       </header>
 
