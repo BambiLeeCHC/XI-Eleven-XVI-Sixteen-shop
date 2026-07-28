@@ -6,6 +6,7 @@ import { AlmanacCalendar, ElevenSixteenStrip } from "../components/journal/Alman
 import { DrawThree } from "../components/journal/DrawThree";
 import { DailyCode } from "../components/journal/DailyCode";
 import { JournalSky } from "../components/journal/JournalSky";
+import { JournalMasthead } from "../components/journal/JournalMasthead";
 import { ShareRow } from "../components/journal/ShareRow";
 import { spreadOfTheDay } from "../lib/ritual";
 import { usePublishedPosts, type JournalPost } from "../lib/journalData";
@@ -80,14 +81,10 @@ export function JournalPage() {
 
       <div className="journal-stack">
         {/* ── Hero card ─────────────────────────────────────────── */}
-        <header className="journal-hero journal-surface">
+        <div className="journal-surface journal-masthead-shell">
           <div className="journal-hero__aura" aria-hidden="true" />
-          <p className="journal-hero__eyebrow">XI · XVI — Est. 11:16</p>
-          <h1 className="journal-hero__title">The Journal</h1>
-          <p className="journal-hero__sub">
-            A house record of manifesto, material and ritual. Time, kept at 11:16.
-          </p>
-        </header>
+          <JournalMasthead />
+        </div>
 
         {/* ── The 11:16 strip ───────────────────────────────────── */}
         <ElevenSixteenStrip onOpenAlmanac={() => setDock("almanac")} />

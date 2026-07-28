@@ -1,307 +1,529 @@
 import type { ArcanaCard } from "../../data/arcana";
 
 /* ═══════════════════════════════════════════════════════════════════════
-   XI·XVI DECK ARTWORK — generated house sigils.
+   XI·XVI DECK ARTWORK — illustrated plates.
 
-   Every card face carries a piece of brand geometry rather than borrowed
-   occult illustration: eleven rays (the signal), sixteen courses (the
-   tower), the weave lattice, the bloom, the mirror, the constellation of
-   27→9. Art family is chosen from the card number so a card always looks
-   the same, and the plates are print-ready vector — the same files can go
-   straight onto a licensed physical deck.
+   Built in the tarot tradition — portrait plate, gold arch, numeral at the
+   top, title banner at the foot, a figure inside a scene — but every
+   element is ours: the real XI·XVI shield sits at the keystone of the
+   arch, the figure is the house sky mannequin, the sky behind it is the
+   brand's clouded sky, and the borders repeat the monogram. Ten scene
+   types are mapped card by card so the picture matches the meaning.
+
+   Print-ready: all vector except the shield and the mannequin, both of
+   which are supplied at 2x.
    ═══════════════════════════════════════════════════════════════════════ */
 
-type Family = "signal" | "tower" | "weave" | "bloom" | "mirror" | "constellation" | "cycle";
+const SHIELD = "/journal/shield-gold.png";
+const FIGURE = "/mannequin-women-v37.png";
 
-const FAMILIES: Family[] = ["signal", "tower", "weave", "bloom", "mirror", "constellation", "cycle"];
+type Scene =
+  | "veil"
+  | "figure"
+  | "tower"
+  | "moon"
+  | "sun"
+  | "wheel"
+  | "stars"
+  | "loom"
+  | "scales"
+  | "path";
 
-export function artFamily(card: ArcanaCard): Family {
-  return FAMILIES[card.number % FAMILIES.length];
+/** Card number → scene. Chosen for meaning, not variety. */
+const SCENE_BY_NUMBER: Record<number, Scene> = {
+  0: "veil",
+  1: "figure",
+  2: "moon",
+  3: "figure",
+  4: "tower",
+  5: "stars",
+  6: "path",
+  7: "tower",
+  8: "scales",
+  9: "stars",
+  10: "wheel",
+  11: "sun",
+  12: "moon",
+  13: "veil",
+  14: "loom",
+  15: "loom",
+  16: "tower",
+  17: "stars",
+  18: "moon",
+  19: "sun",
+  20: "figure",
+  21: "loom",
+  22: "wheel",
+};
+
+export function sceneOf(card: ArcanaCard): Scene {
+  return SCENE_BY_NUMBER[card.number] ?? "wheel";
 }
 
-/** The gold shield emblem, drawn as vector so it stays crisp at any size. */
-function ShieldMark({ opacity = 0.9, size = 1 }: { opacity?: number; size?: number }) {
+const GOLD = "url(#xvGoldPlate)";
+
+/* ── Scene layers ─────────────────────────────────────────────────────── */
+
+function Clouds({ tone }: { tone: string }) {
   return (
-    <g opacity={opacity} transform={`translate(100 100) scale(${size}) translate(-100 -100)`}>
+    <g fill={tone} opacity="0.5">
+      <ellipse cx="46" cy="86" rx="30" ry="10" />
+      <ellipse cx="62" cy="80" rx="20" ry="9" />
+      <ellipse cx="158" cy="106" rx="34" ry="11" />
+      <ellipse cx="140" cy="99" rx="19" ry="8" />
+      <ellipse cx="104" cy="64" rx="24" ry="8" opacity="0.7" />
+    </g>
+  );
+}
+
+function Ground() {
+  return (
+    <g>
+      <path d="M0 214 C40 204, 80 210, 100 208 C140 204, 168 212, 200 206 L200 300 L0 300 Z" fill="rgba(10,20,38,.42)" />
+      <path d="M0 232 C46 224, 92 230, 200 224 L200 300 L0 300 Z" fill="rgba(8,16,32,.5)" />
+    </g>
+  );
+}
+
+function Figure({ scale = 1, x = 100, y = 226, opacity = 0.95 }: { scale?: number; x?: number; y?: number; opacity?: number }) {
+  /* The house mannequin, dropped in as the card's figure. */
+  const w = 96 * scale;
+  const h = 144 * scale;
+  return (
+    <g opacity={opacity}>
+      <ellipse cx={x} cy={y + 3} rx={w * 0.34} ry={5} fill="rgba(6,12,26,.45)" />
+      <image href={FIGURE} x={x - w / 2} y={y - h} width={w} height={h} preserveAspectRatio="xMidYMax meet" />
+    </g>
+  );
+}
+
+function SceneVeil() {
+  return (
+    <g>
+      {/* an uncut bolt of cloth, hanging */}
+      <g stroke={GOLD} strokeWidth="1.1" fill="none">
+        <path d="M62 96 C74 108, 74 152, 66 196 C62 216, 66 226, 72 232" />
+        <path d="M138 96 C126 108, 126 152, 134 196 C138 216, 134 226, 128 232" />
+      </g>
       <path
-        d="M100 62 L128 74 V101 C128 118 115 130 100 138 C85 130 72 118 72 101 V74 Z"
-        fill="none"
-        stroke="url(#xvGold)"
-        strokeWidth="2.2"
-      />
-      <path
-        d="M100 70 L121 79 V100 C121 113 111 123 100 129 C89 123 79 113 79 100 V79 Z"
-        fill="rgba(255,255,255,.06)"
-        stroke="url(#xvGold)"
+        d="M62 96 C82 90, 118 90, 138 96 C130 128, 132 176, 128 232 C112 226, 88 226, 72 232 C68 176, 70 128, 62 96 Z"
+        fill="rgba(255,255,255,.2)"
+        stroke="rgba(255,255,255,.42)"
         strokeWidth="0.8"
-        opacity="0.7"
       />
-      <text
-        x="100"
-        y="97"
-        textAnchor="middle"
-        fontSize="13"
-        letterSpacing="1.4"
-        fill="url(#xvGold)"
-        fontFamily="'Playfair Display', Georgia, serif"
-      >
-        XI
+      {[0, 1, 2, 3].map((i) => (
+        <path
+          key={i}
+          d={`M${76 + i * 15} 100 C${72 + i * 15} 140, ${80 + i * 15} 190, ${76 + i * 15} 228`}
+          stroke="rgba(255,255,255,.3)"
+          strokeWidth="0.8"
+          fill="none"
+        />
+      ))}
+      {/* the scissors that have not been used */}
+      <g stroke={GOLD} strokeWidth="1.4" fill="none" opacity="0.9">
+        <path d="M92 250 L112 268 M108 250 L88 268" />
+        <circle cx="86" cy="272" r="4" />
+        <circle cx="114" cy="272" r="4" />
+      </g>
+    </g>
+  );
+}
+
+function SceneFigure({ seed }: { seed: number }) {
+  return (
+    <g>
+      {/* halo of eleven rays behind the figure */}
+      {Array.from({ length: 11 }).map((_, i) => (
+        <line
+          key={i}
+          x1="100"
+          y1="150"
+          x2="100"
+          y2="62"
+          stroke="rgba(255,236,186,.5)"
+          strokeWidth={i % 2 ? 0.7 : 1.3}
+          strokeLinecap="round"
+          transform={`rotate(${(360 / 11) * i + seed} 100 150)`}
+        />
+      ))}
+      <circle cx="100" cy="150" r="42" fill="rgba(255,240,200,.16)" />
+      <Ground />
+      <Figure scale={0.92} />
+    </g>
+  );
+}
+
+function SceneTower() {
+  return (
+    <g>
+      <Ground />
+      {/* sixteen courses, narrowing */}
+      {Array.from({ length: 16 }).map((_, i) => {
+        const w = 62 - i * 2.6;
+        return (
+          <rect
+            key={i}
+            x={100 - w / 2}
+            y={214 - i * 9.4}
+            width={w}
+            height={6.4}
+            rx="1.4"
+            fill={i % 4 === 0 ? "rgba(255,255,255,.2)" : "rgba(255,255,255,.1)"}
+            stroke={i % 4 === 0 ? GOLD : "rgba(255,255,255,.34)"}
+            strokeWidth={i % 4 === 0 ? 1 : 0.6}
+          />
+        );
+      })}
+      {/* crown + the strike that takes it */}
+      <path d="M88 64 L100 46 L112 64 Z" fill="none" stroke={GOLD} strokeWidth="1.2" />
+      <path
+        d="M132 52 L118 84 L130 84 L112 122"
+        fill="none"
+        stroke="rgba(255,242,196,.9)"
+        strokeWidth="2.2"
+        strokeLinecap="round"
+      />
+      {/* falling stones */}
+      <rect x="60" y="150" width="9" height="6" rx="1.4" fill="rgba(255,255,255,.24)" transform="rotate(-24 64 153)" />
+      <rect x="136" y="176" width="8" height="5.4" rx="1.4" fill="rgba(255,255,255,.2)" transform="rotate(32 140 178)" />
+    </g>
+  );
+}
+
+function SceneMoon() {
+  return (
+    <g>
+      {/* moon with the bite out of it */}
+      <g>
+        <circle cx="100" cy="106" r="34" fill="rgba(255,252,240,.92)" />
+        <circle cx="118" cy="96" r="30" fill="rgba(255,255,255,0)" />
+        <path d="M100 72 A34 34 0 1 0 100 140 A27 27 0 1 1 100 72 Z" fill="rgba(255,250,236,.95)" />
+        <circle cx="100" cy="106" r="42" fill="none" stroke="rgba(255,248,220,.34)" strokeWidth="1.2" />
+      </g>
+      {/* still water with the reflection path */}
+      <path d="M0 218 L200 218 L200 300 L0 300 Z" fill="rgba(10,22,44,.5)" />
+      {[0, 1, 2, 3, 4].map((i) => (
+        <rect
+          key={i}
+          x={100 - (26 - i * 4) / 2}
+          y={230 + i * 13}
+          width={26 - i * 4}
+          height={3}
+          rx="1.5"
+          fill="rgba(255,250,232,.4)"
+        />
+      ))}
+      {/* two pillars, the classic gate */}
+      <rect x="34" y="150" width="10" height="70" fill="rgba(255,255,255,.14)" stroke={GOLD} strokeWidth="0.9" />
+      <rect x="156" y="150" width="10" height="70" fill="rgba(255,255,255,.14)" stroke={GOLD} strokeWidth="0.9" />
+    </g>
+  );
+}
+
+function SceneSun() {
+  return (
+    <g>
+      {Array.from({ length: 16 }).map((_, i) => (
+        <line
+          key={i}
+          x1="100"
+          y1="112"
+          x2="100"
+          y2={i % 2 ? 36 : 20}
+          stroke="rgba(255,238,178,.6)"
+          strokeWidth={i % 2 ? 0.8 : 1.6}
+          strokeLinecap="round"
+          transform={`rotate(${(360 / 16) * i} 100 112)`}
+        />
+      ))}
+      <circle cx="100" cy="112" r="38" fill="rgba(255,240,190,.34)" />
+      <circle cx="100" cy="112" r="27" fill="rgba(255,246,214,.9)" />
+      <Ground />
+      {/* two figures of cloth on the ground line — the wearers */}
+      <path d="M66 232 C70 208, 78 200, 84 232 Z" fill="rgba(255,255,255,.28)" stroke={GOLD} strokeWidth="0.7" />
+      <path d="M118 232 C124 204, 132 200, 138 232 Z" fill="rgba(255,255,255,.24)" stroke={GOLD} strokeWidth="0.7" />
+    </g>
+  );
+}
+
+function SceneWheel({ seed }: { seed: number }) {
+  return (
+    <g>
+      {[62, 50, 38, 24].map((r, i) => (
+        <circle
+          key={r}
+          cx="100"
+          cy="150"
+          r={r}
+          fill="none"
+          stroke={i % 2 ? "rgba(255,255,255,.3)" : GOLD}
+          strokeWidth={i % 2 ? 0.7 : 1.2}
+          strokeDasharray={i === 1 ? "5 8" : undefined}
+        />
+      ))}
+      {Array.from({ length: 9 }).map((_, i) => (
+        <line
+          key={i}
+          x1="100"
+          y1="88"
+          x2="100"
+          y2="112"
+          stroke={GOLD}
+          strokeWidth="1"
+          transform={`rotate(${(360 / 9) * i + seed} 100 150)`}
+        />
+      ))}
+      <text x="100" y="156" textAnchor="middle" fontSize="19" fill={GOLD} fontFamily="'Playfair Display', Georgia, serif">
+        IX
       </text>
-      <text
-        x="100"
-        y="115"
-        textAnchor="middle"
-        fontSize="13"
-        letterSpacing="1.4"
-        fill="url(#xvGold)"
-        fontFamily="'Playfair Display', Georgia, serif"
-      >
-        XVI
+      <Ground />
+    </g>
+  );
+}
+
+function SceneStars({ seed }: { seed: number }) {
+  const pts = Array.from({ length: 11 }).map((_, i) => {
+    const a = ((360 / 11) * i + seed) * (Math.PI / 180);
+    const r = i % 3 === 0 ? 58 : i % 3 === 1 ? 38 : 20;
+    return { x: 100 + r * Math.cos(a), y: 132 + r * Math.sin(a) };
+  });
+  return (
+    <g>
+      {pts.map((p, i) => {
+        const n = pts[(i + 1) % pts.length];
+        return <line key={`l${i}`} x1={p.x} y1={p.y} x2={n.x} y2={n.y} stroke="rgba(255,246,214,.28)" strokeWidth="0.7" />;
+      })}
+      {pts.map((p, i) => (
+        <g key={`s${i}`}>
+          <circle cx={p.x} cy={p.y} r={i % 3 === 0 ? 2.6 : 1.6} fill="rgba(255,250,228,.95)" />
+          {i % 3 === 0 && (
+            <path
+              d={`M${p.x - 6} ${p.y} H${p.x + 6} M${p.x} ${p.y - 6} V${p.y + 6}`}
+              stroke="rgba(255,250,228,.5)"
+              strokeWidth="0.7"
+            />
+          )}
+        </g>
+      ))}
+      <Ground />
+      {/* the lantern on the ground */}
+      <g stroke={GOLD} strokeWidth="1" fill="rgba(255,240,190,.34)">
+        <rect x="92" y="212" width="16" height="18" rx="2" />
+        <path d="M96 212 L100 204 L104 212" fill="none" />
+      </g>
+    </g>
+  );
+}
+
+function SceneLoom() {
+  return (
+    <g>
+      {/* warp */}
+      {Array.from({ length: 13 }).map((_, i) => (
+        <line
+          key={`w${i}`}
+          x1={40 + i * 10}
+          y1="60"
+          x2={40 + i * 10}
+          y2="240"
+          stroke={i % 4 === 0 ? GOLD : "rgba(255,255,255,.3)"}
+          strokeWidth={i % 4 === 0 ? 1 : 0.6}
+        />
+      ))}
+      {/* weft, woven over and under */}
+      {Array.from({ length: 15 }).map((_, i) => (
+        <path
+          key={`f${i}`}
+          d={`M36 ${68 + i * 12} Q100 ${68 + i * 12 + (i % 2 ? 9 : -9)} 164 ${68 + i * 12}`}
+          fill="none"
+          stroke={i % 5 === 2 ? "rgba(255,236,186,.65)" : "rgba(255,255,255,.24)"}
+          strokeWidth={i % 5 === 2 ? 1.1 : 0.7}
+        />
+      ))}
+      {/* the shuttle, mid-pass */}
+      <g transform="translate(0 4)">
+        <path d="M78 176 L122 176 L114 184 L86 184 Z" fill="rgba(255,240,200,.85)" stroke={GOLD} strokeWidth="0.8" />
+      </g>
+      {/* measure */}
+      <g stroke={GOLD} strokeWidth="0.9">
+        <line x1="34" y1="252" x2="166" y2="252" />
+        {Array.from({ length: 12 }).map((_, i) => (
+          <line key={i} x1={34 + i * 12} y1="252" x2={34 + i * 12} y2={i % 4 === 0 ? 244 : 248} />
+        ))}
+      </g>
+    </g>
+  );
+}
+
+function SceneScales() {
+  return (
+    <g>
+      <Ground />
+      <line x1="100" y1="70" x2="100" y2="214" stroke={GOLD} strokeWidth="1.3" />
+      <line x1="46" y1="104" x2="154" y2="96" stroke={GOLD} strokeWidth="1.3" />
+      {/* two pans, slightly out of balance — the reckoning is not settled */}
+      <g stroke={GOLD} strokeWidth="1" fill="rgba(255,255,255,.16)">
+        <path d="M32 104 L60 104 L52 122 L40 122 Z" />
+        <line x1="46" y1="104" x2="46" y2="98" />
+        <path d="M140 96 L168 96 L160 116 L148 116 Z" />
+        <line x1="154" y1="96" x2="154" y2="90" />
+      </g>
+      <circle cx="100" cy="70" r="4.4" fill="none" stroke={GOLD} strokeWidth="1.2" />
+      <text x="100" y="196" textAnchor="middle" fontSize="13" fill={GOLD} fontFamily="'Playfair Display', Georgia, serif">
+        VII
       </text>
     </g>
   );
 }
 
-function FamilyArt({ family, seed }: { family: Family; seed: number }) {
-  const stroke = "rgba(255,255,255,.62)";
-  const faint = "rgba(255,255,255,.26)";
+function ScenePath() {
+  return (
+    <g>
+      <Ground />
+      {/* two roads out of one */}
+      <path d="M100 232 C96 196, 72 160, 40 120" fill="none" stroke="rgba(255,255,255,.4)" strokeWidth="2" strokeLinecap="round" />
+      <path d="M100 232 C104 196, 130 160, 162 120" fill="none" stroke="rgba(255,255,255,.24)" strokeWidth="2" strokeLinecap="round" />
+      <path d="M100 232 L100 168" stroke={GOLD} strokeWidth="1.2" strokeDasharray="4 5" />
+      <Figure scale={0.6} y={236} opacity={0.9} />
+      {/* the two doors */}
+      <rect x="26" y="86" width="26" height="40" rx="12" fill="rgba(255,255,255,.16)" stroke={GOLD} strokeWidth="0.9" />
+      <rect x="148" y="86" width="26" height="40" rx="12" fill="rgba(255,255,255,.1)" stroke="rgba(255,255,255,.4)" strokeWidth="0.9" />
+    </g>
+  );
+}
 
-  switch (family) {
-    case "signal":
-      return (
-        <g>
-          {Array.from({ length: 11 }).map((_, i) => (
-            <line
-              key={i}
-              x1="100"
-              y1="100"
-              x2="100"
-              y2={i % 2 ? 22 : 8}
-              stroke={i % 2 ? faint : stroke}
-              strokeWidth={i % 2 ? 0.8 : 1.4}
-              strokeLinecap="round"
-              transform={`rotate(${(360 / 11) * i + seed} 100 100)`}
-            />
-          ))}
-          <circle cx="100" cy="100" r="46" fill="none" stroke={faint} strokeWidth="0.8" />
-          <circle cx="100" cy="100" r="30" fill="none" stroke={stroke} strokeWidth="1.2" />
-        </g>
-      );
-    case "tower":
-      return (
-        <g>
-          {Array.from({ length: 16 }).map((_, i) => {
-            const w = 74 - i * 3.4;
-            return (
-              <rect
-                key={i}
-                x={100 - w / 2}
-                y={168 - i * 9}
-                width={w}
-                height={5.4}
-                rx="1.6"
-                fill="none"
-                stroke={i % 4 === 0 ? stroke : faint}
-                strokeWidth={i % 4 === 0 ? 1.2 : 0.7}
-              />
-            );
-          })}
-          <line x1="100" y1="24" x2="100" y2="8" stroke={stroke} strokeWidth="1.4" strokeLinecap="round" />
-        </g>
-      );
-    case "weave":
-      return (
-        <g>
-          {Array.from({ length: 14 }).map((_, i) => (
-            <line
-              key={`v${i}`}
-              x1={30 + i * 10}
-              y1="26"
-              x2={30 + i * 10}
-              y2="174"
-              stroke={i % 3 === 0 ? stroke : faint}
-              strokeWidth={i % 3 === 0 ? 1.1 : 0.6}
-            />
-          ))}
-          {Array.from({ length: 14 }).map((_, i) => (
-            <path
-              key={`h${i}`}
-              d={`M26 ${30 + i * 10.6} Q100 ${30 + i * 10.6 + (i % 2 ? 8 : -8)} 174 ${30 + i * 10.6}`}
-              fill="none"
-              stroke={i % 3 === 1 ? stroke : faint}
-              strokeWidth={i % 3 === 1 ? 1 : 0.6}
-            />
-          ))}
-        </g>
-      );
-    case "bloom":
-      return (
-        <g>
-          {Array.from({ length: 9 }).map((_, i) => (
-            <ellipse
-              key={i}
-              cx="100"
-              cy="72"
-              rx="15"
-              ry="40"
-              fill="none"
-              stroke={i % 2 ? faint : stroke}
-              strokeWidth={i % 2 ? 0.7 : 1.1}
-              transform={`rotate(${(360 / 9) * i + seed} 100 100)`}
-            />
-          ))}
-          <circle cx="100" cy="100" r="7" fill="none" stroke={stroke} strokeWidth="1.3" />
-        </g>
-      );
-    case "mirror":
-      return (
-        <g>
-          <path d="M100 18 L162 100 L100 182 L38 100 Z" fill="none" stroke={stroke} strokeWidth="1.3" />
-          <path d="M100 40 L142 100 L100 160 L58 100 Z" fill="none" stroke={faint} strokeWidth="0.8" />
-          <line x1="38" y1="100" x2="162" y2="100" stroke={faint} strokeWidth="0.7" />
-          {Array.from({ length: 6 }).map((_, i) => (
-            <line
-              key={i}
-              x1={62 + i * 15}
-              y1="100"
-              x2={62 + i * 15}
-              y2={100 - (i % 2 ? 26 : 40)}
-              stroke={faint}
-              strokeWidth="0.6"
-            />
-          ))}
-        </g>
-      );
-    case "constellation":
-      return (
-        <g>
-          {Array.from({ length: 9 }).map((_, i) => {
-            const a = (360 / 9) * i + seed;
-            const r = i % 3 === 0 ? 66 : i % 3 === 1 ? 44 : 24;
-            const x = 100 + r * Math.cos((a * Math.PI) / 180);
-            const y = 100 + r * Math.sin((a * Math.PI) / 180);
-            const next = (360 / 9) * ((i + 1) % 9) + seed;
-            const rn = (i + 1) % 3 === 0 ? 66 : (i + 1) % 3 === 1 ? 44 : 24;
-            const nx = 100 + rn * Math.cos((next * Math.PI) / 180);
-            const ny = 100 + rn * Math.sin((next * Math.PI) / 180);
-            return (
-              <g key={i}>
-                <line x1={x} y1={y} x2={nx} y2={ny} stroke={faint} strokeWidth="0.7" />
-                <circle cx={x} cy={y} r={i % 3 === 0 ? 2.6 : 1.7} fill={stroke} />
-              </g>
-            );
-          })}
-        </g>
-      );
-    case "cycle":
-      return (
-        <g>
-          {[70, 56, 42, 28].map((r, i) => (
-            <circle
-              key={r}
-              cx="100"
-              cy="100"
-              r={r}
-              fill="none"
-              stroke={i % 2 ? faint : stroke}
-              strokeWidth={i % 2 ? 0.7 : 1.15}
-              strokeDasharray={i === 1 ? "4 7" : i === 3 ? "2 5" : undefined}
-            />
-          ))}
-          <line x1="100" y1="30" x2="100" y2="170" stroke={faint} strokeWidth="0.6" />
-          <line x1="30" y1="100" x2="170" y2="100" stroke={faint} strokeWidth="0.6" />
-        </g>
-      );
+function SceneBody({ scene, seed }: { scene: Scene; seed: number }) {
+  switch (scene) {
+    case "veil": return <SceneVeil />;
+    case "figure": return <SceneFigure seed={seed} />;
+    case "tower": return <SceneTower />;
+    case "moon": return <SceneMoon />;
+    case "sun": return <SceneSun />;
+    case "wheel": return <SceneWheel seed={seed} />;
+    case "stars": return <SceneStars seed={seed} />;
+    case "loom": return <SceneLoom />;
+    case "scales": return <SceneScales />;
+    case "path": return <ScenePath />;
   }
 }
 
-/** Full card plate: colorway wash + house sigil + shield watermark. */
+/* ── The plate ────────────────────────────────────────────────────────── */
+
 export function CardArt({ card, reversed = false }: { card: ArcanaCard; reversed?: boolean }) {
-  const family = artFamily(card);
-  const seed = (card.number * 13) % 90;
+  const scene = sceneOf(card);
+  const seed = (card.number * 17) % 90;
+  const id = `c${card.number}`;
   return (
-    <svg className="jdeck-art" viewBox="0 0 200 200" role="img" aria-label={`${card.name} plate`}>
+    <svg className="jdeck-art" viewBox="0 0 200 300" role="img" aria-label={`${card.name} plate`}>
       <defs>
-        <linearGradient id={`wash-${card.number}`} x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor={card.colorway[0]} />
+        <linearGradient id={`sky-${id}`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor={card.colorway[1]} />
+          <stop offset="58%" stopColor={card.colorway[0]} />
           <stop offset="100%" stopColor={card.colorway[1]} />
         </linearGradient>
-        <linearGradient id="xvGold" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor="#f7e0a8" />
-          <stop offset="45%" stopColor="#d8a83f" />
-          <stop offset="100%" stopColor="#f3d894" />
+        <linearGradient id="xvGoldPlate" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stopColor="#f9e7bb" />
+          <stop offset="46%" stopColor="#d3a63c" />
+          <stop offset="100%" stopColor="#f6dfa0" />
         </linearGradient>
-        <radialGradient id={`vig-${card.number}`}>
-          <stop offset="55%" stopColor="rgba(0,0,0,0)" />
-          <stop offset="100%" stopColor="rgba(8,14,28,.42)" />
+        <radialGradient id={`vig-${id}`}>
+          <stop offset="52%" stopColor="rgba(0,0,0,0)" />
+          <stop offset="100%" stopColor="rgba(6,12,26,.5)" />
         </radialGradient>
+        {/* The arch: everything in the scene is clipped to it. */}
+        <clipPath id={`arch-${id}`}>
+          <path d="M26 300 V88 C26 52, 56 30, 100 30 C144 30, 174 52, 174 88 V300 Z" />
+        </clipPath>
+        <pattern id={`mono-${id}`} width="18" height="18" patternUnits="userSpaceOnUse">
+          <text x="9" y="12" textAnchor="middle" fontSize="7" fill="rgba(214,178,96,.35)" fontFamily="'Playfair Display', Georgia, serif">
+            XI
+          </text>
+        </pattern>
       </defs>
-      <rect width="200" height="200" fill={`url(#wash-${card.number})`} />
-      <rect width="200" height="200" fill={`url(#vig-${card.number})`} />
-      <g transform={reversed ? "rotate(180 100 100)" : undefined}>
-        <FamilyArt family={family} seed={seed} />
-        <ShieldMark opacity={0.46} size={0.66} />
+
+      {/* card stock */}
+      <rect width="200" height="300" fill="#101c33" />
+      <rect width="200" height="300" fill={`url(#mono-${id})`} opacity="0.5" />
+
+      <g>
+        {/* The picture window. Only the scene turns when a card is reversed —
+           the arch, the shield and the numeral stay the right way up, the way
+           a printed plate would. */}
+        <g clipPath={`url(#arch-${id})`}>
+          <rect width="200" height="300" fill={`url(#sky-${id})`} />
+          <g transform={reversed ? "rotate(180 100 165)" : undefined}>
+            <Clouds tone="rgba(255,255,255,.7)" />
+            <SceneBody scene={scene} seed={seed} />
+          </g>
+          <rect width="200" height="300" fill={`url(#vig-${id})`} />
+        </g>
+        {/* arch moulding */}
+        <path
+          d="M26 300 V88 C26 52, 56 30, 100 30 C144 30, 174 52, 174 88 V300"
+          fill="none"
+          stroke={GOLD}
+          strokeWidth="2"
+        />
+        <path
+          d="M32 300 V89 C32 56, 60 36, 100 36 C140 36, 168 56, 168 89 V300"
+          fill="none"
+          stroke="rgba(214,178,96,.45)"
+          strokeWidth="0.7"
+        />
+        {/* the keystone: the real shield */}
+        <image href={SHIELD} x="86" y="14" width="28" height="37" preserveAspectRatio="xMidYMid meet" />
       </g>
-      <rect
-        x="7"
-        y="7"
-        width="186"
-        height="186"
-        rx="9"
-        fill="none"
-        stroke="url(#xvGold)"
-        strokeWidth="1.1"
-        opacity="0.85"
-      />
+
+      {/* numeral cartouche */}
+      <g>
+        <rect x="76" y="272" width="48" height="17" rx="8.5" fill="#0d1830" stroke={GOLD} strokeWidth="0.9" />
+        <text x="100" y="284.5" textAnchor="middle" fontSize="10" letterSpacing="1.6" fill={GOLD} fontFamily="'Playfair Display', Georgia, serif">
+          {card.roman}
+        </text>
+      </g>
+
+      {/* outer border */}
+      <rect x="5" y="5" width="190" height="290" rx="10" fill="none" stroke={GOLD} strokeWidth="1.2" />
+      <rect x="10" y="10" width="180" height="280" rx="7" fill="none" stroke="rgba(214,178,96,.3)" strokeWidth="0.6" />
     </svg>
   );
 }
 
-/** The card back — the house shield on ink, identical on every card. */
+/** The card back — the real house logo on ink, identical on every card. */
 export function CardBack() {
   return (
-    <svg className="jdeck-back-art" viewBox="0 0 200 300" role="img" aria-label="XI·XVI card back">
-      <defs>
-        <linearGradient id="backInk" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor="#1b2c4a" />
-          <stop offset="52%" stopColor="#101c33" />
-          <stop offset="100%" stopColor="#1e2f52" />
-        </linearGradient>
-        <linearGradient id="xvGoldBack" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor="#f9e6b6" />
-          <stop offset="45%" stopColor="#d3a338" />
-          <stop offset="100%" stopColor="#f5dc9c" />
-        </linearGradient>
-        <pattern id="guilloche" width="14" height="14" patternUnits="userSpaceOnUse">
-          <path d="M0 7 Q3.5 0 7 7 T14 7" fill="none" stroke="rgba(214,178,96,.16)" strokeWidth="0.6" />
-          <path d="M7 0 Q14 3.5 7 7 T7 14" fill="none" stroke="rgba(160,196,240,.1)" strokeWidth="0.6" />
-        </pattern>
-      </defs>
-      <rect width="200" height="300" fill="url(#backInk)" />
-      <rect width="200" height="300" fill="url(#guilloche)" />
-      <rect x="9" y="9" width="182" height="282" rx="12" fill="none" stroke="url(#xvGoldBack)" strokeWidth="1.2" opacity="0.75" />
-      <rect x="16" y="16" width="168" height="268" rx="9" fill="none" stroke="rgba(214,178,96,.28)" strokeWidth="0.6" />
-
-      {/* Shield, large and centred */}
-      <g transform="translate(100 150)">
-        <path
-          d="M0 -62 L44 -44 V4 C44 32 24 54 0 68 C-24 54 -44 32 -44 4 V-44 Z"
-          fill="rgba(255,255,255,.035)"
-          stroke="url(#xvGoldBack)"
-          strokeWidth="2"
-        />
-        <path
-          d="M0 -51 L34 -37 V2 C34 24 18 42 0 53 C-18 42 -34 24 -34 2 V-37 Z"
-          fill="none"
-          stroke="rgba(214,178,96,.42)"
-          strokeWidth="0.8"
-        />
-        <text x="0" y="-6" textAnchor="middle" fontSize="21" letterSpacing="2.5" fill="url(#xvGoldBack)" fontFamily="'Playfair Display', Georgia, serif">XI</text>
-        <text x="0" y="22" textAnchor="middle" fontSize="21" letterSpacing="2.5" fill="url(#xvGoldBack)" fontFamily="'Playfair Display', Georgia, serif">XVI</text>
-        <line x1="-20" y1="4" x2="20" y2="4" stroke="rgba(214,178,96,.55)" strokeWidth="0.8" />
-      </g>
-      <text x="100" y="44" textAnchor="middle" fontSize="8" letterSpacing="4" fill="rgba(226,214,186,.55)">ELEVEN · SIXTEEN</text>
-      <text x="100" y="266" textAnchor="middle" fontSize="7" letterSpacing="3.4" fill="rgba(226,214,186,.42)">THE HOUSE DECK</text>
-    </svg>
+    <div className="jdeck-back">
+      <svg className="jdeck-back-art" viewBox="0 0 200 300" role="img" aria-label="XI·XVI card back">
+        <defs>
+          <linearGradient id="backInk" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stopColor="#1c2e4d" />
+            <stop offset="52%" stopColor="#0f1b31" />
+            <stop offset="100%" stopColor="#1f3054" />
+          </linearGradient>
+          <linearGradient id="xvGoldBack" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stopColor="#f9e6b6" />
+            <stop offset="45%" stopColor="#d3a338" />
+            <stop offset="100%" stopColor="#f5dc9c" />
+          </linearGradient>
+          <pattern id="guilloche" width="16" height="16" patternUnits="userSpaceOnUse">
+            <path d="M0 8 Q4 0 8 8 T16 8" fill="none" stroke="rgba(214,178,96,.18)" strokeWidth="0.6" />
+            <path d="M8 0 Q16 4 8 8 T8 16" fill="none" stroke="rgba(160,196,240,.11)" strokeWidth="0.6" />
+          </pattern>
+        </defs>
+        <rect width="200" height="300" fill="url(#backInk)" />
+        <rect width="200" height="300" fill="url(#guilloche)" />
+        <rect x="9" y="9" width="182" height="282" rx="12" fill="none" stroke="url(#xvGoldBack)" strokeWidth="1.2" opacity="0.8" />
+        <rect x="16" y="16" width="168" height="268" rx="9" fill="none" stroke="rgba(214,178,96,.28)" strokeWidth="0.6" />
+        <text x="100" y="42" textAnchor="middle" fontSize="7.5" letterSpacing="4" fill="rgba(226,214,186,.6)">
+          ELEVEN · SIXTEEN
+        </text>
+        <text x="100" y="268" textAnchor="middle" fontSize="6.5" letterSpacing="3.4" fill="rgba(226,214,186,.45)">
+          THE HOUSE DECK
+        </text>
+      </svg>
+      {/* the actual logo file, not a redraw */}
+      <img className="jdeck-back__logo" src={SHIELD} alt="" />
+    </div>
   );
 }

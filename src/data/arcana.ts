@@ -21,6 +21,10 @@ export interface ArcanaCard {
   element: "Air" | "Fire" | "Water" | "Earth" | "Aether";
   reduction: number; // numerology reduction of the card number
   keywords: string[];
+  /** Plain-language read of the card: what it is actually telling you. */
+  meaning: string;
+  /** Concrete steps that implement the message, doable the same day. */
+  actions: string[];
   upright: string;
   reversed: string;
   ritual: string;
@@ -38,6 +42,13 @@ export const ARCANA: ArcanaCard[] = [
     element: "Aether",
     reduction: 9,
     keywords: ["potential", "restraint", "beginning"],
+    meaning:
+      "You are at the start of something and nothing is committed yet — that is an advantage, not a delay.",
+    actions: [
+      "Write the one sentence that describes what you're actually trying to make.",
+      "Name one thing you will start today and one thing you will refuse.",
+      "Set a deadline for the first cut — a date, not 'soon'.",
+    ],
     upright:
       "The most powerful version of a thing is the version not yet committed. You are standing in front of an open bolt of cloth. Choose deliberately; the first cut sets every seam after it.",
     reversed:
@@ -55,6 +66,13 @@ export const ARCANA: ArcanaCard[] = [
     element: "Fire",
     reduction: 1,
     keywords: ["initiation", "agency", "craft"],
+    meaning:
+      "Your skill is the bottleneck and also the answer: today rewards making something over planning something.",
+    actions: [
+      "Do the hardest ten minutes first, before email.",
+      "Ship one rough version of the thing you keep polishing.",
+      "Write down the technique you need to learn next and book time for it.",
+    ],
     upright:
       "You are not waiting for permission. Skill plus intent equals authorship. Whatever you touch today takes your shape.",
     reversed:
@@ -72,6 +90,13 @@ export const ARCANA: ArcanaCard[] = [
     element: "Water",
     reduction: 2,
     keywords: ["intuition", "privacy", "listening"],
+    meaning:
+      "You already know the answer and you're collecting evidence to avoid acting on it.",
+    actions: [
+      "Spend ten screen-free minutes and write the first sentence that surfaces.",
+      "Say the quiet thing out loud to one person you trust.",
+      "Make the decision you've been researching; give yourself a 24-hour deadline.",
+    ],
     upright:
       "The answer already arrived; you are stalling for evidence. Sit with the quieter voice — it has a better record than your spreadsheet.",
     reversed:
@@ -89,6 +114,13 @@ export const ARCANA: ArcanaCard[] = [
     element: "Earth",
     reduction: 3,
     keywords: ["creativity", "generosity", "growth"],
+    meaning:
+      "Something you planted is paying off — spend it while it's fresh instead of stockpiling it.",
+    actions: [
+      "Give one thing away today: credit, time, or a real compliment.",
+      "Reinvest one hour of today's win back into the work that made it.",
+      "Tell the person who helped you that it worked.",
+    ],
     upright:
       "Something you planted is producing. Share the surplus while it is fresh; hoarded abundance rots into inventory.",
     reversed:
@@ -106,6 +138,13 @@ export const ARCANA: ArcanaCard[] = [
     element: "Earth",
     reduction: 4,
     keywords: ["discipline", "boundaries", "foundation"],
+    meaning:
+      "You need structure, not more motivation. A boundary today buys you freedom this week.",
+    actions: [
+      "Pick your three non-negotiables for the day and cut the rest.",
+      "Put one recurring task on a calendar slot so it stops living in your head.",
+      "Say no to one request, in writing, today.",
+    ],
     upright:
       "The pattern comes before the garment. Build the frame and the creativity gets somewhere to live.",
     reversed:
@@ -123,6 +162,13 @@ export const ARCANA: ArcanaCard[] = [
     element: "Air",
     reduction: 5,
     keywords: ["tradition", "teaching", "inheritance"],
+    meaning:
+      "What you inherited — a skill, a story, a standard — is a tool you're not using on purpose.",
+    actions: [
+      "Ask one person who came before you how they handled this.",
+      "Write down one rule you inherited and decide: keep it or retire it.",
+      "Teach someone one thing you know cold.",
+    ],
     upright:
       "You are standing on someone's technique. Honour it by improving it, not by preserving it under glass.",
     reversed:
@@ -140,6 +186,13 @@ export const ARCANA: ArcanaCard[] = [
     element: "Air",
     reduction: 6,
     keywords: ["alignment", "partnership", "decision"],
+    meaning:
+      "There are two real options and you're pretending there are none. Choosing is the work today.",
+    actions: [
+      "List the two options in one line each, then name the cost of each.",
+      "Decide by a set hour today; note the reason in one sentence.",
+      "Close the door on the option you didn't pick so it stops taking rent.",
+    ],
     upright:
       "This is not a coin flip. One option makes you larger and one makes you safer, and you already know which is which.",
     reversed:
@@ -157,6 +210,13 @@ export const ARCANA: ArcanaCard[] = [
     element: "Fire",
     reduction: 7,
     keywords: ["momentum", "focus", "victory"],
+    meaning:
+      "Momentum is available if you point it at one thing instead of five.",
+    actions: [
+      "Choose the single outcome that makes today a win; put it first.",
+      "Cut or delegate one commitment to protect that outcome.",
+      "Work one uninterrupted 45-minute block with notifications off.",
+    ],
     upright:
       "You have speed. The only question is steering. Point everything at one objective for the next seven days.",
     reversed:
@@ -174,6 +234,13 @@ export const ARCANA: ArcanaCard[] = [
     element: "Earth",
     reduction: 8,
     keywords: ["accountability", "balance", "truth"],
+    meaning:
+      "An honest accounting is overdue — of money, time, or a relationship. It will be lighter than you think.",
+    actions: [
+      "Open the number you've been avoiding and write it down.",
+      "Admit one thing that isn't working, out loud, to someone.",
+      "Fix the smallest piece of it today; schedule the rest.",
+    ],
     upright:
       "Add it up properly — hours, waste, favours, footprint. A number you refuse to look at will bill you twice.",
     reversed:
@@ -191,6 +258,13 @@ export const ARCANA: ArcanaCard[] = [
     element: "Aether",
     reduction: 9,
     keywords: ["solitude", "study", "completion"],
+    meaning:
+      "You are between certainties, and looking is the correct activity — just look deliberately.",
+    actions: [
+      "Write the actual question you're trying to answer.",
+      "Ask one person with real experience for 20 minutes.",
+      "Run one small experiment today instead of researching a fourth option.",
+    ],
     upright:
       "Withdraw to work. Nine closes the cycle: finish the thing nobody is watching you finish.",
     reversed:
@@ -208,6 +282,13 @@ export const ARCANA: ArcanaCard[] = [
     element: "Water",
     reduction: 1,
     keywords: ["seasons", "circularity", "return"],
+    meaning:
+      "The pattern repeating is not fate — it's a loop you're inside. Change one input.",
+    actions: [
+      "Name the loop in one sentence: 'every time X, I do Y.'",
+      "Change one input today, however small, and note what shifts.",
+      "Close one open cycle: finish, cancel, or hand it off.",
+    ],
     upright:
       "You have been here before at a different altitude. Reuse what worked; retire what only worked once.",
     reversed:
@@ -225,6 +306,13 @@ export const ARCANA: ArcanaCard[] = [
     element: "Aether",
     reduction: 2,
     keywords: ["insight", "courage", "calling"],
+    meaning:
+      "You saw it before anyone else. Today is for saying it plainly enough that it lands.",
+    actions: [
+      "Say the thing in one sentence, no hedging, to the person who needs to hear it.",
+      "Put the idea somewhere permanent — a doc, a note, a post.",
+      "Ask one person to poke holes in it, then keep the parts that survive.",
+    ],
     upright:
       "The house card. Eleven is knowing before the proof exists — and having the nerve to move on it. Say the unpopular true thing today.",
     reversed:
@@ -242,6 +330,13 @@ export const ARCANA: ArcanaCard[] = [
     element: "Water",
     reduction: 3,
     keywords: ["patience", "reframe", "surrender"],
+    meaning:
+      "Waiting is the move, but it has to be deliberate waiting, not stalling.",
+    actions: [
+      "Set the date you'll revisit this, then stop touching it.",
+      "Change your vantage point: walk, sleep on it, or explain it to a stranger.",
+      "Do one small task you have full control over instead.",
+    ],
     upright:
       "Nothing is moving because something is being made. Made-to-order requires waiting; so does the version of you being cut right now.",
     reversed:
@@ -259,6 +354,13 @@ export const ARCANA: ArcanaCard[] = [
     element: "Water",
     reduction: 4,
     keywords: ["release", "ending", "renewal"],
+    meaning:
+      "Something needs to come apart on purpose before it can be rebuilt right.",
+    actions: [
+      "Undo the one seam you know is wrong — the process, the plan, the sentence.",
+      "Remove one thing today instead of adding one.",
+      "Tell whoever's affected before you cut, not after.",
+    ],
     upright:
       "Take the seam out. Ending a thing cleanly is a skill, and it is the only way the fabric survives to be something else.",
     reversed:
@@ -276,6 +378,13 @@ export const ARCANA: ArcanaCard[] = [
     element: "Fire",
     reduction: 5,
     keywords: ["moderation", "precision", "craft"],
+    meaning:
+      "Precision beats effort today. Measure before you commit anything.",
+    actions: [
+      "Define what 'done' looks like in one measurable line.",
+      "Check the number, the fit, or the spec before you go further.",
+      "Cut one estimate in half and see if the plan still holds.",
+    ],
     upright:
       "Excess is imprecision. Cut to the measurement, not to the fear of coming up short.",
     reversed:
@@ -293,6 +402,13 @@ export const ARCANA: ArcanaCard[] = [
     element: "Earth",
     reduction: 6,
     keywords: ["habit", "compulsion", "release"],
+    meaning:
+      "Something has you tied — a habit, an obligation, a contract. Name it and loosen one knot.",
+    actions: [
+      "Write down what you're actually bound to, and by whom.",
+      "Cancel, renegotiate, or set an end date on one of them today.",
+      "Replace the habit's trigger, not the habit — change the cue.",
+    ],
     upright:
       "Something you call a preference is running you. Cheap dopamine, cheap clothing, cheap agreement — all the same mechanism.",
     reversed:
@@ -310,6 +426,13 @@ export const ARCANA: ArcanaCard[] = [
     element: "Fire",
     reduction: 7,
     keywords: ["rupture", "honesty", "rebuild"],
+    meaning:
+      "What just fell was hollow, and its falling is useful information. Build on the site, not on the rubble.",
+    actions: [
+      "Admit one thing that is not working, out loud, to someone.",
+      "Salvage the one part worth keeping and write down why.",
+      "Rebuild the smallest honest version today — one page, one call, one piece.",
+    ],
     upright:
       "The second house card. What just fell was hollow, and its falling is information. Sixteen reduces to seven: the seeker walks out of the rubble and starts looking.",
     reversed:
@@ -327,6 +450,13 @@ export const ARCANA: ArcanaCard[] = [
     element: "Air",
     reduction: 8,
     keywords: ["hope", "vision", "direction"],
+    meaning:
+      "The pieces are related; you've been treating them as separate problems.",
+    actions: [
+      "Put every open thread on one page and draw the lines between them.",
+      "Find the single item that unblocks three others and do that one.",
+      "Tell one person the whole picture so it stops living only in your head.",
+    ],
     upright:
       "After the tower, the sky. Pick a fixed point far enough away to steer by for years, not weeks.",
     reversed:
@@ -344,6 +474,13 @@ export const ARCANA: ArcanaCard[] = [
     element: "Water",
     reduction: 9,
     keywords: ["uncertainty", "instinct", "dreams"],
+    meaning:
+      "Instinct and craft are pulling together today — trust the feel, then check the work.",
+    actions: [
+      "Make the choice on feel, then verify it once against a fact.",
+      "Protect your first two hours for the work only you can do.",
+      "Write down the hunch and the date; check back in a week.",
+    ],
     upright:
       "You cannot see the whole path and you do not need to. Move by feel; verify in the morning.",
     reversed:
@@ -361,6 +498,13 @@ export const ARCANA: ArcanaCard[] = [
     element: "Fire",
     reduction: 1,
     keywords: ["visibility", "vitality", "confidence"],
+    meaning:
+      "Visibility is on your side. Be seen doing the thing rather than preparing to be seen.",
+    actions: [
+      "Publish, send, or show one piece of work today.",
+      "Ask directly for the thing you want — one clear sentence.",
+      "Credit someone publicly.",
+    ],
     upright:
       "Stop editing yourself down to a comfortable size for other people. Full light. Full posture.",
     reversed:
@@ -378,6 +522,13 @@ export const ARCANA: ArcanaCard[] = [
     element: "Aether",
     reduction: 2,
     keywords: ["reckoning", "clarity", "call"],
+    meaning:
+      "Something hidden is coming into view. Look at it straight and act on what you actually see.",
+    actions: [
+      "Ask the direct question you've been asking sideways.",
+      "Reread the thing you skimmed — the contract, the message, the data.",
+      "Change one plan today to match what you now know.",
+    ],
     upright:
       "Everything is on the table and it is a relief. Answer the summons: the version of you that shows up now sets the next decade.",
     reversed:
@@ -395,6 +546,13 @@ export const ARCANA: ArcanaCard[] = [
     element: "Earth",
     reduction: 3,
     keywords: ["completion", "integration", "arrival"],
+    meaning:
+      "The cycle is closing cleanly, with nothing left over. Finish it and let it be finished.",
+    actions: [
+      "Complete the last 5% of one thing and call it done, publicly.",
+      "Archive, invoice, or hand off what remains.",
+      "Write one line on what you'd do differently, then start the next thing.",
+    ],
     upright:
       "The cycle closes at nine and the piece is finished. Take the full measure of it before you start the next one.",
     reversed:

@@ -203,11 +203,34 @@ const SPREAD_SLOTS: Array<{ slot: SpreadSlot; slotName: string; slotQuestion: st
 ];
 
 /**
- * THE DRAW — three cards, one spread per calendar day, identical for every
- * visitor worldwide. No duplicates within a spread.
+ * A stable, anonymous id for this browser. The draw is personal: two people
+ * opening the Journal on the same day get different spreads, and the same
+ * person gets the same spread all day.
  */
-export function spreadOfTheDay(d: Date = new Date()): SpreadCard[] {
-  const key = dayKey(d);
+export function drawerId(): string {
+  const KEY = "xixvi-drawer";
+  try {
+    const existing = localStorage.getItem(KEY);
+    if (existing) return existing;
+    const fresh =
+      typeof crypto !== "undefined" && "randomUUID" in crypto
+        ? crypto.randomUUID()
+        : `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
+    localStorage.setItem(KEY, fresh);
+    return fresh;
+  } catch {
+    /* storage blocked — fall back to a per-session id */
+    return "guest";
+  }
+}
+
+/**
+ * THE DRAW — three cards, one spread per person per day. Deterministic from
+ * (drawer id + date), so it survives reloads and cannot be re-rolled, but it
+ * is nobody else's spread. No duplicates within a spread.
+ */
+export function spreadOfTheDay(d: Date = new Date(), who: string = drawerId()): SpreadCard[] {
+  const key = `${who}|${dayKey(d)}`;
   const used = new Set<number>();
   return SPREAD_SLOTS.map(({ slot, slotName, slotQuestion }) => {
     let idx = hash(`${slot}:${key}`) % ARCANA.length;

@@ -2530,8 +2530,10 @@ footer {
   font-size: 10px; letter-spacing: .26em; color: rgba(255,255,255,.85);
 }
 .jdeck-face__rev {
-  position: absolute; bottom: 5px; left: 0; right: 0; text-align: center;
-  font-size: 7px; letter-spacing: .2em; text-transform: uppercase; color: rgba(255,255,255,.7);
+  margin-left: 4px; font-style: normal;
+  font-family: Inter, system-ui, sans-serif;
+  font-size: 7.5px; letter-spacing: .18em; text-transform: uppercase;
+  color: rgba(226,214,186,.6);
 }
 .jdeck-face__plaque {
   flex: 0 0 auto; padding: .4rem .35rem .5rem; text-align: center;
@@ -2595,3 +2597,234 @@ footer {
   .jdeck-card__inner { transition: none; }
   .jdeck-card__burst { animation: none !important; }
 }
+
+/* ══════════════════════════════════════════════════════════════════════
+   THE MASTHEAD — ransom-note collage
+   Cut letters on torn paper stock, tape, pen scribbles, signed off by
+   hand. Deliberately loud, deliberately expensive-looking: the palette is
+   held to newsprint / cream / kraft / ink / gold plus the two brand
+   accents, so the noise stays editorial rather than chaotic.
+   ══════════════════════════════════════════════════════════════════════ */
+.jmast {
+  position: relative;
+  padding: 2.6rem 1.25rem 2.4rem;
+  text-align: center;
+  overflow: hidden;
+  isolation: isolate;
+}
+@media (min-width: 768px) { .jmast { padding: 3.4rem 2.5rem 3rem; } }
+
+/* Backing scraps — big torn rectangles pasted behind the type. */
+.jmast__patch {
+  position: absolute; z-index: -1; pointer-events: none;
+  background-repeat: no-repeat;
+  opacity: .55;
+}
+.jmast__patch--a {
+  left: 4%; top: 12%; width: 46%; height: 46%;
+  background-image: repeating-linear-gradient(0deg, rgba(21,36,61,.05) 0 1px, transparent 1px 5px);
+  background-color: rgba(252,250,244,.55);
+  transform: rotate(-2.2deg);
+  clip-path: polygon(1% 4%, 62% 0, 99% 6%, 97% 92%, 40% 100%, 3% 95%);
+}
+.jmast__patch--b {
+  right: 6%; top: 24%; width: 40%; height: 40%;
+  background-color: rgba(232,222,203,.5);
+  transform: rotate(3deg);
+  clip-path: polygon(2% 8%, 55% 2%, 98% 0, 96% 88%, 48% 100%, 0 90%);
+}
+.jmast__patch--c {
+  left: 26%; bottom: 6%; width: 48%; height: 30%;
+  background-color: rgba(255,255,255,.42);
+  transform: rotate(-1.4deg);
+  clip-path: polygon(0 12%, 52% 0, 100% 10%, 98% 86%, 46% 100%, 2% 90%);
+}
+/* Tape */
+.jmast__tape {
+  position: absolute; z-index: 2; pointer-events: none;
+  width: 92px; height: 26px;
+  background: linear-gradient(100deg, rgba(255,255,255,.5), rgba(238,232,214,.62));
+  border-left: 1px solid rgba(255,255,255,.5);
+  border-right: 1px solid rgba(255,255,255,.5);
+  box-shadow: 0 2px 8px -4px rgba(12,34,64,.4);
+  opacity: .8;
+}
+.jmast__tape--tl { left: -18px; top: 34px; transform: rotate(-38deg); }
+.jmast__tape--br { right: -16px; bottom: 44px; transform: rotate(-32deg); }
+
+.jmast__pen { position: absolute; z-index: 3; pointer-events: none; }
+.jmast__pen--arrow { left: 2%; top: 26%; width: 62px; height: 62px; }
+@media (max-width: 700px) { .jmast__pen--arrow { display: none; } }
+.jmast__pen--rule {
+  left: 50%; transform: translateX(-50%);
+  bottom: 27%; width: min(24rem, 76%); height: 18px;
+}
+
+/* Dateline slug */
+.jmast__slug {
+  position: relative; z-index: 4;
+  display: flex; align-items: center; justify-content: center; gap: .6rem;
+  font-family: "Special Elite", "Courier New", monospace;
+  font-size: 9.5px; letter-spacing: .34em; text-transform: uppercase;
+  color: rgba(21,36,61,.5);
+}
+.jmast__slug i { width: 16px; height: 1px; background: rgba(21,36,61,.28); }
+
+/* ── The cut letters ─────────────────────────────────────────────────── */
+.jmast__title {
+  position: relative; z-index: 4;
+  margin: .9rem 0 .1rem;
+  display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: center;
+  gap: 2px;
+  line-height: 1;
+}
+.jmast__wordgroup { display: inline-flex; flex-wrap: nowrap; align-items: flex-end; gap: 2px; }
+.jmast__title { gap: clamp(.5rem, 1.6vw, 1.1rem); }
+.jmast__space { width: clamp(.55rem, 1.6vw, 1.1rem); }
+.jmast__scrap {
+  display: inline-block;
+  padding: .06em .16em .1em;
+  font-size: clamp(2.05rem, 8.2vw, 5.6rem);
+  line-height: .96;
+  transform: rotate(var(--rot, 0deg)) translateY(var(--dy, 0)) scale(var(--sc, 1));
+  box-shadow: 0 8px 18px -10px rgba(12,34,64,.55), 0 1px 0 rgba(255,255,255,.6) inset;
+  clip-path: polygon(2% 5%, 48% 0, 99% 4%, 97% 95%, 52% 100%, 1% 96%);
+  transition: transform .35s cubic-bezier(.2,.8,.2,1);
+}
+.jmast__title:hover .jmast__scrap { transform: rotate(calc(var(--rot, 0deg) * .35)) translateY(0) scale(var(--sc, 1)); }
+
+/* Paper stocks */
+.jmast__scrap--newsprint {
+  background-color: #f7f4ec; color: #17233a;
+  background-image: repeating-linear-gradient(0deg, rgba(21,36,61,.055) 0 1px, transparent 1px 4px);
+}
+.jmast__scrap--cream { background-color: #fdf6e6; color: #1d2b45; }
+.jmast__scrap--kraft { background-color: #dcc7a6; color: #3a2c17; }
+.jmast__scrap--ink   { background-color: #15243d; color: #f6f2e6; }
+.jmast__scrap--gold  {
+  background-image: linear-gradient(135deg, #f7e2ad, #cfa235 55%, #f2d992);
+  color: #2a1f07;
+}
+.jmast__scrap--lilac { background-color: #ddc7fb; color: #331a52; }
+.jmast__scrap--blush { background-color: #ffd2de; color: #4a1626; }
+
+/* Faces */
+.jmast__face--grotesk { font-family: Anton, "Arial Black", sans-serif; letter-spacing: .01em; }
+.jmast__face--display { font-family: "Bodoni Moda", "Playfair Display", Georgia, serif; font-weight: 800; }
+.jmast__face--type    { font-family: "Special Elite", "Courier New", monospace; }
+.jmast__face--slab    { font-family: "Playfair Display", Georgia, serif; font-weight: 600; }
+.jmast__face--script  { font-family: Caveat, "Segoe Script", cursive; }
+
+/* ── The standfirst, same trick at reading size ──────────────────────── */
+.jmast__stand {
+  position: relative; z-index: 4;
+  margin: 1.1rem auto .1rem; max-width: 34rem;
+  display: flex; flex-wrap: wrap; align-items: baseline; justify-content: center;
+  gap: 5px;
+}
+.jmast__word {
+  display: inline-block;
+  padding: 2px 7px 3px;
+  font-size: clamp(12px, 1.5vw, 15px);
+  letter-spacing: .01em;
+  transform: rotate(var(--rot, 0deg));
+  box-shadow: 0 4px 10px -7px rgba(12,34,64,.5);
+  clip-path: polygon(2% 6%, 46% 0, 99% 5%, 97% 94%, 50% 100%, 1% 95%);
+}
+
+/* ── Handwritten sign-off ────────────────────────────────────────────── */
+.jmast__sign {
+  position: relative; z-index: 4;
+  margin-top: 1.3rem;
+  font-family: Caveat, "Segoe Script", cursive;
+  font-size: clamp(22px, 3.4vw, 32px);
+  color: #24365a;
+  transform: rotate(-1.6deg);
+}
+.jmast__sign::after {
+  content: ""; display: block;
+  width: 210px; max-width: 62%; height: 10px; margin: 1px auto 0;
+  background: no-repeat center / 100% 100%
+    url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 220 12'%3E%3Cpath d='M4 8 C44 2 78 10 116 5 C150 1 186 9 216 4' fill='none' stroke='rgba(36,54,90,0.5)' stroke-width='2.2' stroke-linecap='round'/%3E%3C/svg%3E");
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .jmast__title:hover .jmast__scrap { transform: rotate(var(--rot, 0deg)) translateY(var(--dy, 0)) scale(var(--sc, 1)); }
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   ARTICLE FIGURES — text wraps the image
+   ══════════════════════════════════════════════════════════════════════ */
+.journal-prose figure { margin: .4rem 0 1.1rem; }
+.journal-figure {
+  width: min(300px, 46%);
+  border-radius: 14px;
+  overflow: hidden;
+  background: rgba(255,255,255,.5);
+  border: 1px solid rgba(118,180,235,.28);
+  box-shadow: 0 22px 46px -30px rgba(12,34,64,.6);
+}
+.journal-figure img { display: block; width: 100%; border-radius: 0; }
+.journal-figure figcaption {
+  padding: .5rem .65rem .6rem;
+  font-size: 10px; line-height: 1.5; letter-spacing: .04em;
+  color: rgba(21,36,61,.5);
+  border-top: 1px solid rgba(118,180,235,.2);
+}
+.journal-figure--right { float: right; margin: .3rem 0 1rem 1.4rem; }
+.journal-figure--left  { float: left;  margin: .3rem 1.4rem 1rem 0; }
+/* Cut-out silhouette: the paragraph text follows the mannequin's edge. */
+.journal-figure--cutout {
+  background: none; border: 0; box-shadow: none;
+  width: min(260px, 42%);
+}
+.journal-figure--cutout img {
+  filter: drop-shadow(0 22px 30px rgba(12,34,64,.35));
+}
+.journal-figure--cutout.journal-figure--right img { shape-outside: margin-box; }
+/* Swatch trio */
+.journal-swatches {
+  width: min(320px, 48%);
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px;
+}
+.journal-swatches img {
+  aspect-ratio: 1; object-fit: cover; border-radius: 999px;
+  border: 2px solid rgba(255,255,255,.8);
+  box-shadow: 0 12px 24px -14px rgba(12,34,64,.6);
+}
+.journal-swatches figcaption { grid-column: 1 / -1; border: 0; padding: .3rem 0 0; }
+@media (max-width: 560px) {
+  .journal-figure, .journal-figure--cutout, .journal-swatches {
+    float: none; width: 100%; margin: 1.2rem 0;
+  }
+}
+.journal-prose::after { content: ""; display: block; clear: both; }
+.journal-masthead-shell { position: relative; overflow: hidden; }
+.journal-masthead-shell .journal-hero__aura { inset: -60% 6% auto 6%; opacity: .5; }
+
+/* Comfortable measure for long-form reading, and keep lists from
+   interleaving with floated figures. */
+.journal-article { max-width: 58rem; margin-inline: auto; }
+.journal-prose ul, .journal-prose ol, .journal-prose blockquote { overflow: hidden; }
+.journal-swatches {
+  padding: 8px; background: rgba(255,255,255,.55);
+  border: 1px solid rgba(118,180,235,.24); border-radius: 16px;
+}
+.journal-swatches figcaption { padding: .4rem .15rem 0; }
+
+/* Card back: the real logo file sits over the engraved plate. */
+.jdeck-back { position: absolute; inset: 0; }
+.jdeck-back__logo {
+  position: absolute; left: 50%; top: 50%;
+  width: 46%; transform: translate(-50%, -52%);
+  filter: drop-shadow(0 6px 14px rgba(6,12,26,.6));
+}
+.jdeck-face__roman { display: none; }
+.jdeck-read__meaning {
+  margin-bottom: .45rem; font-size: 13.5px; line-height: 1.55;
+  color: #15243d; font-family: "Playfair Display", Georgia, serif;
+}
+.jdeck-read__actions { margin-top: .35rem; padding-left: 1.05rem; list-style: decimal; }
+.jdeck-read__actions li { font-size: 12px; line-height: 1.5; color: rgba(21,36,61,.75); }
+.jdeck-read__actions li + li { margin-top: .3rem; }
+.jdeck-read__actions li::marker { color: #a67c2e; font-weight: 600; }

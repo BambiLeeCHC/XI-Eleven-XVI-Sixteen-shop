@@ -40,8 +40,6 @@ function CardFace({ entry }: { entry: SpreadCard }) {
     <div className="jdeck-face">
       <div className="jdeck-face__plate">
         <CardArt card={card} reversed={reversed} />
-        <span className="jdeck-face__roman">{card.roman}</span>
-        {reversed && <span className="jdeck-face__rev">reversed</span>}
       </div>
       <div className="jdeck-face__plaque">
         <span className="jdeck-face__name">{card.name}</span>
@@ -121,10 +119,15 @@ function Reading({ entry }: { entry: SpreadCard }) {
           <span key={k}>{k}</span>
         ))}
       </div>
+      <p className="jdeck-read__meaning">{card.meaning}</p>
       <p className="jdeck-read__body">{reversed ? card.reversed : card.upright}</p>
       <div className="jdeck-read__ritual">
-        <span>Practice</span>
-        <p>{card.ritual}</p>
+        <span>Do this today</span>
+        <ol className="jdeck-read__actions">
+          {card.actions.map((a) => (
+            <li key={a}>{a}</li>
+          ))}
+        </ol>
       </div>
       <p className="jdeck-read__material">◈ {card.material}</p>
     </div>
@@ -155,8 +158,8 @@ export function DrawThree() {
   return (
     <div className="jdeck">
       <p className="jdeck__intro">
-        Three cards, drawn for {new Date().toLocaleDateString([], { month: "long", day: "numeric" })}.
-        The same three for everyone, everywhere, until midnight.
+        Your spread for {new Date().toLocaleDateString([], { month: "long", day: "numeric" })} —
+        drawn for you alone, and yours until midnight.
       </p>
 
       <div className="jdeck__row">
@@ -186,7 +189,7 @@ export function DrawThree() {
       )}
 
       <p className="journal-dock__footnote">
-        The XI·XVI House Deck™ — 23 plates, drawn in-house. Physical edition in development.
+        The XI·XVI House Deck™ — 22 illustrated plates, drawn in-house. Physical edition in development.
       </p>
     </div>
   );
