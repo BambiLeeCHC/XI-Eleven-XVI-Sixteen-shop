@@ -185,3 +185,41 @@ export function isMarkedDay(d: Date): "signal" | "tower" | null {
   if (d.getDate() === 16) return "tower";
   return null;
 }
+
+// ── The three-card spread ─────────────────────────────────────────────────
+
+export type SpreadSlot = "signal" | "work" | "tower";
+
+export interface SpreadCard extends DailyDraw {
+  slot: SpreadSlot;
+  slotName: string;
+  slotQuestion: string;
+}
+
+const SPREAD_SLOTS: Array<{ slot: SpreadSlot; slotName: string; slotQuestion: string }> = [
+  { slot: "signal", slotName: "The Signal", slotQuestion: "What is true right now" },
+  { slot: "work", slotName: "The Work", slotQuestion: "What to do with it today" },
+  { slot: "tower", slotName: "The Tower", slotQuestion: "What it builds if you keep going" },
+];
+
+/**
+ * THE DRAW — three cards, one spread per calendar day, identical for every
+ * visitor worldwide. No duplicates within a spread.
+ */
+export function spreadOfTheDay(d: Date = new Date()): SpreadCard[] {
+  const key = dayKey(d);
+  const used = new Set<number>();
+  return SPREAD_SLOTS.map(({ slot, slotName, slotQuestion }) => {
+    let idx = hash(`${slot}:${key}`) % ARCANA.length;
+    let guard = 0;
+    while (used.has(idx) && guard++ < ARCANA.length) idx = (idx + 5) % ARCANA.length;
+    used.add(idx);
+    return {
+      slot,
+      slotName,
+      slotQuestion,
+      card: ARCANA[idx],
+      reversed: hash(`${slot}-o:${key}`) % 100 < 28,
+    };
+  });
+}

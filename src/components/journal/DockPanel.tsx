@@ -12,6 +12,7 @@ export function DockPanel({
   eyebrow,
   side = "left",
   accent = "#c48dff",
+  size = "default",
   children,
 }: {
   open: boolean;
@@ -20,6 +21,8 @@ export function DockPanel({
   eyebrow?: string;
   side?: "left" | "right";
   accent?: string;
+  /** "wide" gives the three-card draw room to breathe on desktop. */
+  size?: "default" | "wide";
   children: React.ReactNode;
 }) {
   useEffect(() => {
@@ -28,7 +31,15 @@ export function DockPanel({
       if (e.key === "Escape") onClose();
     };
     window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
+    /* Lock the page behind the sheet so mobile scroll stays inside the panel. */
+    const prev = document.body.style.overflow;
+    if (window.matchMedia("(max-width: 1023px)").matches) {
+      document.body.style.overflow = "hidden";
+    }
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      document.body.style.overflow = prev;
+    };
   }, [open, onClose]);
 
   if (!open) return null;
@@ -43,13 +54,13 @@ export function DockPanel({
         style={{ background: "rgba(12,22,40,.45)", backdropFilter: "blur(2px)" }}
       />
       <aside
-        className={`journal-dock-panel journal-dock-panel--${side}`}
+        className={`journal-dock-panel journal-dock-panel--${side} ${size === "wide" ? "journal-dock-panel--wide" : ""}`}
         style={{ ["--dock-accent" as any]: accent }}
         role="dialog"
         aria-label={title}
       >
         <div className="journal-dock-panel__glow" aria-hidden="true" />
-        <header className="relative flex items-start justify-between gap-3 px-5 pt-4 pb-3">
+        <header className="journal-dock-panel__head">
           <div>
             {eyebrow && (
               <p className="text-[9px] tracking-[0.34em] uppercase" style={{ color: "rgba(21,36,61,.38)" }}>
@@ -74,7 +85,7 @@ export function DockPanel({
             </svg>
           </button>
         </header>
-        <div className="journal-dock-panel__body px-5 pb-5">{children}</div>
+        <div className="journal-dock-panel__body">{children}</div>
       </aside>
     </>
   );

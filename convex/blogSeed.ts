@@ -50,7 +50,7 @@ export const WELCOME_POST = {
 
 <p><strong>The Daily Code.</strong> One line, every day, on sustainability and self-possession. Not a platitude. A directive small enough to actually execute before noon.</p>
 
-<p><strong>The Daily Draw.</strong> Twenty-two cards — the XI·XVI Arcana — reinterpreted as a language of self-empowerment and material honesty. XVI is The Tower for a reason. Pull one card a day and read it as a prompt, not a prophecy.</p>
+<p><strong>The Draw.</strong> A house deck of twenty-three plates, written and drawn in-house as a language of self-empowerment and material honesty. XVI is The Tower for a reason. Three cards a day — The Signal, The Work, The Tower — read as prompts, not prophecy.</p>
 
 <h2>The manifesto, in nine lines</h2>
 
