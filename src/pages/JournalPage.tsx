@@ -1,7 +1,5 @@
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { useQuery } from "convex/react";
-import { api } from "../../convex/_generated/api";
 import { SEO } from "../components/SEO";
 import { DockPanel, DockTab } from "../components/journal/DockPanel";
 import { AlmanacCalendar, ElevenSixteenStrip } from "../components/journal/Almanac";
@@ -9,23 +7,11 @@ import { DailyDraw } from "../components/journal/DailyDraw";
 import { DailyCode } from "../components/journal/DailyCode";
 import { ShareRow } from "../components/journal/ShareRow";
 import { drawOfTheDay } from "../lib/ritual";
+import { usePublishedPosts, type JournalPost } from "../lib/journalData";
 
 type Dock = "almanac" | "draw" | "code" | null;
 
-interface Post {
-  _id: string;
-  _creationTime: number;
-  title: string;
-  slug: string;
-  excerpt: string;
-  coverImage?: string;
-  category: string;
-  tags: string[];
-  author: string;
-  publishedAt?: number;
-  readMinutes: number;
-  featured: boolean;
-}
+type Post = JournalPost;
 
 function fmtDate(ts?: number) {
   if (!ts) return "";
@@ -64,7 +50,7 @@ function PostCard({ post, featured = false }: { post: Post; featured?: boolean }
 export function JournalPage() {
   const [dock, setDock] = useState<Dock>(null);
   const [category, setCategory] = useState("All");
-  const posts = useQuery(api.blog.listPublished, {}) as Post[] | undefined;
+  const { posts } = usePublishedPosts();
   const draw = drawOfTheDay();
 
   const categories = useMemo(() => {

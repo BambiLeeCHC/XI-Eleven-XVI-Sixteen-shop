@@ -1,20 +1,19 @@
 import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { useQuery } from "convex/react";
-import { api } from "../../convex/_generated/api";
 import { SEO } from "../components/SEO";
 import { ShareRow } from "../components/journal/ShareRow";
 import { DockPanel, DockTab } from "../components/journal/DockPanel";
 import { AlmanacCalendar, ElevenSixteenStrip } from "../components/journal/Almanac";
 import { DailyDraw } from "../components/journal/DailyDraw";
 import { DailyCode } from "../components/journal/DailyCode";
+import { usePostBySlug, usePublishedPosts } from "../lib/journalData";
 
 type Dock = "almanac" | "draw" | "code" | null;
 
 export function JournalPostPage() {
   const { slug = "" } = useParams();
-  const post = useQuery(api.blog.getBySlug, { slug }) as any;
-  const others = useQuery(api.blog.listPublished, { limit: 4 }) as any[] | undefined;
+  const post = usePostBySlug(slug) as any;
+  const { posts: others } = usePublishedPosts(4);
   const [dock, setDock] = useState<Dock>(null);
   const toggle = (d: Dock) => setDock((cur) => (cur === d ? null : d));
 
