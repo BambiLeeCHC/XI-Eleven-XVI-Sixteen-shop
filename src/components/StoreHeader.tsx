@@ -89,12 +89,21 @@ export function StoreHeader() {
                   Men
                 </Link>
                 <Link
-                  to="/journal"
+                  to="/about"
                   className={`px-3 py-2 text-[11px] tracking-[0.18em] uppercase font-semibold transition-all ${
-                    location.pathname.startsWith("/journal") ? "text-white" : "text-white/50 hover:text-white"
+                    location.pathname.startsWith("/about") ? "text-white" : "text-white/50 hover:text-white"
                   }`}
                 >
-                  Journal
+                  About
+                </Link>
+                <Link
+                  to="/journal"
+                  className={`nav-blog-flash px-3 py-2 text-[11px] tracking-[0.18em] uppercase font-semibold ${
+                    location.pathname.startsWith("/journal") ? "is-active" : ""
+                  }`}
+                >
+                  <span className="nav-blog-flash__burst" aria-hidden="true" />
+                  <span className="nav-blog-flash__label">Blog</span>
                 </Link>
               </nav>
             </div>
@@ -261,7 +270,7 @@ export function StoreHeader() {
 
               <MobileNavLink to="/favorites" label="FAVORITES" badge={favCount > 0 ? favCount : undefined} />
               <MobileNavLink to="/cart" label="CART" badge={cartCount > 0 ? cartCount : undefined} />
-              <MobileNavLink to="/journal" label="THE JOURNAL" />
+              <MobileNavLink to="/journal" label="BLOG — THE JOURNAL" />
               <MobileNavLink to="/about" label="ABOUT" />
               <MobileNavLink to="/size-guide" label="SIZE GUIDE" />
 
