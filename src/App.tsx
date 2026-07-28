@@ -23,6 +23,8 @@ import {
   ContactPage,
   AdminPage,
   FavoritesPage,
+  JournalPage,
+  JournalPostPage,
 } from "./pages";
 
 function App() {
@@ -48,6 +50,8 @@ function App() {
             <Route path="/about" element={<AboutPage />} />
             <Route path="/contact" element={<ContactPage />} />
             <Route path="/favorites" element={<FavoritesPage />} />
+            <Route path="/journal" element={<JournalPage />} />
+            <Route path="/journal/:slug" element={<JournalPostPage />} />
 
             {/* Protected routes */}
             <Route element={<ProtectedRoute />}>

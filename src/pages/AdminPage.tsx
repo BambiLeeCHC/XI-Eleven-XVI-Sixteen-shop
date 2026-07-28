@@ -3,6 +3,7 @@ import { useQuery, useMutation } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
 import { format } from "date-fns";
+import { JournalAdminTab } from "../components/journal/JournalAdminTab";
 import {
   BarChart3,
   Package,
@@ -58,6 +59,7 @@ type AdminTab =
   | "products"
   | "customers"
   | "crm"
+  | "journal"
   | "newsletter"
   | "shipping"
   | "tax"
@@ -104,6 +106,7 @@ const NAV_ITEMS: Array<{ id: AdminTab; label: string; icon: any }> = [
   { id: "products", label: "Products", icon: Package },
   { id: "customers", label: "Customers", icon: Users },
   { id: "crm", label: "CRM", icon: MessageSquare },
+  { id: "journal", label: "Journal", icon: FileText },
   { id: "newsletter", label: "Newsletter", icon: Mail },
   { id: "shipping", label: "Shipping", icon: Truck },
   { id: "tax", label: "Tax Rates", icon: Receipt },
@@ -2487,6 +2490,8 @@ export default function AdminPage() {
         return <CustomersTab onSelectCustomer={handleCustomerSelect} />;
       case "crm":
         return <CrmTab preselectedCustomerId={crmCustomerId} />;
+      case "journal":
+        return <JournalAdminTab />;
       case "newsletter":
         return <NewsletterTab />;
       case "shipping":
