@@ -20,12 +20,11 @@ export const WELCOME_POST = {
 
 <h2>XI — the signal</h2>
 
+<p>Eleven is the master number of illumination. It is the moment of knowing that arrives before the proof does. Eleven is intuition with a spine: the friend who tells you the truth, the idea that will not let you sleep, the decision you make before you can explain it.</p>
+
 <figure class="journal-figure journal-figure--right">
   <img src="/journal/sky-bust.jpg" alt="The house mannequin, skinned in a clouded sky, wearing the Sherbet Rainbow Icon tee with the XI·XVI shield at the chest." loading="lazy" />
-  <figcaption>The house mannequin wears the sky. Icon Oversized Tee, Sherbet Rainbow — shield at the chest, weather on the skin.</figcaption>
 </figure>
-
-<p>Eleven is the master number of illumination. It is the moment of knowing that arrives before the proof does. Eleven is intuition with a spine: the friend who tells you the truth, the idea that will not let you sleep, the decision you make before you can explain it.</p>
 
 <p>Everything we design begins at eleven. Not with a trend report — with a signal. A silhouette that makes someone stand up straighter. A fabric weight that feels like being held. We design the feeling first and the garment second.</p>
 
@@ -41,7 +40,6 @@ export const WELCOME_POST = {
   <img src="/journal/swatch-sherbet.jpg" alt="Sherbet Rainbow tie-dye swatch." loading="lazy" />
   <img src="/journal/swatch-whisper.jpg" alt="Whisper monogram jacquard swatch, gold XI·XVI repeat." loading="lazy" />
   <img src="/journal/swatch-volt.jpg" alt="Volt glitch-print swatch showing the doubled 11." loading="lazy" />
-  <figcaption>Three house materials: Sherbet Rainbow, Whisper monogram jacquard, Volt glitch. Cut only once someone asks for it.</figcaption>
 </figure>
 
 <p>Eleven plus sixteen is twenty-seven. Two plus seven is nine — the number of completion, of a cycle closing cleanly with nothing left over. That is not a slogan for us. It is the operating model:</p>
@@ -66,7 +64,6 @@ export const WELCOME_POST = {
 
 <figure class="journal-figure journal-figure--cutout journal-figure--right">
   <img src="/mannequin-women-v37.png" alt="The house sky mannequin in the gold XI·XVI monogram slip dress." loading="lazy" />
-  <figcaption>The Slip Dress in Whisper monogram — cut after it is ordered. One piece, one owner.</figcaption>
 </figure>
 
 <h2>The manifesto, in nine lines</h2>

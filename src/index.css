@@ -2753,50 +2753,66 @@ footer {
 }
 
 /* ══════════════════════════════════════════════════════════════════════
-   ARTICLE FIGURES — text wraps the image
+   ARTICLE FIGURES — quiet moments in the margin, never exhibits.
+   No frames, no captions, no card chrome: the image simply appears in the
+   column of text and the prose keeps walking past it.
    ══════════════════════════════════════════════════════════════════════ */
-.journal-prose figure { margin: .4rem 0 1.1rem; }
+.journal-prose figure { margin: .2rem 0 .9rem; }
 .journal-figure {
-  width: min(300px, 46%);
-  border-radius: 14px;
-  overflow: hidden;
-  background: rgba(255,255,255,.5);
-  border: 1px solid rgba(118,180,235,.28);
-  box-shadow: 0 22px 46px -30px rgba(12,34,64,.6);
+  width: min(184px, 30%);
+  border: 0;
+  background: none;
+  box-shadow: none;
+  overflow: visible;
 }
-.journal-figure img { display: block; width: 100%; border-radius: 0; }
-.journal-figure figcaption {
-  padding: .5rem .65rem .6rem;
-  font-size: 10px; line-height: 1.5; letter-spacing: .04em;
-  color: rgba(21,36,61,.5);
-  border-top: 1px solid rgba(118,180,235,.2);
+.journal-figure img {
+  display: block; width: 100%;
+  border-radius: 6px;
+  /* Sit back into the page rather than sitting on top of it. */
+  opacity: .92;
+  filter: saturate(.92);
+  /* Feathered edges so the picture dissolves into the page instead of
+     sitting on it in a frame. */
+  mask-image: radial-gradient(78% 82% at 50% 45%, #000 24%, rgba(0,0,0,.78) 52%, rgba(0,0,0,.3) 76%, transparent 96%);
+  -webkit-mask-image: radial-gradient(78% 82% at 50% 45%, #000 24%, rgba(0,0,0,.78) 52%, rgba(0,0,0,.3) 76%, transparent 96%);
 }
-.journal-figure--right { float: right; margin: .3rem 0 1rem 1.4rem; }
-.journal-figure--left  { float: left;  margin: .3rem 1.4rem 1rem 0; }
+/* Captions are gone by design — the alt text carries the meaning. */
+.journal-figure figcaption { display: none; }
+.journal-figure--right { float: right; margin: .35rem -1.4rem .9rem 1.5rem; }
+.journal-figure--left  { float: left;  margin: .35rem 1.5rem .9rem -1.4rem; }
 /* Cut-out silhouette: the paragraph text follows the mannequin's edge. */
 .journal-figure--cutout {
-  background: none; border: 0; box-shadow: none;
-  width: min(260px, 42%);
+  width: min(190px, 30%);
 }
 .journal-figure--cutout img {
-  filter: drop-shadow(0 22px 30px rgba(12,34,64,.35));
+  mask-image: none; -webkit-mask-image: none;
+  opacity: .95;
+  filter: saturate(.92) drop-shadow(0 18px 26px rgba(12,34,64,.28));
 }
 .journal-figure--cutout.journal-figure--right img { shape-outside: margin-box; }
-/* Swatch trio */
-.journal-swatches {
-  width: min(320px, 48%);
-  display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px;
-}
+/* Swatch trio — three small material notes, stacked down the margin. */
+/* Swatch cluster — three small material notes, cascading past the text
+   like chips dropped on the page. */
+.journal-swatches { width: 118px; display: block; padding: 0; background: none; border: 0; }
 .journal-swatches img {
-  aspect-ratio: 1; object-fit: cover; border-radius: 999px;
-  border: 2px solid rgba(255,255,255,.8);
-  box-shadow: 0 12px 24px -14px rgba(12,34,64,.6);
+  width: 78px; aspect-ratio: 1; object-fit: cover; border-radius: 999px;
+  mask-image: none; -webkit-mask-image: none;
+  opacity: .95;
+  border: 1px solid rgba(255,255,255,.75);
+  box-shadow: 0 10px 18px -14px rgba(12,34,64,.45);
 }
-.journal-swatches figcaption { grid-column: 1 / -1; border: 0; padding: .3rem 0 0; }
+.journal-swatches img:nth-child(1) { margin-left: 0; }
+.journal-swatches img:nth-child(2) { margin-left: 30px; margin-top: -18px; }
+.journal-swatches img:nth-child(3) { margin-left: 6px; margin-top: -16px; }
+@media (max-width: 900px) {
+  .journal-figure--right { margin-right: 0; }
+  .journal-figure--left  { margin-left: 0; }
+}
 @media (max-width: 560px) {
-  .journal-figure, .journal-figure--cutout, .journal-swatches {
-    float: none; width: 100%; margin: 1.2rem 0;
-  }
+  .journal-figure { width: 44%; }
+  .journal-figure--cutout { width: 40%; }
+  .journal-swatches { width: 108px; }
+  .journal-swatches img { width: 68px; }
 }
 .journal-prose::after { content: ""; display: block; clear: both; }
 .journal-masthead-shell { position: relative; overflow: hidden; }
@@ -2806,11 +2822,6 @@ footer {
    interleaving with floated figures. */
 .journal-article { max-width: 58rem; margin-inline: auto; }
 .journal-prose ul, .journal-prose ol, .journal-prose blockquote { overflow: hidden; }
-.journal-swatches {
-  padding: 8px; background: rgba(255,255,255,.55);
-  border: 1px solid rgba(118,180,235,.24); border-radius: 16px;
-}
-.journal-swatches figcaption { padding: .4rem .15rem 0; }
 
 /* Card back: the real logo file sits over the engraved plate. */
 .jdeck-back { position: absolute; inset: 0; }
