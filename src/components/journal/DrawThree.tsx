@@ -1,5 +1,13 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { spreadOfTheDay, dayKey, type SpreadCard } from "../../lib/ritual";
+import {
+  type DailyDraw,
+  dayKey,
+  type SpreadCard,
+  spreadOfTheDay,
+  spreadTypeOfTheDay,
+  synthesisOfTheDay,
+  undercurrentOfTheDay,
+} from "../../lib/ritual";
 import { CardArt, CardBack } from "./CardArt";
 
 /* ═══════════════════════════════════════════════════════════════════════
@@ -28,7 +36,10 @@ function loadRevealed(): Set<string> {
 
 function saveRevealed(slots: Set<string>) {
   try {
-    localStorage.setItem(STORE_KEY, JSON.stringify({ day: dayKey(), slots: [...slots] }));
+    localStorage.setItem(
+      STORE_KEY,
+      JSON.stringify({ day: dayKey(), slots: [...slots] }),
+    );
   } catch {
     /* private mode — the draw simply won't persist */
   }
@@ -63,7 +74,12 @@ function SpreadCardSlot({
   const [igniting, setIgniting] = useState(false);
   const timer = useRef<number | null>(null);
 
-  useEffect(() => () => { if (timer.current) window.clearTimeout(timer.current); }, []);
+  useEffect(
+    () => () => {
+      if (timer.current) window.clearTimeout(timer.current);
+    },
+    [],
+  );
 
   const handle = () => {
     if (revealed || igniting) return;
@@ -75,7 +91,10 @@ function SpreadCardSlot({
   };
 
   return (
-    <div className="jdeck-slot" style={{ ["--slot-i" as string]: String(index) }}>
+    <div
+      className="jdeck-slot"
+      style={{ ["--slot-i" as string]: String(index) }}
+    >
       <div className="jdeck-slot__head">
         <span className="jdeck-slot__name">{entry.slotName}</span>
         <span className="jdeck-slot__q">{entry.slotQuestion}</span>
@@ -86,7 +105,11 @@ function SpreadCardSlot({
         className={`jdeck-card ${revealed ? "is-open" : ""} ${igniting ? "is-igniting" : ""}`}
         onClick={handle}
         aria-pressed={revealed}
-        aria-label={revealed ? `${entry.slotName}: ${entry.card.name}` : `Turn ${entry.slotName}`}
+        aria-label={
+          revealed
+            ? `${entry.slotName}: ${entry.card.name}`
+            : `Turn ${entry.slotName}`
+        }
       >
         <span className="jdeck-card__burst" aria-hidden="true" />
         <span className="jdeck-card__inner">
@@ -103,28 +126,30 @@ function SpreadCardSlot({
   );
 }
 
-function Reading({ entry }: { entry: SpreadCard }) {
+function Reading({ entry, slotName }: { entry: DailyDraw; slotName: string }) {
   const { card, reversed } = entry;
   return (
     <div className="jdeck-read">
       <div className="jdeck-read__head">
-        <span className="jdeck-read__slot">{entry.slotName}</span>
+        <span className="jdeck-read__slot">{slotName}</span>
         <span className="jdeck-read__card">
           {card.roman} · {card.name}
           {reversed ? " · reversed" : ""}
         </span>
       </div>
       <div className="jdeck-read__keys">
-        {card.keywords.map((k) => (
+        {card.keywords.map(k => (
           <span key={k}>{k}</span>
         ))}
       </div>
       <p className="jdeck-read__meaning">{card.meaning}</p>
-      <p className="jdeck-read__body">{reversed ? card.reversed : card.upright}</p>
+      <p className="jdeck-read__body">
+        {reversed ? card.reversed : card.upright}
+      </p>
       <div className="jdeck-read__ritual">
         <span>Do this today</span>
         <ol className="jdeck-read__actions">
-          {card.actions.map((a) => (
+          {card.actions.map(a => (
             <li key={a}>{a}</li>
           ))}
         </ol>
@@ -134,12 +159,17 @@ function Reading({ entry }: { entry: SpreadCard }) {
   );
 }
 
+const UNDERCURRENT_SLOT = "undercurrent";
+
 export function DrawThree() {
+  const spreadType = useMemo(() => spreadTypeOfTheDay(), []);
   const spread = useMemo(() => spreadOfTheDay(), []);
+  const undercurrent = useMemo(() => undercurrentOfTheDay(), []);
+  const synthesis = useMemo(() => synthesisOfTheDay(), []);
   const [revealed, setRevealed] = useState<Set<string>>(() => loadRevealed());
 
   const reveal = useCallback((slot: string) => {
-    setRevealed((cur) => {
+    setRevealed(cur => {
       if (cur.has(slot)) return cur;
       const next = new Set(cur);
       next.add(slot);
@@ -149,17 +179,28 @@ export function DrawThree() {
   }, []);
 
   const turnAll = () => {
-    spread.forEach((entry, i) => window.setTimeout(() => reveal(entry.slot), i * 420));
+    spread.forEach((entry, i) => {
+      window.setTimeout(() => reveal(entry.slot), i * 420);
+    });
   };
 
-  const openCount = spread.filter((e) => revealed.has(e.slot)).length;
+  const openCount = spread.filter(e => revealed.has(e.slot)).length;
   const allOpen = openCount === spread.length;
+  const undercurrentSlot: SpreadCard = {
+    ...undercurrent,
+    slot: UNDERCURRENT_SLOT,
+    slotName: "The Undercurrent",
+    slotQuestion: "What's moving underneath, unasked",
+  };
+  const undercurrentOpen = revealed.has(UNDERCURRENT_SLOT);
 
   return (
     <div className="jdeck">
+      <p className="jdeck__framework">{spreadType.name}</p>
       <p className="jdeck__intro">
-        Your spread for {new Date().toLocaleDateString([], { month: "long", day: "numeric" })} —
-        drawn for you alone, and yours until midnight.
+        {spreadType.intro} Drawn for you alone, for{" "}
+        {new Date().toLocaleDateString([], { month: "long", day: "numeric" })} —
+        yours until midnight.
       </p>
 
       <div className="jdeck__row">
@@ -180,16 +221,55 @@ export function DrawThree() {
         </button>
       )}
 
+      {allOpen && (
+        <div className="jdeck__synthesis">
+          <span className="jdeck__synthesis-head">{synthesis.headline}</span>
+          <p>{synthesis.body}</p>
+        </div>
+      )}
+
       {openCount > 0 && (
         <div className="jdeck__readings">
-          {spread.filter((e) => revealed.has(e.slot)).map((e) => (
-            <Reading key={e.slot} entry={e} />
-          ))}
+          {spread
+            .filter(e => revealed.has(e.slot))
+            .map(e => (
+              <Reading key={e.slot} entry={e} slotName={e.slotName} />
+            ))}
+        </div>
+      )}
+
+      {allOpen && (
+        <div className="jdeck__deeper">
+          {!undercurrentOpen && (
+            <button
+              type="button"
+              className="jdeck__all jdeck__all--deeper"
+              onClick={() => reveal(UNDERCURRENT_SLOT)}
+            >
+              Go deeper — draw The Undercurrent ✦
+            </button>
+          )}
+          {undercurrentOpen && (
+            <>
+              <div className="jdeck__row jdeck__row--single">
+                <SpreadCardSlot
+                  entry={undercurrentSlot}
+                  index={0}
+                  revealed
+                  onReveal={() => {}}
+                />
+              </div>
+              <div className="jdeck__readings">
+                <Reading entry={undercurrent} slotName="The Undercurrent" />
+              </div>
+            </>
+          )}
         </div>
       )}
 
       <p className="journal-dock__footnote">
-        The XI·XVI House Deck™ — 22 illustrated plates, drawn in-house. Physical edition in development.
+        The XI·XVI House Deck™ — 22 illustrated plates, drawn in-house. Physical
+        edition in development.
       </p>
     </div>
   );
