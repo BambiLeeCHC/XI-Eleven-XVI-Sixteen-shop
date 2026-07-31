@@ -66,7 +66,7 @@ export function drawOfTheDay(d: Date = new Date()): DailyDraw {
   return {
     card: ARCANA[h % ARCANA.length],
     // ~30% reversed, stable per day
-    reversed: (hash(`orientation:${dayKey(d)}`) % 100) < 30,
+    reversed: hash(`orientation:${dayKey(d)}`) % 100 < 30,
   };
 }
 
@@ -76,7 +76,10 @@ export function shadowOfTheDay(d: Date = new Date()): DailyDraw {
   const primary = drawOfTheDay(d).card.number;
   let idx = h % ARCANA.length;
   if (ARCANA[idx].number === primary) idx = (idx + 7) % ARCANA.length;
-  return { card: ARCANA[idx], reversed: (hash(`shadow-o:${dayKey(d)}`) % 100) < 30 };
+  return {
+    card: ARCANA[idx],
+    reversed: hash(`shadow-o:${dayKey(d)}`) % 100 < 30,
+  };
 }
 
 // ── 11:16 — the house hours ───────────────────────────────────────────────
@@ -103,7 +106,7 @@ export function nextElevenSixteen(now: Date = new Date()): ElevenSixteen {
     candidates.push({ t: tm, label });
   }
   candidates.sort((a, b) => a.t.getTime() - b.t.getTime());
-  const next = candidates.find((c) => c.t.getTime() > now.getTime())!;
+  const next = candidates.find(c => c.t.getTime() > now.getTime())!;
   const isNow =
     (now.getHours() === 11 || now.getHours() === 23) && now.getMinutes() === 16;
   return {
@@ -161,7 +164,10 @@ export function moonPhase(d: Date = new Date()): MoonPhase {
 }
 
 /** Calendar grid (weeks x 7) for a month, Sunday-first. Nulls pad the edges. */
-export function monthGrid(year: number, month: number): Array<Array<Date | null>> {
+export function monthGrid(
+  year: number,
+  month: number,
+): Array<Array<Date | null>> {
   const first = new Date(year, month, 1);
   const startPad = first.getDay();
   const daysInMonth = new Date(year, month + 1, 0).getDate();
@@ -175,8 +181,18 @@ export function monthGrid(year: number, month: number): Array<Array<Date | null>
 }
 
 export const MONTH_NAMES = [
-  "January", "February", "March", "April", "May", "June",
-  "July", "August", "September", "October", "November", "December",
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
 ];
 
 /** Dates the brand marks: the 11th and 16th of every month. */
@@ -186,9 +202,9 @@ export function isMarkedDay(d: Date): "signal" | "tower" | null {
   return null;
 }
 
-// ── The three-card spread ─────────────────────────────────────────────────
+// ── The spread — now a rotating cast of frameworks ────────────────────────
 
-export type SpreadSlot = "signal" | "work" | "tower";
+export type SpreadSlot = string;
 
 export interface SpreadCard extends DailyDraw {
   slot: SpreadSlot;
@@ -196,11 +212,122 @@ export interface SpreadCard extends DailyDraw {
   slotQuestion: string;
 }
 
-const SPREAD_SLOTS: Array<{ slot: SpreadSlot; slotName: string; slotQuestion: string }> = [
-  { slot: "signal", slotName: "The Signal", slotQuestion: "What is true right now" },
-  { slot: "work", slotName: "The Work", slotQuestion: "What to do with it today" },
-  { slot: "tower", slotName: "The Tower", slotQuestion: "What it builds if you keep going" },
+export interface SpreadType {
+  id: string;
+  name: string;
+  /** One line describing the lens this framework reads the day through. */
+  intro: string;
+  slots: Array<{ slot: SpreadSlot; slotName: string; slotQuestion: string }>;
+}
+
+/**
+ * Four house frameworks the Draw rotates through, one per calendar day
+ * (`dayOfYear % SPREAD_TYPES.length`). Same three cards can fall very
+ * differently depending on which questions are asked of them, so rotating
+ * the framework — not just the cards — is what keeps the reading from
+ * feeling like a rerun even on a day the deck repeats a card.
+ */
+export const SPREAD_TYPES: SpreadType[] = [
+  {
+    id: "signal-work-tower",
+    name: "The House Spread",
+    intro: "The brand's own lens: what's true, what to do, what it builds.",
+    slots: [
+      {
+        slot: "signal",
+        slotName: "The Signal",
+        slotQuestion: "What is true right now",
+      },
+      {
+        slot: "work",
+        slotName: "The Work",
+        slotQuestion: "What to do with it today",
+      },
+      {
+        slot: "tower",
+        slotName: "The Tower",
+        slotQuestion: "What it builds if you keep going",
+      },
+    ],
+  },
+  {
+    id: "past-present-future",
+    name: "The Thread",
+    intro:
+      "A line through time: where this started, where it stands, where it's headed.",
+    slots: [
+      {
+        slot: "past",
+        slotName: "The Root",
+        slotQuestion: "What this grew out of",
+      },
+      {
+        slot: "present",
+        slotName: "The Stitch",
+        slotQuestion: "Where it stands right now",
+      },
+      {
+        slot: "future",
+        slotName: "The Reach",
+        slotQuestion: "Where it's headed if unbroken",
+      },
+    ],
+  },
+  {
+    id: "body-mind-spirit",
+    name: "The Fitting",
+    intro:
+      "Three measurements: the body doing it, the mind planning it, the why underneath.",
+    slots: [
+      {
+        slot: "body",
+        slotName: "The Body",
+        slotQuestion: "What your energy is actually asking for",
+      },
+      {
+        slot: "mind",
+        slotName: "The Mind",
+        slotQuestion: "What your plan needs to admit",
+      },
+      {
+        slot: "spirit",
+        slotName: "The Spirit",
+        slotQuestion: "What this is really in service of",
+      },
+    ],
+  },
+  {
+    id: "keep-cut-carry",
+    name: "The Unstitching",
+    intro:
+      "An edit of the day: what to keep, what to cut, what to carry forward regardless.",
+    slots: [
+      {
+        slot: "keep",
+        slotName: "Keep",
+        slotQuestion: "What is already working — don't touch it",
+      },
+      {
+        slot: "cut",
+        slotName: "Cut",
+        slotQuestion: "What needs to come apart today",
+      },
+      {
+        slot: "carry",
+        slotName: "Carry",
+        slotQuestion: "What survives the edit and comes with you",
+      },
+    ],
+  },
 ];
+
+/** Rotating framework for the day — deterministic, cycles daily. */
+export function spreadTypeOfTheDay(d: Date = new Date()): SpreadType {
+  const start = new Date(d.getFullYear(), 0, 0);
+  const diff = d.getTime() - start.getTime();
+  const dayOfYear = Math.floor(diff / 86400000);
+  return SPREAD_TYPES[dayOfYear % SPREAD_TYPES.length];
+}
 
 /**
  * A stable, anonymous id for this browser. The draw is personal: two people
@@ -229,13 +356,18 @@ export function drawerId(): string {
  * (drawer id + date), so it survives reloads and cannot be re-rolled, but it
  * is nobody else's spread. No duplicates within a spread.
  */
-export function spreadOfTheDay(d: Date = new Date(), who: string = drawerId()): SpreadCard[] {
+export function spreadOfTheDay(
+  d: Date = new Date(),
+  who: string = drawerId(),
+): SpreadCard[] {
   const key = `${who}|${dayKey(d)}`;
+  const slots = spreadTypeOfTheDay(d).slots;
   const used = new Set<number>();
-  return SPREAD_SLOTS.map(({ slot, slotName, slotQuestion }) => {
+  return slots.map(({ slot, slotName, slotQuestion }) => {
     let idx = hash(`${slot}:${key}`) % ARCANA.length;
     let guard = 0;
-    while (used.has(idx) && guard++ < ARCANA.length) idx = (idx + 5) % ARCANA.length;
+    while (used.has(idx) && guard++ < ARCANA.length)
+      idx = (idx + 5) % ARCANA.length;
     used.add(idx);
     return {
       slot,
@@ -245,4 +377,140 @@ export function spreadOfTheDay(d: Date = new Date(), who: string = drawerId()): 
       reversed: hash(`${slot}-o:${key}`) % 100 < 28,
     };
   });
+}
+
+/**
+ * THE UNDERCURRENT — a fourth, optional card revealed only after all spread
+ * cards are turned. It answers a question the framework didn't ask: what's
+ * moving underneath the visible reading. Reuses `shadowOfTheDay` so it never
+ * duplicates a card already in the spread.
+ */
+export function undercurrentOfTheDay(
+  d: Date = new Date(),
+  who: string = drawerId(),
+): DailyDraw {
+  const key = `${who}|${dayKey(d)}`;
+  const spreadIds = new Set(spreadOfTheDay(d, who).map(s => s.card.number));
+  let idx = hash(`undercurrent:${key}`) % ARCANA.length;
+  let guard = 0;
+  while (spreadIds.has(ARCANA[idx].number) && guard++ < ARCANA.length) {
+    idx = (idx + 3) % ARCANA.length;
+  }
+  return {
+    card: ARCANA[idx],
+    reversed: hash(`undercurrent-o:${key}`) % 100 < 28,
+  };
+}
+
+// ── Synthesis — a bespoke narrative that reads the cards together ─────────
+
+const ELEMENT_VOICE: Record<ArcanaCard["element"], string[]> = {
+  Fire: [
+    "Fire is doing the talking today — this is a push day, not a planning day.",
+    "Everything here wants speed. Momentum is the resource on offer; don't let it idle.",
+    "The energy on the table is combustible in a good way — point it before it points itself.",
+  ],
+  Water: [
+    "Water runs through this reading — trust what you feel before you can fully explain it.",
+    "This is a listening day. The instinct arrived first; the reasoning can catch up later.",
+    "Something here moves by feel, not by force. Don't override it with logic too early.",
+  ],
+  Earth: [
+    "Earth grounds this spread — the work today is structural: build, measure, finish.",
+    "This is a hands-on-the-material day. Precision beats inspiration here.",
+    "The cards are asking for something durable, not something exciting.",
+  ],
+  Air: [
+    "Air moves through this one — today is about the sentence you say out loud, not the one in your head.",
+    "This reading wants clarity in words: name it plainly and the rest sorts itself.",
+    "Ideas outrun action today. Pick one and give it a body before it evaporates.",
+  ],
+  Aether: [
+    "Aether threads this spread — something bigger than the to-do list is asking for attention.",
+    "This is a house-card kind of day: the timing itself is the message.",
+    "There's a signal underneath the practical stuff today. Don't talk yourself out of it.",
+  ],
+};
+
+const REDUCTION_VOICE: Record<number, string> = {
+  1: "a start — treat today like day one of something, even if it isn't.",
+  2: "a pairing — whatever you're weighing, the answer involves another person.",
+  3: "an overflow — something is ready to be shared, not stored.",
+  4: "a frame — the structure matters more than the motivation today.",
+  5: "an inheritance — old rules are up for renegotiation.",
+  6: "a fork — stop treating the choice as if it weren't a choice.",
+  7: "a lane — momentum is available if you stop splitting it.",
+  8: "an accounting — something needs to be counted honestly.",
+  9: "a close — finish the open loop before starting a new one.",
+  11: "a house number — the signal is early and it's yours to act on.",
+  22: "a build number — what you make today is built to last past today.",
+};
+
+function pick<T>(items: T[], seed: string): T {
+  return items[hash(seed) % items.length];
+}
+
+/**
+ * One synthesized paragraph reading the whole spread together — the
+ * elemental mood, the numerology of the day, and the moon — rather than
+ * repeating any single card's canned text. Deterministic per drawer + day,
+ * so it's a genuinely different composition from yesterday's even when the
+ * deck (only 22 cards) happens to repeat one.
+ */
+export function synthesisOfTheDay(
+  d: Date = new Date(),
+  who: string = drawerId(),
+): { headline: string; body: string } {
+  const key = `${who}|${dayKey(d)}`;
+  const spread = spreadOfTheDay(d, who);
+  const type = spreadTypeOfTheDay(d);
+
+  const elementCounts = new Map<string, number>();
+  for (const s of spread)
+    elementCounts.set(
+      s.card.element,
+      (elementCounts.get(s.card.element) ?? 0) + 1,
+    );
+  const dominant = [...elementCounts.entries()].sort(
+    (a, b) => b[1] - a[1],
+  )[0][0] as ArcanaCard["element"];
+  const mixed = elementCounts.size === spread.length;
+
+  const reversedCount = spread.filter(s => s.reversed).length;
+  const num = dateNumber(d);
+  const moon = moonPhase(d);
+
+  const elementLine = pick(ELEMENT_VOICE[dominant], `elem:${key}`);
+  const reductionLine =
+    REDUCTION_VOICE[num] ??
+    "a day that resists a single number — read the cards, not the math.";
+
+  const reversalLine =
+    reversedCount === 0
+      ? "Every card fell upright — nothing here is asking to be untangled first, only acted on."
+      : reversedCount === spread.length
+        ? "Every card fell reversed — today is more about clearing a blockage than adding something new."
+        : `${reversedCount} of ${spread.length} fell reversed — part of this is ready to move, part of it is still working something out.`;
+
+  const moonLine =
+    moon.illumination > 0.85
+      ? `A ${moon.name.toLowerCase()} is overhead — visibility is high; whatever you do today gets seen.`
+      : moon.illumination < 0.15
+        ? `A ${moon.name.toLowerCase()} is overhead — good conditions for starting something nobody's watching yet.`
+        : `The moon is ${moon.name.toLowerCase()} — energy is transitional, not settled either way.`;
+
+  const cohesionLine = mixed
+    ? "The three elements don't agree with each other, which is itself the reading: you're being pulled between registers today, not just directions."
+    : "More than one card is speaking the same element — that's a chorus, not a coincidence. Whatever it's saying, it's saying it twice for a reason.";
+
+  return {
+    headline: `${type.name} · Day number ${num}`,
+    body: [
+      elementLine,
+      cohesionLine,
+      reversalLine,
+      moonLine,
+      `Numerologically, today is ${reductionLine}`,
+    ].join(" "),
+  };
 }
