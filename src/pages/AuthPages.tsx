@@ -70,7 +70,7 @@ export function LoginPage() {
   // OTP verification screen
   if (needsVerification) {
     return (
-      <div className="min-h-[70vh] flex items-center justify-center px-6">
+      <div className="min-h-[70vh] flex items-center justify-center px-6 bg-[#0e0a0f]">
         <div className="w-full max-w-sm">
           <p className="text-[10px] tracking-[0.3em] uppercase text-purple-400/60 mb-2 text-center">
             VERIFY YOUR EMAIL
@@ -140,7 +140,7 @@ export function LoginPage() {
 
   // Main sign-in screen
   return (
-    <div className="min-h-[70vh] flex items-center justify-center px-6">
+    <div className="min-h-[70vh] flex items-center justify-center px-6 bg-[#0e0a0f]">
       <div className="w-full max-w-sm">
         <p className="text-[10px] tracking-[0.3em] uppercase text-purple-400/60 mb-2 text-center">
           WELCOME BACK
@@ -281,7 +281,7 @@ export function SignupPage() {
   // OTP verification screen
   if (needsVerification) {
     return (
-      <div className="min-h-[70vh] flex items-center justify-center px-6">
+      <div className="min-h-[70vh] flex items-center justify-center px-6 bg-[#0e0a0f]">
         <div className="w-full max-w-sm">
           <p className="text-[10px] tracking-[0.3em] uppercase text-purple-400/60 mb-2 text-center">
             ALMOST THERE
@@ -361,7 +361,7 @@ export function SignupPage() {
 
   // Main sign-up screen
   return (
-    <div className="min-h-[70vh] flex items-center justify-center px-6">
+    <div className="min-h-[70vh] flex items-center justify-center px-6 bg-[#0e0a0f]">
       <div className="w-full max-w-sm">
         <p className="text-[10px] tracking-[0.3em] uppercase text-purple-400/60 mb-2 text-center">
           JOIN THE INNER CIRCLE
