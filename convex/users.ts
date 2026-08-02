@@ -1,38 +1,14 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
-import { mutation, query, action, internalMutation } from "./_generated/server";
-import { internal } from "./_generated/api";
-import { v } from "convex/values";
+import { mutation, query } from "./_generated/server";
 
-// ─── Admin helpers ───────────────────────────────────────────────────────
-
-export const listAll = query({
-  args: {},
-  handler: async (ctx) => {
-    return await ctx.db.query("users").collect();
-  },
-});
-
-export const setRole = internalMutation({
-  args: { email: v.string(), role: v.string() },
-  handler: async (ctx, { email, role }) => {
-    const user = await ctx.db
-      .query("users")
-      .withIndex("email", (q) => q.eq("email", email))
-      .first();
-    if (!user) {
-      throw new Error(`No user found with email: ${email}`);
-    }
-    await ctx.db.patch(user._id, { role });
-    return { success: true, userId: user._id, email, role };
-  },
-});
-
-export const setRoleAction = action({
-  args: { email: v.string(), role: v.string() },
-  handler: async (ctx, { email, role }): Promise<{ success: boolean; userId: string; email: string; role: string }> => {
-    return await ctx.runMutation(internal.users.setRole, { email, role });
-  },
-});
+// NOTE: this file previously also exported `listAll` (query) and
+// `setRoleAction` (action) with no auth check at all — meaning anyone who
+// knew the Convex deployment URL could list every user's email/role, or
+// grant themselves admin, via the public HTTP API. Both were dead code
+// (unused by the frontend, which already uses the properly admin-gated
+// `admin.listCustomers` / `admin.setUserRole` for this), so they were
+// removed rather than patched. If a "list/manage users" admin helper is
+// needed again, use `admin.ts`'s `requireAdmin()` guard pattern.
 
 export const isAdmin = query({
   args: {},

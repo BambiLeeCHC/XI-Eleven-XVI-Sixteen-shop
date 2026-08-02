@@ -22,12 +22,51 @@ export function LoginPage() {
   const [needsVerification, setNeedsVerification] = useState(false);
   const [code, setCode] = useState("");
 
+  // Forgot-password flow: "request" (enter email) → "verify" (enter code + new password)
+  const [forgotStep, setForgotStep] = useState<null | "request" | "verify">(null);
+  const [resetEmail, setResetEmail] = useState("");
+  const [resetCode, setResetCode] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [resetMessage, setResetMessage] = useState("");
+
   // Redirect if already authenticated
   useEffect(() => {
     if (isAuthenticated) {
       navigate("/profile", { replace: true });
     }
   }, [isAuthenticated, navigate]);
+
+  const handleRequestReset = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+    setResetMessage("");
+    setLoading(true);
+    try {
+      await signIn("password", { email: resetEmail, flow: "reset" });
+      setForgotStep("verify");
+    } catch {
+      setError("Couldn't send a reset code. Double-check the email and try again.");
+    }
+    setLoading(false);
+  };
+
+  const handleConfirmReset = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+    setLoading(true);
+    try {
+      await signIn("password", {
+        email: resetEmail,
+        code: resetCode,
+        newPassword,
+        flow: "reset-verification",
+      });
+      // useEffect handles redirect on auth state change
+    } catch {
+      setError("Invalid or expired code. Please try again.");
+    }
+    setLoading(false);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -138,6 +177,159 @@ export function LoginPage() {
     );
   }
 
+  // Forgot-password: step 1 — enter email to request a reset code
+  if (forgotStep === "request") {
+    return (
+      <div className="min-h-[70vh] flex items-center justify-center px-6 bg-[#0e0a0f]">
+        <div className="w-full max-w-sm">
+          <p className="text-[10px] tracking-[0.3em] uppercase text-purple-400/60 mb-2 text-center">
+            RESET PASSWORD
+          </p>
+          <h1
+            className="text-3xl text-white font-light mb-3 text-center"
+            style={{ fontFamily: "var(--font-display)" }}
+          >
+            Forgot Password
+          </h1>
+          <p className="text-[13px] text-white/40 text-center mb-8">
+            Enter your account email and we'll send you a 6-digit code to reset your password.
+          </p>
+
+          <form onSubmit={handleRequestReset} className="space-y-4">
+            <div>
+              <label className="block text-[10px] tracking-[0.25em] uppercase text-white/50 font-semibold mb-2">
+                EMAIL
+              </label>
+              <input
+                type="email"
+                value={resetEmail}
+                onChange={(e) => setResetEmail(e.target.value)}
+                placeholder="you@example.com"
+                className="w-full bg-white/5 border border-white/10 text-white/80 placeholder-white/25 px-4 py-3 text-sm outline-none focus:border-purple-400/40 transition-colors rounded-md"
+                required
+              />
+            </div>
+
+            {error && <p className="text-[12px] text-red-400 text-center">{error}</p>}
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full py-3 text-[11px] tracking-[0.25em] uppercase font-bold text-white transition-all disabled:opacity-50 rounded-md"
+              style={{
+                background: "linear-gradient(135deg, #a855f7, #7c3aed)",
+              }}
+            >
+              {loading ? "SENDING..." : "SEND RESET CODE"}
+            </button>
+          </form>
+
+          <p className="text-center text-[12px] text-white/30 mt-6">
+            <button
+              onClick={() => {
+                setForgotStep(null);
+                setError("");
+              }}
+              className="text-white/40 hover:text-white/60"
+            >
+              ← Back to sign in
+            </button>
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  // Forgot-password: step 2 — enter code + choose new password
+  if (forgotStep === "verify") {
+    return (
+      <div className="min-h-[70vh] flex items-center justify-center px-6 bg-[#0e0a0f]">
+        <div className="w-full max-w-sm">
+          <p className="text-[10px] tracking-[0.3em] uppercase text-purple-400/60 mb-2 text-center">
+            RESET PASSWORD
+          </p>
+          <h1
+            className="text-3xl text-white font-light mb-3 text-center"
+            style={{ fontFamily: "var(--font-display)" }}
+          >
+            Enter Code
+          </h1>
+          <p className="text-[13px] text-white/40 text-center mb-8">
+            We sent a 6-digit code to{" "}
+            <span className="text-white/60">{resetEmail}</span>
+          </p>
+
+          <form onSubmit={handleConfirmReset} className="space-y-4">
+            <OTPInput value={resetCode} onChange={setResetCode} />
+
+            <div>
+              <label className="block text-[10px] tracking-[0.25em] uppercase text-white/50 font-semibold mb-2">
+                NEW PASSWORD
+              </label>
+              <input
+                type="password"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                placeholder="••••••••"
+                className="w-full bg-white/5 border border-white/10 text-white/80 placeholder-white/25 px-4 py-3 text-sm outline-none focus:border-purple-400/40 transition-colors rounded-md"
+                required
+                minLength={8}
+              />
+            </div>
+
+            {error && <p className="text-[12px] text-red-400 text-center">{error}</p>}
+            {resetMessage && (
+              <p className="text-[12px] text-green-400 text-center">{resetMessage}</p>
+            )}
+
+            <button
+              type="submit"
+              disabled={loading || resetCode.length !== 6 || newPassword.length < 8}
+              className="w-full py-3 text-[11px] tracking-[0.25em] uppercase font-bold text-white transition-all disabled:opacity-50 rounded-md"
+              style={{
+                background: "linear-gradient(135deg, #a855f7, #7c3aed)",
+              }}
+            >
+              {loading ? "RESETTING..." : "RESET & SIGN IN"}
+            </button>
+          </form>
+
+          <p className="text-center text-[12px] text-white/30 mt-6">
+            <button
+              onClick={async () => {
+                setError("");
+                try {
+                  await signIn("password", { email: resetEmail, flow: "reset" });
+                } catch {
+                  // Expected — re-sends OTP
+                }
+                setResetMessage("A new code has been sent.");
+              }}
+              className="text-purple-400 hover:text-purple-300"
+            >
+              Resend code
+            </button>
+          </p>
+
+          <p className="text-center text-[12px] text-white/30 mt-3">
+            <button
+              onClick={() => {
+                setForgotStep(null);
+                setResetCode("");
+                setNewPassword("");
+                setError("");
+                setResetMessage("");
+              }}
+              className="text-white/40 hover:text-white/60"
+            >
+              ← Back to sign in
+            </button>
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   // Main sign-in screen
   return (
     <div className="min-h-[70vh] flex items-center justify-center px-6 bg-[#0e0a0f]">
@@ -178,6 +370,17 @@ export function LoginPage() {
               className="w-full bg-white/5 border border-white/10 text-white/80 placeholder-white/25 px-4 py-3 text-sm outline-none focus:border-purple-400/40 transition-colors rounded-md"
               required
             />
+            <button
+              type="button"
+              onClick={() => {
+                setResetEmail(email);
+                setError("");
+                setForgotStep("request");
+              }}
+              className="mt-2 text-[11px] text-purple-400 hover:text-purple-300"
+            >
+              Forgot password?
+            </button>
           </div>
 
           {error && <p className="text-[12px] text-red-400">{error}</p>}
