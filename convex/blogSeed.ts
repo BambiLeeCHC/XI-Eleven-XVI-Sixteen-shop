@@ -118,3 +118,91 @@ export const SECOND_POST = {
 <p class="signoff">— XI · XVI</p>
 `.trim(),
 };
+
+export const THIRD_POST = {
+  title: "How We Print Without a Single Drop of Water",
+  slug: "how-we-print-without-a-single-drop-of-water",
+  excerpt:
+    "Your piece begins as light, not liquid. Inside the sublimation process — why our color is fused into the fiber instead of floated on top of it, and why no dye bath means no discharge, ever.",
+  coverImage: "https://xixvi.shop/journal/sublimation-transfer-negative.jpg",
+  category: "Sustainability",
+  tags: ["sublimation", "sustainability", "process", "made-to-order", "zero-waste"],
+  author: "XI · XVI",
+  readMinutes: 8,
+  featured: false,
+  content: `
+<p class="lede">Your piece begins as light, not liquid — a digital file printed onto a photographic-grade transfer negative, then heat-fused into fiber until the color is not sitting on the fabric, but living inside it. Which is another way of saying: the piece you put on tonight will look exactly this rich the hundredth time you wear it.</p>
+
+<p>That sentence describes almost no one else in fashion. The industry default is a dye bath: garments submerged in vats of water and chemical fixative, one shade at a time — an estimated 2,000 gallons of water per pair of jeans, by some counts. That water does not simply disappear. In July 2023, the UK's Environment Agency confirmed that a stretch of the River Trent below Stoke-on-Trent had turned bright orange and blue after clothing dye was released into it. In Tangail, Bangladesh, the Louhajang River has run red, yellow, and purple for years, traced to a nearby textile mill that was fined for illegal discharge once before — and simply kept discharging. In West Java, Indonesia, the Citarum, called "the most polluted river in the world" in a 2012 government-commissioned assessment, sits downstream of more than a thousand textile factories; in 2020, a Bandung court found one of them guilty of dumping hazardous waste into it and ordered over $300,000 in damages. A widely cited UN figure puts textile dyeing at up to a fifth of all global industrial water pollution. These are documented, dated, and in some cases litigated — not hypotheticals. We skip the bath entirely, which means we skip that discharge entirely, permanently, by design. We sublimate.</p>
+
+<h2>From pixel to permanent</h2>
+
+<p>Here is what that actually means, start to finish. Your colorway — the gold shield, the glitch "11 16," the monogram repeat — starts as a digital file. We print it, at full saturation, onto a calibrated transfer negative engineered to hold color with total precision. That negative is pressed against your fabric panel under controlled heat near 400°F. At that threshold the ink skips its liquid state entirely — it converts straight to gas and bonds at the molecular level with our four-way stretch fabric, the same way an image fixes permanently onto film stock. The color does not sit on the garment. It becomes the garment — the quiet reason a piece like this holds up to being worn on repeat, season after season, instead of retiring to the back of a closet after one good night out. No dye bath means no wastewater to treat or discharge: nothing enters a drain in the first place.</p>
+
+<figure class="journal-figure journal-figure--right">
+  <img src="https://xixvi.shop/journal/sublimation-heat-fusion.jpg" alt="Close-up of the heat press fusing gold pigment into a four-way stretch fabric panel, the ink converting to gas at the fiber." loading="lazy" />
+</figure>
+
+<p>Set side-by-side against screen printing — the industry's old-world default — the difference holds at every stage:</p>
+
+<table style="width:100%; border-collapse:collapse; margin:28px 0; font-size:15px; line-height:1.5;">
+  <thead>
+    <tr>
+      <th style="padding:12px 14px;"></th>
+      <th style="padding:14px; text-align:left; color:#fff; background:#15243d; border-radius:8px 0 0 0;">Sublimation — Our Process</th>
+      <th style="padding:14px; text-align:left; color:rgba(21,36,61,.55); background:rgba(21,36,61,.06); border-radius:0 8px 0 0;">Screen Printing — The Industry Default</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="padding:12px 14px; font-weight:650; color:#15243d; border-bottom:1px solid rgba(21,36,61,.08);">The ink</td>
+      <td style="padding:12px 14px; background:rgba(196,141,255,.07); border-bottom:1px solid rgba(21,36,61,.08);">Converts to gas under heat and bonds directly into the fiber</td>
+      <td style="padding:12px 14px; color:rgba(21,36,61,.55); border-bottom:1px solid rgba(21,36,61,.08);">A plastisol paste, squeegeed across a mesh screen and left to sit on the surface</td>
+    </tr>
+    <tr>
+      <td style="padding:12px 14px; font-weight:650; color:#15243d; border-bottom:1px solid rgba(21,36,61,.08);">The bond</td>
+      <td style="padding:12px 14px; background:rgba(196,141,255,.07); border-bottom:1px solid rgba(21,36,61,.08);">Permanent — part of the yarn, not a coating on it</td>
+      <td style="padding:12px 14px; color:rgba(21,36,61,.55); border-bottom:1px solid rgba(21,36,61,.08);">Surface adhesion only — a layer resting on top, waiting to lift</td>
+    </tr>
+    <tr>
+      <td style="padding:12px 14px; font-weight:650; color:#15243d; border-bottom:1px solid rgba(21,36,61,.08);">The hand-feel</td>
+      <td style="padding:12px 14px; background:rgba(196,141,255,.07); border-bottom:1px solid rgba(21,36,61,.08);">Invisible — the fabric feels like fabric, because it still is</td>
+      <td style="padding:12px 14px; color:rgba(21,36,61,.55); border-bottom:1px solid rgba(21,36,61,.08);">A stiff, plasticky patch you can feel from the inside</td>
+    </tr>
+    <tr>
+      <td style="padding:12px 14px; font-weight:650; color:#15243d; border-bottom:1px solid rgba(21,36,61,.08);">Over time</td>
+      <td style="padding:12px 14px; background:rgba(196,141,255,.07); border-bottom:1px solid rgba(21,36,61,.08);">Unchanged — wash after wash, year after year</td>
+      <td style="padding:12px 14px; color:rgba(21,36,61,.55); border-bottom:1px solid rgba(21,36,61,.08);">Cracks, flakes, and fades — often within a season</td>
+    </tr>
+    <tr>
+      <td style="padding:12px 14px; font-weight:650; color:#15243d; border-bottom:1px solid rgba(21,36,61,.08);">Per-color cost</td>
+      <td style="padding:12px 14px; background:rgba(196,141,255,.07); border-bottom:1px solid rgba(21,36,61,.08);">Zero — one digital file, infinite colorways</td>
+      <td style="padding:12px 14px; color:rgba(21,36,61,.55); border-bottom:1px solid rgba(21,36,61,.08);">A new screen, and a new setup charge, for every single color</td>
+    </tr>
+    <tr>
+      <td style="padding:12px 14px; font-weight:650; color:#15243d;">Water used</td>
+      <td style="padding:12px 14px; background:rgba(196,141,255,.07); border-radius:0 0 0 8px;">None, at any stage</td>
+      <td style="padding:12px 14px; color:rgba(21,36,61,.55);">A wash-out and cleanup cycle for every screen, every run</td>
+    </tr>
+  </tbody>
+</table>
+
+<figure class="journal-figure journal-figure--left">
+  <img src="https://xixvi.shop/journal/sublimation-embroidery-crest.jpg" alt="Macro photograph of the gold shield crest being embroidered onto a genuinely hand tie-dyed fabric." loading="lazy" />
+</figure>
+
+<p>Our organic cotton T-Icon tees are the one exception. Cotton does not accept a sublimated dye the way our four-way stretch fabric does, so the gold shield crest is applied by direct-to-film print instead — a distinct process built for natural fiber. On the tie-dye styles, that same crest is embroidered — stitched thread laid over a spiral pattern that is itself genuinely hand-dyed, one piece at a time. The tie-dye underneath is real dye on real fabric, never a printed effect standing in for it — which is why no two tie-dye pieces we make are ever quite the same.</p>
+
+<h3>The economics of clean</h3>
+
+<p>Screen printing needs a physical screen and a full setup charge for every single color a brand offers — so a shirt in six colors usually costs six times as much to produce and creates six times the waste, which is exactly why most brands quietly round down to the two or three colors they can actually afford to stock. We skip all of that: changing color is just a different digital file, so every color we offer costs exactly the same to produce as the first, and we can offer all of them. We also only make a piece once it's actually been ordered, instead of guessing at a batch of five hundred "to be safe" and hoping they sell — so no color is ever mixed, printed, or wasted for a garment that doesn't yet have an owner. Because the color is fused into the fabric itself rather than sitting on top of it like a plastic sticker, it doesn't crack, peel, or fade the way that kind of printed layer eventually does — it simply outlasts the wash, year after year.</p>
+
+<blockquote>The cleanest ink is the ink that never needed a bath to begin with.</blockquote>
+
+<h2>Made because you asked for it</h2>
+
+<p>"Made to order" is the literal sequence here, and it starts the second your order comes through. Your size, color, and quantity enter production instantly — nothing pulled from a shelf, because your piece doesn't exist yet. Your colorway is rendered onto its transfer negative, mapped to your exact cut, then converted to gas and bonded into the panel at the fiber level under controlled heat — permanently. The panels are cut and sewn to spec — tie-bow straps, built-in shelf, flat-seam stitching — quality-checked for print and finish, then tracked door to door, typically arriving within one to two weeks: a few days longer than a shelf pick, because it was never on a shelf. Nothing about it came from a pile of extras made just in case. It exists because you ordered it — and that is the whole of what we mean by sustainable: not a badge or a slogan, but a supply chain with nothing left over. No dye bath. No dead stock. No layer waiting to crack. Your size, your color, printed once, sent to one address, built to be worn for years, not one good night out.</p>
+
+<p class="signoff">— XI · XVI</p>
+`.trim(),
+};
