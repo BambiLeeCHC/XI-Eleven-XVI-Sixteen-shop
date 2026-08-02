@@ -1,7 +1,7 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 import { getAuthUserId } from "@convex-dev/auth/server";
-import { SECOND_POST, WELCOME_POST } from "./blogSeed";
+import { SECOND_POST, THIRD_POST, WELCOME_POST } from "./blogSeed";
 
 // ─── Helpers ────────────────────────────────────────────────────────────
 
@@ -207,7 +207,7 @@ export const seedWelcomePost = mutation({
   returns: v.any(),
   handler: async (ctx) => {
     const inserted: string[] = [];
-    for (const seed of [WELCOME_POST, SECOND_POST]) {
+    for (const seed of [WELCOME_POST, SECOND_POST, THIRD_POST]) {
       const existing = await ctx.db
         .query("blogPosts")
         .withIndex("by_slug", (q: any) => q.eq("slug", seed.slug))

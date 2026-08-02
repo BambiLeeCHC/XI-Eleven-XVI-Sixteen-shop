@@ -10,7 +10,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useConvex } from "convex/react";
 import { api } from "../../convex/_generated/api";
-import { WELCOME_POST, SECOND_POST } from "../../convex/blogSeed";
+import { WELCOME_POST, SECOND_POST, THIRD_POST } from "../../convex/blogSeed";
 
 export interface JournalPost {
   _id: string;
@@ -29,9 +29,14 @@ export interface JournalPost {
 }
 
 const LAUNCH_DAY = Date.UTC(2026, 6, 28, 15, 16, 0);
+const SUBLIMATION_DAY = Date.UTC(2026, 7, 1, 15, 16, 0);
 
-function toPost(seed: typeof WELCOME_POST, offsetMinutes: number): JournalPost {
-  const ts = LAUNCH_DAY - offsetMinutes * 60_000;
+function toPost(
+  seed: typeof WELCOME_POST | typeof THIRD_POST,
+  offsetMinutes: number,
+  day: number = LAUNCH_DAY
+): JournalPost {
+  const ts = day - offsetMinutes * 60_000;
   return {
     _id: `seed-${seed.slug}`,
     _creationTime: ts,
@@ -43,6 +48,7 @@ function toPost(seed: typeof WELCOME_POST, offsetMinutes: number): JournalPost {
 
 /** Seeded launch entries, newest first. */
 export const STATIC_POSTS: JournalPost[] = [
+  toPost(THIRD_POST, 0, SUBLIMATION_DAY),
   toPost(WELCOME_POST, 0),
   toPost(SECOND_POST, 60),
 ];
