@@ -2439,7 +2439,7 @@ function TaxTab() {
 
 function LoadingState() {
   return (
-    <div className="flex items-center justify-center h-64">
+    <div className="flex items-center justify-center h-64 bg-[#0e0a0f] -mx-4 sm:-mx-6 lg:-mx-8 -mt-4">
       <div className="text-center">
         <div className="text-xl mb-2 animate-pulse">✦</div>
         <p className="text-[11px] tracking-wider uppercase text-white/20">
@@ -2461,7 +2461,7 @@ export default function AdminPage() {
   if (isAdmin === undefined) return <LoadingState />;
   if (!isAdmin) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center bg-[#0e0a0f] -mx-4 sm:-mx-6 lg:-mx-8 -mt-4">
         <div className="text-center">
           <XCircle className="w-12 h-12 text-red-400/40 mx-auto mb-3" />
           <h1 className="text-lg font-medium text-white/70">Access Denied</h1>
@@ -2506,7 +2506,7 @@ export default function AdminPage() {
   };
 
   return (
-    <div className="flex min-h-screen -mx-4 sm:-mx-6 lg:-mx-8 -mt-4">
+    <div className="flex min-h-screen -mx-4 sm:-mx-6 lg:-mx-8 -mt-4 bg-[#0e0a0f] text-[#f5ede6]">
       <Sidebar active={activeTab} onSelect={setActiveTab} />
       <main className="flex-1 p-6 overflow-y-auto">{renderTab()}</main>
     </div>
