@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { useQuery, useMutation } from "convex/react";
+import { useAuthActions } from "@convex-dev/auth/react";
+import { useNavigate } from "react-router-dom";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
 import { format } from "date-fns";
@@ -37,6 +39,7 @@ import {
   ToggleLeft,
   ToggleRight,
   Download,
+  LogOut,
 } from "lucide-react";
 import {
   BarChart,
@@ -120,8 +123,16 @@ function Sidebar({
   active: AdminTab;
   onSelect: (tab: AdminTab) => void;
 }) {
+  const { signOut } = useAuthActions();
+  const navigate = useNavigate();
+
+  const handleSignOut = async () => {
+    await signOut();
+    navigate("/");
+  };
+
   return (
-    <aside className="w-56 shrink-0 border-r border-white/[0.06] bg-[#0c0c0c] min-h-screen">
+    <aside className="w-56 shrink-0 border-r border-white/[0.06] bg-[#0c0c0c] min-h-screen flex flex-col">
       <div className="p-5 border-b border-white/[0.06]">
         <div className="flex items-center gap-2">
           <div className="w-7 h-7 rounded bg-amber-500/20 flex items-center justify-center">
@@ -132,7 +143,7 @@ function Sidebar({
           </span>
         </div>
       </div>
-      <nav className="p-3 space-y-0.5">
+      <nav className="p-3 space-y-0.5 flex-1">
         {NAV_ITEMS.map((item) => {
           const Icon = item.icon;
           const isActive = active === item.id;
@@ -155,6 +166,15 @@ function Sidebar({
           );
         })}
       </nav>
+      <div className="p-3 border-t border-white/[0.06]">
+        <button
+          onClick={handleSignOut}
+          className="w-full flex items-center gap-2.5 px-3 py-2 rounded-md text-[13px] text-white/40 hover:text-red-400 hover:bg-white/[0.04] transition-all"
+        >
+          <LogOut className="w-4 h-4" />
+          Sign Out
+        </button>
+      </div>
     </aside>
   );
 }
