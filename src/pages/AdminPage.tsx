@@ -690,7 +690,7 @@ function OrderDetailModal({
                       {item.productName}
                     </p>
                     <p className="text-[11px] text-white/30">
-                      Size: {item.size} · Qty: {item.quantity}
+                      {item.color ? `${item.color} · ` : ""}Size: {item.size} · Qty: {item.quantity}
                     </p>
                   </div>
                   <p className="text-sm text-white/60">

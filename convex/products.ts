@@ -91,8 +91,12 @@ export const upsertFromPrintful = mutation({
       .first();
 
     if (existing) {
+      // Storefront prices are the source of truth and are set deliberately — a Printful
+      // sync must never overwrite them. Printful's retail_price is still kept per variant
+      // inside printfulVariants for margin reporting.
+      const { price: _incomingPrice, currency: _incomingCurrency, ...syncable } = args;
       await ctx.db.patch(existing._id, {
-        ...args,
+        ...syncable,
         isActive: true,
         sortOrder: args.sortOrder ?? existing.sortOrder,
       });
@@ -183,14 +187,70 @@ export const syncFromPrintful = action({
           images.push(product.thumbnail_url);
         }
 
-        const sizes = [...new Set(syncVariants.map((sv: { name: string }) => {
-          const parts = sv.name.split(" - ");
-          return parts[parts.length - 1] || "One Size";
-        }))];
+        // Derive a clean size (and colour, where there is one) for every variant, and drop
+        // variants we can't resolve so checkout can never pick an orphan (orders.ts matches
+        // on `size`, which is missing on the raw sync_variants stored today).
+        // Sync variant names are "<sync product name> / [<colour> / ]<size>", e.g.
+        //   "J-Glitch Jersey [Black] / XL"                  -> size XL, no colour axis
+        //   "T-Icon Oversized Tee / French Navy / XL"       -> colour French Navy, size XL
+        //   "T-Icon Tie-Dye Tee / Navy / White / XL"        -> colour "Navy / White" (!), size XL
+        // So the size is the LAST segment after stripping the product-name prefix, and the
+        // colour is everything in between — colours can themselves contain " / ".
+        // The catalog name ("... (Colour / Size)") is only a size fallback: its colour is the
+        // blank garment colour, not the XIXVI colourway, so it must never drive matching.
+        const parseOptions = (sv: { name: string; product?: { name?: string } }): { size: string; color: string | null } | null => {
+          const fullName = (sv.name ?? "").trim();
+          const prefix = syncProduct.name.trim();
+          const rest = fullName.startsWith(prefix)
+            ? fullName.slice(prefix.length).replace(/^\s*\/\s*/, "").trim()
+            : fullName;
 
-        const price = syncVariants[0]?.retail_price
-          ? Math.round(Number.parseFloat(syncVariants[0].retail_price) * 100)
-          : 0;
+          if (rest && rest !== fullName) {
+            const parts = rest.split(" / ").map((x) => x.trim()).filter(Boolean);
+            const size = parts.pop();
+            if (size) return { size, color: parts.length > 0 ? parts.join(" / ") : null };
+          }
+
+          const catalog = sv.product?.name ?? "";
+          if (catalog.includes("(") && catalog.includes(")")) {
+            const inner = catalog.slice(catalog.lastIndexOf("(") + 1, catalog.lastIndexOf(")"));
+            const catalogParts = inner.split(" / ").map((x) => x.trim()).filter(Boolean);
+            const size = catalogParts.pop();
+            if (size) return { size, color: null };
+          }
+
+          // Single-size products legitimately have no size segment.
+          return fullName ? { size: "One Size", color: null } : null;
+        };
+
+        const normalizedVariants = syncVariants
+          .map((sv) => {
+            const options = parseOptions(sv);
+            if (!options) return null;
+            return {
+              id: sv.id,                    // Printful sync_variant id used at order time
+              size: options.size,
+              color: options.color,         // multi-colour products (e.g. the tees) need this too
+              variant_id: sv.variant_id,    // catalog variant id
+              retail_price: sv.retail_price,
+              currency: sv.currency || "USD",
+            };
+          })
+          .filter((v): v is NonNullable<typeof v> => v !== null);
+
+        if (normalizedVariants.length === 0) {
+          // Nothing fulfillable — don't overwrite a good record with a broken one.
+          continue;
+        }
+
+        const sizes = [...new Set(normalizedVariants.map((v) => v.size))];
+
+        // Only used when a product is brand new to the storefront; existing products keep
+        // their curated price (see upsertFromPrintful). Cheapest variant, not variant #1,
+        // because Printful's variant ordering is not stable.
+        const price = Math.min(
+          ...normalizedVariants.map((v) => Math.round(Number.parseFloat(v.retail_price) * 100)),
+        );
 
         // Categorize based on product name
         let category = "Tops";
@@ -208,13 +268,13 @@ export const syncFromPrintful = action({
           name: syncProduct.name,
           description: `Premium ${syncProduct.name} from the XI · XVI collection.`,
           price,
-          currency: syncVariants[0]?.currency || "USD",
+          currency: normalizedVariants[0]?.currency || "USD",
           category,
           gender,
           images: images.slice(0, 5),
           sizes: sizes as string[],
           printfulProductId: String(syncProduct.id),
-          printfulVariants: syncVariants,
+          printfulVariants: normalizedVariants,
           sortOrder: synced,
         });
 

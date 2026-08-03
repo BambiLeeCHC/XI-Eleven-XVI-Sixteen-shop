@@ -266,6 +266,7 @@ export function CheckoutPage() {
       const items = cartItems.map((item: any) => ({
         productId: item.productId,
         size: item.size,
+        color: item.color || undefined,
         quantity: item.quantity,
       }));
 
@@ -306,7 +307,7 @@ export function CheckoutPage() {
 
     try {
       const items = cartItems.map((item: any) => ({
-        productName: `${item.product.name} — ${item.size}`,
+        productName: `${item.product.name} — ${[item.color, item.size].filter(Boolean).join(" / ")}`,
         priceInCents: item.product.price,
         quantity: item.quantity,
         imageUrl: item.product.images?.[0] || undefined,
@@ -320,6 +321,7 @@ export function CheckoutPage() {
           productId: item.productId,
           productName: item.product.name,
           size: item.size,
+          color: item.color || undefined,
           quantity: item.quantity,
           priceAtPurchase: item.product.price,
           image: item.product.images?.[0] || undefined,

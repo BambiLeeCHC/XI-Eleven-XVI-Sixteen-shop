@@ -78,7 +78,7 @@ export function CartPage() {
               <Link to={`/product/${item.productId}`} className="text-[12px] tracking-[0.1em] uppercase font-medium" style={{ color: "rgba(21,36,61,0.88)" }}>
                 {item.product.name}
               </Link>
-              <p className="text-[11px] mt-1" style={{ color: "rgba(21,36,61,0.5)" }}>Size: {item.size}</p>
+              <p className="text-[11px] mt-1" style={{ color: "rgba(21,36,61,0.5)" }}>{item.color ? `${item.color} · ` : ""}Size: {item.size}</p>
               <p className="text-[13px] mt-2" style={{ color: "rgba(21,36,61,0.78)" }}>${(item.product.price / 100).toFixed(2)}</p>
             </div>
 

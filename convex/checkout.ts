@@ -1,6 +1,7 @@
 import { v } from "convex/values";
 import { action, internalQuery } from "./_generated/server";
 import { internal } from "./_generated/api";
+import { matchVariant, type PrintfulVariant } from "./variantMatch";
 
 declare const process: { env: Record<string, string | undefined> };
 
@@ -53,6 +54,7 @@ export const resolveCartVariants = internalQuery({
       v.object({
         productId: v.id("products"),
         size: v.string(),
+        color: v.optional(v.string()),
         quantity: v.number(),
       })
     ),
@@ -64,26 +66,21 @@ export const resolveCartVariants = internalQuery({
       const product = await ctx.db.get(item.productId);
       if (!product) continue;
 
-      const variants = product.printfulVariants as any[] | undefined;
+      const variants = product.printfulVariants as PrintfulVariant[] | undefined;
       let syncVariantId: number | null = null;
       let catalogVariantId: number | null = null;
 
-      // Cart stores size as "Product Name / Size" or just "Size" — extract the pure size
-      const rawSize = item.size;
-      const pureSize = rawSize.includes(" / ") ? rawSize.split(" / ").pop()! : rawSize;
-
-      if (variants && variants.length > 0) {
-        const match = variants.find((v: any) => v.size === pureSize);
-        if (match) {
-          syncVariantId = Math.round(match.id);
-          catalogVariantId = Math.round(match.variant_id);
-        }
+      const match = matchVariant(variants, item.size, item.color);
+      if (match) {
+        syncVariantId = Math.round(match.id);
+        catalogVariantId = Math.round(match.variant_id);
       }
 
       resolved.push({
         productId: item.productId,
         productName: product.name,
         size: item.size,
+        color: item.color ?? null,
         quantity: item.quantity,
         price: product.price,
         image: product.images?.[0] ?? null,
@@ -121,6 +118,7 @@ interface ResolvedCartItem {
   productId: string;
   productName: string;
   size: string;
+  color?: string | null;
   quantity: number;
   price: number;
   image: string | null;
@@ -141,6 +139,7 @@ export const estimateShipping = action({
       v.object({
         productId: v.id("products"),
         size: v.string(),
+        color: v.optional(v.string()),
         quantity: v.number(),
       })
     ),
@@ -277,6 +276,7 @@ export const createCheckoutSession = action({
           productId: v.id("products"),
           productName: v.string(),
           size: v.string(),
+          color: v.optional(v.string()),
           quantity: v.number(),
           priceAtPurchase: v.number(),
           image: v.optional(v.string()),

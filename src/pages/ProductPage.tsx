@@ -350,6 +350,7 @@ export function ProductPage() {
   const addToCart = useMutation(api.cart.addItem);
   const sessionId = useSessionId();
   const [selectedSize, setSelectedSize] = useState<string>("");
+  const [selectedColor, setSelectedColor] = useState<string>("");
   const [added, setAdded] = useState(false);
   const [activeTab, setActiveTab] = useState<"details" | "fit">("details");
 
@@ -376,20 +377,42 @@ export function ProductPage() {
 
   const handleAddToCart = async () => {
     if (!selectedSize && product.sizes.length > 0) return;
+    // Products that carry several colourways in one listing (the tees) must not fall
+    // back to "whichever variant matched the size first" — that shipped the wrong colour.
+    if (colorOptions.length > 1 && !selectedColor) return;
     await addToCart({
       sessionId,
       productId: product._id,
       size: selectedSize || "One Size",
+      color: colorOptions.length > 1 ? selectedColor : undefined,
       quantity: 1,
     });
     setAdded(true);
     setTimeout(() => setAdded(false), 2000);
   };
 
-  const variantForSize = (size: string) =>
+  // Some products (both T-Icon tees) hold every colourway in a single listing.
+  const colorOptions: string[] = (() => {
+    const seen: string[] = [];
+    for (const variant of (product.printfulVariants || []) as any[]) {
+      const color = variant?.color;
+      if (color && !seen.some((c) => c.toLowerCase() === String(color).toLowerCase())) {
+        seen.push(String(color));
+      }
+    }
+    return seen;
+  })();
+  const hasColorAxis = colorOptions.length > 1;
+
+  const variantForSize = (size: string, color?: string) =>
     (product.printfulVariants || []).find((variant: any) => {
-      const variantSize = variant.size || variant.name?.split(" - ").pop();
-      return cleanSizeLabel(variantSize || "") === cleanSizeLabel(size);
+      const variantSize = variant.size || variant.name?.split(" / ").pop();
+      const sizeMatches = cleanSizeLabel(variantSize || "") === cleanSizeLabel(size);
+      if (!sizeMatches) return false;
+      if (!hasColorAxis) return true;
+      const wanted = color ?? selectedColor;
+      if (!wanted) return true;
+      return String(variant.color || "").toLowerCase() === wanted.toLowerCase();
     });
   const isSizeAvailable = (size: string) => {
     const variant = variantForSize(size);
@@ -545,6 +568,44 @@ export function ProductPage() {
             </div>
           </div>
 
+          {/* Colour Selector — only for listings with more than one colourway */}
+          {hasColorAxis && (
+            <div className="mb-8">
+              <p
+                className="text-[10px] tracking-[0.25em] uppercase font-semibold mb-3"
+                style={{ color: "rgba(21,36,61,0.6)" }}
+              >
+                COLOUR{selectedColor ? ` — ${selectedColor}` : ""}
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {colorOptions.map((color: string) => (
+                  <button
+                    type="button"
+                    key={color}
+                    onClick={() => setSelectedColor(color)}
+                    className="px-4 py-2 text-[11px] tracking-wider uppercase transition-all"
+                    style={{
+                      color: selectedColor === color ? "white" : "rgba(21,36,61,0.6)",
+                      background:
+                        selectedColor === color
+                          ? "linear-gradient(135deg, rgba(36,139,212,0.15), rgba(85,191,255,0.08))"
+                          : "transparent",
+                      border:
+                        selectedColor === color
+                          ? "1px solid rgba(36,139,212,0.3)"
+                          : "1px solid rgba(92,155,205,0.2)",
+                      borderRadius: "10px",
+                      cursor: "pointer",
+                    }}
+                    title={`Select ${color}`}
+                  >
+                    {color}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
           {/* Size Selector */}
           {product.sizes?.length > 0 && (
             <div className="mb-8">
@@ -610,7 +671,7 @@ export function ProductPage() {
           <button
             type="button"
             onClick={handleAddToCart}
-            disabled={product.sizes?.length > 0 && !selectedSize}
+            disabled={(product.sizes?.length > 0 && !selectedSize) || (hasColorAxis && !selectedColor)}
             className="w-full py-4 text-[12px] tracking-[0.25em] uppercase font-bold text-white transition-all duration-300 disabled:opacity-30 disabled:cursor-not-allowed"
             style={{
               background: added
@@ -625,7 +686,13 @@ export function ProductPage() {
               letterSpacing: "0.25em",
             }}
           >
-            {added ? "✓ ADDED TO CART" : "ADD TO CART"}
+            {added
+              ? "✓ ADDED TO CART"
+              : hasColorAxis && !selectedColor
+                ? "SELECT A COLOUR"
+                : product.sizes?.length > 0 && !selectedSize
+                  ? "SELECT A SIZE"
+                  : "ADD TO CART"}
           </button>
 
           {/* Trust signals */}
