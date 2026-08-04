@@ -43,6 +43,28 @@ export function colorOptions(variants: PrintfulVariant[] | undefined | null): st
 }
 
 /**
+ * Storefront ID convention for a colourway page.
+ *
+ * XIXVI merchandises one product page per colourway, but Printful sometimes bundles
+ * every colourway into a single sync product (both T-Icon tees). Those storefront pages
+ * are therefore keyed `<printfulProductId>-<colour-slug>`, e.g. `429126344-french-navy`
+ * and `429126341-navy-white`. The sync builds the same key so it updates the existing
+ * page instead of inserting a duplicate bundled product.
+ */
+export function colorSlug(color: string): string {
+  return (color ?? "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
+export function colorwayProductId(printfulProductId: string | number, color?: string | null): string {
+  const base = String(printfulProductId);
+  const slug = color ? colorSlug(color) : "";
+  return slug ? `${base}-${slug}` : base;
+}
+
+/**
  * Resolve a variant, or null when the selection is not fulfillable.
  *
  * Deliberately strict: if a product has a colour axis and no colour was chosen, we

@@ -1,4 +1,4 @@
-import { matchVariant, colorOptions } from '../convex/variantMatch.ts';
+import { matchVariant, colorOptions, colorSlug, colorwayProductId } from '../convex/variantMatch.ts';
 const tee = [
   {id:1,size:'S',color:'French Navy',variant_id:11},
   {id:2,size:'S',color:'Black',variant_id:12},
@@ -20,6 +20,14 @@ eq('unknown size -> null', matchVariant(jersey,'4XL'), null);
 eq('empty variants -> null', matchVariant([],'XL'), null);
 eq('colourOptions dedupes', colorOptions(tee).length, 4);
 eq('colourOptions empty for jersey', colorOptions(jersey).length, 0);
+// Colourway page IDs must reproduce the IDs the storefront already uses, or the sync
+// inserts duplicate products instead of updating the live colour pages.
+eq('slug: simple colour', colorwayProductId(429126344,'Black'), '429126344-black');
+eq('slug: two words', colorwayProductId('429126344','French Navy'), '429126344-french-navy');
+eq('slug: slash colour', colorwayProductId('429126341','Navy / White'), '429126341-navy-white');
+eq('slug: other slash colour', colorwayProductId('429126341','Black / White'), '429126341-black-white');
+eq('slug: no colour -> bare id', colorwayProductId('447456270', null), '447456270');
+eq('slug: trims punctuation', colorSlug('  Sherbet Rainbow! '), 'sherbet-rainbow');
 let fail=0;
 for (const [n,ok,got] of t){ if(!ok){fail++; console.log('FAIL',n,'got',got);} else console.log('pass',n); }
 console.log(fail? `${fail} FAILED` : 'all passed');
