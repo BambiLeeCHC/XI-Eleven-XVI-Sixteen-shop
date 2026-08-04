@@ -1,5 +1,6 @@
 import { v } from "convex/values";
 import { action, mutation, query } from "./_generated/server";
+import { colorwayProductId } from "./variantMatch";
 
 declare const process: { env: Record<string, string | undefined> };
 
@@ -91,11 +92,24 @@ export const upsertFromPrintful = mutation({
       .first();
 
     if (existing) {
-      await ctx.db.patch(existing._id, {
-        ...args,
+      // The storefront is the source of truth for everything a human curated: price,
+      // currency, name, description, imagery, merchandising. Printful only owns the
+      // fulfillment data (which sizes exist and which sync variant each one maps to).
+      // Anything else would be silently undone on every sync — the product copy would
+      // revert to boilerplate and the self-hosted photography would be replaced with
+      // Printful mockups. Printful's retail_price is still kept per variant inside
+      // printfulVariants for margin reporting.
+      const patch: Record<string, unknown> = {
+        sizes: args.sizes,
+        printfulVariants: args.printfulVariants,
         isActive: true,
-        sortOrder: args.sortOrder ?? existing.sortOrder,
-      });
+      };
+      // Fill genuine gaps only, never overwrite existing curated values.
+      if ((existing.images?.length ?? 0) === 0 && args.images.length > 0) patch.images = args.images;
+      if (!existing.description?.trim()) patch.description = args.description;
+      if (!existing.name?.trim()) patch.name = args.name;
+      if (existing.sortOrder === undefined) patch.sortOrder = args.sortOrder ?? 0;
+      await ctx.db.patch(existing._id, patch);
       return existing._id;
     }
 
@@ -129,6 +143,68 @@ export const createManual = mutation({
   },
 });
 
+// ─── One-time migration: re-point stale Printful product IDs ────────────
+
+/**
+ * The six S-Glitch 2.5" Shorts colourways were deleted and re-created in Printful, so
+ * the storefront rows point at sync products that now return 404. Nothing matches them
+ * by ID any more, which means a sync would insert six brand-new duplicate products and
+ * leave the six live pages permanently unfulfillable.
+ *
+ * Verified against the Printful store (2026-08-03): every `from` ID 404s and every
+ * `to` ID resolves to the named colourway. Colour is carried so we can refuse to remap
+ * a row whose name no longer matches — better to skip than to point a page at the wrong
+ * garment. Safe to run repeatedly: rows already carrying the new ID are left alone.
+ */
+const PRINTFUL_ID_REMAP: Array<{ from: string; to: string; color: string }> = [
+  { from: "429126732", to: "448077622", color: "Black" },
+  { from: "429126729", to: "448076773", color: "White" },
+  { from: "429126728", to: "448079876", color: "Volt" },
+  { from: "429126727", to: "448079476", color: "Peach" },
+  { from: "429126724", to: "448080273", color: "Ice" },
+  { from: "429126351", to: "448079072", color: "Pink" },
+];
+
+export const remapPrintfulIds = mutation({
+  args: {},
+  returns: v.array(v.string()),
+  handler: async (ctx) => {
+    const report: string[] = [];
+
+    for (const entry of PRINTFUL_ID_REMAP) {
+      const row = await ctx.db
+        .query("products")
+        .withIndex("by_printful_id", (q) => q.eq("printfulProductId", entry.from))
+        .first();
+
+      if (!row) {
+        report.push(`skip ${entry.from}: no product with that ID (already remapped?)`);
+        continue;
+      }
+
+      // Guard: the row must still be the colourway we verified against Printful.
+      if (!row.name.toLowerCase().includes(entry.color.toLowerCase())) {
+        report.push(`SKIP ${entry.from}: "${row.name}" does not look like ${entry.color} — not touching it`);
+        continue;
+      }
+
+      const clash = await ctx.db
+        .query("products")
+        .withIndex("by_printful_id", (q) => q.eq("printfulProductId", entry.to))
+        .first();
+      if (clash) {
+        report.push(`SKIP ${entry.from}: "${clash.name}" already uses target ID ${entry.to}`);
+        continue;
+      }
+
+      await ctx.db.patch(row._id, { printfulProductId: entry.to });
+      report.push(`remapped "${row.name}" ${entry.from} → ${entry.to}`);
+    }
+
+    return report;
+  },
+});
+
 // ─── Actions (Printful Sync) ────────────────────────────────────────────
 
 const PRINTFUL_API_KEY = process.env.PRINTFUL_API_KEY!;
@@ -153,6 +229,10 @@ export const syncFromPrintful = action({
   returns: v.string(),
   handler: async (ctx) => {
     try {
+      // Always run the ID remap first: without it the re-created shorts would be
+      // inserted as duplicates instead of updating the live pages. It is idempotent.
+      const remap = (await ctx.runMutation("products:remapPrintfulIds" as any, {})) as string[];
+
       // Get store products from Printful
       const result = await printfulGet<{ code: number; result: Array<{ id: number; external_id: string; name: string; variants: number; synced: number; thumbnail_url: string }> }>(
         "/store/products"
@@ -175,22 +255,94 @@ export const syncFromPrintful = action({
 
         if (!syncProduct) continue;
 
-        // Extract product info
-        const images = syncVariants
-          .flatMap((sv: { files: Array<{ type: string; preview_url: string }> }) => sv.files?.filter((f: { type: string }) => f.type === "preview")?.map((f: { preview_url: string }) => f.preview_url) ?? [])
-          .filter(Boolean);
-        if (images.length === 0 && product.thumbnail_url) {
-          images.push(product.thumbnail_url);
+        // Preview imagery, per sync variant, so a colourway page can be given its own
+        // mockups rather than a mix of every colour in the product.
+        const previewsByVariantId = new Map<number, string[]>();
+        for (const sv of syncVariants) {
+          previewsByVariantId.set(
+            sv.id,
+            (sv.files ?? []).filter((f) => f.type === "preview").map((f) => f.preview_url).filter(Boolean),
+          );
         }
 
-        const sizes = [...new Set(syncVariants.map((sv: { name: string }) => {
-          const parts = sv.name.split(" - ");
-          return parts[parts.length - 1] || "One Size";
-        }))];
+        // Derive a clean size (and colour, where there is one) for every variant, and drop
+        // variants we can't resolve so checkout can never pick an orphan (orders.ts matches
+        // on `size`, which is missing on the raw sync_variants stored today).
+        // Sync variant names are "<sync product name> / [<colour> / ]<size>", e.g.
+        //   "J-Glitch Jersey [Black] / XL"                  -> size XL, no colour axis
+        //   "T-Icon Oversized Tee / French Navy / XL"       -> colour French Navy, size XL
+        //   "T-Icon Tie-Dye Tee / Navy / White / XL"        -> colour "Navy / White" (!), size XL
+        // So the size is the LAST segment after stripping the product-name prefix, and the
+        // colour is everything in between — colours can themselves contain " / ".
+        // The catalog name ("... (Colour / Size)") is only a size fallback: its colour is the
+        // blank garment colour, not the XIXVI colourway, so it must never drive matching.
+        const parseOptions = (sv: { name: string; product?: { name?: string } }): { size: string; color: string | null } | null => {
+          const fullName = (sv.name ?? "").trim();
+          const prefix = syncProduct.name.trim();
+          const rest = fullName.startsWith(prefix)
+            ? fullName.slice(prefix.length).replace(/^\s*\/\s*/, "").trim()
+            : fullName;
 
-        const price = syncVariants[0]?.retail_price
-          ? Math.round(Number.parseFloat(syncVariants[0].retail_price) * 100)
-          : 0;
+          if (rest && rest !== fullName) {
+            const parts = rest.split(" / ").map((x) => x.trim()).filter(Boolean);
+            const size = parts.pop();
+            if (size) return { size, color: parts.length > 0 ? parts.join(" / ") : null };
+          }
+
+          const catalog = sv.product?.name ?? "";
+          if (catalog.includes("(") && catalog.includes(")")) {
+            const inner = catalog.slice(catalog.lastIndexOf("(") + 1, catalog.lastIndexOf(")"));
+            const catalogParts = inner.split(" / ").map((x) => x.trim()).filter(Boolean);
+            const size = catalogParts.pop();
+            if (size) return { size, color: null };
+          }
+
+          // Single-size products legitimately have no size segment.
+          return fullName ? { size: "One Size", color: null } : null;
+        };
+
+        const normalizedVariants = syncVariants
+          .map((sv) => {
+            const options = parseOptions(sv);
+            if (!options) return null;
+            return {
+              id: sv.id,                    // Printful sync_variant id used at order time
+              size: options.size,
+              color: options.color,         // multi-colour products (e.g. the tees) need this too
+              variant_id: sv.variant_id,    // catalog variant id
+              retail_price: sv.retail_price,
+              currency: sv.currency || "USD",
+            };
+          })
+          .filter((v): v is NonNullable<typeof v> => v !== null);
+
+        if (normalizedVariants.length === 0) {
+          // Nothing fulfillable — don't overwrite a good record with a broken one.
+          continue;
+        }
+
+        // Split a bundled Printful product back into one storefront row per colourway.
+        // Printful holds all five T-Icon colourways inside one sync product, but the
+        // storefront sells them as separate pages keyed `<printfulId>-<colour-slug>`.
+        // Syncing the bundle as a single row would insert a duplicate product and leave
+        // every existing colourway page unfulfillable.
+        const productColors = [
+          ...new Set(normalizedVariants.map((v) => v.color).filter((c): c is string => !!c)),
+        ];
+        const groups =
+          productColors.length > 1
+            ? productColors.map((color) => ({
+                printfulProductId: colorwayProductId(syncProduct.id, color),
+                name: `${syncProduct.name} [${color}]`,
+                variants: normalizedVariants.filter((v) => v.color === color),
+              }))
+            : [
+                {
+                  printfulProductId: String(syncProduct.id),
+                  name: syncProduct.name,
+                  variants: normalizedVariants,
+                },
+              ];
 
         // Categorize based on product name
         let category = "Tops";
@@ -204,24 +356,41 @@ export const syncFromPrintful = action({
         if (nameLower.includes("women") || nameLower.includes("her")) gender = "women";
         else if (nameLower.includes("men") || nameLower.includes("him") || nameLower.includes("his")) gender = "men";
 
-        await ctx.runMutation("products:upsertFromPrintful" as any, {
-          name: syncProduct.name,
-          description: `Premium ${syncProduct.name} from the XI · XVI collection.`,
-          price,
-          currency: syncVariants[0]?.currency || "USD",
-          category,
-          gender,
-          images: images.slice(0, 5),
-          sizes: sizes as string[],
-          printfulProductId: String(syncProduct.id),
-          printfulVariants: syncVariants,
-          sortOrder: synced,
-        });
+        for (const group of groups) {
+          const sizes = [...new Set(group.variants.map((v) => v.size))];
 
-        synced++;
+          const images = group.variants
+            .flatMap((v) => previewsByVariantId.get(v.id) ?? [])
+            .filter(Boolean);
+          if (images.length === 0 && product.thumbnail_url) images.push(product.thumbnail_url);
+
+          // Only used when a product is brand new to the storefront; existing products keep
+          // their curated price (see upsertFromPrintful). Cheapest variant, not variant #1,
+          // because Printful's variant ordering is not stable.
+          const price = Math.min(
+            ...group.variants.map((v) => Math.round(Number.parseFloat(v.retail_price) * 100)),
+          );
+
+          await ctx.runMutation("products:upsertFromPrintful" as any, {
+            name: group.name,
+            description: `Premium ${group.name} from the XI · XVI collection.`,
+            price,
+            currency: group.variants[0]?.currency || "USD",
+            category,
+            gender,
+            images: [...new Set(images)].slice(0, 5),
+            sizes: sizes as string[],
+            printfulProductId: group.printfulProductId,
+            printfulVariants: group.variants,
+            sortOrder: synced,
+          });
+
+          synced++;
+        }
       }
 
-      return `Synced ${synced} products from Printful.`;
+      const remapped = remap.filter((line) => line.startsWith("remapped")).length;
+      return `Synced ${synced} products from Printful (${remapped} product IDs remapped).`;
     } catch (error) {
       return `Printful sync error: ${error instanceof Error ? error.message : String(error)}`;
     }

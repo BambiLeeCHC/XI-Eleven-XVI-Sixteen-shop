@@ -53,6 +53,7 @@ const schema = defineSchema({
     sessionId: v.string(), // anonymous or userId
     productId: v.id("products"),
     size: v.string(),
+    color: v.optional(v.string()), // multi-colourway products (the tees) need this
     quantity: v.number(),
   })
     .index("by_session", ["sessionId"])
@@ -68,6 +69,7 @@ const schema = defineSchema({
         productId: v.id("products"),
         productName: v.string(),
         size: v.string(),
+        color: v.optional(v.string()),
         quantity: v.number(),
         priceAtPurchase: v.number(),
         image: v.optional(v.string()),

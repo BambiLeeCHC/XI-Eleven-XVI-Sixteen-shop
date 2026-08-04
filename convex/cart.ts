@@ -42,17 +42,20 @@ export const addItem = mutation({
     sessionId: v.string(),
     productId: v.id("products"),
     size: v.string(),
+    color: v.optional(v.string()),
     quantity: v.number(),
   },
   returns: v.null(),
-  handler: async (ctx, { sessionId, productId, size, quantity }) => {
-    // Check if item already exists with same size
-    const existing = await ctx.db
+  handler: async (ctx, { sessionId, productId, size, color, quantity }) => {
+    // Same product + size + colour is the same cart line. Colour matters: two tees in
+    // the same size but different colourways are different Printful variants.
+    const sameSize = await ctx.db
       .query("cartItems")
       .withIndex("by_session_product_size", (q) =>
         q.eq("sessionId", sessionId).eq("productId", productId).eq("size", size)
       )
-      .first();
+      .collect();
+    const existing = sameSize.find((item) => (item.color ?? null) === (color ?? null));
 
     if (existing) {
       await ctx.db.patch(existing._id, {
@@ -63,6 +66,7 @@ export const addItem = mutation({
         sessionId,
         productId,
         size,
+        color,
         quantity,
       });
     }

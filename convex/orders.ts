@@ -2,6 +2,7 @@ import { v } from "convex/values";
 import { mutation, query, action, internalMutation } from "./_generated/server";
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { api, internal } from "./_generated/api";
+import { matchVariant } from "./variantMatch";
 
 declare const process: { env: Record<string, string | undefined> };
 
@@ -26,6 +27,7 @@ export const create = mutation({
         productId: v.id("products"),
         productName: v.string(),
         size: v.string(),
+        color: v.optional(v.string()),
         quantity: v.number(),
         priceAtPurchase: v.number(),
         image: v.optional(v.string()),
@@ -260,19 +262,30 @@ export const fulfillWithPrintful = action({
 
     // Build Printful order items from cart items (need sync_variant_ids)
     const printfulItems: Array<{ sync_variant_id: number; quantity: number }> = [];
+    const unresolved: string[] = [];
     for (const item of order.items) {
       // Look up product for variant info
       const product: any = await ctx.runQuery(api.orders.getProduct as any, { productId: item.productId });
-      if (!product?.printfulVariants) continue;
-
-      const pureSize = item.size.includes(" / ") ? item.size.split(" / ").pop()! : item.size;
-      const variant = (product.printfulVariants as any[]).find((v: any) => v.size === pureSize);
+      const variant = matchVariant(product?.printfulVariants, item.size, item.color);
       if (variant) {
         printfulItems.push({
           sync_variant_id: Math.round(variant.id),
           quantity: item.quantity,
         });
+      } else {
+        unresolved.push(
+          `${item.productName} (${[item.color, item.size].filter(Boolean).join(" / ")})`,
+        );
       }
+    }
+
+    // Never ship a partial order silently: if any line can't be resolved, stop and
+    // surface it. A half-fulfilled order is worse than one that visibly needs a human.
+    if (unresolved.length > 0) {
+      return {
+        success: false,
+        error: `No Printful variant for: ${unresolved.join(", ")}`,
+      };
     }
 
     if (printfulItems.length === 0) {

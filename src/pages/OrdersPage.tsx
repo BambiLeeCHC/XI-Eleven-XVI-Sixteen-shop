@@ -151,7 +151,7 @@ export function OrdersPage() {
               <div className="space-y-2">
                 {order.items.map((item: any, i: number) => (
                   <div key={i} className="flex justify-between text-[12px]">
-                    <span className="text-white/50">{item.productName} × {item.quantity} — {item.size}</span>
+                    <span className="text-white/50">{item.productName} × {item.quantity} — {[item.color, item.size].filter(Boolean).join(" / ")}</span>
                     <span className="text-white/60">${(item.priceAtPurchase * item.quantity / 100).toFixed(2)}</span>
                   </div>
                 ))}
