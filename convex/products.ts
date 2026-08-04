@@ -1,5 +1,6 @@
 import { v } from "convex/values";
-import { action, mutation, query } from "./_generated/server";
+import { internal } from "./_generated/api";
+import { internalAction, internalMutation, query } from "./_generated/server";
 import { colorwayProductId } from "./variantMatch";
 
 declare const process: { env: Record<string, string | undefined> };
@@ -67,7 +68,7 @@ export const getCount = query({
 
 // ─── Mutations ──────────────────────────────────────────────────────────
 
-export const upsertFromPrintful = mutation({
+export const upsertFromPrintful = internalMutation({
   args: {
     name: v.string(),
     description: v.string(),
@@ -121,7 +122,7 @@ export const upsertFromPrintful = mutation({
   },
 });
 
-export const createManual = mutation({
+export const createManual = internalMutation({
   args: {
     name: v.string(),
     description: v.string(),
@@ -165,7 +166,7 @@ const PRINTFUL_ID_REMAP: Array<{ from: string; to: string; color: string }> = [
   { from: "429126351", to: "448079072", color: "Pink" },
 ];
 
-export const remapPrintfulIds = mutation({
+export const remapPrintfulIds = internalMutation({
   args: {},
   returns: v.array(v.string()),
   handler: async (ctx) => {
@@ -224,14 +225,14 @@ async function printfulGet<T>(path: string): Promise<T> {
   return (await response.json()) as T;
 }
 
-export const syncFromPrintful = action({
+export const syncFromPrintful = internalAction({
   args: {},
   returns: v.string(),
   handler: async (ctx) => {
     try {
       // Always run the ID remap first: without it the re-created shorts would be
       // inserted as duplicates instead of updating the live pages. It is idempotent.
-      const remap = (await ctx.runMutation("products:remapPrintfulIds" as any, {})) as string[];
+      const remap = await ctx.runMutation(internal.products.remapPrintfulIds, {});
 
       // Get store products from Printful
       const result = await printfulGet<{ code: number; result: Array<{ id: number; external_id: string; name: string; variants: number; synced: number; thumbnail_url: string }> }>(
@@ -371,7 +372,7 @@ export const syncFromPrintful = action({
             ...group.variants.map((v) => Math.round(Number.parseFloat(v.retail_price) * 100)),
           );
 
-          await ctx.runMutation("products:upsertFromPrintful" as any, {
+          await ctx.runMutation(internal.products.upsertFromPrintful, {
             name: group.name,
             description: `Premium ${group.name} from the XI · XVI collection.`,
             price,
@@ -397,7 +398,7 @@ export const syncFromPrintful = action({
   },
 });
 
-export const updateImages = mutation({
+export const updateImages = internalMutation({
   args: {
     productId: v.id("products"),
     images: v.array(v.string()),
@@ -407,7 +408,7 @@ export const updateImages = mutation({
   },
 });
 
-export const updateProduct = mutation({
+export const updateProduct = internalMutation({
   args: {
     productId: v.id("products"),
     images: v.optional(v.array(v.string())),
@@ -427,7 +428,7 @@ export const updateProduct = mutation({
   },
 });
 
-export const remove = mutation({
+export const remove = internalMutation({
   args: { productId: v.id("products") },
   handler: async (ctx, { productId }) => {
     await ctx.db.delete(productId);
