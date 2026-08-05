@@ -228,11 +228,14 @@ async function printfulGet<T>(path: string): Promise<T> {
 export const syncFromPrintful = internalAction({
   args: {},
   returns: v.string(),
-  handler: async (ctx) => {
+  handler: async (ctx): Promise<string> => {
     try {
       // Always run the ID remap first: without it the re-created shorts would be
       // inserted as duplicates instead of updating the live pages. It is idempotent.
-      const remap = await ctx.runMutation(internal.products.remapPrintfulIds, {});
+      const remap: string[] = await ctx.runMutation(
+        internal.products.remapPrintfulIds,
+        {},
+      );
 
       // Get store products from Printful
       const result = await printfulGet<{ code: number; result: Array<{ id: number; external_id: string; name: string; variants: number; synced: number; thumbnail_url: string }> }>(
@@ -390,7 +393,7 @@ export const syncFromPrintful = internalAction({
         }
       }
 
-      const remapped = remap.filter((line) => line.startsWith("remapped")).length;
+      const remapped = remap.filter((line: string) => line.startsWith("remapped")).length;
       return `Synced ${synced} products from Printful (${remapped} product IDs remapped).`;
     } catch (error) {
       return `Printful sync error: ${error instanceof Error ? error.message : String(error)}`;
