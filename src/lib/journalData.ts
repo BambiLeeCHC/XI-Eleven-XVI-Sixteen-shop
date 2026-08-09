@@ -1,15 +1,14 @@
 // Journal data access with a static fallback.
 //
-// The Journal reads from Convex (`blog:*`), which is where admin-authored posts
-// live. If those functions are not available on the deployment the site is
-// pointed at (e.g. the backend hasn't been deployed yet), a plain `useQuery`
-// throws and takes the whole page down. So instead we query imperatively,
-// catch the failure, and serve the seeded launch entries bundled with the app.
-// The moment the backend is live, Convex data wins automatically.
+// The Journal reads admin-authored posts from Supabase. If that read fails
+// (network, or the table empty on a fresh environment), a plain `useQuery`
+// would throw and take the whole page down. So we query imperatively, catch
+// the failure, and serve the seeded launch entries bundled with the app.
+// Whenever the database answers, its posts win.
 
 import { useEffect, useMemo, useState } from "react";
 import { SECOND_POST, THIRD_POST, WELCOME_POST } from "../data/journalSeed";
-import { api, useConvex } from "../lib/backend";
+import { api, useBackend } from "../lib/backend";
 
 export interface JournalPost {
   _id: string;
@@ -54,12 +53,12 @@ export const STATIC_POSTS: JournalPost[] = [
 
 type Source = "database" | "static";
 
-/** Published posts, from Convex when reachable, else the bundled entries. */
+/** Published posts, from the database when reachable, else the bundled entries. */
 export function usePublishedPosts(limit?: number): {
   posts: JournalPost[] | undefined;
   source: Source;
 } {
-  const backend = useConvex();
+  const backend = useBackend();
   const [posts, setPosts] = useState<JournalPost[] | undefined>(undefined);
   const [source, setSource] = useState<Source>("database");
 
@@ -93,7 +92,7 @@ export function usePublishedPosts(limit?: number): {
 
 /** One published post by slug: `undefined` while loading, `null` if unknown. */
 export function usePostBySlug(slug: string): JournalPost | null | undefined {
-  const backend = useConvex();
+  const backend = useBackend();
   const [post, setPost] = useState<JournalPost | null | undefined>(undefined);
   const fallback = useMemo(
     () => STATIC_POSTS.find(p => p.slug === slug) ?? null,

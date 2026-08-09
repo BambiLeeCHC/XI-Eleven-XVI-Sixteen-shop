@@ -1,11 +1,11 @@
-import { useConvexAuth } from "../lib/backend";
+import { useAuthStatus } from "../lib/backend";
 import { ArrowRight } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { APP_NAME } from "@/lib/constants";
 import { Button } from "./ui/button";
 
 export function Header() {
-  const { isAuthenticated, isLoading } = useConvexAuth();
+  const { isAuthenticated, isLoading } = useAuthStatus();
   const location = useLocation();
 
   const isAuthPage =

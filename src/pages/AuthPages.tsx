@@ -1,5 +1,5 @@
 import { useAuthActions } from "../lib/backend";
-import { useConvexAuth } from "../lib/backend";
+import { useAuthStatus } from "../lib/backend";
 import { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
@@ -10,7 +10,7 @@ import { Link, useNavigate } from "react-router-dom";
  */
 export function LoginPage() {
   const { signIn } = useAuthActions();
-  const { isAuthenticated } = useConvexAuth();
+  const { isAuthenticated } = useAuthStatus();
   const navigate = useNavigate();
 
   const [email, setEmail] = useState("");
@@ -418,7 +418,7 @@ export function LoginPage() {
  */
 export function SignupPage() {
   const { signIn } = useAuthActions();
-  const { isAuthenticated } = useConvexAuth();
+  const { isAuthenticated } = useAuthStatus();
   const navigate = useNavigate();
 
   const [email, setEmail] = useState("");

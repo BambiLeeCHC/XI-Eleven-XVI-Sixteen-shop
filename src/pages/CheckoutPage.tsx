@@ -1,6 +1,6 @@
 import { useState, useCallback, useMemo, useEffect } from "react";
 import { useQuery, useAction, useMutation } from "../lib/backend";
-import { useConvexAuth } from "../lib/backend";
+import { useAuthStatus } from "../lib/backend";
 import { Link, useNavigate } from "react-router-dom";
 import { api } from "../lib/backend";
 import { useSessionId } from "../hooks/useSessionId";
@@ -172,7 +172,7 @@ const labelStyle: React.CSSProperties = {
 
 export function CheckoutPage() {
   const sessionId = useSessionId();
-  const { isAuthenticated } = useConvexAuth();
+  const { isAuthenticated } = useAuthStatus();
   const cartItems = useQuery(api.cart.getItems, { sessionId }) ?? [];
   const estimateShipping = useAction(api.checkout.estimateShipping);
   const createOrder = useMutation(api.orders.create);

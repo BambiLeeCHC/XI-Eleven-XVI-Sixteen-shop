@@ -57,7 +57,7 @@ export function PrivacyPage() {
         <h2>3. How We Share Your Information</h2>
         <p>We do not sell your personal information. We share data only with:</p>
         <ul>
-          <li><strong>Service providers:</strong> Stripe (payment processing), Printful (order fulfillment and shipping), Convex (database hosting), and Vercel (website hosting) — each bound by contractual data-protection obligations.</li>
+          <li><strong>Service providers:</strong> Stripe (payment processing), Printful (order fulfillment and shipping), Supabase (database and file hosting), and Vercel (website hosting) — each bound by contractual data-protection obligations.</li>
           <li><strong>Legal requirements:</strong> when required by law, subpoena, court order, or to protect our rights, property, or safety.</li>
           <li><strong>Business transfers:</strong> in connection with a merger, acquisition, or sale of assets, your data may be transferred to the successor entity.</li>
         </ul>

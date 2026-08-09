@@ -130,7 +130,7 @@ export function buildOrganizationJsonLd() {
     name: "XI Eleven XVI Sixteen",
     alternateName: "XI · XVI",
     url: "https://xixvi.shop",
-    logo: "https://decisive-cheetah-451.convex.cloud/api/storage/9f36be32-eae9-430a-ac7e-ab617f632b25",
+    logo: "https://liiyalnrsilwskqidvzw.supabase.co/storage/v1/object/public/site-media/legacy/9f36be32-eae9-430a-ac7e-ab617f632b25.png",
     sameAs: ["https://www.instagram.com/xielevenxvisixteen/"],
     description:
       "Luxury streetwear brand engineered for precision fit. Slip dresses, performance jerseys, glitch shorts, and activewear.",
