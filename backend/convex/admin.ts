@@ -84,6 +84,7 @@ export const updateProduct = mutation({
     sortOrder: v.optional(v.number()),
     category: v.optional(v.string()),
     gender: v.optional(v.string()),
+    images: v.optional(v.array(v.string())),
     rotationImages: v.optional(v.array(v.string())),
   },
   returns: v.null(),

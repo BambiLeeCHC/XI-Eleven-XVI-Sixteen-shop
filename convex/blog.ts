@@ -206,6 +206,7 @@ export const seedWelcomePost = mutation({
   args: {},
   returns: v.any(),
   handler: async (ctx) => {
+    await requireAdmin(ctx);
     const inserted: string[] = [];
     for (const seed of [WELCOME_POST, SECOND_POST, THIRD_POST]) {
       const existing = await ctx.db

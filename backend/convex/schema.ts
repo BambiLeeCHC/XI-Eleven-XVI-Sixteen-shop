@@ -140,6 +140,19 @@ const schema = defineSchema({
     tags: v.array(v.string()),
   }).index("by_customer", ["customerId"]),
 
+  crmEmails: defineTable({
+    customerId: v.id("users"),
+    adminId: v.id("users"),
+    to: v.string(),
+    from: v.string(),
+    subject: v.string(),
+    body: v.string(),
+    status: v.string(),
+    providerId: v.optional(v.string()),
+    error: v.optional(v.string()),
+    sentAt: v.number(),
+  }).index("by_customer", ["customerId"]),
+
   // Drape images — stored in Convex file storage for quality + no size limits
   drapeImages: defineTable({
     key: v.string(), // e.g. "d-slip-dress-black_curvy_xl" or "d-slip-dress-black_m" 
@@ -182,6 +195,14 @@ const schema = defineSchema({
   })
     .index("by_slug", ["slug"])
     .index("by_status", ["status"]),
+
+  // Editable storefront content. A single "landing" document powers the
+  // homepage editor while defaults in the frontend keep first deploy safe.
+  siteContent: defineTable({
+    key: v.string(),
+    value: v.any(),
+    updatedAt: v.number(),
+  }).index("by_key", ["key"]),
 
   // Shipping settings — admin-configurable shipping rules
   shippingSettings: defineTable({
