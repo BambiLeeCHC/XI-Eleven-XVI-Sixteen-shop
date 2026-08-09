@@ -550,8 +550,10 @@ function TrustBadges() {
    HOME PAGE
    ═══════════════════════════════════════════════════════ */
 export function HomePage() {
-  const stored = useQuery(api.siteContent.getLanding);
-  const content = mergeLandingContent(stored?.value);
+  // NOTE: landing content is served from static defaults until the site-content
+  // store is live on the new backend. Querying an undeployed backend function
+  // here white-screened the whole homepage.
+  const content = mergeLandingContent(undefined);
   return (
     <>
       <SEO
