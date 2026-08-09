@@ -2,7 +2,7 @@
  * Printful → order state (shipping, tracking, production failures).
  */
 
-import { type ApiRequest, type ApiResponse, updateOrder } from "./_lib/server";
+import { type ApiRequest, type ApiResponse, updateOrder } from "./_lib/server.js";
 
 export default async function handler(req: ApiRequest, res: ApiResponse) {
   if (req.method !== "POST") {

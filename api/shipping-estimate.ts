@@ -10,8 +10,16 @@ import {
   HttpError,
   printfulRequest,
   supabaseAdmin,
-} from "./_lib/server";
-import { matchVariant, type PrintfulVariant } from "./_lib/variantMatch";
+} from "./_lib/server.js";
+import { matchVariant, type PrintfulVariant } from "./_lib/variantMatch.js";
+
+type ShippingProductRow = {
+  id: string;
+  name: string;
+  price: number;
+  images: string[] | null;
+  printful_variants: PrintfulVariant[] | null;
+};
 
 const FULFILLMENT_MIN = 2;
 const FULFILLMENT_MAX = 5;
@@ -56,13 +64,14 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
 
     const admin = supabaseAdmin();
     const ids = [...new Set(items.map(item => String(item.productId)))];
-    const { data: products, error } = await admin
+    const { data: productRows, error } = await admin
       .from("products")
       .select("id, name, price, images, printful_variants")
       .in("id", ids);
     if (error) throw error;
 
-    const byId = new Map((products ?? []).map(p => [p.id, p]));
+    const products = (productRows ?? []) as ShippingProductRow[];
+    const byId = new Map(products.map(p => [p.id, p]));
     const resolvedItems = [];
     const printfulItems: Array<{ variant_id: number; quantity: number }> = [];
 
