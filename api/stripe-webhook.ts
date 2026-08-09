@@ -9,14 +9,14 @@
  * forwarded to production. It now resolves the key the same way checkout does.
  */
 
-import { submitOrderToPrintful } from "./_lib/fulfill";
+import { submitOrderToPrintful } from "./_lib/fulfill.js";
 import {
   type ApiRequest,
   type ApiResponse,
   stripeSecret,
   supabaseAdmin,
   updateOrder,
-} from "./_lib/server";
+} from "./_lib/server.js";
 
 export default async function handler(req: ApiRequest, res: ApiResponse) {
   if (req.method !== "POST") {

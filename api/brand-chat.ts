@@ -12,7 +12,7 @@ import {
   type ApiResponse,
   fail,
   HttpError,
-} from "./_lib/server";
+} from "./_lib/server.js";
 
 const BRAND_SYSTEM_PROMPT = `You are the XI · XVI Style Concierge — the personal shopping assistant for XI Eleven XVI Sixteen (xixvi.shop), a premium streetwear and luxury fashion brand. You speak with warmth, confidence, and sophistication. You're knowledgeable, stylish, and genuinely excited to help customers find their perfect pieces.
 

@@ -10,11 +10,12 @@
     "check": "biome check .",
     "format": "biome check --write .",
     "lint": "biome lint .",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc --noEmit && tsc -p tsconfig.api.json",
     "test": "bun run --bun scripts/test.ts",
     "test:variants": "node --experimental-strip-types scripts/verify-variant-match.mjs",
     "test:security": "node scripts/security-regression.mjs",
-    "screenshot": "bun run --bun scripts/screenshot.ts"
+    "screenshot": "bun run --bun scripts/screenshot.ts",
+    "typecheck:api": "tsc -p tsconfig.api.json"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",

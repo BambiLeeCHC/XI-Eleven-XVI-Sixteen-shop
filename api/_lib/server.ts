@@ -7,7 +7,7 @@
  * change a price, or mark their own order paid.
  */
 
-import { createClient } from "@supabase/supabase-js";
+import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 
 export type ApiRequest = {
   method?: string;
@@ -29,13 +29,13 @@ const SUPABASE_URL =
   process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL || "";
 const SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || "";
 
-export function supabaseAdmin() {
+export function supabaseAdmin(): SupabaseClient<any, "public", any> {
   if (!SUPABASE_URL || !SERVICE_KEY) {
     throw new Error(
       "Supabase is not configured on the server (SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY).",
     );
   }
-  return createClient(SUPABASE_URL, SERVICE_KEY, {
+  return createClient<any, "public", any>(SUPABASE_URL, SERVICE_KEY, {
     auth: { persistSession: false, autoRefreshToken: false },
   });
 }

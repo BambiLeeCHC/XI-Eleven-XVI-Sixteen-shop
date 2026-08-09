@@ -14,8 +14,8 @@ import {
   printfulRequest,
   requireAdmin,
   supabaseAdmin,
-} from "./_lib/server";
-import { colorwayProductId } from "./_lib/variantMatch";
+} from "./_lib/server.js";
+import { colorwayProductId } from "./_lib/variantMatch.js";
 
 /**
  * The six S-Glitch 2.5" shorts colourways were deleted and re-created in

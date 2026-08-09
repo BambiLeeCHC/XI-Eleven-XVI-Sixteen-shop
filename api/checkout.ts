@@ -14,7 +14,7 @@ import {
   HttpError,
   stripePost,
   supabaseAdmin,
-} from "./_lib/server";
+} from "./_lib/server.js";
 
 type OrderItem = {
   productName: string;
