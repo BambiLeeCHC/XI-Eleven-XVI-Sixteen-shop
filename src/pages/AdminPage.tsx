@@ -1,11 +1,13 @@
 import { useState } from "react";
-import { useQuery, useMutation } from "convex/react";
+import { useAction, useQuery, useMutation } from "convex/react";
 import { useAuthActions } from "@convex-dev/auth/react";
 import { useNavigate } from "react-router-dom";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
 import { format } from "date-fns";
 import { JournalAdminTab } from "../components/journal/JournalAdminTab";
+import { ProductImageManager } from "../components/admin/ProductImageManager";
+import { LandingPageEditor } from "../components/admin/LandingPageEditor";
 import {
   BarChart3,
   Package,
@@ -36,6 +38,7 @@ import {
   X,
   Receipt,
   Globe,
+  LayoutTemplate,
   ToggleLeft,
   ToggleRight,
   Download,
@@ -60,6 +63,7 @@ type AdminTab =
   | "dashboard"
   | "orders"
   | "products"
+  | "site"
   | "customers"
   | "crm"
   | "journal"
@@ -107,6 +111,7 @@ const NAV_ITEMS: Array<{ id: AdminTab; label: string; icon: any }> = [
   { id: "dashboard", label: "Dashboard", icon: BarChart3 },
   { id: "orders", label: "Orders", icon: ShoppingCart },
   { id: "products", label: "Products", icon: Package },
+  { id: "site", label: "Site Editor", icon: LayoutTemplate },
   { id: "customers", label: "Customers", icon: Users },
   { id: "crm", label: "CRM", icon: MessageSquare },
   { id: "journal", label: "Journal", icon: FileText },
@@ -908,6 +913,7 @@ function ProductsTab() {
       category: product.category,
       gender: product.gender,
       isActive: product.isActive,
+      images: [...(product.images || [])],
     });
   };
 
@@ -920,6 +926,7 @@ function ProductsTab() {
       category: editForm.category,
       gender: editForm.gender,
       isActive: editForm.isActive,
+      images: editForm.images,
     });
     setEditingId(null);
   };
@@ -1040,6 +1047,10 @@ function ProductsTab() {
                     className="w-full bg-white/[0.04] border border-white/[0.08] rounded px-3 py-1.5 text-sm text-white/80 focus:outline-none resize-none"
                   />
                 </div>
+                <ProductImageManager
+                  images={editForm.images || []}
+                  onChange={(images) => setEditForm({ ...editForm, images })}
+                />
                 <div className="flex items-center justify-between">
                   <label className="flex items-center gap-2 text-sm text-white/60">
                     <input
@@ -1332,10 +1343,17 @@ function CrmDetail({ customer }: { customer: any }) {
   const deleteNote = useMutation(api.admin.deleteCrmNote);
   const updateTags = useMutation(api.admin.updateCustomerTags);
   const setRole = useMutation(api.admin.setUserRole);
+  const sendEmail = useAction(api.crmEmail.send);
+  const emailHistory = useQuery(api.crmEmail.listForCustomer, { customerId: customer._id });
 
   const [newNote, setNewNote] = useState("");
   const [noteType, setNoteType] = useState("note");
   const [newTag, setNewTag] = useState("");
+  const [showComposer, setShowComposer] = useState(false);
+  const [emailSubject, setEmailSubject] = useState("");
+  const [emailBody, setEmailBody] = useState("");
+  const [emailStatus, setEmailStatus] = useState("");
+  const [sendingEmail, setSendingEmail] = useState(false);
 
   const NOTE_TYPES = [
     { id: "note", label: "Note", icon: FileText },
@@ -1376,6 +1394,13 @@ function CrmDetail({ customer }: { customer: any }) {
             </div>
           </div>
           <div className="flex gap-2">
+            <button
+              onClick={() => setShowComposer((value) => !value)}
+              className="flex items-center gap-1.5 rounded bg-amber-500/15 px-3 py-1.5 text-[10px] font-medium text-amber-300 hover:bg-amber-500/25"
+            >
+              <Mail className="h-3 w-3" />
+              Email customer
+            </button>
             <button
               onClick={() =>
                 setRole({
@@ -1440,6 +1465,43 @@ function CrmDetail({ customer }: { customer: any }) {
         </div>
       </div>
 
+      {showComposer && (
+        <div className="rounded-lg border border-amber-500/15 bg-amber-500/[0.04] p-4">
+          <div className="mb-3 flex items-start justify-between">
+            <div>
+              <h3 className="text-sm font-medium text-white/85">New customer email</h3>
+              <p className="mt-0.5 text-[11px] text-white/35">
+                From XI · XVI Support &lt;support@xixvi.shop&gt; · replies return to support@xixvi.shop
+              </p>
+            </div>
+            <button onClick={() => setShowComposer(false)} className="text-white/30 hover:text-white"><X className="h-4 w-4" /></button>
+          </div>
+          <div className="space-y-3">
+            <input className="admin-input" value={emailSubject} onChange={(e) => setEmailSubject(e.target.value)} placeholder="Subject" />
+            <textarea className="admin-input resize-none" rows={7} value={emailBody} onChange={(e) => setEmailBody(e.target.value)} placeholder={`Hi ${customer.name || "there"},\n\n`} />
+            <div className="flex items-center justify-between gap-3">
+              <p className={`text-[11px] ${emailStatus.startsWith("Sent") ? "text-emerald-400" : "text-red-400"}`}>{emailStatus}</p>
+              <button
+                disabled={sendingEmail || !emailSubject.trim() || !emailBody.trim()}
+                onClick={async () => {
+                  setSendingEmail(true); setEmailStatus("");
+                  try {
+                    await sendEmail({ customerId: customer._id, to: customer.email, subject: emailSubject.trim(), body: emailBody.trim() });
+                    setEmailStatus("Sent successfully.");
+                    setEmailSubject(""); setEmailBody("");
+                  } catch (e: any) {
+                    setEmailStatus(e?.message || "Email could not be sent.");
+                  } finally { setSendingEmail(false); }
+                }}
+                className="rounded-md bg-amber-500/20 px-4 py-2 text-xs font-medium text-amber-300 hover:bg-amber-500/30 disabled:opacity-40"
+              >
+                {sendingEmail ? "Sending…" : "Send email"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Add Note */}
       <div className="bg-white/[0.03] border border-white/[0.06] rounded-lg p-4">
         <div className="flex gap-2 mb-2">
@@ -1491,7 +1553,7 @@ function CrmDetail({ customer }: { customer: any }) {
       {/* Notes Timeline */}
       <div className="space-y-2">
         <h3 className="text-[11px] tracking-wider uppercase text-white/30">
-          Activity ({notes?.length || 0})
+          Activity ({(notes?.length || 0) + (emailHistory?.length || 0)})
         </h3>
         {notes?.map((note: any) => {
           const typeInfo = NOTE_TYPES.find((t) => t.id === note.type) || NOTE_TYPES[0];
@@ -1529,6 +1591,16 @@ function CrmDetail({ customer }: { customer: any }) {
             </div>
           );
         })}
+        {emailHistory?.map((email: any) => (
+          <div key={email._id} className="flex gap-3 rounded-lg border border-white/[0.06] bg-white/[0.03] p-3">
+            <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-white/[0.06]"><Mail className="h-3.5 w-3.5 text-white/30" /></div>
+            <div className="min-w-0 flex-1">
+              <div className="flex gap-2 text-[10px]"><span className={email.status === "sent" ? "text-emerald-400" : "text-red-400"}>{email.status.toUpperCase()}</span><span className="text-white/20">{format(new Date(email.sentAt), "MMM d, h:mm a")}</span></div>
+              <p className="mt-1 text-xs font-medium text-white/65">{email.subject}</p>
+              <p className="mt-1 whitespace-pre-wrap text-xs text-white/40">{email.body}</p>
+            </div>
+          </div>
+        ))}
         {(!notes || notes.length === 0) && (
           <p className="text-center text-white/15 text-xs py-6">
             No notes yet — add one above
@@ -2506,6 +2578,8 @@ export default function AdminPage() {
         return <OrdersTab />;
       case "products":
         return <ProductsTab />;
+      case "site":
+        return <LandingPageEditor />;
       case "customers":
         return <CustomersTab onSelectCustomer={handleCustomerSelect} />;
       case "crm":

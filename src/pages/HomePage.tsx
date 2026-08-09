@@ -6,6 +6,7 @@ import { ClosetHero } from "../components/ClosetHero";
 import { DynamicSkyBar } from "../components/DynamicSkyBar";
 import { PAGE_SEO } from "../data/seoMeta";
 import { api } from "../../convex/_generated/api";
+import { mergeLandingContent, type LandingContent } from "../data/landingContent";
 
 function LedStripDivider() {
   return (
@@ -41,7 +42,7 @@ const CATEGORIES: CategoryItem[] = [
   { name: "Tie-Dye Tees", baseName: "T-Icon Tie-Dye", gender: "men", gradient: "linear-gradient(135deg, #18101a 0%, #0a0510 100%)" },
 ];
 
-function CategoryCarousel() {
+function CategoryCarousel({ eyebrow }: { eyebrow: string }) {
   const products = useQuery(api.products.list, {}) ?? [];
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -55,7 +56,7 @@ function CategoryCarousel() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 mb-8">
         <div className="flex items-center gap-3">
           <span style={{ color: "rgba(184,148,63,0.5)" }}>✦</span>
-          <span className="text-[10px] tracking-[0.3em] uppercase font-medium" style={{ color: "rgba(184,148,63,0.6)" }}>Shop by Category</span>
+          <span className="text-[10px] tracking-[0.3em] uppercase font-medium" style={{ color: "rgba(184,148,63,0.6)" }}>{eyebrow}</span>
         </div>
       </div>
       <div
@@ -155,7 +156,7 @@ function ProductCarousel({ baseName, accentColor }: { baseName: string; accentCo
 /* ═══════════════════════════════════════════════════════
    B-LIFT SPORTS BRA MOMENT — Feature cards + product busts
    ═══════════════════════════════════════════════════════ */
-function BraSpotlight() {
+function BraSpotlight({ content }: { content: LandingContent["bra"] }) {
   return (
     <section className="closet-section closet-section-women relative overflow-hidden" style={{ background: "#050508" }}>
       <div className="closet-section-sign closet-section-sign-women" aria-hidden="true">
@@ -201,13 +202,13 @@ function BraSpotlight() {
         <div className="text-center mb-10">
           <div className="inline-flex items-center gap-2 px-5 py-2 mb-5" style={{ background: "rgba(184,148,63,0.08)", border: "1px solid rgba(184,148,63,0.18)", borderRadius: "40px" }}>
             <span style={{ color: "rgba(184,148,63,0.8)", fontSize: 10 }}>✦</span>
-            <span className="text-[10px] tracking-[0.35em] uppercase font-semibold" style={{ color: "rgba(184,148,63,0.8)" }}>Engineered for Movement</span>
+            <span className="text-[10px] tracking-[0.35em] uppercase font-semibold" style={{ color: "rgba(184,148,63,0.8)" }}>{content.eyebrow}</span>
           </div>
           <h2 className="text-3xl md:text-5xl font-light mb-4" style={{ fontFamily: "var(--font-display)", color: "#fff" }}>
-            B-Lift <span className="italic" style={{ background: "linear-gradient(135deg, rgba(184,148,63,1), rgba(220,190,100,0.9))", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>Sports Bra</span>
+            {content.title} <span className="italic" style={{ background: "linear-gradient(135deg, rgba(184,148,63,1), rgba(220,190,100,0.9))", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>{content.accent}</span>
           </h2>
           <p className="text-[15px] max-w-lg mx-auto" style={{ color: "rgba(255,255,255,0.45)" }}>
-            Removable cups. Moisture-wicking fabric. Your fit, your way.
+            {content.description}
           </p>
         </div>
 
@@ -254,7 +255,7 @@ function BraSpotlight() {
 /* ═══════════════════════════════════════════════════════
    S-GLITCH SHORTS MOMENT — Feature cards + product busts
    ═══════════════════════════════════════════════════════ */
-function ShortsSpotlight() {
+function ShortsSpotlight({ content }: { content: LandingContent["shorts"] }) {
   return (
     <section className="closet-section closet-section-men relative overflow-hidden" style={{ background: "#060610" }}>
       <div className="closet-section-sign closet-section-sign-men" aria-hidden="true">
@@ -291,13 +292,13 @@ function ShortsSpotlight() {
         <div className="text-center mb-10">
           <div className="inline-flex items-center gap-2 px-5 py-2 mb-5" style={{ background: "rgba(100,160,255,0.08)", border: "1px solid rgba(100,160,255,0.18)", borderRadius: "40px" }}>
             <span style={{ color: "rgba(100,160,255,0.8)", fontSize: 10 }}>✦</span>
-            <span className="text-[10px] tracking-[0.35em] uppercase font-semibold" style={{ color: "rgba(100,160,255,0.8)" }}>Built for Training</span>
+            <span className="text-[10px] tracking-[0.35em] uppercase font-semibold" style={{ color: "rgba(100,160,255,0.8)" }}>{content.eyebrow}</span>
           </div>
           <h2 className="text-3xl md:text-5xl font-light mb-4" style={{ fontFamily: "var(--font-display)", color: "#fff" }}>
-            S-Glitch <span className="italic" style={{ background: "linear-gradient(135deg, rgba(100,160,255,1), rgba(140,200,255,0.9))", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>Basketball Shorts</span>
+            {content.title} <span className="italic" style={{ background: "linear-gradient(135deg, rgba(100,160,255,1), rgba(140,200,255,0.9))", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>{content.accent}</span>
           </h2>
           <p className="text-[15px] max-w-lg mx-auto" style={{ color: "rgba(255,255,255,0.45)" }}>
-            SPF UV protection. Two inseam lengths. Six colors. Built for the court.
+            {content.description}
           </p>
         </div>
 
@@ -351,20 +352,20 @@ function ShortsSpotlight() {
 /* ═══════════════════════════════════════════════════════
    HOW IT WORKS — Photo-driven steps
    ═══════════════════════════════════════════════════════ */
-function HowItWorks() {
+function HowItWorks({ content }: { content: LandingContent["howItWorks"] }) {
   return (
     <section className="relative py-24 px-6 overflow-hidden" style={{ background: "#fafafa" }}>
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-16">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 mb-6" style={{ background: "rgba(184,148,63,0.04)", border: "1px solid rgba(184,148,63,0.1)", borderRadius: "10px" }}>
             <span style={{ color: "rgba(184,148,63,0.6)" }}>✦</span>
-            <span className="text-[10px] tracking-[0.3em] uppercase font-medium" style={{ color: "rgba(184,148,63,0.6)" }}>Couture, Redefined</span>
+            <span className="text-[10px] tracking-[0.3em] uppercase font-medium" style={{ color: "rgba(184,148,63,0.6)" }}>{content.eyebrow}</span>
           </div>
           <h2 className="text-4xl md:text-5xl mb-5 font-light" style={{ fontFamily: "var(--font-display)", color: "#1a1a2e" }}>
-            Made Exclusively <span className="italic" style={{ color: "rgba(184,148,63,0.8)" }}>for You</span>
+            {content.title} <span className="italic" style={{ color: "rgba(184,148,63,0.8)" }}>{content.accent}</span>
           </h2>
           <p className="text-[15px] max-w-lg mx-auto leading-relaxed" style={{ color: "rgba(26, 26, 46, 0.4)" }}>
-            Every piece is crafted the moment you order it — not pulled from a shelf. That's not fast fashion. That's couture for the modern age.
+            {content.description}
           </p>
         </div>
 
@@ -451,7 +452,7 @@ function HowItWorks() {
 /* ═══════════════════════════════════════════════════════
    NEWSLETTER / CRM SECTION
    ═══════════════════════════════════════════════════════ */
-function NewsletterSection() {
+function NewsletterSection({ content }: { content: LandingContent["newsletter"] }) {
   const [email, setEmail] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const subscribe = useMutation(api.newsletter.subscribe);
@@ -475,18 +476,18 @@ function NewsletterSection() {
       <div className="max-w-xl mx-auto text-center relative z-10">
         <div className="inline-flex items-center gap-2 px-4 py-1.5 mb-6" style={{ background: "rgba(184,148,63,0.06)", border: "1px solid rgba(184,148,63,0.12)", borderRadius: "10px" }}>
           <span style={{ color: "rgba(184,148,63,0.6)" }}>✦</span>
-          <span className="text-[10px] tracking-[0.3em] uppercase font-medium" style={{ color: "rgba(184,148,63,0.6)" }}>Join the Movement</span>
+          <span className="text-[10px] tracking-[0.3em] uppercase font-medium" style={{ color: "rgba(184,148,63,0.6)" }}>{content.eyebrow}</span>
         </div>
         <h2 className="text-3xl md:text-4xl mb-4 font-light" style={{ fontFamily: "var(--font-display)", color: "#fff" }}>
-          Stay in the <span className="italic" style={{ color: "rgba(184,148,63,0.85)" }}>Loop</span>
+          {content.title} <span className="italic" style={{ color: "rgba(184,148,63,0.85)" }}>{content.accent}</span>
         </h2>
         <p className="text-[14px] mb-8 leading-relaxed" style={{ color: "rgba(255,255,255,0.4)" }}>
-          Early access to new drops, exclusive offers, and behind-the-scenes looks at what's coming next.
+          {content.description}
         </p>
 
         {submitted ? (
           <div className="p-4 rounded-xl" style={{ background: "rgba(184,148,63,0.1)", border: "1px solid rgba(184,148,63,0.2)" }}>
-            <p className="text-[13px]" style={{ color: "rgba(184,148,63,0.9)" }}>✦ Welcome to the family. Stay tuned.</p>
+            <p className="text-[13px]" style={{ color: "rgba(184,148,63,0.9)" }}>{content.success}</p>
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="flex gap-3 max-w-md mx-auto">
@@ -512,7 +513,7 @@ function NewsletterSection() {
                 color: "rgba(184,148,63,0.9)",
               }}
             >
-              Join
+              {content.button}
             </button>
           </form>
         )}
@@ -549,6 +550,8 @@ function TrustBadges() {
    HOME PAGE
    ═══════════════════════════════════════════════════════ */
 export function HomePage() {
+  const stored = useQuery(api.siteContent.getLanding);
+  const content = mergeLandingContent(stored?.value);
   return (
     <>
       <SEO
@@ -558,29 +561,29 @@ export function HomePage() {
       />
       <div className="home-lucite">
         {/* ── CLOSET HERO — Split-screen showroom ── */}
-        <ClosetHero />
+        <ClosetHero content={content.hero} />
 
         {/* ── LED Strip Divider ── */}
         <LedStripDivider />
 
         {/* ── Product Categories ── */}
-        <CategoryCarousel />
+        {content.categories.visible && <CategoryCarousel eyebrow={content.categories.eyebrow} />}
 
         {/* ── B-Lift Sports Bra Moment ── */}
-        <BraSpotlight />
+        {content.bra.visible && <BraSpotlight content={content.bra} />}
 
         {/* ── S-Glitch Shorts Moment ── */}
-        <ShortsSpotlight />
+        {content.shorts.visible && <ShortsSpotlight content={content.shorts} />}
 
         {/* ── How It Works — Photo-driven ── */}
         <div style={{ height: 1, background: "linear-gradient(90deg, transparent, rgba(184,148,63,0.08), transparent)" }} />
-        <HowItWorks />
+        {content.howItWorks.visible && <HowItWorks content={content.howItWorks} />}
 
         {/* ── Newsletter / CRM ── */}
-        <NewsletterSection />
+        {content.newsletter.visible && <NewsletterSection content={content.newsletter} />}
 
         {/* ── Trust Badges ── */}
-        <TrustBadges />
+        {content.trust.visible && <TrustBadges />}
       </div>
     </>
   );
