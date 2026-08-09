@@ -11,8 +11,8 @@ import {
   printfulRequest,
   supabaseAdmin,
   updateOrder,
-} from "./server";
-import { matchVariant, type PrintfulVariant } from "./variantMatch";
+} from "./server.js";
+import { matchVariant, type PrintfulVariant } from "./variantMatch.js";
 
 export async function submitOrderToPrintful(orderId: string) {
   const admin = supabaseAdmin();

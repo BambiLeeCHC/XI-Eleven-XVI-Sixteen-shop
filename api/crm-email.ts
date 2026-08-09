@@ -9,7 +9,7 @@ import {
   HttpError,
   requireAdmin,
   supabaseAdmin,
-} from "./_lib/server";
+} from "./_lib/server.js";
 
 const FROM = "XI · XVI Support <support@xixvi.shop>";
 

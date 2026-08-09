@@ -14,7 +14,17 @@ import {
   fail,
   HttpError,
   supabaseAdmin,
-} from "./_lib/server";
+} from "./_lib/server.js";
+
+type ProductRow = {
+  id: string;
+  name: string;
+  price: number;
+  images: string[] | null;
+  is_active: boolean;
+};
+
+type TaxRow = { region: string; rate: number; enabled: boolean };
 
 type IncomingItem = {
   productId: string;
@@ -69,13 +79,14 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
 
     // ── Price the order from the database, never from the client ──────────
     const ids = [...new Set(items.map(item => String(item.productId)))];
-    const { data: products, error: productError } = await admin
+    const { data: productRows, error: productError } = await admin
       .from("products")
       .select("id, name, price, images, is_active")
       .in("id", ids);
     if (productError) throw productError;
 
-    const byId = new Map((products ?? []).map(p => [p.id, p]));
+    const products = (productRows ?? []) as ProductRow[];
+    const byId = new Map(products.map(p => [p.id, p]));
     const orderItems = [];
     let subtotal = 0;
 
@@ -110,23 +121,25 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
     let taxRegion: string | null = null;
 
     if (countryCode === US_STATE_FALLBACK && stateCode) {
-      const { data } = await admin
+      const { data: taxRow } = await admin
         .from("tax_rates")
         .select("region, rate, enabled")
         .eq("region", stateCode)
         .eq("region_type", "us_state")
         .maybeSingle();
+      const data = taxRow as TaxRow | null;
       if (data?.enabled) {
         taxRate = Number(data.rate);
         taxRegion = data.region;
       }
     } else {
-      const { data } = await admin
+      const { data: taxRow } = await admin
         .from("tax_rates")
         .select("region, rate, enabled")
         .eq("region", countryCode)
         .eq("region_type", "country")
         .maybeSingle();
+      const data = taxRow as TaxRow | null;
       if (data?.enabled) {
         taxRate = Number(data.rate);
         taxRegion = data.region;
