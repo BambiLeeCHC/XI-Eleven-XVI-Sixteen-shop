@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useMutation, useQuery } from "convex/react";
+import { useMutation } from "convex/react";
 import { ExternalLink, Eye, EyeOff, RotateCcw, Save } from "lucide-react";
 import { api } from "../../../convex/_generated/api";
 import { DEFAULT_LANDING_CONTENT, mergeLandingContent, type LandingContent } from "../../data/landingContent";
@@ -15,7 +15,9 @@ const SECTIONS: Array<{ key: keyof LandingContent; title: string; description: s
 ];
 
 export function LandingPageEditor() {
-  const stored = useQuery(api.siteContent.getLanding);
+  // Reading stored content is disabled until the site-content store is live on
+  // the new backend; querying an undeployed function crashed the admin page.
+  const stored = undefined as { value?: unknown } | undefined;
   const saveLanding = useMutation(api.siteContent.saveLanding);
   const [content, setContent] = useState<LandingContent>(DEFAULT_LANDING_CONTENT);
   const [selected, setSelected] = useState<keyof LandingContent>("hero");
