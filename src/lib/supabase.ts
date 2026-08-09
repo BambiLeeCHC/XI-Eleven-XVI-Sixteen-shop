@@ -1,4 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
+import { getSessionId } from "./session";
 
 const url = import.meta.env.VITE_SUPABASE_URL as string;
 const key = import.meta.env.VITE_SUPABASE_ANON_KEY as string;
@@ -12,6 +13,10 @@ if (!url || !key) {
 }
 
 export const supabase = createClient(url ?? "", key ?? "", {
+  global: {
+    // Scopes the guest cart: RLS on `cart_items` matches rows against this.
+    headers: { "x-cart-session": getSessionId() },
+  },
   auth: {
     persistSession: true,
     autoRefreshToken: true,
