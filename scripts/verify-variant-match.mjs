@@ -1,4 +1,4 @@
-import { matchVariant, colorOptions, colorSlug, colorwayProductId } from '../convex/variantMatch.ts';
+import { matchVariant, colorOptions, colorSlug, colorwayProductId } from '../api/_lib/variantMatch.ts';
 const tee = [
   {id:1,size:'S',color:'French Navy',variant_id:11},
   {id:2,size:'S',color:'Black',variant_id:12},

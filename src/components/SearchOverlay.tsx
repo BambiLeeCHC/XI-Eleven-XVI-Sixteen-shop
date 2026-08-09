@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
-import { useQuery } from "convex/react";
+import { useQuery } from "../lib/backend";
 import { useNavigate } from "react-router-dom";
-import { api } from "../../convex/_generated/api";
+import { api } from "../lib/backend";
 
 interface SearchOverlayProps {
   isOpen: boolean;

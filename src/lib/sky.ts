@@ -20,7 +20,8 @@ export function getSkyPhase(d: Date = new Date()): SkyPhase {
 
 export function weatherCodeToCondition(code: number): WeatherCondition {
   if (code >= 95) return "storm";
-  if ([51, 53, 55, 56, 57, 61, 63, 65, 66, 67, 80, 81, 82].includes(code)) return "rain";
+  if ([51, 53, 55, 56, 57, 61, 63, 65, 66, 67, 80, 81, 82].includes(code))
+    return "rain";
   if ([2, 3, 45, 48].includes(code)) return "cloudy";
   return "clear";
 }
@@ -36,7 +37,7 @@ const LOCATION_KEY = "xixvi-weather-location";
 export async function resolveWeather(): Promise<WeatherCondition | null> {
   const fetchWeather = async (lat: number, lng: number) => {
     const r = await fetch(
-      `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&current_weather=true`
+      `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&current_weather=true`,
     );
     const d = await r.json();
     return weatherCodeToCondition(d?.current_weather?.weathercode ?? 0);
@@ -55,11 +56,14 @@ export async function resolveWeather(): Promise<WeatherCondition | null> {
   try {
     const res = await fetch("https://ipwho.is/");
     const loc = await res.json();
-    if (typeof loc?.latitude === "number" && typeof loc?.longitude === "number") {
+    if (
+      typeof loc?.latitude === "number" &&
+      typeof loc?.longitude === "number"
+    ) {
       try {
         sessionStorage.setItem(
           LOCATION_KEY,
-          JSON.stringify({ latitude: loc.latitude, longitude: loc.longitude })
+          JSON.stringify({ latitude: loc.latitude, longitude: loc.longitude }),
         );
       } catch {
         /* private mode — fine */
@@ -77,7 +81,10 @@ export async function resolveWeather(): Promise<WeatherCondition | null> {
  * this sits *behind* reading cards, so it keeps luminance high enough at the
  * horizon for glass surfaces to read, and never goes fully black at night.
  */
-export function getPageSkyGradient(phase: SkyPhase, weather: WeatherCondition): string {
+export function getPageSkyGradient(
+  phase: SkyPhase,
+  weather: WeatherCondition,
+): string {
   const wet = weather === "rain" || weather === "storm";
   if (wet) {
     switch (phase) {

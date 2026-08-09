@@ -1,9 +1,8 @@
 import { useState } from "react";
-import { useAction, useQuery, useMutation } from "convex/react";
-import { useAuthActions } from "@convex-dev/auth/react";
+import { useAction, useQuery, useMutation } from "../lib/backend";
+import { useAuthActions } from "../lib/backend";
 import { useNavigate } from "react-router-dom";
-import { api } from "../../convex/_generated/api";
-import type { Id } from "../../convex/_generated/dataModel";
+import { api } from "../lib/backend";
 import { format } from "date-fns";
 import { JournalAdminTab } from "../components/journal/JournalAdminTab";
 import { ProductImageManager } from "../components/admin/ProductImageManager";
@@ -73,7 +72,7 @@ type AdminTab =
   | "settings";
 
 interface Order {
-  _id: Id<"orders">;
+  _id: string;
   _creationTime: number;
   email: string;
   status: string;
@@ -82,7 +81,7 @@ interface Order {
   shipping: number;
   currency: string;
   items: Array<{
-    productId: Id<"products">;
+    productId: string;
     productName: string;
     size: string;
     quantity: number;
@@ -917,7 +916,7 @@ function ProductsTab() {
     });
   };
 
-  const saveEdit = async (productId: Id<"products">) => {
+  const saveEdit = async (productId: string) => {
     await updateProduct({
       productId,
       name: editForm.name,
@@ -1746,7 +1745,7 @@ function SettingsTab() {
   const handleGrantAdmin = async (userId: string) => {
     setSaving(true);
     try {
-      await setRole({ userId: userId as Id<"users">, role: "admin" });
+      await setRole({ userId: userId as string, role: "admin" });
       setConfirmGrant(null);
       setSearch("");
       setShowAddAdmin(false);
@@ -1759,7 +1758,7 @@ function SettingsTab() {
   const handleRevokeAdmin = async (userId: string) => {
     setSaving(true);
     try {
-      await setRole({ userId: userId as Id<"users">, role: "customer" });
+      await setRole({ userId: userId as string, role: "customer" });
       setConfirmRemove(null);
     } catch (e) {
       console.error("Failed to revoke admin:", e);

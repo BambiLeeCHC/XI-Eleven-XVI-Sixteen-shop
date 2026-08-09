@@ -1,5 +1,5 @@
-import { useAuthActions } from "@convex-dev/auth/react";
-import { useConvexAuth } from "convex/react";
+import { useAuthActions } from "../lib/backend";
+import { useConvexAuth } from "../lib/backend";
 import { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 

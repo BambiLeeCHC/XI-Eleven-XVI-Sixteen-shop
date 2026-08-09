@@ -1,7 +1,7 @@
-import { useQuery } from "convex/react";
-import { useAuthActions } from "@convex-dev/auth/react";
+import { useQuery } from "../lib/backend";
+import { useAuthActions } from "../lib/backend";
 import { Link, useNavigate } from "react-router-dom";
-import { api } from "../../convex/_generated/api";
+import { api } from "../lib/backend";
 
 export function ProfilePage() {
   const user = useQuery(api.auth.currentUser);

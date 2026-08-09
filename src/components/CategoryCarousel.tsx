@@ -1,7 +1,7 @@
 import { useRef, useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { useQuery } from "convex/react";
-import { api } from "../../convex/_generated/api";
+import { useQuery } from "../lib/backend";
+import { api } from "../lib/backend";
 
 interface CategoryDef {
   label: string;

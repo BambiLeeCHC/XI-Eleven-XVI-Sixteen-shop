@@ -1,6 +1,6 @@
-import { useQuery } from "convex/react";
+import { useQuery } from "../lib/backend";
 import { Link } from "react-router-dom";
-import { api } from "../../convex/_generated/api";
+import { api } from "../lib/backend";
 import { useSessionId } from "../hooks/useSessionId";
 
 /* ─── Fulfillment stage metadata ─────────────────────────────────────── */

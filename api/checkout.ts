@@ -1,69 +1,57 @@
-type VercelRequest = {
-  method?: string;
-  body: unknown;
-};
+/**
+ * Turn a stored order into a Stripe Checkout session.
+ *
+ * Everything billed is read back from the `orders` row the server wrote, not
+ * from the request body: the browser can only say *which* order to pay for.
+ * The Stripe session id is attached here, so the confirmation page and the
+ * payment webhook can both find the order again.
+ */
 
-type VercelResponse = {
-  setHeader(name: string, value: string): void;
-  status(code: number): VercelResponse;
-  json(body: unknown): void;
-};
+import {
+  type ApiRequest,
+  type ApiResponse,
+  fail,
+  HttpError,
+  stripePost,
+  supabaseAdmin,
+} from "./_lib/server";
 
-const STRIPE_BASE = "https://api.stripe.com/v1";
-
-type CheckoutItem = {
+type OrderItem = {
   productName: string;
-  priceInCents: number;
+  size?: string;
+  color?: string | null;
   quantity: number;
-  imageUrl?: string;
+  priceAtPurchase: number;
+  image?: string;
 };
 
-export default async function handler(req: VercelRequest, res: VercelResponse) {
+export default async function handler(req: ApiRequest, res: ApiResponse) {
   if (req.method !== "POST") {
     res.setHeader("Allow", "POST");
     return res.status(405).json({ error: "Method not allowed" });
   }
 
-  const encodedKey =
-    process.env.STRIPE_KEY_ENCODED_V2 ||
-    process.env.STRIPE_KEY_ENCODED ||
-    process.env.STRIPE_KEY_B64;
-  const secretKey = encodedKey
-    ? Buffer.from(encodedKey, "base64").toString("utf8")
-    : process.env.STRIPE_API_KEY || process.env.STRIPE_SECRET_KEY;
-  if (!secretKey) {
-    return res.status(500).json({ error: "Payment service is not configured" });
-  }
-
   try {
-    const normalizedSecretKey = secretKey
-      .replace(/^['"]|['"]$/g, "")
-      .replace(/[^\x20-\x7E]/g, "")
-      .trim();
-    const {
-      items,
-      shippingRateInCents,
-      shippingMethodName,
-      taxAmountCents,
-      taxLabel,
-      customerEmail,
-      successUrl,
-      cancelUrl,
-      orderId,
-    } = req.body as {
-      items: CheckoutItem[];
-      shippingRateInCents?: number;
-      shippingMethodName?: string;
-      taxAmountCents?: number;
-      taxLabel?: string;
-      customerEmail?: string;
-      successUrl: string;
-      cancelUrl: string;
-      orderId: string;
+    const { orderId, successUrl, cancelUrl } = (req.body ?? {}) as {
+      orderId?: string;
+      successUrl?: string;
+      cancelUrl?: string;
     };
 
-    if (!Array.isArray(items) || items.length === 0 || !successUrl || !cancelUrl) {
-      return res.status(400).json({ error: "Invalid checkout request" });
+    if (!orderId || !successUrl || !cancelUrl) {
+      throw new HttpError(400, "Invalid checkout request");
+    }
+
+    const admin = supabaseAdmin();
+    const { data: order, error } = await admin
+      .from("orders")
+      .select("*")
+      .eq("id", orderId)
+      .maybeSingle();
+    if (error) throw error;
+    if (!order) throw new HttpError(404, "Order not found");
+    if (order.status !== "pending") {
+      throw new HttpError(409, "This order has already been paid");
     }
 
     const params: Record<string, string> = {
@@ -72,69 +60,71 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       success_url: `${successUrl}?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: cancelUrl,
       "phone_number_collection[enabled]": "true",
-      "allow_promotion_codes": "true",
-      client_reference_id: orderId,
-      "metadata[order_id]": orderId,
-      "payment_intent_data[metadata][order_id]": orderId,
-      "payment_intent_data[receipt_email]": customerEmail || "",
+      allow_promotion_codes: "true",
+      client_reference_id: order.id,
+      "metadata[order_id]": order.id,
+      "payment_intent_data[metadata][order_id]": order.id,
     };
-
-    if (customerEmail) params.customer_email = customerEmail;
+    if (order.email) {
+      params.customer_email = order.email;
+      params["payment_intent_data[receipt_email]"] = order.email;
+    }
 
     let index = 0;
+    const addLine = (
+      name: string,
+      unitAmount: number,
+      quantity: number,
+      image?: string,
+    ) => {
+      params[`line_items[${index}][price_data][currency]`] = "usd";
+      params[`line_items[${index}][price_data][product_data][name]`] =
+        name.slice(0, 250);
+      if (image?.startsWith("http")) {
+        params[`line_items[${index}][price_data][product_data][images][0]`] =
+          image;
+      }
+      params[`line_items[${index}][price_data][unit_amount]`] =
+        String(unitAmount);
+      params[`line_items[${index}][quantity]`] = String(quantity);
+      index += 1;
+    };
+
+    const items = (order.items ?? []) as OrderItem[];
+    if (items.length === 0) throw new HttpError(400, "This order has no items");
+
     for (const item of items) {
-      if (
-        !item.productName ||
-        !Number.isInteger(item.priceInCents) ||
-        item.priceInCents < 1 ||
-        !Number.isInteger(item.quantity) ||
-        item.quantity < 1
-      ) {
-        return res.status(400).json({ error: "Invalid checkout item" });
-      }
-      params[`line_items[${index}][price_data][currency]`] = "usd";
-      params[`line_items[${index}][price_data][product_data][name]`] = item.productName;
-      if (item.imageUrl) {
-        params[`line_items[${index}][price_data][product_data][images][0]`] = item.imageUrl;
-      }
-      params[`line_items[${index}][price_data][unit_amount]`] = String(item.priceInCents);
-      params[`line_items[${index}][quantity]`] = String(item.quantity);
-      index += 1;
-    }
-
-    if (taxAmountCents && taxAmountCents > 0) {
-      params[`line_items[${index}][price_data][currency]`] = "usd";
-      params[`line_items[${index}][price_data][product_data][name]`] =
-        taxLabel || "Sales Tax";
-      params[`line_items[${index}][price_data][unit_amount]`] = String(taxAmountCents);
-      params[`line_items[${index}][quantity]`] = "1";
-      index += 1;
-    }
-
-    if (shippingRateInCents && shippingRateInCents > 0) {
-      params[`line_items[${index}][price_data][currency]`] = "usd";
-      params[`line_items[${index}][price_data][product_data][name]`] =
-        shippingMethodName || "Shipping";
-      params[`line_items[${index}][price_data][unit_amount]`] = String(
-        shippingRateInCents,
+      const variant = [item.color, item.size].filter(Boolean).join(" / ");
+      addLine(
+        variant ? `${item.productName} — ${variant}` : item.productName,
+        item.priceAtPurchase,
+        item.quantity,
+        item.image,
       );
-      params[`line_items[${index}][quantity]`] = "1";
     }
 
-    const stripeResponse = await fetch(`${STRIPE_BASE}/checkout/sessions`, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${normalizedSecretKey}`,
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
-      body: new URLSearchParams(params).toString(),
-    });
-    const session = await stripeResponse.json();
-
-    if (!stripeResponse.ok) {
-      console.error("Stripe checkout error", session?.error?.type);
-      return res.status(502).json({ error: "Unable to create secure checkout" });
+    if (order.tax > 0) {
+      addLine(
+        order.tax_region ? `Sales Tax (${order.tax_region})` : "Sales Tax",
+        order.tax,
+        1,
+      );
     }
+    if (order.shipping > 0) {
+      const method = (order.shipping_method as { name?: string } | null)?.name;
+      addLine(method || "Shipping", order.shipping, 1);
+    }
+
+    const session = await stripePost("/checkout/sessions", params);
+
+    const { error: attachError } = await admin
+      .from("orders")
+      .update({
+        stripe_checkout_session_id: session.id,
+        updated_at: new Date().toISOString(),
+      })
+      .eq("id", order.id);
+    if (attachError) throw attachError;
 
     return res.status(200).json({
       success: true,
@@ -142,7 +132,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       sessionId: session.id,
     });
   } catch (error) {
-    console.error("Checkout API error", error);
-    return res.status(500).json({ error: "Unable to create secure checkout" });
+    return fail(res, error);
   }
 }

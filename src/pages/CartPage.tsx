@@ -1,6 +1,6 @@
-import { useQuery, useMutation } from "convex/react";
+import { useQuery, useMutation } from "../lib/backend";
 import { Link, useNavigate } from "react-router-dom";
-import { api } from "../../convex/_generated/api";
+import { api } from "../lib/backend";
 import { useSessionId } from "../hooks/useSessionId";
 import { SEO } from "../components/SEO";
 import { PAGE_SEO } from "../data/seoMeta";

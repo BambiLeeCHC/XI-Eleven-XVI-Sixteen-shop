@@ -1,4 +1,4 @@
-import { useAuthActions } from "@convex-dev/auth/react";
+import { useAuthActions } from "../lib/backend";
 import { ArrowLeft, Loader2, Mail } from "lucide-react";
 import { useState } from "react";
 import { Button } from "./ui/button";
