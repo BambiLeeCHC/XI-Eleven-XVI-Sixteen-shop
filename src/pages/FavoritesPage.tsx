@@ -1,7 +1,7 @@
-import { useQuery, useMutation } from "convex/react";
-import { useConvexAuth } from "convex/react";
+import { useQuery, useMutation } from "../lib/backend";
+import { useConvexAuth } from "../lib/backend";
 import { Link, useNavigate } from "react-router-dom";
-import { api } from "../../convex/_generated/api";
+import { api } from "../lib/backend";
 
 
 export default function FavoritesPage() {

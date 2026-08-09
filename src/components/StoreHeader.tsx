@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
-import { useQuery } from "convex/react";
-import { useConvexAuth } from "convex/react";
+import { useQuery } from "../lib/backend";
+import { useConvexAuth } from "../lib/backend";
 import { Link, useLocation } from "react-router-dom";
-import { api } from "../../convex/_generated/api";
+import { api } from "../lib/backend";
 import { useSessionId } from "../hooks/useSessionId";
 import { SearchOverlay } from "./SearchOverlay";
 import { DynamicSkyBar } from "./DynamicSkyBar";

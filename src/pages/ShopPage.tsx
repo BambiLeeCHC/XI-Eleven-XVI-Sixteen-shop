@@ -1,6 +1,6 @@
-import { useQuery } from "convex/react";
+import { useQuery } from "../lib/backend";
 import { Link, useSearchParams } from "react-router-dom";
-import { api } from "../../convex/_generated/api";
+import { api } from "../lib/backend";
 import { SEO, buildBreadcrumbJsonLd } from "../components/SEO";
 import { PAGE_SEO } from "../data/seoMeta";
 

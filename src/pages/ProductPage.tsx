@@ -1,9 +1,8 @@
-import { useQuery, useMutation } from "convex/react";
+import { useQuery, useMutation } from "../lib/backend";
 import { useState, useRef, useCallback, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
-import { api } from "../../convex/_generated/api";
+import { api } from "../lib/backend";
 import { useSessionId } from "../hooks/useSessionId";
-import type { Id } from "../../convex/_generated/dataModel";
 import { SEO, buildProductJsonLd, buildBreadcrumbJsonLd } from "../components/SEO";
 import { getProductSEO } from "../data/seoMeta";
 import { CompleteTheLook } from "../components/CompleteTheLook";
@@ -345,7 +344,7 @@ export function ProductPage() {
   const { id } = useParams<{ id: string }>();
   const product = useQuery(
     api.products.getById,
-    id ? { productId: id as Id<"products"> } : "skip"
+    id ? { productId: id as string } : "skip"
   );
   const addToCart = useMutation(api.cart.addItem);
   const sessionId = useSessionId();

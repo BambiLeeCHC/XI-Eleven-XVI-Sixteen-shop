@@ -1,14 +1,13 @@
 import { useState } from "react";
-import { useMutation, useQuery } from "convex/react";
-import { api } from "../../../convex/_generated/api";
-import type { Id } from "../../../convex/_generated/dataModel";
+import { useMutation, useQuery } from "../../lib/backend";
+import { api } from "../../lib/backend";
 import { RichTextEditor } from "./RichTextEditor";
 import { Edit, Eye, FileText, Plus, Sparkles, Trash2, X } from "lucide-react";
 
 const CATEGORIES = ["Manifesto", "Sustainability", "Ritual", "Numerology", "Style", "Drops"];
 
 interface Draft {
-  postId?: Id<"blogPosts">;
+  postId?: string;
   title: string;
   slug: string;
   excerpt: string;
@@ -101,7 +100,7 @@ export function JournalAdminTab() {
     }
   };
 
-  const remove = async (id: Id<"blogPosts">, title: string) => {
+  const remove = async (id: string, title: string) => {
     if (!window.confirm(`Delete "${title}"? This cannot be undone.`)) return;
     await deletePost({ postId: id });
   };

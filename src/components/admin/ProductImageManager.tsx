@@ -1,9 +1,6 @@
 import { useRef, useState } from "react";
-import { useConvex } from "convex/react";
-import { api } from "../../../convex/_generated/api";
+import { uploadImage } from "../../lib/media";
 import { ArrowLeft, ArrowRight, ImagePlus, Loader2, Trash2 } from "lucide-react";
-
-const MAX_FILE_BYTES = 10 * 1024 * 1024;
 
 export function ProductImageManager({
   images,
@@ -12,7 +9,6 @@ export function ProductImageManager({
   images: string[];
   onChange: (images: string[]) => void;
 }) {
-  const convex = useConvex();
   const input = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState("");
@@ -24,19 +20,7 @@ export function ProductImageManager({
     try {
       const next = [...images];
       for (const file of Array.from(files)) {
-        if (!file.type.startsWith("image/")) throw new Error(`${file.name} is not an image.`);
-        if (file.size > MAX_FILE_BYTES) throw new Error(`${file.name} is larger than 10 MB.`);
-        const uploadUrl = await convex.mutation(api.storage.generateUploadUrl, {});
-        const response = await fetch(uploadUrl, {
-          method: "POST",
-          headers: { "Content-Type": file.type },
-          body: file,
-        });
-        if (!response.ok) throw new Error(`Upload failed for ${file.name}.`);
-        const { storageId } = await response.json();
-        const url = await convex.query(api.storage.getUrl, { storageId });
-        if (!url) throw new Error(`Could not prepare ${file.name}.`);
-        next.push(url);
+        next.push(await uploadImage(file, "product-media"));
       }
       onChange(next);
     } catch (e: any) {

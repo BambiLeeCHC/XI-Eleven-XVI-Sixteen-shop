@@ -1,6 +1,6 @@
-import { useAction } from "convex/react";
+import { useAction } from "../lib/backend";
 import { useState, useRef, useEffect } from "react";
-import { api } from "../../convex/_generated/api";
+import { api } from "../lib/backend";
 
 interface Message {
   role: "user" | "assistant";

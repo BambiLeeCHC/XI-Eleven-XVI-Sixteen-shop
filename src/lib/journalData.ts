@@ -8,9 +8,8 @@
 // The moment the backend is live, Convex data wins automatically.
 
 import { useEffect, useMemo, useState } from "react";
-import { useConvex } from "convex/react";
-import { api } from "../../convex/_generated/api";
-import { WELCOME_POST, SECOND_POST, THIRD_POST } from "../../convex/blogSeed";
+import { SECOND_POST, THIRD_POST, WELCOME_POST } from "../data/journalSeed";
+import { api, useConvex } from "../lib/backend";
 
 export interface JournalPost {
   _id: string;
@@ -34,7 +33,7 @@ const SUBLIMATION_DAY = Date.UTC(2026, 7, 1, 15, 16, 0);
 function toPost(
   seed: typeof WELCOME_POST | typeof THIRD_POST,
   offsetMinutes: number,
-  day: number = LAUNCH_DAY
+  day: number = LAUNCH_DAY,
 ): JournalPost {
   const ts = day - offsetMinutes * 60_000;
   return {
@@ -53,26 +52,28 @@ export const STATIC_POSTS: JournalPost[] = [
   toPost(SECOND_POST, 60),
 ];
 
-type Source = "convex" | "static";
+type Source = "database" | "static";
 
 /** Published posts, from Convex when reachable, else the bundled entries. */
 export function usePublishedPosts(limit?: number): {
   posts: JournalPost[] | undefined;
   source: Source;
 } {
-  const convex = useConvex();
+  const backend = useConvex();
   const [posts, setPosts] = useState<JournalPost[] | undefined>(undefined);
-  const [source, setSource] = useState<Source>("convex");
+  const [source, setSource] = useState<Source>("database");
 
   useEffect(() => {
     let live = true;
     (async () => {
       try {
-        const rows = (await convex.query(api.blog.listPublished, { limit })) as JournalPost[];
+        const rows = (await backend.query(api.blog.listPublished, {
+          limit,
+        })) as JournalPost[];
         if (!live) return;
         if (rows && rows.length > 0) {
           setPosts(rows);
-          setSource("convex");
+          setSource("database");
           return;
         }
         throw new Error("empty");
@@ -85,18 +86,18 @@ export function usePublishedPosts(limit?: number): {
     return () => {
       live = false;
     };
-  }, [convex, limit]);
+  }, [backend, limit]);
 
   return { posts, source };
 }
 
 /** One published post by slug: `undefined` while loading, `null` if unknown. */
 export function usePostBySlug(slug: string): JournalPost | null | undefined {
-  const convex = useConvex();
+  const backend = useConvex();
   const [post, setPost] = useState<JournalPost | null | undefined>(undefined);
   const fallback = useMemo(
-    () => STATIC_POSTS.find((p) => p.slug === slug) ?? null,
-    [slug]
+    () => STATIC_POSTS.find(p => p.slug === slug) ?? null,
+    [slug],
   );
 
   useEffect(() => {
@@ -104,7 +105,9 @@ export function usePostBySlug(slug: string): JournalPost | null | undefined {
     setPost(undefined);
     (async () => {
       try {
-        const row = (await convex.query(api.blog.getBySlug, { slug })) as JournalPost | null;
+        const row = (await backend.query(api.blog.getBySlug, {
+          slug,
+        })) as JournalPost | null;
         if (!live) return;
         setPost(row ?? fallback);
       } catch {
@@ -115,7 +118,7 @@ export function usePostBySlug(slug: string): JournalPost | null | undefined {
     return () => {
       live = false;
     };
-  }, [convex, slug, fallback]);
+  }, [backend, slug, fallback]);
 
   return post;
 }

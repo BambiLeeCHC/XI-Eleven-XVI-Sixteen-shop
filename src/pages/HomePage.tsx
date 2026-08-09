@@ -1,11 +1,11 @@
 import { Link } from "react-router-dom";
-import { useQuery, useMutation } from "convex/react";
+import { useQuery, useMutation } from "../lib/backend";
 import { useRef, useState } from "react";
 import { SEO, buildOrganizationJsonLd } from "../components/SEO";
 import { ClosetHero } from "../components/ClosetHero";
 import { DynamicSkyBar } from "../components/DynamicSkyBar";
 import { PAGE_SEO } from "../data/seoMeta";
-import { api } from "../../convex/_generated/api";
+import { api } from "../lib/backend";
 import { mergeLandingContent, type LandingContent } from "../data/landingContent";
 
 function LedStripDivider() {

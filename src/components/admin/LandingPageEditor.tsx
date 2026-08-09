@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import { useMutation } from "convex/react";
+import { useMutation } from "../../lib/backend";
 import { ExternalLink, Eye, EyeOff, RotateCcw, Save } from "lucide-react";
-import { api } from "../../../convex/_generated/api";
+import { api } from "../../lib/backend";
 import { DEFAULT_LANDING_CONTENT, mergeLandingContent, type LandingContent } from "../../data/landingContent";
 
 const SECTIONS: Array<{ key: keyof LandingContent; title: string; description: string }> = [
