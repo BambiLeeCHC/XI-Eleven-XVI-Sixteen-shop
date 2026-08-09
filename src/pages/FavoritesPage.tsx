@@ -1,11 +1,11 @@
 import { useQuery, useMutation } from "../lib/backend";
-import { useConvexAuth } from "../lib/backend";
+import { useAuthStatus } from "../lib/backend";
 import { Link, useNavigate } from "react-router-dom";
 import { api } from "../lib/backend";
 
 
 export default function FavoritesPage() {
-  const { isAuthenticated } = useConvexAuth();
+  const { isAuthenticated } = useAuthStatus();
   const favorites = useQuery(api.favorites.list) ?? [];
   const toggleFavorite = useMutation(api.favorites.toggle);
   const navigate = useNavigate();

@@ -2,7 +2,7 @@
  * React bindings for the Supabase backend.
  *
  * These deliberately mirror the hook surface the storefront was written
- * against (`useQuery` / `useMutation` / `useAction` / `useConvexAuth` /
+ * against (`useQuery` / `useMutation` / `useAction` / `useAuthStatus` /
  * `useAuthActions`), so migrating the data layer did not mean rewriting forty
  * components on a live store.
  *
@@ -104,7 +104,7 @@ export function useAuthState() {
   return useContext(AuthContext);
 }
 
-export function useConvexAuth() {
+export function useAuthStatus() {
   const { session, loading } = useAuthState();
   return { isLoading: loading, isAuthenticated: !!session };
 }
@@ -172,7 +172,7 @@ export function useAction<T = any>(ref: FunctionRef) {
 
 /* ── imperative client ────────────────────────────────────────────────── */
 
-export function useConvex() {
+export function useBackend() {
   return useMemo(
     () => ({
       query: (ref: FunctionRef, args?: Record<string, any>) =>

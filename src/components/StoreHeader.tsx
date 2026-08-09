@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useQuery } from "../lib/backend";
-import { useConvexAuth } from "../lib/backend";
+import { useAuthStatus } from "../lib/backend";
 import { Link, useLocation } from "react-router-dom";
 import { api } from "../lib/backend";
 import { useSessionId } from "../hooks/useSessionId";
@@ -11,7 +11,7 @@ export function StoreHeader() {
   const location = useLocation();
   const sessionId = useSessionId();
   const cartCount = useQuery(api.cart.getCount, { sessionId }) ?? 0;
-  const { isAuthenticated } = useConvexAuth();
+  const { isAuthenticated } = useAuthStatus();
   const isAdmin = useQuery(api.users.isAdmin);
   const favCount = useQuery(api.favorites.getCount) ?? 0;
   const [mobileOpen, setMobileOpen] = useState(false);

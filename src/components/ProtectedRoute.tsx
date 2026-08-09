@@ -1,4 +1,4 @@
-import { useConvexAuth } from "../lib/backend";
+import { useAuthStatus } from "../lib/backend";
 import { Navigate, Outlet } from "react-router-dom";
 
 function LoadingSkeleton() {
@@ -13,7 +13,7 @@ function LoadingSkeleton() {
 }
 
 export function ProtectedRoute() {
-  const { isAuthenticated, isLoading } = useConvexAuth();
+  const { isAuthenticated, isLoading } = useAuthStatus();
 
   if (isLoading) {
     return <LoadingSkeleton />;
