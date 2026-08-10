@@ -102,7 +102,7 @@ export function ProductImageManager({
         />
       </div>
       {images.length ? (
-        <div className="grid grid-cols-3 gap-2 sm:grid-cols-5 lg:grid-cols-7">
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 lg:grid-cols-7">
           {images.map((src, index) => (
             <div
               key={`${src}-${index}`}
@@ -142,37 +142,37 @@ export function ProductImageManager({
                 </span>
               )}
               <div
-                className="absolute right-1 top-1 rounded bg-black/60 p-0.5 text-white/50 opacity-100 sm:opacity-0 sm:group-hover:opacity-100"
+                className="absolute right-1 top-1 rounded bg-black/60 p-0.5 text-white/50 opacity-100 [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover:opacity-100"
                 aria-hidden="true"
               >
                 <GripVertical className="h-3 w-3" />
               </div>
-              <div className="absolute inset-x-0 bottom-0 flex justify-center gap-1 bg-black/75 p-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100">
+              <div className="absolute inset-x-0 bottom-0 flex justify-center gap-1 bg-black/75 p-1 opacity-100 [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover:opacity-100">
                 <button
                   type="button"
                   disabled={index === 0}
                   onClick={() => move(index, -1)}
-                  className="p-1 text-white/70 disabled:opacity-20"
+                  className="p-2 text-white/70 disabled:opacity-20"
                   aria-label="Move photo left"
                 >
-                  <ArrowLeft className="h-3 w-3" />
+                  <ArrowLeft className="h-3.5 w-3.5" />
                 </button>
                 <button
                   type="button"
                   onClick={() => onChange(images.filter((_, i) => i !== index))}
-                  className="p-1 text-red-300"
+                  className="p-2 text-red-300"
                   aria-label="Delete photo"
                 >
-                  <Trash2 className="h-3 w-3" />
+                  <Trash2 className="h-3.5 w-3.5" />
                 </button>
                 <button
                   type="button"
                   disabled={index === images.length - 1}
                   onClick={() => move(index, 1)}
-                  className="p-1 text-white/70 disabled:opacity-20"
+                  className="p-2 text-white/70 disabled:opacity-20"
                   aria-label="Move photo right"
                 >
-                  <ArrowRight className="h-3 w-3" />
+                  <ArrowRight className="h-3.5 w-3.5" />
                 </button>
               </div>
             </div>
