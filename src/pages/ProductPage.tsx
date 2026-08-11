@@ -18,6 +18,64 @@ function cleanSizeLabel(size: string): string {
   return size;
 }
 
+/** Split a product description into narrative copy vs. fabric/care details.
+ *  Descriptions are written with fabric composition/care called out at the end
+ *  (e.g. "Fabric composition: 100% polyester chiffon. Machine-washable."). We
+ *  pull that out so it can live in its own "Fabric & Care" accordion section. */
+function splitDescription(description?: string): { body: string; fabric: string | null } {
+  if (!description) return { body: "", fabric: null };
+  const match = description.match(/(Fabric composition:[\s\S]*)/i);
+  if (!match || match.index === undefined) {
+    return { body: description.trim(), fabric: null };
+  }
+  return {
+    body: description.slice(0, match.index).trim(),
+    fabric: match[1].trim(),
+  };
+}
+
+/** A single collapsible row used for Description / Fit / Fabric & Care. */
+function AccordionRow({
+  label,
+  isOpen,
+  onToggle,
+  children,
+}: {
+  label: string;
+  isOpen: boolean;
+  onToggle: () => void;
+  children: React.ReactNode;
+}) {
+  return (
+    <div style={{ borderTop: "1px solid rgba(21,36,61,0.12)" }}>
+      <button
+        type="button"
+        onClick={onToggle}
+        className="w-full flex items-center justify-between py-4 text-left"
+        style={{ background: "none", border: "none", cursor: "pointer" }}
+      >
+        <span
+          className="text-[11px] tracking-[0.2em] uppercase font-semibold"
+          style={{ color: "#15243d" }}
+        >
+          {label}
+        </span>
+        <span
+          style={{
+            color: "rgba(21,36,61,0.5)",
+            fontSize: "13px",
+            transform: isOpen ? "rotate(180deg)" : "rotate(0deg)",
+            transition: "transform 0.2s ease",
+          }}
+        >
+          ▾
+        </span>
+      </button>
+      {isOpen && <div className="pb-5">{children}</div>}
+    </div>
+  );
+}
+
 /* ─── 360° Product Viewer ────────────────────────────────────────── */
 function Product360Viewer({
   images,
@@ -334,7 +392,7 @@ export function ProductPage() {
   const [selectedSize, setSelectedSize] = useState<string>("");
   const [selectedColor, setSelectedColor] = useState<string>("");
   const [added, setAdded] = useState(false);
-  const [activeTab, setActiveTab] = useState<"details" | "fit">("details");
+  const [openSection, setOpenSection] = useState<"description" | "fit" | "fabric" | null>("description");
 
   if (product === undefined) {
     return (
@@ -385,6 +443,7 @@ export function ProductPage() {
     return seen;
   })();
   const hasColorAxis = colorOptions.length > 1;
+  const { body: descriptionBody, fabric: fabricDetails } = splitDescription(product.description);
 
   const variantForSize = (size: string, color?: string) =>
     (product.printfulVariants || []).find((variant: any) => {
@@ -468,22 +527,23 @@ export function ProductPage() {
             ${(product.price / 100).toFixed(2)}
           </p>
 
-          {/* Description — plain text, no card chrome */}
-          <p className="text-[14px] leading-relaxed whitespace-pre-line mb-6" style={{ color: "rgba(21,36,61,0.6)" }}>
-            {product.description}
-          </p>
+          {/* Description / Fit / Fabric & Care — expandable rows, no card chrome */}
+          <div className="mb-6" style={{ borderBottom: "1px solid rgba(21,36,61,0.12)" }}>
+            <AccordionRow
+              label="Description"
+              isOpen={openSection === "description"}
+              onToggle={() => setOpenSection(openSection === "description" ? null : "description")}
+            >
+              <p className="text-[14px] leading-relaxed whitespace-pre-line" style={{ color: "rgba(21,36,61,0.6)" }}>
+                {descriptionBody}
+              </p>
+            </AccordionRow>
 
-          {/* Fit Guide — collapsed by default, one clean toggle line */}
-          <button
-            type="button"
-            onClick={() => setActiveTab(activeTab === "fit" ? "details" : "fit")}
-            className="text-[11px] tracking-[0.15em] uppercase font-semibold mb-6 self-start underline underline-offset-4 decoration-1"
-            style={{ color: "rgba(21,36,61,0.65)", background: "none", border: "none", cursor: "pointer", padding: 0 }}
-          >
-            {activeTab === "fit" ? "Hide Fit Guide" : "Size & Fit Guide"}
-          </button>
-          {activeTab === "fit" && (
-            <div className="mb-6 -mt-3">
+            <AccordionRow
+              label="Fit & Size Guide"
+              isOpen={openSection === "fit"}
+              onToggle={() => setOpenSection(openSection === "fit" ? null : "fit")}
+            >
               <ProductFitGuide
                 product={{ name: product.name, category: product.category, sizes: product.sizes || [], images: product.images || [] }}
                 externalSize={selectedSize ? cleanSizeLabel(selectedSize) : undefined}
@@ -493,8 +553,20 @@ export function ProductPage() {
                 }}
                 lightMode={true}
               />
-            </div>
-          )}
+            </AccordionRow>
+
+            {fabricDetails && (
+              <AccordionRow
+                label="Fabric & Care"
+                isOpen={openSection === "fabric"}
+                onToggle={() => setOpenSection(openSection === "fabric" ? null : "fabric")}
+              >
+                <p className="text-[14px] leading-relaxed whitespace-pre-line" style={{ color: "rgba(21,36,61,0.6)" }}>
+                  {fabricDetails}
+                </p>
+              </AccordionRow>
+            )}
+          </div>
 
           {/* Colour Selector — only for listings with more than one colourway */}
           {hasColorAxis && (
