@@ -16,6 +16,8 @@ export function StoreHeader() {
   const favCount = useQuery(api.favorites.getCount) ?? 0;
   const [mobileOpen, setMobileOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
+  const [policiesOpen, setPoliciesOpen] = useState(false);
+  const isPolicyPage = ["/privacy", "/terms", "/shipping-policy", "/returns"].includes(location.pathname);
 
   // Close mobile menu on route change
   useEffect(() => {
@@ -103,6 +105,60 @@ export function StoreHeader() {
                   }`}
                 >
                   <span className="nav-blog-flash__label" data-text="Blog">Blog</span>
+                </Link>
+
+                {/* Policies dropdown */}
+                <div
+                  className="relative"
+                  onMouseEnter={() => setPoliciesOpen(true)}
+                  onMouseLeave={() => setPoliciesOpen(false)}
+                >
+                  <button
+                    type="button"
+                    className={`px-3 py-2 text-[11px] tracking-[0.18em] uppercase font-semibold transition-all ${
+                      isPolicyPage ? "text-white" : "text-white/50 hover:text-white"
+                    }`}
+                    onClick={() => setPoliciesOpen((v) => !v)}
+                  >
+                    Policies
+                  </button>
+                  {policiesOpen && (
+                    <div
+                      className="absolute top-full left-0 pt-1 min-w-[190px]"
+                      style={{ zIndex: 50 }}
+                    >
+                      <div
+                        className="flex flex-col py-2 rounded-lg"
+                        style={{
+                          background: "#fdfbf9",
+                          border: "1px solid rgba(21,36,61,0.1)",
+                          boxShadow: "0 8px 24px rgba(21,36,61,0.15)",
+                        }}
+                      >
+                        <Link to="/privacy" className="px-4 py-2 text-[11px] tracking-[0.08em] uppercase font-semibold hover:bg-black/[0.03]" style={{ color: "#15243d" }}>
+                          Privacy Policy
+                        </Link>
+                        <Link to="/terms" className="px-4 py-2 text-[11px] tracking-[0.08em] uppercase font-semibold hover:bg-black/[0.03]" style={{ color: "#15243d" }}>
+                          Terms of Service
+                        </Link>
+                        <Link to="/shipping-policy" className="px-4 py-2 text-[11px] tracking-[0.08em] uppercase font-semibold hover:bg-black/[0.03]" style={{ color: "#15243d" }}>
+                          Shipping Policy
+                        </Link>
+                        <Link to="/returns" className="px-4 py-2 text-[11px] tracking-[0.08em] uppercase font-semibold hover:bg-black/[0.03]" style={{ color: "#15243d" }}>
+                          Returns & Refunds
+                        </Link>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                <Link
+                  to="/contact"
+                  className={`px-3 py-2 text-[11px] tracking-[0.18em] uppercase font-semibold transition-all ${
+                    location.pathname.startsWith("/contact") ? "text-white" : "text-white/50 hover:text-white"
+                  }`}
+                >
+                  Contact
                 </Link>
               </nav>
             </div>
@@ -259,6 +315,15 @@ export function StoreHeader() {
             >
               <span className="nav-blog-flash__label" data-text="Blog">Blog</span>
             </Link>
+            <span className="w-px h-3 bg-white/[0.14]" />
+            <Link
+              to="/contact"
+              className={`px-2.5 py-1 text-[10px] tracking-[0.16em] uppercase font-semibold transition-all ${
+                location.pathname.startsWith("/contact") ? "text-white" : "text-white/55"
+              }`}
+            >
+              Contact
+            </Link>
           </nav>
         </div>
       </header>
@@ -311,6 +376,15 @@ export function StoreHeader() {
               <MobileNavLink to="/journal" label="BLOG — THE JOURNAL" />
               <MobileNavLink to="/about" label="ABOUT" />
               <MobileNavLink to="/size-guide" label="SIZE GUIDE" />
+              <MobileNavLink to="/contact" label="CONTACT US" />
+
+              <div className="my-6 border-t border-white/[0.06]" />
+
+              <p className="px-1 pb-1 text-[9px] tracking-[0.25em] uppercase text-white/25">Policies</p>
+              <MobileNavLink to="/privacy" label="PRIVACY POLICY" />
+              <MobileNavLink to="/terms" label="TERMS OF SERVICE" />
+              <MobileNavLink to="/shipping-policy" label="SHIPPING POLICY" />
+              <MobileNavLink to="/returns" label="RETURNS & REFUNDS" />
 
               <div className="my-6 border-t border-white/[0.06]" />
 
