@@ -127,8 +127,8 @@ function Product360Viewer({
         aria-label={`${name} product gallery${has360 ? " with 360 degree view" : ""}`}
         className="aspect-[3/4] overflow-hidden mb-4 relative group"
         style={{
-          background: "linear-gradient(145deg, rgba(255,240,230,0.03), rgba(200,160,220,0.02))",
-          border: "1px solid rgba(92,155,205,0.18)",
+          background: "linear-gradient(145deg, #f7f5f1, #efece6)",
+          border: "1px solid rgba(21,36,61,0.10)",
           borderRadius: "16px",
           cursor: is360Mode ? (isDragging ? "grabbing" : "grab") : "default",
           userSelect: "none",
@@ -170,7 +170,7 @@ function Product360Viewer({
                 background: "rgba(0,0,0,0.65)",
                 backdropFilter: "blur(12px)",
                 borderRadius: "20px",
-                border: "1px solid rgba(36,139,212,0.2)",
+                border: "1px solid rgba(185,149,69,0.35)",
               }}
             >
               <span className="text-[18px]" style={{ animation: isAutoRotating ? "spin360 2s linear infinite" : "none" }}>
@@ -205,7 +205,7 @@ function Product360Viewer({
                 onPointerDown={(event) => event.stopPropagation()}
                 onMouseDown={(event) => event.stopPropagation()}
                 onTouchStart={(event) => event.stopPropagation()}
-                className="w-40 accent-[#c48dff]"
+                className="w-40 accent-[#b99545]"
               />
               <div className="flex gap-1.5" aria-hidden="true">
                 {angleImages.map((_, i) => (
@@ -218,7 +218,7 @@ function Product360Viewer({
                       borderRadius: "3px",
                       background:
                         i === currentIndex % angleImages.length
-                          ? "linear-gradient(135deg, #248bd4, #55bfff)"
+                          ? "linear-gradient(135deg, #b99545, #d9b876)"
                           : "rgba(255,255,255,0.3)",
                     }}
                   />
@@ -275,7 +275,7 @@ function Product360Viewer({
               background: "rgba(0,0,0,0.65)",
               backdropFilter: "blur(12px)",
               borderRadius: "20px",
-              border: "1px solid rgba(36,139,212,0.25)",
+              border: "1px solid rgba(185,149,69,0.4)",
               color: "white",
             }}
           >
@@ -297,8 +297,8 @@ function Product360Viewer({
               style={{
                 border:
                   i === currentIndex
-                    ? "2px solid rgba(36,139,212,0.6)"
-                    : "1px solid rgba(92,155,205,0.2)",
+                    ? "2px solid rgba(185,149,69,0.85)"
+                    : "1px solid rgba(21,36,61,0.14)",
                 borderRadius: "10px",
                 background: "rgba(255,240,230,0.02)",
               }}
@@ -314,13 +314,13 @@ function Product360Viewer({
               onClick={enter360}
               className="w-16 h-20 flex-shrink-0 flex flex-col items-center justify-center gap-1 transition-all"
               style={{
-                border: "1px solid rgba(36,139,212,0.2)",
+                border: "1px solid rgba(185,149,69,0.35)",
                 borderRadius: "10px",
-                background: "linear-gradient(135deg, rgba(36,139,212,0.06), rgba(85,191,255,0.04))",
+                background: "linear-gradient(135deg, rgba(185,149,69,0.08), rgba(185,149,69,0.05))",
               }}
             >
-              <span style={{ fontSize: "18px", color: "rgba(36,139,212,0.75)" }}>↻</span>
-              <span className="text-[8px] tracking-wider uppercase" style={{ color: "rgba(36,139,212,0.7)" }}>
+              <span style={{ fontSize: "18px", color: "rgba(21,36,61,0.55)" }}>↻</span>
+              <span className="text-[8px] tracking-wider uppercase" style={{ color: "rgba(185,149,69,0.8)" }}>
                 8-angle 360°
               </span>
             </button>
@@ -367,7 +367,7 @@ export function ProductPage() {
     return (
       <div className="min-h-[80vh] flex items-center justify-center flex-col gap-4">
         <p style={{ color: "rgba(21,36,61,0.65)" }}>Product not found.</p>
-        <Link to="/shop" className="text-[12px] tracking-wider uppercase" style={{ color: "#248bd4" }}>
+        <Link to="/shop" className="text-[12px] tracking-wider uppercase" style={{ color: "rgba(21,36,61,0.75)" }}>
           ← Back to Shop
         </Link>
       </div>
@@ -472,12 +472,12 @@ export function ProductPage() {
 
         {/* Product Info */}
         <div className="flex flex-col">
-          <p className="text-[10px] tracking-[0.3em] uppercase mb-2" style={{ color: "rgba(36,139,212,0.75)" }}>
+          <p className="text-[10px] tracking-[0.3em] uppercase mb-2" style={{ color: "rgba(21,36,61,0.55)" }}>
             {product.category}
           </p>
           <h1
-            className="text-3xl md:text-4xl text-white font-light mb-4"
-            style={{ fontFamily: "var(--font-display)" }}
+            className="text-3xl md:text-4xl font-light mb-4"
+            style={{ fontFamily: "var(--font-display)", color: "#15243d" }}
           >
             {product.name}
           </h1>
@@ -494,25 +494,25 @@ export function ProductPage() {
               borderRadius: "16px",
               border: activeTab === "fit"
                 ? "1px solid rgba(200,180,160,0.3)"
-                : "1px solid rgba(92,155,205,0.18)",
+                : "1px solid rgba(21,36,61,0.12)",
               padding: "0",
               marginBottom: "24px",
               transition: "all 0.35s ease",
               boxShadow: activeTab === "fit"
-                ? "0 8px 40px rgba(36,139,212,0.08), 0 2px 12px rgba(0,0,0,0.1)"
+                ? "0 8px 40px rgba(185,149,69,0.10), 0 2px 12px rgba(0,0,0,0.1)"
                 : "none",
               overflow: "hidden",
             }}
           >
             {/* Tab buttons */}
-            <div className="flex gap-0" style={{ borderBottom: activeTab === "fit" ? "1px solid rgba(36,139,212,0.35)" : "1px solid rgba(92,155,205,0.15)" }}>
+            <div className="flex gap-0" style={{ borderBottom: activeTab === "fit" ? "1px solid rgba(185,149,69,0.45)" : "1px solid rgba(21,36,61,0.10)" }}>
               <button
                 type="button"
                 onClick={() => setActiveTab("details")}
                 className="flex-1 py-3.5 text-[11px] tracking-[0.2em] uppercase font-bold transition-all relative"
                 style={{
                   color: activeTab === "details"
-                    ? (activeTab === "fit" ? "rgba(30,25,20,0.8)" : "white")
+                    ? (activeTab === "fit" ? "rgba(30,25,20,0.8)" : "#15243d")
                     : (activeTab === "fit" ? "rgba(30,25,20,0.35)" : "rgba(21,36,61,0.5)"),
                   background: "transparent",
                   border: "none",
@@ -522,7 +522,7 @@ export function ProductPage() {
                 Details
                 {activeTab === "details" && (
                   <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-3/4 h-[2.5px]"
-                    style={{ background: "linear-gradient(90deg, #248bd4, #55bfff)", borderRadius: "2px" }} />
+                    style={{ background: "linear-gradient(90deg, #b99545, #d9b876)", borderRadius: "2px" }} />
                 )}
               </button>
               <button
@@ -539,10 +539,10 @@ export function ProductPage() {
                 }}
               >
                 <span>Fit Guide</span>
-                <span className="text-[9px]" style={{ color: activeTab === "fit" ? "rgba(36,139,212,0.85)" : "rgba(36,139,212,0.6)" }}>✦</span>
+                <span className="text-[9px]" style={{ color: activeTab === "fit" ? "rgba(185,149,69,0.95)" : "rgba(185,149,69,0.85)" }}>✦</span>
                 {activeTab === "fit" && (
                   <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-3/4 h-[2.5px]"
-                    style={{ background: "linear-gradient(90deg, #248bd4, #55bfff)", borderRadius: "2px" }} />
+                    style={{ background: "linear-gradient(90deg, #b99545, #d9b876)", borderRadius: "2px" }} />
                 )}
               </button>
             </div>
@@ -584,15 +584,12 @@ export function ProductPage() {
                     onClick={() => setSelectedColor(color)}
                     className="px-4 py-2 text-[11px] tracking-wider uppercase transition-all"
                     style={{
-                      color: selectedColor === color ? "white" : "rgba(21,36,61,0.6)",
-                      background:
-                        selectedColor === color
-                          ? "linear-gradient(135deg, rgba(36,139,212,0.15), rgba(85,191,255,0.08))"
-                          : "transparent",
+                      color: selectedColor === color ? "#ffffff" : "rgba(21,36,61,0.65)",
+                      background: selectedColor === color ? "#15243d" : "transparent",
                       border:
                         selectedColor === color
-                          ? "1px solid rgba(36,139,212,0.3)"
-                          : "1px solid rgba(92,155,205,0.2)",
+                          ? "1px solid #15243d"
+                          : "1px solid rgba(21,36,61,0.16)",
                       borderRadius: "10px",
                       cursor: "pointer",
                     }}
@@ -625,15 +622,12 @@ export function ProductPage() {
                     disabled={!available}
                     className="px-4 py-2 text-[11px] tracking-wider uppercase transition-all"
                     style={{
-                      color: selectedSize === size ? "white" : "rgba(21,36,61,0.6)",
-                      background:
-                        selectedSize === size
-                          ? "linear-gradient(135deg, rgba(36,139,212,0.15), rgba(85,191,255,0.08))"
-                          : "transparent",
+                      color: selectedSize === size ? "#ffffff" : "rgba(21,36,61,0.65)",
+                      background: selectedSize === size ? "#15243d" : "transparent",
                       border:
                         selectedSize === size
-                          ? "1px solid rgba(36,139,212,0.3)"
-                          : "1px solid rgba(92,155,205,0.2)",
+                          ? "1px solid #15243d"
+                          : "1px solid rgba(21,36,61,0.16)",
                       borderRadius: "10px",
                       opacity: available ? 1 : 0.32,
                       textDecoration: available ? "none" : "line-through",
@@ -675,13 +669,13 @@ export function ProductPage() {
             style={{
               background: added
                 ? "linear-gradient(135deg, #10b981, #059669)"
-                : "linear-gradient(135deg, #c48dff 0%, #ff9eb8 50%, #f5c97a 100%)",
+                : "linear-gradient(135deg, #15243d 0%, #2a3d5c 100%)",
               backgroundSize: "200% 100%",
               border: "none",
               borderRadius: "12px",
               boxShadow: added
                 ? "0 4px 20px rgba(16,185,129,0.3)"
-                : "0 4px 24px rgba(36,139,212,0.25), 0 1px 3px rgba(0,0,0,0.2)",
+                : "0 6px 24px rgba(21,36,61,0.22)",
               letterSpacing: "0.25em",
             }}
           >
@@ -697,20 +691,20 @@ export function ProductPage() {
           {/* Trust signals */}
           {/* Made for You callout */}
           <div className="flex items-start gap-3 mt-6 p-4" style={{
-            background: "rgba(36,139,212,0.04)",
-            border: "1px solid rgba(36,139,212,0.08)",
+            background: "rgba(185,149,69,0.06)",
+            border: "1px solid rgba(185,149,69,0.10)",
             borderRadius: "12px",
           }}>
             <span className="text-base shrink-0 mt-0.5">✦</span>
             <div>
-              <p className="text-[11px] font-semibold tracking-[0.1em] uppercase mb-1" style={{ color: "rgba(36,139,212,0.85)" }}>Made Exclusively for You</p>
+              <p className="text-[11px] font-semibold tracking-[0.1em] uppercase mb-1" style={{ color: "rgba(185,149,69,0.95)" }}>Made Exclusively for You</p>
               <p className="text-[10px] leading-relaxed" style={{ color: "rgba(21,36,61,0.5)" }}>
                 This piece is crafted on demand — produced the moment you order, just for you. No mass production, no waste. Production takes 2–5 business days.
               </p>
             </div>
           </div>
 
-          <div className="flex gap-6 mt-6 pt-5" style={{ borderTop: "1px solid rgba(92,155,205,0.18)" }}>
+          <div className="flex gap-6 mt-6 pt-5" style={{ borderTop: "1px solid rgba(21,36,61,0.12)" }}>
             <div className="flex items-center gap-2">
               <span className="text-sm">📦</span>
               <span className="text-[10px]" style={{ color: "rgba(21,36,61,0.52)" }}>
