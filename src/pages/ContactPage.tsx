@@ -63,20 +63,17 @@ export function ContactPage() {
         url="/contact"
       />
 
-      <div
-        className="min-h-screen relative"
-        style={{ background: "linear-gradient(180deg, #0c080e 0%, #140e18 40%, #0c080e 100%)" }}
-      >
-        {/* Background glow orbs */}
+      <div className="min-h-screen relative" style={{ background: "#fdfbf9" }}>
+        {/* Background glow orbs — subtle, light-theme */}
         <div
           style={{
             position: "absolute",
-            top: "15%",
-            left: "20%",
+            top: "10%",
+            left: "18%",
             width: "300px",
             height: "300px",
             borderRadius: "50%",
-            background: "radial-gradient(circle, rgba(196,141,255,0.12), transparent 70%)",
+            background: "radial-gradient(circle, rgba(255,118,200,0.08), transparent 70%)",
             animation: "contact-glow 6s ease-in-out infinite",
             pointerEvents: "none",
           }}
@@ -84,8 +81,8 @@ export function ContactPage() {
         <div
           style={{
             position: "absolute",
-            bottom: "20%",
-            right: "15%",
+            bottom: "15%",
+            right: "12%",
             width: "250px",
             height: "250px",
             borderRadius: "50%",
@@ -100,18 +97,13 @@ export function ContactPage() {
           <div className="text-center mb-16">
             <p
               className="text-[10px] tracking-[0.4em] uppercase mb-4"
-              style={{ color: "rgba(36,139,212,0.65)" }}
+              style={{ color: "rgba(36,139,212,0.75)" }}
             >
               GET IN TOUCH
             </p>
             <h1
-              className="text-4xl md:text-5xl font-bold tracking-wide mb-4"
-              style={{
-                fontFamily: "var(--font-display)",
-                background: "linear-gradient(135deg, #fff 0%, rgba(21,36,61,0.92) 50%, rgba(36,139,212,0.8) 100%)",
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-              }}
+              className="text-4xl md:text-5xl font-light tracking-wide mb-4"
+              style={{ fontFamily: "var(--font-display)", color: "#15243d" }}
             >
               Contact Us
             </h1>
@@ -140,9 +132,10 @@ export function ContactPage() {
                 href="mailto:support@xixvi.shop"
                 className="block group"
                 style={{
-                  background: "rgba(255,240,230,0.02)",
-                  border: "1px solid rgba(92,155,205,0.18)",
+                  background: "#ffffff",
+                  border: "1px solid rgba(21,36,61,0.1)",
                   borderRadius: "16px",
+                  boxShadow: "0 4px 20px rgba(21,36,61,0.05)",
                   padding: "24px",
                   transition: "all 0.3s ease",
                 }}
@@ -151,8 +144,8 @@ export function ContactPage() {
                   e.currentTarget.style.background = "rgba(36,139,212,0.04)";
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.borderColor = "rgba(92,155,205,0.18)";
-                  e.currentTarget.style.background = "rgba(255,240,230,0.02)";
+                  e.currentTarget.style.borderColor = "rgba(21,36,61,0.1)";
+                  e.currentTarget.style.background = "#ffffff";
                 }}
               >
                 <div className="flex items-center gap-3 mb-3">
@@ -192,9 +185,10 @@ export function ContactPage() {
                 rel="noopener noreferrer"
                 className="block group"
                 style={{
-                  background: "rgba(255,240,230,0.02)",
-                  border: "1px solid rgba(92,155,205,0.18)",
+                  background: "#ffffff",
+                  border: "1px solid rgba(21,36,61,0.1)",
                   borderRadius: "16px",
+                  boxShadow: "0 4px 20px rgba(21,36,61,0.05)",
                   padding: "24px",
                   transition: "all 0.3s ease",
                 }}
@@ -203,8 +197,8 @@ export function ContactPage() {
                   e.currentTarget.style.background = "rgba(85,191,255,0.04)";
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.borderColor = "rgba(92,155,205,0.18)";
-                  e.currentTarget.style.background = "rgba(255,240,230,0.02)";
+                  e.currentTarget.style.borderColor = "rgba(21,36,61,0.1)";
+                  e.currentTarget.style.background = "#ffffff";
                 }}
               >
                 <div className="flex items-center gap-3 mb-3">
@@ -240,9 +234,10 @@ export function ContactPage() {
               {/* Location Card */}
               <div
                 style={{
-                  background: "rgba(255,240,230,0.02)",
-                  border: "1px solid rgba(92,155,205,0.18)",
+                  background: "#ffffff",
+                  border: "1px solid rgba(21,36,61,0.1)",
                   borderRadius: "16px",
+                  boxShadow: "0 4px 20px rgba(21,36,61,0.05)",
                   padding: "24px",
                 }}
               >
@@ -281,9 +276,10 @@ export function ContactPage() {
             <div className="md:col-span-2">
               <div
                 style={{
-                  background: "rgba(255,240,230,0.02)",
-                  border: "1px solid rgba(92,155,205,0.18)",
+                  background: "#ffffff",
+                  border: "1px solid rgba(21,36,61,0.1)",
                   borderRadius: "20px",
+                  boxShadow: "0 4px 24px rgba(21,36,61,0.06)",
                   padding: "32px",
                 }}
               >
@@ -343,8 +339,8 @@ export function ContactPage() {
                           placeholder="Your name"
                           className="w-full text-sm outline-none transition-all"
                           style={{
-                            background: "rgba(255,240,230,0.04)",
-                            border: "1px solid rgba(92,155,205,0.2)",
+                            background: "#faf8f6",
+                            border: "1px solid rgba(21,36,61,0.12)",
                             color: "rgba(21,36,61,0.9)",
                             borderRadius: "12px",
                             padding: "14px 16px",
@@ -354,8 +350,8 @@ export function ContactPage() {
                             e.currentTarget.style.background = "rgba(36,139,212,0.04)";
                           }}
                           onBlur={(e) => {
-                            e.currentTarget.style.borderColor = "rgba(92,155,205,0.2)";
-                            e.currentTarget.style.background = "rgba(255,240,230,0.04)";
+                            e.currentTarget.style.borderColor = "rgba(21,36,61,0.12)";
+                            e.currentTarget.style.background = "#faf8f6";
                           }}
                         />
                       </div>
@@ -376,8 +372,8 @@ export function ContactPage() {
                           placeholder="your@email.com"
                           className="w-full text-sm outline-none transition-all"
                           style={{
-                            background: "rgba(255,240,230,0.04)",
-                            border: "1px solid rgba(92,155,205,0.2)",
+                            background: "#faf8f6",
+                            border: "1px solid rgba(21,36,61,0.12)",
                             color: "rgba(21,36,61,0.9)",
                             borderRadius: "12px",
                             padding: "14px 16px",
@@ -387,8 +383,8 @@ export function ContactPage() {
                             e.currentTarget.style.background = "rgba(36,139,212,0.04)";
                           }}
                           onBlur={(e) => {
-                            e.currentTarget.style.borderColor = "rgba(92,155,205,0.2)";
-                            e.currentTarget.style.background = "rgba(255,240,230,0.04)";
+                            e.currentTarget.style.borderColor = "rgba(21,36,61,0.12)";
+                            e.currentTarget.style.background = "#faf8f6";
                           }}
                         />
                       </div>
@@ -409,8 +405,8 @@ export function ContactPage() {
                         placeholder="What's this about?"
                         className="w-full text-sm outline-none transition-all"
                         style={{
-                          background: "rgba(255,240,230,0.04)",
-                          border: "1px solid rgba(92,155,205,0.2)",
+                          background: "#faf8f6",
+                          border: "1px solid rgba(21,36,61,0.12)",
                           color: "rgba(21,36,61,0.9)",
                           borderRadius: "12px",
                           padding: "14px 16px",
@@ -420,8 +416,8 @@ export function ContactPage() {
                           e.currentTarget.style.background = "rgba(36,139,212,0.04)";
                         }}
                         onBlur={(e) => {
-                          e.currentTarget.style.borderColor = "rgba(92,155,205,0.2)";
-                          e.currentTarget.style.background = "rgba(255,240,230,0.04)";
+                          e.currentTarget.style.borderColor = "rgba(21,36,61,0.12)";
+                          e.currentTarget.style.background = "#faf8f6";
                         }}
                       />
                     </div>
@@ -442,8 +438,8 @@ export function ContactPage() {
                         rows={5}
                         className="w-full text-sm outline-none transition-all resize-none"
                         style={{
-                          background: "rgba(255,240,230,0.04)",
-                          border: "1px solid rgba(92,155,205,0.2)",
+                          background: "#faf8f6",
+                          border: "1px solid rgba(21,36,61,0.12)",
                           color: "rgba(21,36,61,0.9)",
                           borderRadius: "12px",
                           padding: "14px 16px",
@@ -454,8 +450,8 @@ export function ContactPage() {
                           e.currentTarget.style.background = "rgba(36,139,212,0.04)";
                         }}
                         onBlur={(e) => {
-                          e.currentTarget.style.borderColor = "rgba(92,155,205,0.2)";
-                          e.currentTarget.style.background = "rgba(255,240,230,0.04)";
+                          e.currentTarget.style.borderColor = "rgba(21,36,61,0.12)";
+                          e.currentTarget.style.background = "#faf8f6";
                         }}
                       />
                     </div>
