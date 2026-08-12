@@ -287,5 +287,22 @@ export function useAuthActions() {
     invalidateQueries();
   }, []);
 
-  return { signIn, signOut };
+  /**
+   * OAuth (Google / Facebook / Apple, etc). Redirects the browser to the
+   * provider, then back to `${origin}/profile` once Supabase completes the
+   * exchange. Throws if the provider isn't enabled in the Supabase Auth
+   * dashboard yet.
+   */
+  const signInWithProvider = useCallback(
+    async (provider: "google" | "facebook" | "apple") => {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider,
+        options: { redirectTo: `${window.location.origin}/profile` },
+      });
+      if (error) throw new Error(error.message);
+    },
+    [],
+  );
+
+  return { signIn, signOut, signInWithProvider };
 }

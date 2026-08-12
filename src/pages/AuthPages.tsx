@@ -3,6 +3,189 @@ import { useAuthStatus } from "../lib/backend";
 import { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
+/* ── shared shell (matches the light showroom theme used everywhere else) ── */
+
+function AuthShell({
+  eyebrow,
+  title,
+  subtitle,
+  children,
+  footer,
+}: {
+  eyebrow: string;
+  title: string;
+  subtitle?: React.ReactNode;
+  children: React.ReactNode;
+  footer?: React.ReactNode;
+}) {
+  return (
+    <div className="min-h-[70vh] flex items-center justify-center px-6 py-16">
+      <div className="w-full max-w-sm">
+        <p
+          className="text-[10px] tracking-[0.3em] uppercase font-semibold text-center"
+          style={{ color: "var(--showroom-gold)" }}
+        >
+          {eyebrow}
+        </p>
+        <h1
+          className="text-3xl font-light mt-2 mb-3 text-center"
+          style={{ fontFamily: "var(--font-display)", color: "var(--showroom-ink)" }}
+        >
+          {title}
+        </h1>
+        {subtitle && (
+          <p className="text-[13px] text-slate-500 text-center mb-8">{subtitle}</p>
+        )}
+
+        <div className="p-6 rounded-2xl border border-[rgba(92,155,205,0.18)] bg-white/80 shadow-sm">
+          {children}
+        </div>
+
+        {footer && <div className="text-center text-[12px] text-slate-500 mt-6">{footer}</div>}
+      </div>
+    </div>
+  );
+}
+
+const inputClass =
+  "w-full bg-white border border-[rgba(92,155,205,0.25)] text-[15px] placeholder-slate-400 px-4 py-3 outline-none focus:border-[rgba(185,149,69,0.55)] transition-colors rounded-md";
+
+const labelClass =
+  "block text-[10px] tracking-[0.25em] uppercase text-slate-500 font-semibold mb-2";
+
+const primaryButtonClass =
+  "w-full py-3 text-[11px] tracking-[0.25em] uppercase font-bold text-white transition-all disabled:opacity-50 rounded-md";
+
+const primaryButtonStyle = {
+  background: "linear-gradient(135deg, var(--showroom-gold), #8f6f2e)",
+};
+
+const linkClass = "font-semibold";
+const linkStyle = { color: "var(--showroom-gold)" };
+
+function ErrorText({ children }: { children: React.ReactNode }) {
+  return <p className="text-[12px] text-red-500 text-center">{children}</p>;
+}
+
+/* ── social login ─────────────────────────────────────────────────────── */
+
+function SocialButtons({ onError }: { onError: (msg: string) => void }) {
+  const { signInWithProvider } = useAuthActions() as any;
+  const [pending, setPending] = useState<string | null>(null);
+
+  const handleClick = async (provider: "google" | "facebook" | "apple") => {
+    setPending(provider);
+    onError("");
+    try {
+      await signInWithProvider(provider);
+      // Browser is redirected away by Supabase; nothing else to do here.
+    } catch (err: any) {
+      setPending(null);
+      onError(
+        err?.message?.toLowerCase().includes("provider is not enabled") ||
+          err?.message?.toLowerCase().includes("unsupported provider")
+          ? "That sign-in method isn't turned on yet — use email for now."
+          : err?.message || "Couldn't start sign-in. Please try again.",
+      );
+    }
+  };
+
+  return (
+    <div className="space-y-2.5 mb-6">
+      <SocialButton
+        label="Continue with Google"
+        loading={pending === "google"}
+        onClick={() => handleClick("google")}
+        icon={<GoogleIcon />}
+      />
+      <SocialButton
+        label="Continue with Apple"
+        loading={pending === "apple"}
+        onClick={() => handleClick("apple")}
+        icon={<AppleIcon />}
+      />
+      <SocialButton
+        label="Continue with Facebook"
+        loading={pending === "facebook"}
+        onClick={() => handleClick("facebook")}
+        icon={<FacebookIcon />}
+      />
+
+      <div className="flex items-center gap-3 pt-3">
+        <div className="h-px flex-1 bg-[rgba(92,155,205,0.2)]" />
+        <span className="text-[10px] tracking-[0.2em] uppercase text-slate-400">or</span>
+        <div className="h-px flex-1 bg-[rgba(92,155,205,0.2)]" />
+      </div>
+    </div>
+  );
+}
+
+function SocialButton({
+  label,
+  icon,
+  loading,
+  onClick,
+}: {
+  label: string;
+  icon: React.ReactNode;
+  loading: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={loading}
+      className="w-full flex items-center justify-center gap-3 py-3 rounded-md border border-[rgba(92,155,205,0.25)] bg-white text-[13px] font-medium text-slate-700 transition-all hover:border-[rgba(185,149,69,0.5)] hover:bg-[rgba(185,149,69,0.05)] disabled:opacity-50"
+    >
+      <span className="w-4 h-4 flex items-center justify-center shrink-0">{icon}</span>
+      {loading ? "Redirecting…" : label}
+    </button>
+  );
+}
+
+function GoogleIcon() {
+  return (
+    <svg viewBox="0 0 24 24" width="16" height="16">
+      <path
+        fill="#4285F4"
+        d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+      />
+      <path
+        fill="#34A853"
+        d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.99.67-2.26 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+      />
+      <path
+        fill="#FBBC05"
+        d="M5.84 14.1c-.22-.67-.35-1.38-.35-2.1s.13-1.43.35-2.1V7.06H2.18A10.97 10.97 0 001 12c0 1.77.43 3.44 1.18 4.94l3.66-2.84z"
+      />
+      <path
+        fill="#EA4335"
+        d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+      />
+    </svg>
+  );
+}
+
+function AppleIcon() {
+  return (
+    <svg viewBox="0 0 24 24" width="16" height="16" fill="#111">
+      <path d="M16.36 1.43c.1 1.06-.28 2.1-.94 2.9-.68.82-1.8 1.46-2.9 1.38-.12-1.03.32-2.1.97-2.85.7-.83 1.9-1.44 2.87-1.43zM20.7 17.35c-.5 1.15-.75 1.66-1.4 2.67-.9 1.4-2.16 3.15-3.72 3.16-1.4.02-1.75-.9-3.65-.9-1.9 0-2.3.88-3.68.9-1.55.03-2.73-1.58-3.64-2.98C2.24 17.3 1.4 12.6 3.4 9.4c1.03-1.62 2.66-2.65 4.4-2.68 1.4-.02 2.28.94 3.65.94 1.34 0 2.05-.94 3.66-.94 1.5.02 3.08.8 4.1 2.16-3.6 2-3.02 6.9 1.5 8.47z" />
+    </svg>
+  );
+}
+
+function FacebookIcon() {
+  return (
+    <svg viewBox="0 0 24 24" width="16" height="16">
+      <path
+        fill="#1877F2"
+        d="M24 12.07C24 5.4 18.63 0 12 0S0 5.4 0 12.07c0 5.02 3.16 9.31 7.63 10.94v-7.62H5.32V12.4h2.31V9.86c0-2.28 1.36-3.54 3.43-3.54.99 0 2.03.18 2.03.18v2.5H12.1c-1.14 0-1.5.71-1.5 1.44v1.96h2.56l-.41 2.99h-2.15v7.62C20.84 21.38 24 17.09 24 12.07z"
+      />
+    </svg>
+  );
+}
+
 /**
  * Sign-In Page
  *
@@ -109,305 +292,244 @@ export function LoginPage() {
   // OTP verification screen
   if (needsVerification) {
     return (
-      <div className="min-h-[70vh] flex items-center justify-center px-6 bg-[#0e0a0f]">
-        <div className="w-full max-w-sm">
-          <p className="text-[10px] tracking-[0.3em] uppercase text-purple-400/60 mb-2 text-center">
-            VERIFY YOUR EMAIL
-          </p>
-          <h1
-            className="text-3xl text-white font-light mb-3 text-center"
-            style={{ fontFamily: "var(--font-display)" }}
+      <AuthShell
+        eyebrow="Verify your email"
+        title="Enter Code"
+        subtitle={
+          <>
+            We sent a 6-digit code to <span className="text-slate-700">{email}</span>
+          </>
+        }
+      >
+        <form onSubmit={handleVerify} className="space-y-4">
+          <OTPInput value={code} onChange={setCode} />
+
+          {error && <ErrorText>{error}</ErrorText>}
+
+          <button
+            type="submit"
+            disabled={loading || code.length !== 6}
+            className={primaryButtonClass}
+            style={primaryButtonStyle}
           >
-            Enter Code
-          </h1>
-          <p className="text-[13px] text-white/40 text-center mb-8">
-            We sent a 6-digit code to{" "}
-            <span className="text-white/60">{email}</span>
-          </p>
+            {loading ? "VERIFYING..." : "VERIFY & SIGN IN"}
+          </button>
+        </form>
 
-          <form onSubmit={handleVerify} className="space-y-4">
-            <OTPInput value={code} onChange={setCode} />
+        <p className="text-center text-[12px] text-slate-500 mt-6">
+          Didn't get a code?{" "}
+          <button
+            onClick={async () => {
+              setError("");
+              try {
+                await signIn("password", { email, password, flow: "signIn" });
+              } catch {
+                // Expected — re-sends OTP
+              }
+              setError("A new code has been sent.");
+            }}
+            className={linkClass}
+            style={linkStyle}
+          >
+            Resend
+          </button>
+        </p>
 
-            {error && <p className="text-[12px] text-red-400 text-center">{error}</p>}
-
-            <button
-              type="submit"
-              disabled={loading || code.length !== 6}
-              className="w-full py-3 text-[11px] tracking-[0.25em] uppercase font-bold text-white transition-all disabled:opacity-50 rounded-md"
-              style={{
-                background: "linear-gradient(135deg, #a855f7, #7c3aed)",
-              }}
-            >
-              {loading ? "VERIFYING..." : "VERIFY & SIGN IN"}
-            </button>
-          </form>
-
-          <p className="text-center text-[12px] text-white/30 mt-6">
-            Didn't get a code?{" "}
-            <button
-              onClick={async () => {
-                setError("");
-                try {
-                  await signIn("password", { email, password, flow: "signIn" });
-                } catch {
-                  // Expected — re-sends OTP
-                }
-                setError("A new code has been sent.");
-              }}
-              className="text-purple-400 hover:text-purple-300"
-            >
-              Resend
-            </button>
-          </p>
-
-          <p className="text-center text-[12px] text-white/30 mt-3">
-            <button
-              onClick={() => {
-                setNeedsVerification(false);
-                setCode("");
-                setError("");
-              }}
-              className="text-white/40 hover:text-white/60"
-            >
-              ← Back to sign in
-            </button>
-          </p>
-        </div>
-      </div>
+        <p className="text-center text-[12px] text-slate-400 mt-3">
+          <button
+            onClick={() => {
+              setNeedsVerification(false);
+              setCode("");
+              setError("");
+            }}
+            className="hover:text-slate-600"
+          >
+            ← Back to sign in
+          </button>
+        </p>
+      </AuthShell>
     );
   }
 
   // Forgot-password: step 1 — enter email to request a reset code
   if (forgotStep === "request") {
     return (
-      <div className="min-h-[70vh] flex items-center justify-center px-6 bg-[#0e0a0f]">
-        <div className="w-full max-w-sm">
-          <p className="text-[10px] tracking-[0.3em] uppercase text-purple-400/60 mb-2 text-center">
-            RESET PASSWORD
-          </p>
-          <h1
-            className="text-3xl text-white font-light mb-3 text-center"
-            style={{ fontFamily: "var(--font-display)" }}
+      <AuthShell
+        eyebrow="Reset password"
+        title="Forgot Password"
+        subtitle="Enter your account email and we'll send you a 6-digit code to reset your password."
+      >
+        <form onSubmit={handleRequestReset} className="space-y-4">
+          <div>
+            <label className={labelClass}>EMAIL</label>
+            <input
+              type="email"
+              value={resetEmail}
+              onChange={(e) => setResetEmail(e.target.value)}
+              placeholder="you@example.com"
+              className={inputClass}
+              required
+            />
+          </div>
+
+          {error && <ErrorText>{error}</ErrorText>}
+
+          <button type="submit" disabled={loading} className={primaryButtonClass} style={primaryButtonStyle}>
+            {loading ? "SENDING..." : "SEND RESET CODE"}
+          </button>
+        </form>
+
+        <p className="text-center text-[12px] text-slate-400 mt-6">
+          <button
+            onClick={() => {
+              setForgotStep(null);
+              setError("");
+            }}
+            className="hover:text-slate-600"
           >
-            Forgot Password
-          </h1>
-          <p className="text-[13px] text-white/40 text-center mb-8">
-            Enter your account email and we'll send you a 6-digit code to reset your password.
-          </p>
-
-          <form onSubmit={handleRequestReset} className="space-y-4">
-            <div>
-              <label className="block text-[10px] tracking-[0.25em] uppercase text-white/50 font-semibold mb-2">
-                EMAIL
-              </label>
-              <input
-                type="email"
-                value={resetEmail}
-                onChange={(e) => setResetEmail(e.target.value)}
-                placeholder="you@example.com"
-                className="w-full bg-white/5 border border-white/10 text-white/80 placeholder-white/25 px-4 py-3 text-sm outline-none focus:border-purple-400/40 transition-colors rounded-md"
-                required
-              />
-            </div>
-
-            {error && <p className="text-[12px] text-red-400 text-center">{error}</p>}
-
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full py-3 text-[11px] tracking-[0.25em] uppercase font-bold text-white transition-all disabled:opacity-50 rounded-md"
-              style={{
-                background: "linear-gradient(135deg, #a855f7, #7c3aed)",
-              }}
-            >
-              {loading ? "SENDING..." : "SEND RESET CODE"}
-            </button>
-          </form>
-
-          <p className="text-center text-[12px] text-white/30 mt-6">
-            <button
-              onClick={() => {
-                setForgotStep(null);
-                setError("");
-              }}
-              className="text-white/40 hover:text-white/60"
-            >
-              ← Back to sign in
-            </button>
-          </p>
-        </div>
-      </div>
+            ← Back to sign in
+          </button>
+        </p>
+      </AuthShell>
     );
   }
 
   // Forgot-password: step 2 — enter code + choose new password
   if (forgotStep === "verify") {
     return (
-      <div className="min-h-[70vh] flex items-center justify-center px-6 bg-[#0e0a0f]">
-        <div className="w-full max-w-sm">
-          <p className="text-[10px] tracking-[0.3em] uppercase text-purple-400/60 mb-2 text-center">
-            RESET PASSWORD
-          </p>
-          <h1
-            className="text-3xl text-white font-light mb-3 text-center"
-            style={{ fontFamily: "var(--font-display)" }}
+      <AuthShell
+        eyebrow="Reset password"
+        title="Enter Code"
+        subtitle={
+          <>
+            We sent a 6-digit code to <span className="text-slate-700">{resetEmail}</span>
+          </>
+        }
+      >
+        <form onSubmit={handleConfirmReset} className="space-y-4">
+          <OTPInput value={resetCode} onChange={setResetCode} />
+
+          <div>
+            <label className={labelClass}>NEW PASSWORD</label>
+            <input
+              type="password"
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+              placeholder="••••••••"
+              className={inputClass}
+              required
+              minLength={8}
+            />
+          </div>
+
+          {error && <ErrorText>{error}</ErrorText>}
+          {resetMessage && <p className="text-[12px] text-emerald-600 text-center">{resetMessage}</p>}
+
+          <button
+            type="submit"
+            disabled={loading || resetCode.length !== 6 || newPassword.length < 8}
+            className={primaryButtonClass}
+            style={primaryButtonStyle}
           >
-            Enter Code
-          </h1>
-          <p className="text-[13px] text-white/40 text-center mb-8">
-            We sent a 6-digit code to{" "}
-            <span className="text-white/60">{resetEmail}</span>
-          </p>
+            {loading ? "RESETTING..." : "RESET & SIGN IN"}
+          </button>
+        </form>
 
-          <form onSubmit={handleConfirmReset} className="space-y-4">
-            <OTPInput value={resetCode} onChange={setResetCode} />
+        <p className="text-center text-[12px] text-slate-500 mt-6">
+          <button
+            onClick={async () => {
+              setError("");
+              try {
+                await signIn("password", { email: resetEmail, flow: "reset" });
+              } catch {
+                // Expected — re-sends OTP
+              }
+              setResetMessage("A new code has been sent.");
+            }}
+            className={linkClass}
+            style={linkStyle}
+          >
+            Resend code
+          </button>
+        </p>
 
-            <div>
-              <label className="block text-[10px] tracking-[0.25em] uppercase text-white/50 font-semibold mb-2">
-                NEW PASSWORD
-              </label>
-              <input
-                type="password"
-                value={newPassword}
-                onChange={(e) => setNewPassword(e.target.value)}
-                placeholder="••••••••"
-                className="w-full bg-white/5 border border-white/10 text-white/80 placeholder-white/25 px-4 py-3 text-sm outline-none focus:border-purple-400/40 transition-colors rounded-md"
-                required
-                minLength={8}
-              />
-            </div>
-
-            {error && <p className="text-[12px] text-red-400 text-center">{error}</p>}
-            {resetMessage && (
-              <p className="text-[12px] text-green-400 text-center">{resetMessage}</p>
-            )}
-
-            <button
-              type="submit"
-              disabled={loading || resetCode.length !== 6 || newPassword.length < 8}
-              className="w-full py-3 text-[11px] tracking-[0.25em] uppercase font-bold text-white transition-all disabled:opacity-50 rounded-md"
-              style={{
-                background: "linear-gradient(135deg, #a855f7, #7c3aed)",
-              }}
-            >
-              {loading ? "RESETTING..." : "RESET & SIGN IN"}
-            </button>
-          </form>
-
-          <p className="text-center text-[12px] text-white/30 mt-6">
-            <button
-              onClick={async () => {
-                setError("");
-                try {
-                  await signIn("password", { email: resetEmail, flow: "reset" });
-                } catch {
-                  // Expected — re-sends OTP
-                }
-                setResetMessage("A new code has been sent.");
-              }}
-              className="text-purple-400 hover:text-purple-300"
-            >
-              Resend code
-            </button>
-          </p>
-
-          <p className="text-center text-[12px] text-white/30 mt-3">
-            <button
-              onClick={() => {
-                setForgotStep(null);
-                setResetCode("");
-                setNewPassword("");
-                setError("");
-                setResetMessage("");
-              }}
-              className="text-white/40 hover:text-white/60"
-            >
-              ← Back to sign in
-            </button>
-          </p>
-        </div>
-      </div>
+        <p className="text-center text-[12px] text-slate-400 mt-3">
+          <button
+            onClick={() => {
+              setForgotStep(null);
+              setResetCode("");
+              setNewPassword("");
+              setError("");
+              setResetMessage("");
+            }}
+            className="hover:text-slate-600"
+          >
+            ← Back to sign in
+          </button>
+        </p>
+      </AuthShell>
     );
   }
 
   // Main sign-in screen
   return (
-    <div className="min-h-[70vh] flex items-center justify-center px-6 bg-[#0e0a0f]">
-      <div className="w-full max-w-sm">
-        <p className="text-[10px] tracking-[0.3em] uppercase text-purple-400/60 mb-2 text-center">
-          WELCOME BACK
-        </p>
-        <h1
-          className="text-3xl text-white font-light mb-8 text-center"
-          style={{ fontFamily: "var(--font-display)" }}
-        >
-          Sign In
-        </h1>
-
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-[10px] tracking-[0.25em] uppercase text-white/50 font-semibold mb-2">
-              EMAIL
-            </label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="you@example.com"
-              className="w-full bg-white/5 border border-white/10 text-white/80 placeholder-white/25 px-4 py-3 text-sm outline-none focus:border-purple-400/40 transition-colors rounded-md"
-              required
-            />
-          </div>
-          <div>
-            <label className="block text-[10px] tracking-[0.25em] uppercase text-white/50 font-semibold mb-2">
-              PASSWORD
-            </label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="••••••••"
-              className="w-full bg-white/5 border border-white/10 text-white/80 placeholder-white/25 px-4 py-3 text-sm outline-none focus:border-purple-400/40 transition-colors rounded-md"
-              required
-            />
-            <button
-              type="button"
-              onClick={() => {
-                setResetEmail(email);
-                setError("");
-                setForgotStep("request");
-              }}
-              className="mt-2 text-[11px] text-purple-400 hover:text-purple-300"
-            >
-              Forgot password?
-            </button>
-          </div>
-
-          {error && <p className="text-[12px] text-red-400">{error}</p>}
-
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full py-3 text-[11px] tracking-[0.25em] uppercase font-bold text-white transition-all disabled:opacity-50 rounded-md"
-            style={{
-              background: "linear-gradient(135deg, #a855f7, #7c3aed)",
-            }}
-          >
-            {loading ? "SIGNING IN..." : "SIGN IN"}
-          </button>
-        </form>
-
-        <p className="text-center text-[12px] text-white/40 mt-6">
+    <AuthShell
+      eyebrow="Welcome back"
+      title="Sign In"
+      footer={
+        <>
           Don't have an account?{" "}
-          <Link
-            to="/signup"
-            className="text-purple-400 hover:text-purple-300"
-          >
+          <Link to="/signup" className={linkClass} style={linkStyle}>
             Create one
           </Link>
-        </p>
-      </div>
-    </div>
+        </>
+      }
+    >
+      <SocialButtons onError={setError} />
+
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div>
+          <label className={labelClass}>EMAIL</label>
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="you@example.com"
+            className={inputClass}
+            required
+          />
+        </div>
+        <div>
+          <label className={labelClass}>PASSWORD</label>
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="••••••••"
+            className={inputClass}
+            required
+          />
+          <button
+            type="button"
+            onClick={() => {
+              setResetEmail(email);
+              setError("");
+              setForgotStep("request");
+            }}
+            className="mt-2 text-[11px] font-semibold"
+            style={linkStyle}
+          >
+            Forgot password?
+          </button>
+        </div>
+
+        {error && <ErrorText>{error}</ErrorText>}
+
+        <button type="submit" disabled={loading} className={primaryButtonClass} style={primaryButtonStyle}>
+          {loading ? "SIGNING IN..." : "SIGN IN"}
+        </button>
+      </form>
+    </AuthShell>
   );
 }
 
@@ -459,7 +581,7 @@ export function SignupPage() {
         msg.toLowerCase().includes("exists")
       ) {
         setError(
-          "An account with this email already exists. Try signing in instead."
+          "An account with this email already exists. Try signing in instead.",
         );
       } else {
         setError("Could not create account. Please try again.");
@@ -484,152 +606,119 @@ export function SignupPage() {
   // OTP verification screen
   if (needsVerification) {
     return (
-      <div className="min-h-[70vh] flex items-center justify-center px-6 bg-[#0e0a0f]">
-        <div className="w-full max-w-sm">
-          <p className="text-[10px] tracking-[0.3em] uppercase text-purple-400/60 mb-2 text-center">
-            ALMOST THERE
-          </p>
-          <h1
-            className="text-3xl text-white font-light mb-3 text-center"
-            style={{ fontFamily: "var(--font-display)" }}
-          >
-            Verify Email
-          </h1>
-          <p className="text-[13px] text-white/40 text-center mb-8">
-            We sent a 6-digit code to{" "}
-            <span className="text-white/60">{email}</span>
+      <AuthShell
+        eyebrow="Almost there"
+        title="Verify Email"
+        subtitle={
+          <>
+            We sent a 6-digit code to <span className="text-slate-700">{email}</span>
             <br />
-            <span className="text-white/25 text-[11px]">
-              Check your inbox (and spam folder)
-            </span>
-          </p>
+            <span className="text-slate-400 text-[11px]">Check your inbox (and spam folder)</span>
+          </>
+        }
+      >
+        <form onSubmit={handleVerify} className="space-y-4">
+          <OTPInput value={code} onChange={setCode} />
 
-          <form onSubmit={handleVerify} className="space-y-4">
-            <OTPInput value={code} onChange={setCode} />
+          {error && <ErrorText>{error}</ErrorText>}
 
-            {error && (
-              <p className="text-[12px] text-red-400 text-center">{error}</p>
-            )}
+          <button
+            type="submit"
+            disabled={loading || code.length !== 6}
+            className={primaryButtonClass}
+            style={primaryButtonStyle}
+          >
+            {loading ? "VERIFYING..." : "VERIFY & CREATE ACCOUNT"}
+          </button>
+        </form>
 
-            <button
-              type="submit"
-              disabled={loading || code.length !== 6}
-              className="w-full py-3 text-[11px] tracking-[0.25em] uppercase font-bold text-white transition-all disabled:opacity-50 rounded-md"
-              style={{
-                background: "linear-gradient(135deg, #a855f7, #7c3aed)",
-              }}
-            >
-              {loading ? "VERIFYING..." : "VERIFY & CREATE ACCOUNT"}
-            </button>
-          </form>
+        <p className="text-center text-[12px] text-slate-500 mt-6">
+          Didn't get a code?{" "}
+          <button
+            onClick={async () => {
+              setError("");
+              try {
+                await signIn("password", {
+                  email,
+                  password,
+                  flow: "signUp",
+                });
+              } catch {
+                // Expected — re-sends OTP
+              }
+              setError("A new code has been sent.");
+            }}
+            className={linkClass}
+            style={linkStyle}
+          >
+            Resend
+          </button>
+        </p>
 
-          <p className="text-center text-[12px] text-white/30 mt-6">
-            Didn't get a code?{" "}
-            <button
-              onClick={async () => {
-                setError("");
-                try {
-                  await signIn("password", {
-                    email,
-                    password,
-                    flow: "signUp",
-                  });
-                } catch {
-                  // Expected — re-sends OTP
-                }
-                setError("A new code has been sent.");
-              }}
-              className="text-purple-400 hover:text-purple-300"
-            >
-              Resend
-            </button>
-          </p>
-
-          <p className="text-center text-[12px] text-white/30 mt-3">
-            <button
-              onClick={() => {
-                setNeedsVerification(false);
-                setCode("");
-                setError("");
-              }}
-              className="text-white/40 hover:text-white/60"
-            >
-              ← Back
-            </button>
-          </p>
-        </div>
-      </div>
+        <p className="text-center text-[12px] text-slate-400 mt-3">
+          <button
+            onClick={() => {
+              setNeedsVerification(false);
+              setCode("");
+              setError("");
+            }}
+            className="hover:text-slate-600"
+          >
+            ← Back
+          </button>
+        </p>
+      </AuthShell>
     );
   }
 
   // Main sign-up screen
   return (
-    <div className="min-h-[70vh] flex items-center justify-center px-6 bg-[#0e0a0f]">
-      <div className="w-full max-w-sm">
-        <p className="text-[10px] tracking-[0.3em] uppercase text-purple-400/60 mb-2 text-center">
-          JOIN THE INNER CIRCLE
-        </p>
-        <h1
-          className="text-3xl text-white font-light mb-8 text-center"
-          style={{ fontFamily: "var(--font-display)" }}
-        >
-          Create Account
-        </h1>
-
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-[10px] tracking-[0.25em] uppercase text-white/50 font-semibold mb-2">
-              EMAIL
-            </label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="you@example.com"
-              className="w-full bg-white/5 border border-white/10 text-white/80 placeholder-white/25 px-4 py-3 text-sm outline-none focus:border-purple-400/40 transition-colors rounded-md"
-              required
-            />
-          </div>
-          <div>
-            <label className="block text-[10px] tracking-[0.25em] uppercase text-white/50 font-semibold mb-2">
-              PASSWORD
-            </label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="Min. 6 characters"
-              className="w-full bg-white/5 border border-white/10 text-white/80 placeholder-white/25 px-4 py-3 text-sm outline-none focus:border-purple-400/40 transition-colors rounded-md"
-              required
-              minLength={6}
-            />
-          </div>
-
-          {error && <p className="text-[12px] text-red-400">{error}</p>}
-
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full py-3 text-[11px] tracking-[0.25em] uppercase font-bold text-white transition-all disabled:opacity-50 rounded-md"
-            style={{
-              background: "linear-gradient(135deg, #a855f7, #7c3aed)",
-            }}
-          >
-            {loading ? "CREATING..." : "CREATE ACCOUNT"}
-          </button>
-        </form>
-
-        <p className="text-center text-[12px] text-white/40 mt-6">
+    <AuthShell
+      eyebrow="Join the inner circle"
+      title="Create Account"
+      footer={
+        <>
           Already have an account?{" "}
-          <Link
-            to="/login"
-            className="text-purple-400 hover:text-purple-300"
-          >
+          <Link to="/login" className={linkClass} style={linkStyle}>
             Sign in
           </Link>
-        </p>
-      </div>
-    </div>
+        </>
+      }
+    >
+      <SocialButtons onError={setError} />
+
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div>
+          <label className={labelClass}>EMAIL</label>
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="you@example.com"
+            className={inputClass}
+            required
+          />
+        </div>
+        <div>
+          <label className={labelClass}>PASSWORD</label>
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="Min. 6 characters"
+            className={inputClass}
+            required
+            minLength={6}
+          />
+        </div>
+
+        {error && <ErrorText>{error}</ErrorText>}
+
+        <button type="submit" disabled={loading} className={primaryButtonClass} style={primaryButtonStyle}>
+          {loading ? "CREATING..." : "CREATE ACCOUNT"}
+        </button>
+      </form>
+    </AuthShell>
   );
 }
 
@@ -688,7 +777,8 @@ function OTPInput({
           onChange={(e) => handleChange(i, e.target.value)}
           onKeyDown={(e) => handleKeyDown(i, e)}
           onPaste={handlePaste}
-          className="w-11 h-14 text-center text-xl font-mono text-white bg-white/5 border border-white/15 rounded-lg focus:border-purple-400/60 focus:bg-white/[0.08] outline-none transition-all"
+          className="w-11 h-14 text-center text-xl font-mono border border-[rgba(92,155,205,0.25)] rounded-lg focus:border-[rgba(185,149,69,0.55)] outline-none transition-all"
+          style={{ color: "var(--showroom-ink)" }}
           autoFocus={i === 0}
         />
       ))}
