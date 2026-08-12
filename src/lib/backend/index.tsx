@@ -290,16 +290,51 @@ export function useAuthActions() {
   /**
    * OAuth (Google / Facebook / Apple, etc). Redirects the browser to the
    * provider, then back to `${origin}/profile` once Supabase completes the
-   * exchange. Throws if the provider isn't enabled in the Supabase Auth
-   * dashboard yet.
+   * exchange. Throws BEFORE navigating away if the provider isn't enabled in
+   * the Supabase Auth dashboard yet, so callers can show a friendly message
+   * instead of the browser landing on Supabase's raw JSON error page.
    */
   const signInWithProvider = useCallback(
     async (provider: "google" | "facebook" | "apple") => {
-      const { error } = await supabase.auth.signInWithOAuth({
+      // skipBrowserRedirect so we can validate the provider is enabled
+      // (via a manual, no-follow fetch) before sending the user anywhere.
+      const { data, error } = await supabase.auth.signInWithOAuth({
         provider,
-        options: { redirectTo: `${window.location.origin}/profile` },
+        options: {
+          redirectTo: `${window.location.origin}/profile`,
+          skipBrowserRedirect: true,
+        },
       });
       if (error) throw new Error(error.message);
+      if (!data?.url) throw new Error("Couldn't start sign-in. Please try again.");
+
+      // A disabled/unsupported provider responds 400 with a JSON error body
+      // instead of a 302 redirect to the provider's consent screen. `manual`
+      // redirect mode surfaces a real 3xx as an opaque "success" response
+      // (status 0, type "opaqueredirect") we can distinguish from an actual
+      // 4xx error response, so we can catch this before navigating away.
+      try {
+        const check = await fetch(data.url, { redirect: "manual" });
+        if (check.type !== "opaqueredirect" && check.status >= 400) {
+          let msg = "Unsupported provider: provider is not enabled";
+          try {
+            const body = await check.json();
+            msg = body?.msg || body?.message || msg;
+          } catch {
+            // ignore — use default msg
+          }
+          throw new Error(msg);
+        }
+      } catch (checkErr: any) {
+        // If the pre-check itself fails (e.g. CORS), fall back to just
+        // navigating — better an unexplained redirect than blocking a
+        // working provider on a check that couldn't run.
+        if (checkErr instanceof Error && checkErr.message !== "Failed to fetch") {
+          throw checkErr;
+        }
+      }
+
+      window.location.assign(data.url);
     },
     [],
   );
