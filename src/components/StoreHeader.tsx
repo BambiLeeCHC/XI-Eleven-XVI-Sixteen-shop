@@ -52,8 +52,8 @@ export function StoreHeader() {
 
       {/* Main Nav — continuous with the visitor's local sky */}
       <header className="relative z-30">
-        <div className="store-sky-nav relative overflow-hidden" style={{ background: "#78bce8" }}>
-          <div className="absolute inset-0 opacity-100 pointer-events-none" aria-hidden="true">
+        <div className="store-sky-nav relative" style={{ background: "#78bce8" }}>
+          <div className="absolute inset-0 opacity-100 pointer-events-none overflow-hidden" aria-hidden="true">
             <DynamicSkyBar />
           </div>
           <div className="absolute inset-0 pointer-events-none" style={{ background: "linear-gradient(90deg, rgba(7,18,42,.56), rgba(255,255,255,.04) 50%, rgba(7,18,42,.56))" }} />
@@ -128,11 +128,12 @@ export function StoreHeader() {
                       style={{ zIndex: 50 }}
                     >
                       <div
-                        className="flex flex-col py-2 rounded-lg"
+                        className="flex flex-col py-2 rounded-lg overflow-y-auto"
                         style={{
                           background: "#fdfbf9",
                           border: "1px solid rgba(21,36,61,0.1)",
                           boxShadow: "0 8px 24px rgba(21,36,61,0.15)",
+                          maxHeight: "calc(100svh - 110px)",
                         }}
                       >
                         <Link to="/privacy" className="px-4 py-2 text-[11px] tracking-[0.08em] uppercase font-semibold hover:bg-black/[0.03]" style={{ color: "#15243d" }}>
@@ -342,7 +343,7 @@ export function StoreHeader() {
 
           {/* Slide-in panel */}
           <div
-            className="store-mobile-menu absolute top-0 right-0 w-[280px] h-full flex flex-col"
+            className="store-mobile-menu absolute top-0 right-0 w-[280px] h-full flex flex-col overflow-hidden"
             style={{
               background: "linear-gradient(180deg, rgba(247,251,255,.97), rgba(239,246,255,.97))",
               borderLeft: "1px solid rgba(118,180,235,.28)",
@@ -364,7 +365,7 @@ export function StoreHeader() {
             </div>
 
             {/* Nav links */}
-            <nav className="flex-1 px-6 py-8 space-y-2">
+            <nav className="flex-1 min-h-0 overflow-y-auto px-6 py-8 space-y-2">
               <MobileNavLink to="/shop?gender=women" label="SHOP WOMEN" />
               <MobileNavLink to="/shop?gender=men" label="SHOP MEN" />
               <MobileNavLink to="/shop" label="SHOP ALL" />
