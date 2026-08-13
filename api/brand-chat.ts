@@ -1,7 +1,8 @@
 /**
  * XI · XVI Style Concierge.
  *
- * Calls OpenAI directly using OPENAI_API_KEY. If the key is not present the
+ * Calls xAI's Grok models via their OpenAI-compatible chat completions
+ * endpoint, using XAI_API_KEY. If the key is not present the
  * widget answers with a graceful hand-off instead of erroring — a broken
  * concierge should never look like a broken shop.
  */
@@ -46,7 +47,7 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
     };
     if (!message) throw new HttpError(400, "A message is required");
 
-    const apiKey = process.env.OPENAI_API_KEY;
+    const apiKey = process.env.XAI_API_KEY;
     if (!apiKey) {
       return res.status(200).json({ success: true, response: FALLBACK });
     }
@@ -60,14 +61,14 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
       { role: "user" as const, content: message },
     ];
 
-    const response = await fetch("https://api.openai.com/v1/chat/completions", {
+    const response = await fetch("https://api.x.ai/v1/chat/completions", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${apiKey}`,
       },
       body: JSON.stringify({
-        model: "gpt-4o-mini",
+        model: "grok-3",
         messages,
         temperature: 0.8,
         max_tokens: 350,
@@ -75,7 +76,7 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
     });
 
     if (!response.ok) {
-      console.error("Concierge OpenAI call failed", response.status, await response.text().catch(() => ""));
+      console.error("Concierge Grok call failed", response.status, await response.text().catch(() => ""));
       return res.status(200).json({ success: true, response: FALLBACK });
     }
 

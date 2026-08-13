@@ -11,8 +11,10 @@
  * connected groups, one true synthesis line, soft close) — never a
  * generic daily-horoscope template.
  *
- * If OPENAI_API_KEY isn't configured, the caller falls back to the
- * static per-card copy already in the deck data (see DrawThree.tsx).
+ * Calls xAI's Grok models via their OpenAI-compatible chat completions
+ * endpoint, using XAI_API_KEY. If XAI_API_KEY isn't configured, the caller
+ * falls back to the static per-card copy already in the deck data (see
+ * DrawThree.tsx).
  */
 
 import {
@@ -63,19 +65,19 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
       throw new HttpError(400, "A spread of drawn cards is required");
     }
 
-    const apiKey = process.env.OPENAI_API_KEY;
+    const apiKey = process.env.XAI_API_KEY;
     if (!apiKey) {
       return res.status(200).json({ success: false, reason: "no_key" });
     }
 
-    const response = await fetch("https://api.openai.com/v1/chat/completions", {
+    const response = await fetch("https://api.x.ai/v1/chat/completions", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${apiKey}`,
       },
       body: JSON.stringify({
-        model: "gpt-4o-mini",
+        model: "grok-3",
         messages: [
           { role: "system", content: SYSTEM_PROMPT },
           { role: "user", content: buildUserPrompt(spread) },
@@ -87,7 +89,7 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
 
     if (!response.ok) {
       console.error(
-        "Tarot reading OpenAI call failed",
+        "Tarot reading Grok call failed",
         response.status,
         await response.text().catch(() => ""),
       );
