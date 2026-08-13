@@ -111,9 +111,9 @@ export function JournalPage() {
             </span>
             <span className="journal-tile__label">The Draw</span>
             <span className="journal-tile__desc">
-              Three cards from the house deck — {spread.map((s) => s.slotName.replace("The ", "")).join(" · ")}
+              Five cards from the Major Arcana — {spread.map((s) => s.slotName.replace("The ", "")).join(" · ")}
             </span>
-            <span className="journal-tile__cta">Draw three ✦</span>
+            <span className="journal-tile__cta">Draw your five ✦</span>
           </button>
         </section>
 

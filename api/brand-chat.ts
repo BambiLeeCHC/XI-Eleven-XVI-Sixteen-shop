@@ -1,10 +1,9 @@
 /**
  * XI · XVI Style Concierge.
  *
- * Ported from the old backend, which reached the Viktor Spaces tool API using
- * credentials held in that deployment's environment. If those credentials are
- * not present the widget answers with a graceful hand-off instead of erroring —
- * a broken concierge should never look like a broken shop.
+ * Calls OpenAI directly using OPENAI_API_KEY. If the key is not present the
+ * widget answers with a graceful hand-off instead of erroring — a broken
+ * concierge should never look like a broken shop.
  */
 
 import {
@@ -27,7 +26,9 @@ PRODUCT LINES:
 - S-Glitch Shorts — 2.5" and 6.3" inseams
 - T-Icon Tees — oversized and tie-dye
 
-Everything is made to order: production takes 2–5 business days before shipping. Standard shipping is free.`;
+Everything is made to order: production takes 2–5 business days before shipping. Standard shipping is free.
+
+Keep replies conversational and concise (2-4 sentences unless the customer asks for detail).`;
 
 const FALLBACK =
   "I'm having trouble reaching the concierge right now — but I'd still love to help. Email support@xixvi.shop and a human will come straight back to you, usually the same day.";
@@ -45,64 +46,44 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
     };
     if (!message) throw new HttpError(400, "A message is required");
 
-    const apiUrl = process.env.VIKTOR_SPACES_API_URL;
-    const projectName = process.env.VIKTOR_SPACES_PROJECT_NAME;
-    const projectSecret = process.env.VIKTOR_SPACES_PROJECT_SECRET;
-
-    if (!apiUrl || !projectName || !projectSecret) {
+    const apiKey = process.env.OPENAI_API_KEY;
+    if (!apiKey) {
       return res.status(200).json({ success: true, response: FALLBACK });
     }
 
-    const conversation = (history ?? [])
-      .slice(-8)
-      .map(
-        turn =>
-          `${turn.role === "user" ? "Customer" : "Concierge"}: ${turn.content}`,
-      )
-      .join("\n");
+    const messages = [
+      { role: "system" as const, content: BRAND_SYSTEM_PROMPT },
+      ...(history ?? []).slice(-8).map(turn => ({
+        role: turn.role,
+        content: turn.content,
+      })),
+      { role: "user" as const, content: message },
+    ];
 
-    const prompt = `${BRAND_SYSTEM_PROMPT}
-
-CONVERSATION SO FAR:
-${conversation || "(New conversation)"}
-
-Customer: ${message}
-
-Respond as the XI · XVI Style Concierge. Be helpful, on-brand, and conversational.`;
-
-    const response = await fetch(`${apiUrl}/api/viktor-spaces/tools/call`, {
+    const response = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${apiKey}`,
+      },
       body: JSON.stringify({
-        project_name: projectName,
-        project_secret: projectSecret,
-        role: "ai_structured_output",
-        arguments: {
-          prompt,
-          output_schema: {
-            type: "object",
-            properties: {
-              response: {
-                type: "string",
-                description: "The concierge response to the customer",
-              },
-            },
-            required: ["response"],
-          },
-        },
+        model: "gpt-4o-mini",
+        messages,
+        temperature: 0.8,
+        max_tokens: 350,
       }),
     });
 
     if (!response.ok) {
-      console.error("Concierge tool call failed", response.status);
+      console.error("Concierge OpenAI call failed", response.status, await response.text().catch(() => ""));
       return res.status(200).json({ success: true, response: FALLBACK });
     }
 
     const json = await response.json();
-    const answer = json?.result?.result?.response ?? json?.result?.response;
+    const answer = json?.choices?.[0]?.message?.content;
     return res.status(200).json({
       success: true,
-      response: typeof answer === "string" ? answer : FALLBACK,
+      response: typeof answer === "string" && answer.trim() ? answer.trim() : FALLBACK,
     });
   } catch (error) {
     return fail(res, error);

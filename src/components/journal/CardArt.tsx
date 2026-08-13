@@ -1,14 +1,16 @@
 import type { ArcanaCard } from "../../data/arcana";
 
 /* ═══════════════════════════════════════════════════════════════════════
-   XI·XVI DECK ARTWORK — illustrated plates.
+   XI·XVI DECK ARTWORK — the real Major Arcana, illustrated fresh in-house.
 
-   Built in the tarot tradition — portrait plate, gold arch, numeral at the
-   top, title banner at the foot, a figure inside a scene — but every
-   element is ours: the real XI·XVI shield sits at the keystone of the
-   arch, the figure is the house sky mannequin, the sky behind it is the
-   brand's clouded sky, and the borders repeat the monogram. Ten scene
-   types are mapped card by card so the picture matches the meaning.
+   Traditional cards, traditional names and meanings (see src/data/arcana.ts)
+   — but the plate itself is ours: portrait frame, gold arch, numeral at the
+   top, the real XI·XVI shield at the keystone, the house sky mannequin as
+   the recurring figure, the brand's clouded sky behind it, borders that
+   repeat the monogram. Ten scene types are mapped card by card so the
+   picture matches the meaning; several traditional cards share a scene
+   type on purpose (the per-card seed keeps the geometry from repeating
+   exactly).
 
    Print-ready: all vector except the shield and the mannequin, both of
    which are supplied at 2x.
@@ -29,31 +31,34 @@ type Scene =
   | "scales"
   | "path";
 
-/** Card number → scene. Chosen for meaning, not variety. */
+/** Card number → scene, mapped to the real Major Arcana. Chosen for
+ * meaning, not variety — several traditional cards share a scene type
+ * (e.g. the lantern in `stars` is a natural fit for both the Hermit and
+ * the Star), which is expected and matches how the house deck always
+ * worked: the per-card seed keeps the geometry from repeating exactly. */
 const SCENE_BY_NUMBER: Record<number, Scene> = {
-  0: "veil",
-  1: "figure",
-  2: "moon",
-  3: "figure",
-  4: "tower",
-  5: "stars",
-  6: "path",
-  7: "tower",
-  8: "scales",
-  9: "stars",
-  10: "wheel",
-  11: "sun",
-  12: "moon",
-  13: "veil",
-  14: "loom",
-  15: "loom",
-  16: "tower",
-  17: "stars",
-  18: "moon",
-  19: "sun",
-  20: "figure",
-  21: "loom",
-  22: "wheel",
+  0: "path", // The Fool
+  1: "figure", // The Magician
+  2: "veil", // The High Priestess
+  3: "figure", // The Empress
+  4: "tower", // The Emperor
+  5: "loom", // The Hierophant
+  6: "path", // The Lovers
+  7: "wheel", // The Chariot
+  8: "scales", // Strength
+  9: "stars", // The Hermit
+  10: "wheel", // The Wheel of Fortune
+  11: "scales", // Justice
+  12: "moon", // The Hanged Man
+  13: "veil", // Death
+  14: "loom", // Temperance
+  15: "tower", // The Devil
+  16: "tower", // The Tower
+  17: "stars", // The Star
+  18: "moon", // The Moon
+  19: "sun", // The Sun
+  20: "figure", // Judgement
+  21: "wheel", // The World
 };
 
 export function sceneOf(card: ArcanaCard): Scene {
@@ -247,7 +252,7 @@ function SceneSun() {
   );
 }
 
-function SceneWheel({ seed }: { seed: number }) {
+function SceneWheel({ seed, roman }: { seed: number; roman: string }) {
   return (
     <g>
       {[62, 50, 38, 24].map((r, i) => (
@@ -274,8 +279,8 @@ function SceneWheel({ seed }: { seed: number }) {
           transform={`rotate(${(360 / 9) * i + seed} 100 150)`}
         />
       ))}
-      <text x="100" y="156" textAnchor="middle" fontSize="19" fill={GOLD} fontFamily="'Playfair Display', Georgia, serif">
-        IX
+      <text x="100" y="156" textAnchor="middle" fontSize={roman.length > 2 ? 13 : 19} fill={GOLD} fontFamily="'Playfair Display', Georgia, serif">
+        {roman}
       </text>
       <Ground />
     </g>
@@ -356,7 +361,7 @@ function SceneLoom() {
   );
 }
 
-function SceneScales() {
+function SceneScales({ roman }: { roman: string }) {
   return (
     <g>
       <Ground />
@@ -370,8 +375,8 @@ function SceneScales() {
         <line x1="154" y1="96" x2="154" y2="90" />
       </g>
       <circle cx="100" cy="70" r="4.4" fill="none" stroke={GOLD} strokeWidth="1.2" />
-      <text x="100" y="196" textAnchor="middle" fontSize="13" fill={GOLD} fontFamily="'Playfair Display', Georgia, serif">
-        VII
+      <text x="100" y="196" textAnchor="middle" fontSize={roman.length > 2 ? 10 : 13} fill={GOLD} fontFamily="'Playfair Display', Georgia, serif">
+        {roman}
       </text>
     </g>
   );
@@ -393,17 +398,17 @@ function ScenePath() {
   );
 }
 
-function SceneBody({ scene, seed }: { scene: Scene; seed: number }) {
+function SceneBody({ scene, seed, roman }: { scene: Scene; seed: number; roman: string }) {
   switch (scene) {
     case "veil": return <SceneVeil />;
     case "figure": return <SceneFigure seed={seed} />;
     case "tower": return <SceneTower />;
     case "moon": return <SceneMoon />;
     case "sun": return <SceneSun />;
-    case "wheel": return <SceneWheel seed={seed} />;
+    case "wheel": return <SceneWheel seed={seed} roman={roman} />;
     case "stars": return <SceneStars seed={seed} />;
     case "loom": return <SceneLoom />;
-    case "scales": return <SceneScales />;
+    case "scales": return <SceneScales roman={roman} />;
     case "path": return <ScenePath />;
   }
 }
@@ -454,7 +459,7 @@ export function CardArt({ card, reversed = false }: { card: ArcanaCard; reversed
           <rect width="200" height="300" fill={`url(#sky-${id})`} />
           <g transform={reversed ? "rotate(180 100 165)" : undefined}>
             <Clouds tone="rgba(255,255,255,.7)" />
-            <SceneBody scene={scene} seed={seed} />
+            <SceneBody scene={scene} seed={seed} roman={card.roman} />
           </g>
           <rect width="200" height="300" fill={`url(#vig-${id})`} />
         </g>
@@ -519,7 +524,7 @@ export function CardBack() {
           ELEVEN · SIXTEEN
         </text>
         <text x="100" y="268" textAnchor="middle" fontSize="6.5" letterSpacing="3.4" fill="rgba(226,214,186,.45)">
-          THE HOUSE DECK
+          THE MAJOR ARCANA
         </text>
       </svg>
       {/* the actual logo file, not a redraw */}
