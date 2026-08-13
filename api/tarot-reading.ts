@@ -79,7 +79,11 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
           contents: [
             { role: "user", parts: [{ text: buildUserPrompt(spread) }] },
           ],
-          generationConfig: { temperature: 0.95, maxOutputTokens: 700 },
+          // Gemini's "thinking" tokens are billed against maxOutputTokens
+          // before any visible text is produced, so this budget needs a
+          // large headroom above the ~320-word (≈450 token) target output
+          // or the response gets cut off mid-sentence.
+          generationConfig: { temperature: 0.95, maxOutputTokens: 3000 },
         }),
       },
     );

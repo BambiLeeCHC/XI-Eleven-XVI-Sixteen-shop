@@ -67,7 +67,10 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
         body: JSON.stringify({
           systemInstruction: { parts: [{ text: BRAND_SYSTEM_PROMPT }] },
           contents,
-          generationConfig: { temperature: 0.8, maxOutputTokens: 350 },
+          // Gemini's "thinking" tokens are billed against maxOutputTokens
+          // before any visible text is produced, so this needs a large
+          // headroom above the actual reply length or it gets cut off.
+          generationConfig: { temperature: 0.8, maxOutputTokens: 1500 },
         }),
       },
     );
