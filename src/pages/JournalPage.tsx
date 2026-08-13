@@ -195,7 +195,7 @@ export function JournalPage() {
         open={dock === "draw"}
         onClose={() => setDock(null)}
         title="The Draw"
-        eyebrow="Three cards · the house deck"
+        eyebrow="Five cards · the Major Arcana"
         side="right"
         size="wide"
         accent="#c48dff"
