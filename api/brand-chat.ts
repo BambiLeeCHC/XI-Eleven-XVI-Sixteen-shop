@@ -1,10 +1,9 @@
 /**
  * XI · XVI Style Concierge.
  *
- * Calls xAI's Grok models via their OpenAI-compatible chat completions
- * endpoint, using XAI_API_KEY. If the key is not present the
- * widget answers with a graceful hand-off instead of erroring — a broken
- * concierge should never look like a broken shop.
+ * Calls Google's Gemini API using GEMINI_API_KEY (free tier). If the key
+ * is not present the widget answers with a graceful hand-off instead of
+ * erroring — a broken concierge should never look like a broken shop.
  */
 
 import {
@@ -47,41 +46,39 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
     };
     if (!message) throw new HttpError(400, "A message is required");
 
-    const apiKey = process.env.XAI_API_KEY;
+    const apiKey = process.env.GEMINI_API_KEY;
     if (!apiKey) {
       return res.status(200).json({ success: true, response: FALLBACK });
     }
 
-    const messages = [
-      { role: "system" as const, content: BRAND_SYSTEM_PROMPT },
+    const contents = [
       ...(history ?? []).slice(-8).map(turn => ({
-        role: turn.role,
-        content: turn.content,
+        role: turn.role === "assistant" ? ("model" as const) : ("user" as const),
+        parts: [{ text: turn.content }],
       })),
-      { role: "user" as const, content: message },
+      { role: "user" as const, parts: [{ text: message }] },
     ];
 
-    const response = await fetch("https://api.x.ai/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${apiKey}`,
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${apiKey}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          systemInstruction: { parts: [{ text: BRAND_SYSTEM_PROMPT }] },
+          contents,
+          generationConfig: { temperature: 0.8, maxOutputTokens: 350 },
+        }),
       },
-      body: JSON.stringify({
-        model: "grok-3",
-        messages,
-        temperature: 0.8,
-        max_tokens: 350,
-      }),
-    });
+    );
 
     if (!response.ok) {
-      console.error("Concierge Grok call failed", response.status, await response.text().catch(() => ""));
+      console.error("Concierge Gemini call failed", response.status, await response.text().catch(() => ""));
       return res.status(200).json({ success: true, response: FALLBACK });
     }
 
     const json = await response.json();
-    const answer = json?.choices?.[0]?.message?.content;
+    const answer = json?.candidates?.[0]?.content?.parts?.[0]?.text;
     return res.status(200).json({
       success: true,
       response: typeof answer === "string" && answer.trim() ? answer.trim() : FALLBACK,

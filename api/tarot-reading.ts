@@ -11,10 +11,9 @@
  * connected groups, one true synthesis line, soft close) — never a
  * generic daily-horoscope template.
  *
- * Calls xAI's Grok models via their OpenAI-compatible chat completions
- * endpoint, using XAI_API_KEY. If XAI_API_KEY isn't configured, the caller
- * falls back to the static per-card copy already in the deck data (see
- * DrawThree.tsx).
+ * Calls Google's Gemini API using GEMINI_API_KEY (free tier). If
+ * GEMINI_API_KEY isn't configured, the caller falls back to the static
+ * per-card copy already in the deck data (see DrawThree.tsx).
  */
 
 import {
@@ -65,31 +64,29 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
       throw new HttpError(400, "A spread of drawn cards is required");
     }
 
-    const apiKey = process.env.XAI_API_KEY;
+    const apiKey = process.env.GEMINI_API_KEY;
     if (!apiKey) {
       return res.status(200).json({ success: false, reason: "no_key" });
     }
 
-    const response = await fetch("https://api.x.ai/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${apiKey}`,
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${apiKey}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          systemInstruction: { parts: [{ text: SYSTEM_PROMPT }] },
+          contents: [
+            { role: "user", parts: [{ text: buildUserPrompt(spread) }] },
+          ],
+          generationConfig: { temperature: 0.95, maxOutputTokens: 700 },
+        }),
       },
-      body: JSON.stringify({
-        model: "grok-3",
-        messages: [
-          { role: "system", content: SYSTEM_PROMPT },
-          { role: "user", content: buildUserPrompt(spread) },
-        ],
-        temperature: 0.95,
-        max_tokens: 700,
-      }),
-    });
+    );
 
     if (!response.ok) {
       console.error(
-        "Tarot reading Grok call failed",
+        "Tarot reading Gemini call failed",
         response.status,
         await response.text().catch(() => ""),
       );
@@ -97,7 +94,7 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
     }
 
     const json = await response.json();
-    const text = json?.choices?.[0]?.message?.content;
+    const text = json?.candidates?.[0]?.content?.parts?.[0]?.text;
     if (typeof text !== "string" || !text.trim()) {
       return res.status(200).json({ success: false, reason: "empty" });
     }
