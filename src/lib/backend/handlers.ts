@@ -165,7 +165,7 @@ export const handlers: Record<string, Handler> = {
   },
 
   "subscription.startTrial": async ({ successUrl, cancelUrl } = {}) => {
-    return callApi("/api/subscribe-checkout", { successUrl, cancelUrl });
+    return callApi("/api/reading-checkout", { kind: "subscribe", successUrl, cancelUrl });
   },
 
   /* ── deep readings (The Long Read content) ───────────────────────────── */
@@ -208,7 +208,8 @@ export const handlers: Record<string, Handler> = {
     successUrl,
     cancelUrl,
   } = {}) => {
-    return callApi("/api/question-checkout", {
+    return callApi("/api/reading-checkout", {
+      kind: "question",
       question,
       readingContext,
       successUrl,
@@ -219,11 +220,11 @@ export const handlers: Record<string, Handler> = {
   /* ── natal chart (free) + numerology (paywalled add-on) ──────────────── */
 
   "natalChart.get": async () => {
-    return callApi("/api/natal-chart", {});
+    return callApi("/api/chart", { kind: "natal" });
   },
 
   "numerology.get": async () => {
-    return callApi("/api/numerology", {});
+    return callApi("/api/chart", { kind: "numerology" });
   },
 
   /* ── products ───────────────────────────────────────────────────────── */
