@@ -1,6 +1,8 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { SEO } from "../components/SEO";
+import { JournalSky } from "../components/journal/JournalSky";
+import { CardArt } from "../components/journal/CardArt";
 import { api, useAction, useQuery } from "../lib/backend";
 import { DEEP_SPREAD, drawDeepSpread, type SpreadCard } from "../lib/ritual";
 
@@ -113,103 +115,142 @@ export function DeepReadingPage() {
 
   if (!user) {
     return (
-      <div className="max-w-lg mx-auto px-6 py-24 text-center">
-        <SEO title={pageTitle} />
-        <h1 className="text-2xl font-serif mb-4">The Long Read</h1>
-        <p className="text-sm text-muted-foreground mb-6">
-          Sign in to unlock the in-depth reading built around what's actually going on with you.
-        </p>
-        <Link to="/login" className="underline">Sign in or create an account →</Link>
+      <div className="journal-page">
+        <JournalSky />
+        <div className="journal-stack">
+          <SEO title={pageTitle} />
+          <div className="journal-surface journal-hero" style={{ textAlign: "center" }}>
+            <p className="uppercase tracking-widest text-xs text-muted-foreground mb-2">The Long Read</p>
+            <h1 className="text-3xl font-serif mb-3">{DEEP_SPREAD.name}</h1>
+            <p className="text-sm text-muted-foreground mb-6">
+              Sign in to unlock the in-depth reading built around what's actually going on with you.
+            </p>
+            <Link to="/login" className="underline">Sign in or create an account →</Link>
+          </div>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="max-w-2xl mx-auto px-6 py-16">
-      <SEO title={pageTitle} />
-      <p className="uppercase tracking-widest text-xs text-muted-foreground mb-2">The Long Read</p>
-      <h1 className="text-3xl font-serif mb-3">{DEEP_SPREAD.name}</h1>
-      <p className="text-sm text-muted-foreground mb-8">{DEEP_SPREAD.intro}</p>
+    <div className="journal-page">
+      <JournalSky />
+      <div className="journal-stack" style={{ maxWidth: "42rem" }}>
+        <SEO title={pageTitle} />
 
-      {error && <p className="text-sm text-red-600 mb-4">{error}</p>}
-
-      {!entitled && (
-        <div className="border rounded-lg p-6 space-y-3">
-          <p className="text-sm">
-            <span className="font-semibold">7 days free</span>, then <span className="font-semibold">$7/week</span>.
-            Cancel anytime.
-          </p>
-          <p className="text-sm text-muted-foreground">
-            Seven cards read directly against what you told us at sign-up — not the daily five, a
-            genuinely deeper read, saved to your account.
-          </p>
-          <button
-            onClick={startTrial}
-            disabled={subscribing}
-            className="w-full rounded-md bg-foreground text-background py-3 text-sm font-medium disabled:opacity-50"
-          >
-            {subscribing ? "Starting…" : "Start your 7-day free trial"}
-          </button>
+        <div className="journal-surface journal-hero">
+          <p className="uppercase tracking-widest text-xs text-muted-foreground mb-2">The Long Read</p>
+          <h1 className="text-3xl font-serif mb-3">{DEEP_SPREAD.name}</h1>
+          <p className="text-sm text-muted-foreground">{DEEP_SPREAD.intro}</p>
         </div>
-      )}
 
-      {entitled && !reading && (
-        <div className="border rounded-lg p-6 space-y-3">
-          <label htmlFor="deep-situation" className="text-sm italic text-muted-foreground block">
-            Before you draw — what's actually going on right now?
-          </label>
-          <textarea
-            id="deep-situation"
-            value={situation}
-            onChange={e => setSituation(e.target.value)}
-            rows={2}
-            placeholder={'e.g. "trying to decide whether to leave my job"'}
-            className="w-full rounded-md border px-3 py-2 text-sm"
-          />
-          <button
-            onClick={drawTheLongRead}
-            disabled={drawing}
-            className="w-full rounded-md bg-foreground text-background py-3 text-sm font-medium disabled:opacity-50"
-          >
-            {drawing ? "Drawing…" : "Draw the Long Read"}
-          </button>
-        </div>
-      )}
-
-      {entitled && reading && (
-        <div className="space-y-8">
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            {spread?.map(s => (
-              <div key={s.slot} className="border rounded p-2 text-center">
-                <p className="text-[10px] uppercase tracking-wide text-muted-foreground">{s.slotName}</p>
-                <p className="text-xs font-medium">{s.card.name}{s.reversed ? " (rev.)" : ""}</p>
-              </div>
-            ))}
+        {error && (
+          <div className="journal-surface" style={{ padding: "1rem 1.25rem" }}>
+            <p className="text-sm text-red-600">{error}</p>
           </div>
+        )}
 
-          <div className="prose prose-sm max-w-none whitespace-pre-line">
-            {reading}
-          </div>
-
-          <div className="border-t pt-6 space-y-3">
-            <p className="text-sm font-medium">Ask a follow-up question — $2.99</p>
-            <textarea
-              value={question}
-              onChange={e => setQuestion(e.target.value)}
-              rows={2}
-              placeholder="What do you want to know more about?"
-              className="w-full rounded-md border px-3 py-2 text-sm"
-            />
+        {!entitled && (
+          <div className="journal-surface" style={{ padding: "1.75rem", display: "flex", flexDirection: "column", gap: "0.9rem" }}>
+            <p className="text-sm">
+              <span className="font-semibold">7 days free</span>, then <span className="font-semibold">$7/week</span>.
+              Cancel anytime.
+            </p>
+            <p className="text-sm text-muted-foreground">
+              Seven cards read directly against what's actually going on for you right now — not the
+              daily five, a genuinely deeper read, saved to your account.
+            </p>
             <button
-              onClick={askQuestion}
-              disabled={askingQuestion || !question.trim()}
-              className="rounded-md border px-4 py-2 text-sm font-medium disabled:opacity-50"
+              onClick={startTrial}
+              disabled={subscribing}
+              className="journal-tile__cta"
+              style={{
+                width: "100%", padding: "0.9rem", borderRadius: "12px", textAlign: "center",
+                background: "linear-gradient(160deg, #1d2f4f, #101c33)", color: "#f3e9d2",
+                border: "1px solid rgba(214,178,96,.6)", fontSize: "0.75rem", letterSpacing: "0.15em",
+                textTransform: "uppercase", fontWeight: 600, opacity: subscribing ? 0.6 : 1,
+              }}
             >
-              {askingQuestion ? "Starting…" : "Ask — $2.99"}
+              {subscribing ? "Starting…" : "Start your 7-day free trial ✦"}
             </button>
           </div>
-        </div>
-      )}
+        )}
+
+        {entitled && !reading && (
+          <div className="journal-surface" style={{ padding: "1.75rem", display: "flex", flexDirection: "column", gap: "0.9rem" }}>
+            <label htmlFor="deep-situation" className="text-sm italic text-muted-foreground block">
+              Before you draw — what's actually going on right now?
+            </label>
+            <textarea
+              id="deep-situation"
+              value={situation}
+              onChange={e => setSituation(e.target.value)}
+              rows={2}
+              placeholder={'e.g. "trying to decide whether to leave my job"'}
+              className="w-full rounded-md border px-3 py-2 text-sm"
+              style={{ background: "rgba(255,255,255,.7)" }}
+            />
+            <button
+              onClick={drawTheLongRead}
+              disabled={drawing}
+              style={{
+                width: "100%", padding: "0.9rem", borderRadius: "12px", textAlign: "center",
+                background: "linear-gradient(160deg, #1d2f4f, #101c33)", color: "#f3e9d2",
+                border: "1px solid rgba(214,178,96,.6)", fontSize: "0.75rem", letterSpacing: "0.15em",
+                textTransform: "uppercase", fontWeight: 600, opacity: drawing ? 0.6 : 1,
+              }}
+            >
+              {drawing ? "Drawing…" : "Draw the Long Read ✦"}
+            </button>
+          </div>
+        )}
+
+        {entitled && reading && (
+          <>
+            <div className="journal-surface" style={{ padding: "1.5rem" }}>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(90px, 1fr))", gap: "0.75rem" }}>
+                {spread?.map(s => (
+                  <div key={s.slot} style={{ textAlign: "center" }}>
+                    <p className="text-[10px] uppercase tracking-wide text-muted-foreground mb-1">{s.slotName}</p>
+                    <CardArt card={s.card} reversed={s.reversed} />
+                    <p className="text-xs font-medium mt-1">{s.card.name}{s.reversed ? " (rev.)" : ""}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="journal-surface" style={{ padding: "1.75rem" }}>
+              <div className="prose prose-sm max-w-none whitespace-pre-line">
+                {reading}
+              </div>
+            </div>
+
+            <div className="journal-surface" style={{ padding: "1.75rem", display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+              <p className="text-sm font-medium">Ask a follow-up question — $2.99</p>
+              <textarea
+                value={question}
+                onChange={e => setQuestion(e.target.value)}
+                rows={2}
+                placeholder="What do you want to know more about?"
+                className="w-full rounded-md border px-3 py-2 text-sm"
+                style={{ background: "rgba(255,255,255,.7)" }}
+              />
+              <button
+                onClick={askQuestion}
+                disabled={askingQuestion || !question.trim()}
+                style={{
+                  alignSelf: "flex-start", padding: "0.7rem 1.4rem", borderRadius: "10px",
+                  border: "1px solid rgba(214,178,96,.6)", fontSize: "0.7rem", letterSpacing: "0.12em",
+                  textTransform: "uppercase", fontWeight: 600,
+                  background: "rgba(255,255,255,.72)", opacity: askingQuestion || !question.trim() ? 0.5 : 1,
+                }}
+              >
+                {askingQuestion ? "Starting…" : "Ask — $2.99"}
+              </button>
+            </div>
+          </>
+        )}
+      </div>
     </div>
   );
 }
