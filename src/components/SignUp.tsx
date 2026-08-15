@@ -69,6 +69,28 @@ export function SignUp() {
               />
             </div>
             <div className="space-y-2">
+              <Label htmlFor="birthDate">Birth date</Label>
+              <Input
+                id="birthDate"
+                name="birthDate"
+                type="date"
+                autoComplete="bday"
+                className="h-11"
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="situation">What's actually going on right now?</Label>
+              <textarea
+                id="situation"
+                name="situation"
+                placeholder="Tell us what you're sitting with — this shapes your readings."
+                rows={3}
+                required
+                className="w-full rounded-lg border border-input bg-transparent px-3 py-2 text-sm shadow-xs placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
+              />
+            </div>
+            <div className="space-y-2">
               <Label htmlFor="password">Password</Label>
               <Input
                 id="password"

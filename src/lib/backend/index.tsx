@@ -224,11 +224,15 @@ export function useAuthActions() {
       const code = fields.code ?? "";
 
       if (flow === "signUp") {
+        const metadata: Record<string, string> = {};
+        if (fields.name) metadata.name = fields.name;
+        if (fields.birthDate) metadata.birth_date = fields.birthDate;
+        if (fields.situation) metadata.situation = fields.situation;
         const { error } = await supabase.auth.signUp({
           email,
           password,
           options: {
-            data: fields.name ? { name: fields.name } : undefined,
+            data: Object.keys(metadata).length ? metadata : undefined,
             emailRedirectTo: `${window.location.origin}/`,
           },
         });

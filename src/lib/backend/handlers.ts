@@ -143,6 +143,79 @@ export const handlers: Record<string, Handler> = {
     return { success: true };
   },
 
+  /* ── subscription (The Long Read) ──────────────────────────────────── */
+
+  "subscription.status": async () => {
+    const userId = await currentUserId();
+    if (!userId) return null;
+    const row = unwrap(
+      await supabase
+        .from("subscriptions")
+        .select("status, trial_end, current_period_end")
+        .eq("user_id", userId)
+        .maybeSingle(),
+    ) as { status: string; trial_end: string | null; current_period_end: string | null } | null;
+    if (!row) return { entitled: false, status: "none" };
+    return {
+      entitled: row.status === "trialing" || row.status === "active",
+      status: row.status,
+      trialEnd: row.trial_end,
+      currentPeriodEnd: row.current_period_end,
+    };
+  },
+
+  "subscription.startTrial": async ({ successUrl, cancelUrl } = {}) => {
+    return callApi("/api/subscribe-checkout", { successUrl, cancelUrl });
+  },
+
+  /* ── deep readings (The Long Read content) ───────────────────────────── */
+
+  "deepReadings.mine": async () => {
+    const userId = await currentUserId();
+    if (!userId) return [];
+    const rows = unwrap(
+      await supabase
+        .from("deep_readings")
+        .select("*")
+        .eq("user_id", userId)
+        .order("created_at", { ascending: false }),
+    ) as Row[];
+    return rows;
+  },
+
+  "deepReadings.draw": async ({ spread } = {}) => {
+    return callApi("/api/deep-tarot-reading", { spread });
+  },
+
+  /* ── pay-per-question follow-ups ─────────────────────────────────────── */
+
+  "readingQuestions.mine": async () => {
+    const userId = await currentUserId();
+    if (!userId) return [];
+    const rows = unwrap(
+      await supabase
+        .from("reading_questions")
+        .select("*")
+        .eq("user_id", userId)
+        .order("created_at", { ascending: false }),
+    ) as Row[];
+    return rows;
+  },
+
+  "readingQuestions.checkout": async ({
+    question,
+    readingContext,
+    successUrl,
+    cancelUrl,
+  } = {}) => {
+    return callApi("/api/question-checkout", {
+      question,
+      readingContext,
+      successUrl,
+      cancelUrl,
+    });
+  },
+
   /* ── products ───────────────────────────────────────────────────────── */
 
   "products.list": async ({ gender, category } = {}) => {

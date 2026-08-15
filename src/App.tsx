@@ -25,6 +25,7 @@ import {
   FavoritesPage,
   JournalPage,
   JournalPostPage,
+  DeepReadingPage,
 } from "./pages";
 
 function App() {
@@ -51,6 +52,7 @@ function App() {
             <Route path="/contact" element={<ContactPage />} />
             <Route path="/favorites" element={<FavoritesPage />} />
             <Route path="/journal" element={<JournalPage />} />
+            <Route path="/journal/deep-reading" element={<DeepReadingPage />} />
             <Route path="/journal/:slug" element={<JournalPostPage />} />
 
             {/* Protected routes */}

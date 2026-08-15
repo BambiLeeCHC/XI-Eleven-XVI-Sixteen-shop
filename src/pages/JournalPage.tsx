@@ -126,6 +126,16 @@ export function JournalPage() {
             </span>
             <span className="journal-tile__cta">Draw your five ✦</span>
           </button>
+          <Link to="/journal/deep-reading" className="journal-tile journal-tile--draw journal-surface">
+            <span className="journal-tile__deck" aria-hidden="true">
+              <i /><i /><i />
+            </span>
+            <span className="journal-tile__label">The Long Read</span>
+            <span className="journal-tile__desc">
+              Seven cards, read against what you told us — the in-depth reading.
+            </span>
+            <span className="journal-tile__cta">Go deeper ✦</span>
+          </Link>
         </section>
 
         {/* ── Body: rails flanking the feed ─────────────────────── */}

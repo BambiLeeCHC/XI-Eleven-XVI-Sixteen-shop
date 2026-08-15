@@ -7,6 +7,7 @@ import {
   spreadTypeOfTheDay,
 } from "../../lib/ritual";
 import { CardArt, CardBack } from "./CardArt";
+import { api, useQuery } from "../../lib/backend";
 
 /* ═══════════════════════════════════════════════════════════════════════
    THE FIVE — a real five-card spread from the XI·XVI Major Arcana.
@@ -96,7 +97,11 @@ function fallbackReading(spread: SpreadCard[]): string {
     .join("\n\n");
 }
 
-async function fetchReading(spread: SpreadCard[]): Promise<string> {
+async function fetchReading(
+  spread: SpreadCard[],
+  name?: string,
+  situation?: string,
+): Promise<string> {
   const body = {
     spread: spread.map(s => ({
       position: s.slotName,
@@ -106,6 +111,8 @@ async function fetchReading(spread: SpreadCard[]): Promise<string> {
       keywords: s.card.keywords,
       meaning: s.reversed ? s.card.reversed : s.card.upright,
     })),
+    ...(name ? { name } : {}),
+    ...(situation ? { situation } : {}),
   };
   try {
     const res = await fetch("/api/tarot-reading", {
@@ -295,6 +302,7 @@ function SpreadCardSlot({
 }
 
 export function DrawThree() {
+  const user = useQuery(api.auth.currentUser);
   const spreadType = useMemo(() => spreadTypeOfTheDay(), []);
   const who = useMemo(() => drawerId(), []);
   const spread = useMemo(() => spreadOfTheDay(undefined, who), [who]);
@@ -327,12 +335,12 @@ export function DrawThree() {
   useEffect(() => {
     if (!allOpen || reading || readingLoading) return;
     setReadingLoading(true);
-    fetchReading(spread).then(text => {
+    fetchReading(spread, user?.name, user?.situation).then(text => {
       saveCachedReading(combo, text);
       setReading(text);
       setReadingLoading(false);
     });
-  }, [allOpen, reading, readingLoading, spread, combo]);
+  }, [allOpen, reading, readingLoading, spread, combo, user]);
 
   return (
     <div className="jdeck">

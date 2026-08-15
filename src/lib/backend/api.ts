@@ -21,6 +21,18 @@ export const api = {
     isAdmin: ref("users.isAdmin"),
     deleteAccount: ref("users.deleteAccount"),
   },
+  subscription: {
+    status: ref("subscription.status"),
+    startTrial: ref("subscription.startTrial"),
+  },
+  deepReadings: {
+    mine: ref("deepReadings.mine"),
+    draw: ref("deepReadings.draw"),
+  },
+  readingQuestions: {
+    mine: ref("readingQuestions.mine"),
+    checkout: ref("readingQuestions.checkout"),
+  },
   products: {
     list: ref("products.list"),
     getById: ref("products.getById"),
