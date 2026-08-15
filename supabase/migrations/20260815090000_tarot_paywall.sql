@@ -1,8 +1,10 @@
 -- Tarot paywall: intake fields on profiles, subscriptions, and pay-per-question.
 --
--- 1. Free intake collected at sign-up: birth date + "what's going on" situation
---    text, used to personalize the free daily reading (name + situation woven
---    into the copy). Both nullable so existing accounts are unaffected.
+-- 1. Sign-up intake that stays consistent visit to visit: birth date, gender
+--    identity, sexual orientation — collected once at registration. `situation`
+--    ("what's going on right now") is intentionally NOT collected at sign-up:
+--    it changes every visit, so it's asked fresh right before each reading
+--    instead, and only optionally saved here as the most recent one typed.
 -- 2. `subscriptions` mirrors Stripe subscription state for the deep-reading
 --    paywall (7-day trial, then $7/week). One row per user; upserted from the
 --    Stripe webhook, never trusted from the client.
@@ -11,9 +13,13 @@
 
 alter table public.profiles add column if not exists birth_date date;
 alter table public.profiles add column if not exists situation text;
+alter table public.profiles add column if not exists gender_identity text;
+alter table public.profiles add column if not exists sexual_orientation text;
 
--- Carry birth_date/situation from sign-up metadata into the profile row,
--- same pattern as the existing name/role handling in handle_new_user().
+-- Carry birth_date/gender_identity/sexual_orientation from sign-up metadata
+-- into the profile row, same pattern as the existing name/role handling in
+-- handle_new_user(). All optional/nullable. `situation` is deliberately not
+-- populated here — it's per-reading, not per-registration (see above).
 create or replace function public.handle_new_user()
 returns trigger
 language plpgsql
@@ -23,20 +29,24 @@ as $$
 declare
   admin_emails text[] := array['mr.trestokes@yahoo.com'];
 begin
-  insert into public.profiles (id, email, name, role, birth_date, situation)
+  insert into public.profiles (
+    id, email, name, role, birth_date, gender_identity, sexual_orientation
+  )
   values (
     new.id,
     new.email,
     coalesce(new.raw_user_meta_data ->> 'name', split_part(coalesce(new.email, ''), '@', 1)),
     case when lower(coalesce(new.email, '')) = any (admin_emails) then 'admin' else 'customer' end,
     nullif(new.raw_user_meta_data ->> 'birth_date', '')::date,
-    nullif(new.raw_user_meta_data ->> 'situation', '')
+    nullif(new.raw_user_meta_data ->> 'gender_identity', ''),
+    nullif(new.raw_user_meta_data ->> 'sexual_orientation', '')
   )
   on conflict (id) do update
     set email = excluded.email,
         name = coalesce(public.profiles.name, excluded.name),
         birth_date = coalesce(public.profiles.birth_date, excluded.birth_date),
-        situation = coalesce(public.profiles.situation, excluded.situation);
+        gender_identity = coalesce(public.profiles.gender_identity, excluded.gender_identity),
+        sexual_orientation = coalesce(public.profiles.sexual_orientation, excluded.sexual_orientation);
   return new;
 end;
 $$;

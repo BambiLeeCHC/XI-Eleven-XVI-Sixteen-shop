@@ -228,6 +228,9 @@ export function useAuthActions() {
         if (fields.name) metadata.name = fields.name;
         if (fields.birthDate) metadata.birth_date = fields.birthDate;
         if (fields.situation) metadata.situation = fields.situation;
+        if (fields.genderIdentity) metadata.gender_identity = fields.genderIdentity;
+        if (fields.sexualOrientation)
+          metadata.sexual_orientation = fields.sexualOrientation;
         const { error } = await supabase.auth.signUp({
           email,
           password,

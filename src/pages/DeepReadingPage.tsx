@@ -28,6 +28,9 @@ export function DeepReadingPage() {
   const [spread, setSpread] = useState<SpreadCard[] | null>(null);
   const [reading, setReading] = useState<string | null>(null);
   const [drawing, setDrawing] = useState(false);
+  // Asked fresh every time, right before drawing — not stored on the
+  // profile, since what's going on changes visit to visit.
+  const [situation, setSituation] = useState("");
   const [subscribing, setSubscribing] = useState(false);
   const [question, setQuestion] = useState("");
   const [askingQuestion, setAskingQuestion] = useState(false);
@@ -75,6 +78,7 @@ export function DeepReadingPage() {
           keywords: s.card.keywords,
           meaning: s.reversed ? s.card.reversed : s.card.upright,
         })),
+        situation: situation.trim() || undefined,
       });
       if (result?.success) setReading(result.reading);
       else setError("The reading couldn't be written just now — try again in a moment.");
@@ -151,9 +155,17 @@ export function DeepReadingPage() {
 
       {entitled && !reading && (
         <div className="border rounded-lg p-6 space-y-3">
-          <p className="text-sm text-muted-foreground">
-            Drawn fresh, read against what you told us: <span className="italic">"{user.situation || "not specified"}"</span>
-          </p>
+          <label htmlFor="deep-situation" className="text-sm italic text-muted-foreground block">
+            Before you draw — what's actually going on right now?
+          </label>
+          <textarea
+            id="deep-situation"
+            value={situation}
+            onChange={e => setSituation(e.target.value)}
+            rows={2}
+            placeholder={'e.g. "trying to decide whether to leave my job"'}
+            className="w-full rounded-md border px-3 py-2 text-sm"
+          />
           <button
             onClick={drawTheLongRead}
             disabled={drawing}

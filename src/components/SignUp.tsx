@@ -80,15 +80,43 @@ export function SignUp() {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="situation">What's actually going on right now?</Label>
-              <textarea
-                id="situation"
-                name="situation"
-                placeholder="Tell us what you're sitting with — this shapes your readings."
-                rows={3}
-                required
-                className="w-full rounded-lg border border-input bg-transparent px-3 py-2 text-sm shadow-xs placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
-              />
+              <Label htmlFor="genderIdentity">Gender identity</Label>
+              <select
+                id="genderIdentity"
+                name="genderIdentity"
+                defaultValue=""
+                className="h-11 w-full rounded-lg border border-input bg-transparent px-3 text-sm shadow-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
+              >
+                <option value="">Prefer not to say</option>
+                <option value="woman">Woman</option>
+                <option value="man">Man</option>
+                <option value="nonbinary">Non-binary</option>
+                <option value="self-described">Prefer to self-describe</option>
+              </select>
+              <p className="text-xs text-muted-foreground">
+                Helps us personalize your readings — optional.
+              </p>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="sexualOrientation">Sexual orientation</Label>
+              <select
+                id="sexualOrientation"
+                name="sexualOrientation"
+                defaultValue=""
+                className="h-11 w-full rounded-lg border border-input bg-transparent px-3 text-sm shadow-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
+              >
+                <option value="">Prefer not to say</option>
+                <option value="straight">Straight</option>
+                <option value="gay">Gay</option>
+                <option value="lesbian">Lesbian</option>
+                <option value="bisexual">Bisexual</option>
+                <option value="queer">Queer</option>
+                <option value="asexual">Asexual</option>
+                <option value="self-described">Prefer to self-describe</option>
+              </select>
+              <p className="text-xs text-muted-foreground">
+                Also optional — used the same way, to personalize your readings.
+              </p>
             </div>
             <div className="space-y-2">
               <Label htmlFor="password">Password</Label>

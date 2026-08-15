@@ -312,6 +312,11 @@ export function DrawThree() {
     loadCachedReading(combo),
   );
   const [readingLoading, setReadingLoading] = useState(false);
+  // Asked fresh on every visit — deliberately not persisted, since what's
+  // going on changes visit to visit (unlike birth date, which lives on the
+  // profile).
+  const [situation, setSituation] = useState("");
+  const [situationConfirmed, setSituationConfirmed] = useState(false);
 
   const reveal = useCallback((slot: string) => {
     setRevealed(cur => {
@@ -333,14 +338,14 @@ export function DrawThree() {
   const allOpen = openCount === spread.length;
 
   useEffect(() => {
-    if (!allOpen || reading || readingLoading) return;
+    if (!allOpen || !situationConfirmed || reading || readingLoading) return;
     setReadingLoading(true);
-    fetchReading(spread, user?.name, user?.situation).then(text => {
+    fetchReading(spread, user?.name, situation || undefined).then(text => {
       saveCachedReading(combo, text);
       setReading(text);
       setReadingLoading(false);
     });
-  }, [allOpen, reading, readingLoading, spread, combo, user]);
+  }, [allOpen, situationConfirmed, situation, reading, readingLoading, spread, combo, user]);
 
   return (
     <div className="jdeck">
@@ -351,25 +356,52 @@ export function DrawThree() {
         yours until midnight.
       </p>
 
-      <div className="jdeck__row">
-        {spread.map((entry, i) => (
-          <SpreadCardSlot
-            key={entry.slot}
-            entry={entry}
-            index={i}
-            revealed={revealed.has(entry.slot)}
-            onReveal={() => reveal(entry.slot)}
+      {!situationConfirmed && (
+        <div className="jdeck__intake">
+          <label htmlFor="jdeck-situation" className="jdeck__intake-label">
+            Before you draw — what's actually going on right now?
+          </label>
+          <textarea
+            id="jdeck-situation"
+            value={situation}
+            onChange={e => setSituation(e.target.value)}
+            rows={2}
+            placeholder={'e.g. "trying to decide whether to leave my job"'}
+            className="jdeck__intake-input"
           />
-        ))}
-      </div>
-
-      {!allOpen && (
-        <button type="button" className="jdeck__all" onClick={turnAll}>
-          Turn all five ✦
-        </button>
+          <button
+            type="button"
+            className="jdeck__all"
+            onClick={() => setSituationConfirmed(true)}
+          >
+            Continue to the draw ✦
+          </button>
+        </div>
       )}
 
-      {allOpen && (
+      {situationConfirmed && (
+        <>
+          <div className="jdeck__row">
+            {spread.map((entry, i) => (
+              <SpreadCardSlot
+                key={entry.slot}
+                entry={entry}
+                index={i}
+                revealed={revealed.has(entry.slot)}
+                onReveal={() => reveal(entry.slot)}
+              />
+            ))}
+          </div>
+
+          {!allOpen && (
+            <button type="button" className="jdeck__all" onClick={turnAll}>
+              Turn all five ✦
+            </button>
+          )}
+        </>
+      )}
+
+      {allOpen && situationConfirmed && (
         <div className="jdeck__letter">
           <ReadingCollageHead spreadName={spreadType.name} />
           {readingLoading && !reading && (

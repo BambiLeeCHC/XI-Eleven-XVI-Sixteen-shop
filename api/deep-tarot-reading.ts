@@ -73,20 +73,23 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
 
     const { data: profile } = await admin
       .from("profiles")
-      .select("name, situation")
+      .select("name")
       .eq("id", user.id)
       .maybeSingle();
     const name = profile?.name || "friend";
-    const situation = profile?.situation || "not specified";
 
-    const { spread } = (req.body ?? {}) as { spread?: SpreadCardInput[] };
+    const { spread, situation } = (req.body ?? {}) as {
+      spread?: SpreadCardInput[];
+      situation?: string;
+    };
     if (!spread || !Array.isArray(spread) || spread.length === 0) {
       throw new HttpError(400, "A spread of drawn cards is required");
     }
+    const situationText = situation?.trim() || "not specified";
 
     const result = await generateWithGemini(
       SYSTEM_PROMPT,
-      buildUserPrompt(spread, name, situation),
+      buildUserPrompt(spread, name, situationText),
       5000,
     );
     if (!result.success) {
