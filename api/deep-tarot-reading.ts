@@ -37,18 +37,26 @@ VOICE AND STRUCTURE (model this closely):
 - Close with one direct synthesis paragraph naming what's really true about their situation, then one concrete, second-person thing to do next. No vague mysticism, no telling them how to feel.
 - Sparing, intentional bold (wrap in **like this**) on the three or four phrases that matter most.
 - Write 450-650 words — this is the long version, not the daily one. No headers, no bullet lists, no emoji, no sign-off.
-- Address them by name once, naturally, in the opening — not as a greeting line.`;
+- Address them by name once, naturally, in the opening — not as a greeting line.
+- If a gender identity and/or sexual orientation are given below, use them only to get pronouns and relationship framing right where the reading naturally touches on identity or relationships — never call them out directly, never make either the subject of the reading unless the person's own stated situation already is.`;
 
 function buildUserPrompt(
   spread: SpreadCardInput[],
   name: string,
   situation: string,
+  genderIdentity?: string,
+  sexualOrientation?: string,
 ): string {
   const lines = spread.map(
     (c, i) =>
       `${i + 1}. Position "${c.position}" (${c.positionMeaning}) → ${c.name}${c.reversed ? ", REVERSED" : ", upright"}. Canonical meaning: ${c.meaning} Keywords: ${c.keywords.join(", ")}.`,
   );
-  return `This reading is for ${name}. What they told us is going on: "${situation}".\n\nThe seven-card spread, in draw order:\n${lines.join("\n")}\n\nWrite the Long Read now, following the voice and structure rules exactly.`;
+  const identityBits = [
+    genderIdentity ? `gender identity: ${genderIdentity}` : null,
+    sexualOrientation ? `sexual orientation: ${sexualOrientation}` : null,
+  ].filter(Boolean);
+  const identityLine = identityBits.length ? ` Also on file: ${identityBits.join(", ")}.` : "";
+  return `This reading is for ${name}. What they told us is going on: "${situation}".${identityLine}\n\nThe seven-card spread, in draw order:\n${lines.join("\n")}\n\nWrite the Long Read now, following the voice and structure rules exactly.`;
 }
 
 export default async function handler(req: ApiRequest, res: ApiResponse) {
@@ -73,7 +81,7 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
 
     const { data: profile } = await admin
       .from("profiles")
-      .select("name")
+      .select("name, gender_identity, sexual_orientation")
       .eq("id", user.id)
       .maybeSingle();
     const name = profile?.name || "friend";
@@ -89,7 +97,13 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
 
     const result = await generateWithGemini(
       SYSTEM_PROMPT,
-      buildUserPrompt(spread, name, situationText),
+      buildUserPrompt(
+        spread,
+        name,
+        situationText,
+        profile?.gender_identity ?? undefined,
+        profile?.sexual_orientation ?? undefined,
+      ),
       5000,
     );
     if (!result.success) {

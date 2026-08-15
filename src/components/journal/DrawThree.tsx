@@ -101,6 +101,8 @@ async function fetchReading(
   spread: SpreadCard[],
   name?: string,
   situation?: string,
+  genderIdentity?: string,
+  sexualOrientation?: string,
 ): Promise<string> {
   const body = {
     spread: spread.map(s => ({
@@ -113,6 +115,8 @@ async function fetchReading(
     })),
     ...(name ? { name } : {}),
     ...(situation ? { situation } : {}),
+    ...(genderIdentity ? { genderIdentity } : {}),
+    ...(sexualOrientation ? { sexualOrientation } : {}),
   };
   try {
     const res = await fetch("/api/tarot-reading", {
@@ -340,7 +344,13 @@ export function DrawThree() {
   useEffect(() => {
     if (!allOpen || !situationConfirmed || reading || readingLoading) return;
     setReadingLoading(true);
-    fetchReading(spread, user?.name, situation || undefined).then(text => {
+    fetchReading(
+      spread,
+      user?.name,
+      situation || undefined,
+      user?.genderIdentity,
+      user?.sexualOrientation,
+    ).then(text => {
       saveCachedReading(combo, text);
       setReading(text);
       setReadingLoading(false);
