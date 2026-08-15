@@ -202,7 +202,12 @@ export function isMarkedDay(d: Date): "signal" | "tower" | null {
   return null;
 }
 
-// ── The spread — now a rotating cast of frameworks ────────────────────────
+// ── The spread — one true five-card layout ─────────────────────────────
+//
+// A single fixed spread, not a rotating cast of frameworks: five
+// positions, each with its own real meaning, so the same card reads
+// differently depending which position it lands in. This is what makes
+// it a spread instead of five single-card pulls.
 
 export type SpreadSlot = string;
 
@@ -215,118 +220,48 @@ export interface SpreadCard extends DailyDraw {
 export interface SpreadType {
   id: string;
   name: string;
-  /** One line describing the lens this framework reads the day through. */
+  /** One line describing the lens this spread reads the day through. */
   intro: string;
   slots: Array<{ slot: SpreadSlot; slotName: string; slotQuestion: string }>;
 }
 
-/**
- * Four house frameworks the Draw rotates through, one per calendar day
- * (`dayOfYear % SPREAD_TYPES.length`). Same three cards can fall very
- * differently depending on which questions are asked of them, so rotating
- * the framework — not just the cards — is what keeps the reading from
- * feeling like a rerun even on a day the deck repeats a card.
- */
-export const SPREAD_TYPES: SpreadType[] = [
-  {
-    id: "signal-work-tower",
-    name: "The House Spread",
-    intro: "The brand's own lens: what's true, what to do, what it builds.",
-    slots: [
-      {
-        slot: "signal",
-        slotName: "The Signal",
-        slotQuestion: "What is true right now",
-      },
-      {
-        slot: "work",
-        slotName: "The Work",
-        slotQuestion: "What to do with it today",
-      },
-      {
-        slot: "tower",
-        slotName: "The Tower",
-        slotQuestion: "What it builds if you keep going",
-      },
-    ],
-  },
-  {
-    id: "past-present-future",
-    name: "The Thread",
-    intro:
-      "A line through time: where this started, where it stands, where it's headed.",
-    slots: [
-      {
-        slot: "past",
-        slotName: "The Root",
-        slotQuestion: "What this grew out of",
-      },
-      {
-        slot: "present",
-        slotName: "The Stitch",
-        slotQuestion: "Where it stands right now",
-      },
-      {
-        slot: "future",
-        slotName: "The Reach",
-        slotQuestion: "Where it's headed if unbroken",
-      },
-    ],
-  },
-  {
-    id: "body-mind-spirit",
-    name: "The Fitting",
-    intro:
-      "Three measurements: the body doing it, the mind planning it, the why underneath.",
-    slots: [
-      {
-        slot: "body",
-        slotName: "The Body",
-        slotQuestion: "What your energy is actually asking for",
-      },
-      {
-        slot: "mind",
-        slotName: "The Mind",
-        slotQuestion: "What your plan needs to admit",
-      },
-      {
-        slot: "spirit",
-        slotName: "The Spirit",
-        slotQuestion: "What this is really in service of",
-      },
-    ],
-  },
-  {
-    id: "keep-cut-carry",
-    name: "The Unstitching",
-    intro:
-      "An edit of the day: what to keep, what to cut, what to carry forward regardless.",
-    slots: [
-      {
-        slot: "keep",
-        slotName: "Keep",
-        slotQuestion: "What is already working — don't touch it",
-      },
-      {
-        slot: "cut",
-        slotName: "Cut",
-        slotQuestion: "What needs to come apart today",
-      },
-      {
-        slot: "carry",
-        slotName: "Carry",
-        slotQuestion: "What survives the edit and comes with you",
-      },
-    ],
-  },
-];
+export const THE_SPREAD: SpreadType = {
+  id: "action-support-gain-letgo-guidance",
+  name: "Embracing Change",
+  intro: "Five positions, one reading: the action that eases this transition, what's supporting you, what you stand to gain, what you need to let go of, and the higher guidance available to you.",
+  slots: [
+    {
+      slot: "action",
+      slotName: "Action",
+      slotQuestion: "The action to ease this transition",
+    },
+    {
+      slot: "support",
+      slotName: "Support",
+      slotQuestion: "What's supporting you through this",
+    },
+    {
+      slot: "gain",
+      slotName: "Gain",
+      slotQuestion: "What you stand to gain",
+    },
+    {
+      slot: "letgo",
+      slotName: "Let Go",
+      slotQuestion: "What you need to release",
+    },
+    {
+      slot: "guidance",
+      slotName: "Higher Guidance",
+      slotQuestion: "The higher guidance available to you",
+    },
+  ],
+};
 
-/** Rotating framework for the day — deterministic, cycles daily. */
-export function spreadTypeOfTheDay(d: Date = new Date()): SpreadType {
-  const start = new Date(d.getFullYear(), 0, 0);
-  const diff = d.getTime() - start.getTime();
-  const dayOfYear = Math.floor(diff / 86400000);
-  return SPREAD_TYPES[dayOfYear % SPREAD_TYPES.length];
+/** The spread is fixed — one framework, always. Kept as a function for
+ * call-site compatibility with the old rotating-framework API. */
+export function spreadTypeOfTheDay(_d: Date = new Date()): SpreadType {
+  return THE_SPREAD;
 }
 
 /**
@@ -352,7 +287,7 @@ export function drawerId(): string {
 }
 
 /**
- * THE DRAW — three cards, one spread per person per day. Deterministic from
+ * THE DRAW — five cards, one spread per person per day. Deterministic from
  * (drawer id + date), so it survives reloads and cannot be re-rolled, but it
  * is nobody else's spread. No duplicates within a spread.
  */
@@ -500,7 +435,7 @@ export function synthesisOfTheDay(
         : `The moon is ${moon.name.toLowerCase()} — energy is transitional, not settled either way.`;
 
   const cohesionLine = mixed
-    ? "The three elements don't agree with each other, which is itself the reading: you're being pulled between registers today, not just directions."
+    ? "The elements in this spread don't agree with each other, which is itself the reading: you're being pulled between registers today, not just directions."
     : "More than one card is speaking the same element — that's a chorus, not a coincidence. Whatever it's saying, it's saying it twice for a reason.";
 
   return {

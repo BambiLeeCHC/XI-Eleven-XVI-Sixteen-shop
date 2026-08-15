@@ -1982,6 +1982,7 @@ footer {
 .journal-chip.is-active { background: #15243d; color: #fff; border-color: #15243d; }
 
 .journal-post {
+  position: relative; isolation: isolate;
   border: 1px solid var(--glass-line); border-radius: 16px; overflow: hidden;
   background: var(--glass); backdrop-filter: blur(8px);
   transition: transform .22s ease, box-shadow .22s ease;
@@ -1996,14 +1997,14 @@ footer {
   display: flex; flex-wrap: wrap; align-items: center; gap: 6px;
   font-size: 9.5px; letter-spacing: .18em; text-transform: uppercase; color: rgba(21,36,61,.4);
 }
-.journal-post__cat { color: #6d3fb0; }
+.journal-post__cat { font-weight: 600; letter-spacing: .1em; text-transform: none; }
 .journal-post__dot { opacity: .5; }
 .journal-post__title {
   font-family: "Playfair Display", Georgia, serif;
   font-size: 22px; line-height: 1.2; color: #15243d; margin: .5rem 0 .45rem;
 }
 .journal-post--featured .journal-post__title { font-size: clamp(26px, 3.4vw, 36px); }
-.journal-post--featured { margin-bottom: 1rem; }
+.journal-post--featured { margin-bottom: 1rem; margin-top: .6rem; overflow: visible; }
 .journal-post__excerpt { font-size: 13px; line-height: 1.65; color: rgba(21,36,61,.6); }
 .journal-post__more {
   display: inline-block; margin-top: .7rem;
@@ -2038,15 +2039,25 @@ footer {
 .journal-share__copied { font-size: 10px; color: #2f7cb8; letter-spacing: .1em; }
 
 /* ── Article ──────────────────────────────────────────────────────────── */
-.journal-article { max-width: 44rem; margin: 0 auto; padding: 2rem 1.25rem 0; }
-.journal-article__back { font-size: 10px; letter-spacing: .24em; text-transform: uppercase; color: rgba(21,36,61,.45); }
+.journal-article { position: relative; isolation: isolate; max-width: 44rem; margin: 0 auto; padding: 2rem 1.25rem 0; }
+.journal-article__back { position: relative; z-index: 4; font-size: 10px; letter-spacing: .24em; text-transform: uppercase; color: rgba(21,36,61,.45); }
 .journal-article__back:hover { color: #6d3fb0; }
 .journal-article__cat { margin-top: 1.5rem; font-size: 9.5px; letter-spacing: .3em; text-transform: uppercase; color: #6d3fb0; }
+.journal-article__slug { position: relative; z-index: 4; justify-content: flex-start; margin-top: 1.6rem; }
 .journal-article__title {
   font-family: "Playfair Display", Georgia, serif;
   font-size: clamp(2rem, 5.2vw, 3.25rem); line-height: 1.06; color: #15243d; margin: .5rem 0 .6rem;
 }
-.journal-article__meta { font-size: 11px; letter-spacing: .12em; color: rgba(21,36,61,.42); }
+.journal-article__title--collage {
+  position: relative; z-index: 4;
+  display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px;
+  margin: .8rem 0 .9rem;
+}
+.journal-article__title--collage .jcol-tag {
+  font-family: "Bodoni Moda", "Playfair Display", Georgia, serif; font-weight: 800;
+  font-size: clamp(1.4rem, 3.6vw, 2.3rem); padding: 3px 12px 6px;
+}
+.journal-article__meta { position: relative; z-index: 4; font-size: 11px; letter-spacing: .12em; color: rgba(21,36,61,.42); }
 .journal-article__share-top { margin: 1.1rem 0 1.75rem; padding-bottom: 1.1rem; border-bottom: 1px solid var(--glass-line); }
 .journal-article__cover { border-radius: 16px; overflow: hidden; margin-bottom: 1.75rem; }
 .journal-article__cover img { width: 100%; display: block; }
@@ -2462,9 +2473,57 @@ footer {
   margin-bottom: .25rem;
 }
 .jdeck__intro { font-size: 11.5px; line-height: 1.6; color: rgba(21,36,61,.55); margin-bottom: .9rem; }
-.jdeck__row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .55rem; }
-@media (min-width: 480px) { .jdeck__row { gap: .8rem; } }
+.jdeck__row { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: .4rem; }
+@media (max-width: 640px) { .jdeck__row { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .5rem; } }
+@media (min-width: 480px) and (min-width: 641px) { .jdeck__row { gap: .7rem; } }
 .jdeck__row--single { grid-template-columns: minmax(0, 1fr); max-width: 200px; margin: 0 auto; }
+
+.jdeck__letter {
+  position: relative;
+  isolation: isolate;
+  margin-top: 1.3rem;
+  padding: 1.5rem 1.3rem 1.4rem;
+  border-radius: 10px;
+  background: #f7f4ec;
+  box-shadow: 0 20px 44px -26px rgba(12,34,64,.5);
+  overflow: hidden;
+}
+.jdeck__letter-loading {
+  position: relative; z-index: 4;
+  font-size: 12px;
+  font-style: italic;
+  color: rgba(21,36,61,.5);
+  text-align: center;
+}
+.jdeck-letter__p {
+  position: relative; z-index: 4;
+  font-size: 13.5px;
+  line-height: 1.75;
+  color: #24365a;
+  margin-bottom: .85rem;
+}
+.jdeck-letter__p:last-child { margin-bottom: 0; }
+.jdeck-letter__p strong {
+  background-image: linear-gradient(135deg, #f7e2ad, #cfa235 55%, #f2d992);
+  color: #2a1f07;
+  padding: 0 3px;
+  box-shadow: 2px 2px 0 rgba(21,36,61,.1);
+}
+
+/* The reading's collage head — dateline, cut-letter spread name, torn tags */
+.jdeck__collage-head { position: relative; text-align: center; padding-bottom: .9rem; margin-bottom: .2rem; }
+.jdeck__collage-title {
+  position: relative; z-index: 4;
+  margin: .7rem 0 .3rem;
+  display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: center;
+  gap: 3px; line-height: 1;
+}
+.jdeck__collage-sub {
+  position: relative; z-index: 4;
+  margin: 0 0 .5rem; display: flex; flex-wrap: wrap; align-items: baseline; justify-content: center; gap: 5px;
+}
+
+.jdeck__letter .jcol-sign { display: block; text-align: center; margin-top: 1rem; }
 
 .jdeck__synthesis {
   margin-top: 1.1rem;
@@ -2785,6 +2844,94 @@ footer {
 
 @media (prefers-reduced-motion: reduce) {
   .jmast__title:hover .jmast__scrap { transform: rotate(var(--rot, 0deg)) translateY(var(--dy, 0)) scale(var(--sc, 1)); }
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   COLLAGE UTILITIES — the masthead's cut-paper language, shared.
+
+   Same recipe as .jmast (torn patches, tape, cut letters, torn word-tags,
+   pen scribble, handwritten close) exposed as reusable classes so the
+   reading reveal, the feed cards and the article header can all speak in
+   the same voice as the masthead instead of inventing a new one.
+   ══════════════════════════════════════════════════════════════════════ */
+.jcol-patch { position: absolute; z-index: -1; pointer-events: none; opacity: .5; }
+.jcol-patch--a {
+  left: 3%; top: 8%; width: 44%; height: 44%;
+  background-image: repeating-linear-gradient(0deg, rgba(21,36,61,.05) 0 1px, transparent 1px 5px);
+  background-color: rgba(252,250,244,.5);
+  transform: rotate(-2deg);
+  clip-path: polygon(1% 4%, 62% 0, 99% 6%, 97% 92%, 40% 100%, 3% 95%);
+}
+.jcol-patch--b {
+  right: 5%; top: 20%; width: 38%; height: 38%;
+  background-color: rgba(232,222,203,.45);
+  transform: rotate(2.6deg);
+  clip-path: polygon(2% 8%, 55% 2%, 98% 0, 96% 88%, 48% 100%, 0 90%);
+}
+.jcol-tape { position: absolute; z-index: 2; pointer-events: none; width: 74px; height: 22px;
+  background: linear-gradient(100deg, rgba(255,255,255,.5), rgba(238,232,214,.6));
+  border-left: 1px solid rgba(255,255,255,.5); border-right: 1px solid rgba(255,255,255,.5);
+  box-shadow: 0 2px 8px -4px rgba(12,34,64,.4); opacity: .75;
+}
+.jcol-tape--tl { left: -14px; top: 18px; transform: rotate(-36deg); }
+.jcol-tape--br { right: -12px; bottom: 22px; transform: rotate(-30deg); }
+
+.jcol-slug {
+  position: relative; z-index: 4;
+  display: flex; align-items: center; justify-content: center; gap: .55rem; flex-wrap: wrap;
+  font-family: "Special Elite", "Courier New", monospace;
+  font-size: 9.5px; letter-spacing: .3em; text-transform: uppercase;
+  color: rgba(21,36,61,.5);
+}
+.jcol-slug i { width: 14px; height: 1px; background: rgba(21,36,61,.28); display: inline-block; }
+
+.jcol-cut {
+  display: inline-block; padding: .07em .17em .11em;
+  box-shadow: 0 8px 18px -10px rgba(12,34,64,.55), 0 1px 0 rgba(255,255,255,.6) inset;
+  clip-path: polygon(2% 5%, 48% 0, 99% 4%, 97% 95%, 52% 100%, 1% 96%);
+}
+.jcol-cut--lg { font-size: clamp(1.6rem, 6vw, 3rem); line-height: .96; }
+.jcol-cut--md { font-size: clamp(1.05rem, 3.2vw, 1.6rem); line-height: .98; }
+
+.jcol-tag {
+  display: inline-block; padding: 2px 9px 4px;
+  letter-spacing: .01em;
+  box-shadow: 0 4px 10px -7px rgba(12,34,64,.5);
+  clip-path: polygon(2% 6%, 46% 0, 99% 5%, 97% 94%, 50% 100%, 1% 95%);
+}
+.jcol-tag--sm { font-size: clamp(10px, 1.4vw, 12px); }
+.jcol-tag--md { font-size: clamp(13px, 2vw, 17px); text-transform: uppercase; }
+
+/* Paper stocks */
+.jcol-newsprint { background-color: #f7f4ec; color: #17233a; background-image: repeating-linear-gradient(0deg, rgba(21,36,61,.055) 0 1px, transparent 1px 4px); }
+.jcol-cream { background-color: #fdf6e6; color: #1d2b45; }
+.jcol-kraft { background-color: #dcc7a6; color: #3a2c17; }
+.jcol-ink   { background-color: #15243d; color: #f6f2e6; }
+.jcol-gold  { background-image: linear-gradient(135deg, #f7e2ad, #cfa235 55%, #f2d992); color: #2a1f07; }
+.jcol-lilac { background-color: #ddc7fb; color: #331a52; }
+.jcol-blush { background-color: #ffd2de; color: #4a1626; }
+
+/* Faces */
+.jcol-grotesk { font-family: Anton, "Arial Black", sans-serif; letter-spacing: .01em; }
+.jcol-display { font-family: "Bodoni Moda", "Playfair Display", Georgia, serif; font-weight: 800; }
+.jcol-type    { font-family: "Special Elite", "Courier New", monospace; }
+.jcol-slab    { font-family: "Playfair Display", Georgia, serif; font-weight: 600; }
+.jcol-script  { font-family: Caveat, "Segoe Script", cursive; }
+
+.jcol-pen-rule { display: block; width: min(18rem, 70%); height: 12px; margin: .5rem auto 1rem; }
+
+.jcol-sign {
+  position: relative; z-index: 4;
+  font-family: Caveat, "Segoe Script", cursive;
+  font-size: clamp(19px, 2.6vw, 25px);
+  color: #24365a;
+  transform: rotate(-1.2deg);
+}
+.jcol-sign::after {
+  content: ""; display: block;
+  width: 160px; max-width: 58%; height: 9px; margin: 1px auto 0;
+  background: no-repeat center / 100% 100%
+    url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 220 12'%3E%3Cpath d='M4 8 C44 2 78 10 116 5 C150 1 186 9 216 4' fill='none' stroke='rgba(36,54,90,0.5)' stroke-width='2.2' stroke-linecap='round'/%3E%3C/svg%3E");
 }
 
 /* ══════════════════════════════════════════════════════════════════════

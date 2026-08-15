@@ -11,6 +11,10 @@ import { usePostBySlug, usePublishedPosts } from "../lib/journalData";
 
 type Dock = "almanac" | "draw" | "code" | null;
 
+const POST_TITLE_PAPERS = ["ink", "kraft", "gold", "newsprint", "blush", "lilac"] as const;
+const POST_TITLE_FACES = ["display", "grotesk", "slab"] as const;
+const POST_TITLE_ROT = [-2, 1.5, -1.5, 2, -2.5, 1];
+
 export function JournalPostPage() {
   const { slug = "" } = useParams();
   const post = usePostBySlug(slug) as any;
@@ -65,11 +69,29 @@ export function JournalPostPage() {
         </div>
 
         <article className="journal-article journal-surface">
+          <span className="jcol-patch jcol-patch--a" aria-hidden="true" />
+          <span className="jcol-tape jcol-tape--tl" aria-hidden="true" />
           <Link to="/journal" className="journal-article__back">← The Journal</Link>
-          <p className="journal-article__cat">{post.category}</p>
-          <h1 className="journal-article__title">{post.title}</h1>
+          <p className="jcol-slug journal-article__slug">
+            <span>XI · XVI</span>
+            <i />
+            <span className="jcol-tag jcol-tag--sm jcol-ink jcol-type">{post.category}</span>
+            <i />
+            <span>{date}</span>
+          </p>
+          <h1 className="journal-article__title journal-article__title--collage" aria-label={post.title}>
+            {post.title.split(" ").map((w: string, i: number) => (
+              <span
+                key={i}
+                className={`jcol-tag jcol-${POST_TITLE_PAPERS[i % POST_TITLE_PAPERS.length]} jcol-${POST_TITLE_FACES[i % POST_TITLE_FACES.length]}`}
+                style={{ transform: `rotate(${POST_TITLE_ROT[i % POST_TITLE_ROT.length]}deg)` }}
+              >
+                {w}
+              </span>
+            ))}
+          </h1>
           <p className="journal-article__meta">
-            {post.author} · {date} · {post.readMinutes} min read
+            {post.author} · {post.readMinutes} min read
           </p>
 
           <div className="journal-article__share-top">
