@@ -12,7 +12,7 @@
  */
 
 import { submitOrderToPrintful } from "./_lib/fulfill.js";
-import { generateWithGemini } from "./_lib/gemini.js";
+import { generateWithGemini, type GeminiFailure } from "./_lib/gemini.js";
 import {
   type ApiRequest,
   type ApiResponse,
@@ -69,7 +69,8 @@ async function answerQuestion(admin: ReturnType<typeof supabaseAdmin>, questionI
 
   const result = await generateWithGemini(QUESTION_SYSTEM_PROMPT, userPrompt, 1200);
   if (!result.success) {
-    console.error("Question answer generation failed", result.reason);
+    const failure = result as GeminiFailure;
+    console.error("Question answer generation failed", failure.reason);
     return;
   }
 

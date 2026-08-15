@@ -26,7 +26,7 @@ import {
   fail,
   HttpError,
 } from "./_lib/server.js";
-import { generateWithGemini } from "./_lib/gemini.js";
+import { generateWithGemini, type GeminiFailure } from "./_lib/gemini.js";
 
 interface SpreadCardInput {
   position: string;
@@ -98,7 +98,8 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
     );
 
     if (!result.success) {
-      return res.status(200).json({ success: false, reason: result.reason });
+      const failure = result as GeminiFailure;
+      return res.status(200).json({ success: false, reason: failure.reason });
     }
     return res.status(200).json({ success: true, reading: result.text });
   } catch (error) {

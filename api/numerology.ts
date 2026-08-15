@@ -19,7 +19,7 @@ import {
   HttpError,
   supabaseAdmin,
 } from "./_lib/server.js";
-import { generateWithGemini } from "./_lib/gemini.js";
+import { generateWithGemini, type GeminiFailure } from "./_lib/gemini.js";
 import { fullNumerologyProfile, NUMBER_MEANINGS } from "../src/lib/numerology.js";
 
 const SYSTEM_PROMPT = `You are the XI · XVI Reader, writing the numerology narrative for the XI Eleven XVI Sixteen (xixvi.shop) brand — the paid, higher-tier companion to the natal chart. Same voice as always: direct, poignant, specific — never a generic horoscope, never hedging ("may"/"could"), never false authority.
@@ -74,7 +74,8 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
 
     const result = await generateWithGemini(SYSTEM_PROMPT, userPrompt, 3000);
     if (!result.success) {
-      return res.status(200).json({ success: false, reason: result.reason, numbers });
+      const failure = result as GeminiFailure;
+      return res.status(200).json({ success: false, reason: failure.reason, numbers });
     }
 
     return res.status(200).json({ success: true, numbers, narrative: result.text });

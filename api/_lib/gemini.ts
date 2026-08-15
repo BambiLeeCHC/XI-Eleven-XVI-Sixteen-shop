@@ -6,9 +6,12 @@
  * visible text is produced, so callers must pass a generous headroom above
  * their target output length or the response gets cut off mid-sentence.
  */
-export type GeminiResult =
-  | { success: true; text: string }
-  | { success: false; reason: "no_key" | "upstream_error" | "empty" };
+export type GeminiFailure = {
+  success: false;
+  reason: "no_key" | "upstream_error" | "empty";
+};
+
+export type GeminiResult = { success: true; text: string } | GeminiFailure;
 
 export async function generateWithGemini(
   systemPrompt: string,
