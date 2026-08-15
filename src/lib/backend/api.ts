@@ -33,6 +33,12 @@ export const api = {
     mine: ref("readingQuestions.mine"),
     checkout: ref("readingQuestions.checkout"),
   },
+  natalChart: {
+    get: ref("natalChart.get"),
+  },
+  numerology: {
+    get: ref("numerology.get"),
+  },
   products: {
     list: ref("products.list"),
     getById: ref("products.getById"),

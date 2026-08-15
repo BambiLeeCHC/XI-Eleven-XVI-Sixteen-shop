@@ -216,6 +216,16 @@ export const handlers: Record<string, Handler> = {
     });
   },
 
+  /* ── natal chart (free) + numerology (paywalled add-on) ──────────────── */
+
+  "natalChart.get": async () => {
+    return callApi("/api/natal-chart", {});
+  },
+
+  "numerology.get": async () => {
+    return callApi("/api/numerology", {});
+  },
+
   /* ── products ───────────────────────────────────────────────────────── */
 
   "products.list": async ({ gender, category } = {}) => {

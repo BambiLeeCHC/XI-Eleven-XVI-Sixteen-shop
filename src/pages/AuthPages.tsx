@@ -546,6 +546,8 @@ export function SignupPage() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [birthDate, setBirthDate] = useState("");
+  const [birthTime, setBirthTime] = useState("");
+  const [birthLocation, setBirthLocation] = useState("");
   const [genderIdentity, setGenderIdentity] = useState("");
   const [sexualOrientation, setSexualOrientation] = useState("");
   const [password, setPassword] = useState("");
@@ -573,6 +575,8 @@ export function SignupPage() {
         email,
         password,
         birthDate,
+        birthTime,
+        birthLocation,
         genderIdentity,
         sexualOrientation,
         flow: "signUp",
@@ -729,6 +733,31 @@ export function SignupPage() {
             className={inputClass}
             required
           />
+        </div>
+        <div>
+          <label className={labelClass}>BIRTH TIME</label>
+          <input
+            type="time"
+            value={birthTime}
+            onChange={(e) => setBirthTime(e.target.value)}
+            className={inputClass}
+          />
+          <p className="text-[12px] text-slate-400 mt-1">
+            Powers your free natal chart — the closer to exact, the more accurate it is. Don't know it? Leave it blank.
+          </p>
+        </div>
+        <div>
+          <label className={labelClass}>BIRTH LOCATION</label>
+          <input
+            type="text"
+            value={birthLocation}
+            onChange={(e) => setBirthLocation(e.target.value)}
+            placeholder="City, State/Country"
+            className={inputClass}
+          />
+          <p className="text-[12px] text-slate-400 mt-1">
+            Where you were born — also used for your natal chart.
+          </p>
         </div>
         <div>
           <label className={labelClass}>GENDER IDENTITY</label>

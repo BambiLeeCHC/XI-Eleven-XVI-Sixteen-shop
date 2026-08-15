@@ -26,6 +26,7 @@ import {
   JournalPage,
   JournalPostPage,
   DeepReadingPage,
+  ChartPage,
 } from "./pages";
 
 function App() {
@@ -54,6 +55,7 @@ function App() {
             <Route path="/journal" element={<JournalPage />} />
             <Route path="/journal/deep-reading" element={<DeepReadingPage />} />
             <Route path="/journal/:slug" element={<JournalPostPage />} />
+            <Route path="/chart" element={<ChartPage />} />
 
             {/* Protected routes */}
             <Route element={<ProtectedRoute />}>

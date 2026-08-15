@@ -227,6 +227,8 @@ export function useAuthActions() {
         const metadata: Record<string, string> = {};
         if (fields.name) metadata.name = fields.name;
         if (fields.birthDate) metadata.birth_date = fields.birthDate;
+        if (fields.birthTime) metadata.birth_time = fields.birthTime;
+        if (fields.birthLocation) metadata.birth_location = fields.birthLocation;
         if (fields.situation) metadata.situation = fields.situation;
         if (fields.genderIdentity) metadata.gender_identity = fields.genderIdentity;
         if (fields.sexualOrientation)
