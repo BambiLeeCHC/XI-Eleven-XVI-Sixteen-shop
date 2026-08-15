@@ -20,9 +20,18 @@ function fmtDate(ts?: number) {
   return new Date(ts).toLocaleDateString([], { month: "long", day: "numeric", year: "numeric" });
 }
 
-function PostCard({ post, featured = false }: { post: Post; featured?: boolean }) {
+const POST_PAPERS = ["ink", "kraft", "gold", "lilac", "blush"] as const;
+
+function PostCard({ post, featured = false, index = 0 }: { post: Post; featured?: boolean; index?: number }) {
+  const paper = POST_PAPERS[index % POST_PAPERS.length];
   return (
     <article className={`journal-post ${featured ? "journal-post--featured" : ""}`}>
+      {featured && (
+        <>
+          <span className="jcol-patch jcol-patch--a" aria-hidden="true" />
+          <span className="jcol-tape jcol-tape--tl" aria-hidden="true" />
+        </>
+      )}
       <Link to={`/journal/${post.slug}`} className="journal-post__link">
         {post.coverImage && (
           <div className="journal-post__cover">
@@ -31,7 +40,9 @@ function PostCard({ post, featured = false }: { post: Post; featured?: boolean }
         )}
         <div className="journal-post__body">
           <div className="journal-post__meta">
-            <span className="journal-post__cat">{post.category}</span>
+            <span className={`journal-post__cat jcol-tag jcol-tag--sm jcol-${paper} jcol-type`}>
+              {post.category}
+            </span>
             <span className="journal-post__dot">·</span>
             <span>{fmtDate(post.publishedAt ?? post._creationTime)}</span>
             <span className="journal-post__dot">·</span>
@@ -150,10 +161,10 @@ export function JournalPage() {
               </div>
             ) : (
               <>
-                {lead && <PostCard post={lead} featured />}
+                {lead && <PostCard post={lead} featured index={0} />}
                 <div className="journal-grid">
-                  {rest.map((p) => (
-                    <PostCard key={p._id} post={p} />
+                  {rest.map((p, i) => (
+                    <PostCard key={p._id} post={p} index={i + 1} />
                   ))}
                 </div>
               </>

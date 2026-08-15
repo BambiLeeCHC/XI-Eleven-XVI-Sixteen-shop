@@ -121,6 +121,76 @@ async function fetchReading(spread: SpreadCard[]): Promise<string> {
   return fallbackReading(spread);
 }
 
+/* ── The reading's collage head ──────────────────────────────────────────
+   Same cut-paper language as the masthead — a dateline slug, the spread's
+   name cut letter by letter, any remaining words as torn tags below — so
+   the reveal reads like a page out of the same publication instead of a
+   different product bolted on. Built from live data (day-of-month, the
+   spread's own name) so it never goes stale if the spread is renamed. */
+const COLLAGE_PAPERS = ["ink", "newsprint", "kraft", "gold", "blush", "lilac", "cream"] as const;
+const COLLAGE_FACES = ["grotesk", "display", "type"] as const;
+const COLLAGE_ROT = [-4, 3, -2, 4, -3, 2, -4.5, 3.5];
+
+function ReadingCollageHead({ spreadName }: { spreadName: string }) {
+  const [firstWord, ...restWords] = spreadName.split(" ");
+  const letters = firstWord.split("");
+  const dayNo = String(new Date().getDate()).padStart(2, "0");
+
+  return (
+    <div className="jdeck__collage-head">
+      <span className="jcol-patch jcol-patch--a" aria-hidden="true" />
+      <span className="jcol-patch jcol-patch--b" aria-hidden="true" />
+      <span className="jcol-tape jcol-tape--tl" aria-hidden="true" />
+      <span className="jcol-tape jcol-tape--br" aria-hidden="true" />
+
+      <p className="jcol-slug">
+        <span>XI · XVI</span>
+        <i />
+        <span>Reading Of The Day</span>
+        <i />
+        <span>No. {dayNo}</span>
+      </p>
+
+      <h3 className="jdeck__collage-title" aria-label={spreadName}>
+        {letters.map((ch, i) => (
+          <span
+            key={i}
+            className={`jcol-cut jcol-cut--lg jcol-${COLLAGE_PAPERS[i % COLLAGE_PAPERS.length]} jcol-${COLLAGE_FACES[i % COLLAGE_FACES.length]}`}
+            style={{ transform: `rotate(${COLLAGE_ROT[i % COLLAGE_ROT.length]}deg)` }}
+            aria-hidden="true"
+          >
+            {ch}
+          </span>
+        ))}
+      </h3>
+
+      {restWords.length > 0 && (
+        <p className="jdeck__collage-sub" aria-hidden="true">
+          {restWords.map((w, i) => (
+            <span
+              key={i}
+              className={`jcol-tag jcol-tag--md jcol-${COLLAGE_PAPERS[(i + 2) % COLLAGE_PAPERS.length]} jcol-${COLLAGE_FACES[(i + 1) % COLLAGE_FACES.length]}`}
+              style={{ transform: `rotate(${COLLAGE_ROT[(i + 3) % COLLAGE_ROT.length]}deg)` }}
+            >
+              {w}
+            </span>
+          ))}
+        </p>
+      )}
+
+      <svg className="jcol-pen-rule" viewBox="0 0 400 24" preserveAspectRatio="none" aria-hidden="true">
+        <path
+          d="M6 15 C60 6, 108 20, 164 12 C220 4, 268 19, 326 10 C356 6, 378 12, 394 9"
+          fill="none"
+          stroke="rgba(196,141,255,.55)"
+          strokeWidth="2.6"
+          strokeLinecap="round"
+        />
+      </svg>
+    </div>
+  );
+}
+
 /** Minimal, safe render of the reading's sparing **bold** markup. */
 function ReadingText({ text }: { text: string }) {
   const paragraphs = text.split(/\n{2,}/);
@@ -293,10 +363,16 @@ export function DrawThree() {
 
       {allOpen && (
         <div className="jdeck__letter">
+          <ReadingCollageHead spreadName={spreadType.name} />
           {readingLoading && !reading && (
             <p className="jdeck__letter-loading">Reading the spread…</p>
           )}
-          {reading && <ReadingText text={reading} />}
+          {reading && (
+            <>
+              <ReadingText text={reading} />
+              <p className="jcol-sign">Yours, until midnight.</p>
+            </>
+          )}
         </div>
       )}
 
