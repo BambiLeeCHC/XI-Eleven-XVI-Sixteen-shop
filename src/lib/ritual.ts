@@ -226,34 +226,34 @@ export interface SpreadType {
 }
 
 export const THE_SPREAD: SpreadType = {
-  id: "root-weight-hidden-choice-reach",
-  name: "The Five",
-  intro: "Five positions, one reading: what's moving, what's pressing, what you can't see, what's in front of you, and where it leads.",
+  id: "action-support-gain-letgo-guidance",
+  name: "Embracing Change",
+  intro: "Five positions, one reading: the action that eases this transition, what's supporting you, what you stand to gain, what you need to let go of, and the higher guidance available to you.",
   slots: [
     {
-      slot: "root",
-      slotName: "The Root",
-      slotQuestion: "What's already in motion",
+      slot: "action",
+      slotName: "Action",
+      slotQuestion: "The action to ease this transition",
     },
     {
-      slot: "weight",
-      slotName: "The Weight",
-      slotQuestion: "What's pressing on you right now",
+      slot: "support",
+      slotName: "Support",
+      slotQuestion: "What's supporting you through this",
     },
     {
-      slot: "hidden",
-      slotName: "The Hidden",
-      slotQuestion: "The blind spot",
+      slot: "gain",
+      slotName: "Gain",
+      slotQuestion: "What you stand to gain",
     },
     {
-      slot: "choice",
-      slotName: "The Choice",
-      slotQuestion: "The fork in front of you",
+      slot: "letgo",
+      slotName: "Let Go",
+      slotQuestion: "What you need to release",
     },
     {
-      slot: "reach",
-      slotName: "The Reach",
-      slotQuestion: "Where this leads",
+      slot: "guidance",
+      slotName: "Higher Guidance",
+      slotQuestion: "The higher guidance available to you",
     },
   ],
 };
