@@ -489,18 +489,6 @@ export function LoginPage() {
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className={labelClass}>NAME</label>
-          <input
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="Your name"
-            autoComplete="name"
-            className={inputClass}
-            required
-          />
-        </div>
-        <div>
           <label className={labelClass}>EMAIL</label>
           <input
             type="email"
@@ -510,54 +498,6 @@ export function LoginPage() {
             className={inputClass}
             required
           />
-        </div>
-        <div>
-          <label className={labelClass}>BIRTH DATE</label>
-          <input
-            type="date"
-            value={birthDate}
-            onChange={(e) => setBirthDate(e.target.value)}
-            autoComplete="bday"
-            className={inputClass}
-            required
-          />
-        </div>
-        <div>
-          <label className={labelClass}>GENDER IDENTITY</label>
-          <select
-            value={genderIdentity}
-            onChange={(e) => setGenderIdentity(e.target.value)}
-            className={inputClass}
-          >
-            <option value="">Prefer not to say</option>
-            <option value="woman">Woman</option>
-            <option value="man">Man</option>
-            <option value="nonbinary">Non-binary</option>
-            <option value="self-described">Prefer to self-describe</option>
-          </select>
-          <p className="text-[12px] text-slate-400 mt-1">
-            Helps us personalize your readings — optional.
-          </p>
-        </div>
-        <div>
-          <label className={labelClass}>SEXUAL ORIENTATION</label>
-          <select
-            value={sexualOrientation}
-            onChange={(e) => setSexualOrientation(e.target.value)}
-            className={inputClass}
-          >
-            <option value="">Prefer not to say</option>
-            <option value="straight">Straight</option>
-            <option value="gay">Gay</option>
-            <option value="lesbian">Lesbian</option>
-            <option value="bisexual">Bisexual</option>
-            <option value="queer">Queer</option>
-            <option value="asexual">Asexual</option>
-            <option value="self-described">Prefer to self-describe</option>
-          </select>
-          <p className="text-[12px] text-slate-400 mt-1">
-            Also optional — used the same way, to personalize your readings.
-          </p>
         </div>
         <div>
           <label className={labelClass}>PASSWORD</label>
@@ -757,6 +697,18 @@ export function SignupPage() {
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
+          <label className={labelClass}>NAME</label>
+          <input
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="Your name"
+            autoComplete="name"
+            className={inputClass}
+            required
+          />
+        </div>
+        <div>
           <label className={labelClass}>EMAIL</label>
           <input
             type="email"
@@ -766,6 +718,54 @@ export function SignupPage() {
             className={inputClass}
             required
           />
+        </div>
+        <div>
+          <label className={labelClass}>BIRTH DATE</label>
+          <input
+            type="date"
+            value={birthDate}
+            onChange={(e) => setBirthDate(e.target.value)}
+            autoComplete="bday"
+            className={inputClass}
+            required
+          />
+        </div>
+        <div>
+          <label className={labelClass}>GENDER IDENTITY</label>
+          <select
+            value={genderIdentity}
+            onChange={(e) => setGenderIdentity(e.target.value)}
+            className={inputClass}
+          >
+            <option value="">Prefer not to say</option>
+            <option value="woman">Woman</option>
+            <option value="man">Man</option>
+            <option value="nonbinary">Non-binary</option>
+            <option value="self-described">Prefer to self-describe</option>
+          </select>
+          <p className="text-[12px] text-slate-400 mt-1">
+            Helps us personalize your readings — optional.
+          </p>
+        </div>
+        <div>
+          <label className={labelClass}>SEXUAL ORIENTATION</label>
+          <select
+            value={sexualOrientation}
+            onChange={(e) => setSexualOrientation(e.target.value)}
+            className={inputClass}
+          >
+            <option value="">Prefer not to say</option>
+            <option value="straight">Straight</option>
+            <option value="gay">Gay</option>
+            <option value="lesbian">Lesbian</option>
+            <option value="bisexual">Bisexual</option>
+            <option value="queer">Queer</option>
+            <option value="asexual">Asexual</option>
+            <option value="self-described">Prefer to self-describe</option>
+          </select>
+          <p className="text-[12px] text-slate-400 mt-1">
+            Also optional — used the same way, to personalize your readings.
+          </p>
         </div>
         <div>
           <label className={labelClass}>PASSWORD</label>
