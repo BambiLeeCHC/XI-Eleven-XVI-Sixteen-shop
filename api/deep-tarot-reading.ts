@@ -4,8 +4,10 @@
  * Requires an active or trialing subscription (checked server-side against
  * `subscriptions`, never trusted from the client). The card draw itself
  * happens in the browser (same pattern as the free five-card spread); this
- * endpoint writes the narrative and saves the result to `deep_readings` so
- * it's kept on the account as a keepsake even before email delivery exists.
+ * endpoint writes the narrative, saves the result to `deep_readings` as a
+ * keepsake, and — best-effort — emails the same keepsake via Resend. Email
+ * delivery failure never blocks the reading response; the account copy is
+ * always the source of truth.
  */
 
 import {
@@ -17,6 +19,12 @@ import {
   supabaseAdmin,
 } from "./_lib/server.js";
 import { generateWithGemini, type GeminiFailure } from "./_lib/gemini.js";
+import {
+  buildKeepsakeEmailHtml,
+  readingTextToHtml,
+  sendResendEmail,
+  SUPPORT_FROM,
+} from "./_lib/resend.js";
 
 interface SpreadCardInput {
   position: string;
@@ -118,11 +126,31 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
       .single();
     if (error) throw error;
 
+    let emailed = false;
+    if (user.email) {
+      const emailResult = await sendResendEmail({
+        from: SUPPORT_FROM,
+        to: user.email,
+        subject: "Your Long Read is ready",
+        html: buildKeepsakeEmailHtml({
+          name,
+          readingHtml: readingTextToHtml(result.text),
+        }),
+        text: result.text,
+      });
+      emailed = emailResult.success;
+      if (!emailResult.success) {
+        // Non-fatal: the reading is already saved to the account either way.
+        console.error("Long Read keepsake email failed:", emailResult.error);
+      }
+    }
+
     return res.status(200).json({
       success: true,
       reading: result.text,
       id: saved.id,
       createdAt: saved.created_at,
+      emailed,
     });
   } catch (error) {
     return fail(res, error);
