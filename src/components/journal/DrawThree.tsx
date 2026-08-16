@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Link } from "react-router-dom";
 import {
   dayKey,
   drawerId,
@@ -421,6 +422,17 @@ export function DrawThree() {
             <>
               <ReadingText text={reading} />
               <p className="jcol-sign">Yours, until midnight.</p>
+
+              <div className="jdeck__long-read-tease">
+                <p className="jdeck__long-read-tease-label">One free draw a day. Want more?</p>
+                <p className="jdeck__long-read-tease-copy">
+                  The Long Read goes seven cards deep, read against what's actually going on with
+                  you — plus your full natal chart and numerology on the Chart page.
+                </p>
+                <Link to="/journal/deep-reading" className="jdeck__long-read-tease-cta">
+                  Go deeper with the Long Read ✦
+                </Link>
+              </div>
             </>
           )}
         </div>

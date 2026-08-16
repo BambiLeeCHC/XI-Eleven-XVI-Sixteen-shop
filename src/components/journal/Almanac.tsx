@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { Link } from "react-router-dom";
 import {
   MONTH_NAMES,
   dateNumber,
@@ -8,6 +9,7 @@ import {
   moonPhase,
   nextElevenSixteen,
 } from "../../lib/ritual";
+import { AnalogClock } from "./AnalogClock";
 
 function useNow(intervalMs = 1000) {
   const [now, setNow] = useState(() => new Date());
@@ -19,12 +21,11 @@ function useNow(intervalMs = 1000) {
 }
 
 /** THE 11:16 STRIP — docked at the top of the Journal. Time as brand surface. */
-export function ElevenSixteenStrip({ onOpenAlmanac }: { onOpenAlmanac?: () => void }) {
+export function ElevenSixteenStrip({ showAlmanacLink = true }: { showAlmanacLink?: boolean }) {
   const now = useNow();
   const es = nextElevenSixteen(now);
   const moon = moonPhase(now);
   const num = dateNumber(now);
-  const time = now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" });
 
   return (
     <div className={`journal-strip ${es.isNow ? "is-hour" : ""}`}>
@@ -32,15 +33,16 @@ export function ElevenSixteenStrip({ onOpenAlmanac }: { onOpenAlmanac?: () => vo
       <div className="relative z-10 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 px-4 py-3">
         <div className="journal-strip__cell">
           <span className="journal-strip__label">Local Time</span>
-          <span className="journal-strip__value tabular-nums">{time}</span>
+          <AnalogClock hours={now.getHours()} minutes={now.getMinutes()} seconds={now.getSeconds()} />
         </div>
         <span className="journal-strip__rule" aria-hidden="true" />
         <div className="journal-strip__cell">
           <span className="journal-strip__label">
             {es.isNow ? "The Hour Is Now" : `Next ${es.nextLabel}`}
           </span>
+          <AnalogClock hours={11} minutes={16} seconds={0} showSecondHand={false} accent />
           <span className="journal-strip__value journal-strip__value--accent tabular-nums">
-            {es.isNow ? "11:16 — set your intention" : formatCountdown(es.msUntilNext)}
+            {es.isNow ? "set your intention" : formatCountdown(es.msUntilNext)}
           </span>
         </div>
         <span className="journal-strip__rule" aria-hidden="true" />
@@ -56,10 +58,10 @@ export function ElevenSixteenStrip({ onOpenAlmanac }: { onOpenAlmanac?: () => vo
           <span className="journal-strip__label">Day Number</span>
           <span className="journal-strip__value journal-strip__value--gold">{num}</span>
         </div>
-        {onOpenAlmanac && (
-          <button className="journal-strip__cta" onClick={onOpenAlmanac}>
+        {showAlmanacLink && (
+          <Link to="/chart?tab=almanac" className="journal-strip__cta">
             Open the Almanac ✦
-          </button>
+          </Link>
         )}
       </div>
     </div>

@@ -16,3 +16,4 @@ export { JournalPage } from "./JournalPage";
 export { JournalPostPage } from "./JournalPostPage";
 export { DeepReadingPage } from "./DeepReadingPage";
 export { ChartPage } from "./ChartPage";
+export { WelcomePage } from "./WelcomePage";

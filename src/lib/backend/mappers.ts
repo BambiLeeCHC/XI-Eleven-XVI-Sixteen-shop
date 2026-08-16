@@ -139,6 +139,8 @@ export function mapProfile(row: Row | null | undefined) {
     phone: row.phone ?? undefined,
     role: row.role ?? "customer",
     birthDate: row.birth_date ?? undefined,
+    birthTime: row.birth_time ?? undefined,
+    birthLocation: row.birth_location ?? undefined,
     situation: row.situation ?? undefined,
     genderIdentity: row.gender_identity ?? undefined,
     sexualOrientation: row.sexual_orientation ?? undefined,

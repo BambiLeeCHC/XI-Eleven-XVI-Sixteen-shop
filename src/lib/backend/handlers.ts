@@ -124,6 +124,41 @@ export const handlers: Record<string, Handler> = {
     return mapProfile(row as Row);
   },
 
+  /**
+   * Lets a signed-in user fill in / correct their own birth details after
+   * registration — sign-up collects these, but nothing on the account page
+   * ever let existing users add them later, which left the natal chart
+   * permanently blocked for anyone who signed up without birth location.
+   */
+  "profile.updateBirthDetails": async (args: Args) => {
+    const userId = await currentUserId();
+    if (!userId) throw new Error("Please sign in first");
+    const { birthDate, birthTime, birthLocation } = args as {
+      birthDate?: string;
+      birthTime?: string;
+      birthLocation?: string;
+    };
+    const patch: Record<string, any> = {};
+    if (birthDate !== undefined) patch.birth_date = birthDate || null;
+    if (birthTime !== undefined) patch.birth_time = birthTime || null;
+    if (birthLocation !== undefined) {
+      patch.birth_location = birthLocation || null;
+      // Location changed — drop the cached geocode so the chart endpoint
+      // re-resolves lat/lng for the new place instead of reusing the old one.
+      patch.birth_lat = null;
+      patch.birth_lng = null;
+    }
+    const row = unwrap(
+      await supabase
+        .from("profiles")
+        .update(patch)
+        .eq("id", userId)
+        .select("*")
+        .single(),
+    );
+    return mapProfile(row as Row);
+  },
+
   "users.isAdmin": async () => {
     const userId = await currentUserId();
     if (!userId) return false;
