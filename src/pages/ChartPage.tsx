@@ -6,7 +6,7 @@ import { AlmanacCalendar } from "../components/journal/Almanac";
 import { NatalChartWheel } from "../components/journal/NatalChartWheel";
 import { SubscriptionTierPicker, type SubscriptionTier } from "../components/SubscriptionTierPicker";
 import { api, useAction, useQuery } from "../lib/backend";
-import { explainAspectPair, explainHouseFull, explainPlacement } from "../lib/astrologyMeanings";
+import { explainAspectPair, explainHouseFull, explainPlacement, explainSignInHouse } from "../lib/astrologyMeanings";
 
 interface NatalPlacement {
   body: string;
@@ -155,6 +155,10 @@ function HouseRow({ houseCusp, expanded, onToggle }: { houseCusp: NatalHouseCusp
               </span>
             ))}
           </div>
+          <p className="chart-house-row__sign-heading">
+            {SIGN_GLYPH[houseCusp.sign] ?? ""} {houseCusp.sign} on this cusp
+          </p>
+          <p className="chart-house-row__sign-explain">{explainSignInHouse(houseCusp.sign, houseCusp.house)}</p>
           <p className="chart-house-row__question">{full.question}</p>
         </div>
       )}

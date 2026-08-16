@@ -150,6 +150,39 @@ export const HOUSE_MEANINGS: Record<number, string> = Object.fromEntries(
   Object.entries(HOUSE_MEANINGS_FULL).map(([house, m]) => [Number(house), `${m.title} — ${m.summary}`]),
 );
 
+/** Short verb phrase for "the way you ___" per house — used to build the
+ * sign-on-the-cusp explanation below. */
+const HOUSE_ACTION_PHRASE: Record<number, string> = {
+  1: "show up and carry yourself into a room",
+  2: "handle money, belongings and your own sense of worth",
+  3: "communicate, learn and move through your everyday",
+  4: "build a sense of home, family and safety",
+  5: "romance, play and create just for the joy of it",
+  6: "work and keep up your daily habits and health",
+  7: "commit to a partner and negotiate a close bond",
+  8: "handle intimacy, shared resources and letting go",
+  9: "chase meaning, belief, travel and the bigger picture",
+  10: "build your career, reputation and public path",
+  11: "show up in friendship, community and shared vision",
+  12: "handle solitude, rest and what stays unconscious",
+};
+
+/** Explains what a given zodiac sign on a given house cusp means — the
+ * flavor that sign brings to that life area. Combines the house's action
+ * phrase with the sign's behavioral traits so every one of the 144
+ * sign/house pairings reads as a specific, grounded sentence rather than a
+ * generic keyword mashup. */
+export function explainSignInHouse(sign: string, house: number): string {
+  const action = HOUSE_ACTION_PHRASE[house];
+  const trait = SIGN_TRAITS[sign];
+  const houseMeaning = HOUSE_MEANINGS_FULL[house];
+  if (!action || !trait || !houseMeaning) return "";
+  return (
+    `With ${sign} here, the way you ${action} tends to be ${trait}. ` +
+    `That's ${sign}'s stamp on your ${houseMeaning.title.toLowerCase()} — not just what this house is about, but the specific style you bring to it.`
+  );
+}
+
 interface AspectMeaning {
   nature: string;
   feel: string;
