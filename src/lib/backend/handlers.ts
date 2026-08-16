@@ -227,6 +227,10 @@ export const handlers: Record<string, Handler> = {
     return callApi("/api/chart", { kind: "numerology" });
   },
 
+  "geocode.search": async ({ q }: { q: string }) => {
+    return callApi("/api/chart", { kind: "geocode-search", q });
+  },
+
   /* ── products ───────────────────────────────────────────────────────── */
 
   "products.list": async ({ gender, category } = {}) => {

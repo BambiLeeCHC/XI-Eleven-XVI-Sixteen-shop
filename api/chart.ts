@@ -33,13 +33,24 @@ import {
   HttpError,
   supabaseAdmin,
 } from "./_lib/server.js";
-import { computeNatalChart, geocodeLocation } from "./_lib/natalChart.js";
+import { computeNatalChart, geocodeLocation, searchLocations } from "./_lib/natalChart.js";
 import { generateWithGemini, type GeminiFailure } from "./_lib/gemini.js";
 import { fullNumerologyProfile, NUMBER_MEANINGS } from "../src/lib/numerology.js";
 
 const NUMEROLOGY_SYSTEM_PROMPT = `You are the XI · XVI Reader, writing the numerology narrative for the XI Eleven XVI Sixteen (xixvi.shop) brand — the paid, higher-tier companion to the natal chart. Same voice as always: direct, poignant, specific — never a generic horoscope, never hedging ("may"/"could"), never false authority.
 
 Write one paragraph per number given (Life Path, Expression, Soul Urge, Personality, Personal Year), each grounded in its literal meaning, never generic keyword soup. Close with one direct synthesis paragraph connecting the numbers into a real throughline about this person. Sparing bold on 3-4 key phrases. 350-500 words total. No headers, no bullets, no emoji, no sign-off. Address them by name once, naturally, not as a greeting.`;
+
+/** Location autocomplete for the birth-location field. Deliberately
+ * unauthenticated — this needs to work on the sign-up form, before an
+ * account exists. */
+async function handleGeocodeSearch(req: ApiRequest, res: ApiResponse) {
+  const queryQ = req.query?.q;
+  const qFromQuery = Array.isArray(queryQ) ? queryQ[0] : queryQ;
+  const q = ((req.body as { q?: string } | undefined)?.q ?? qFromQuery ?? "") as string;
+  const suggestions = await searchLocations(q);
+  return res.status(200).json({ success: true, suggestions });
+}
 
 async function handleNatalChart(req: ApiRequest, res: ApiResponse) {
   const user = await currentUser(req);
@@ -161,6 +172,9 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
 
     if (kind === "numerology") {
       return await handleNumerology(req, res);
+    }
+    if (kind === "geocode-search") {
+      return await handleGeocodeSearch(req, res);
     }
     if (kind === "natal" || kind === undefined) {
       return await handleNatalChart(req, res);

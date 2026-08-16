@@ -49,6 +49,42 @@ export async function geocodeLocation(location: string): Promise<GeoResult | nul
   }
 }
 
+export interface LocationSuggestion {
+  displayName: string;
+  lat: number;
+  lng: number;
+}
+
+/** Live-search location suggestions for the birth-location autocomplete
+ * (used pre-registration, so intentionally unauthenticated/public). Same
+ * Nominatim source as geocodeLocation, but returns several ranked
+ * candidates with a full display name instead of resolving straight to one
+ * lat/lng. Returns [] on any failure or empty query — callers should treat
+ * that as "no suggestions right now", never a hard error. */
+export async function searchLocations(query: string): Promise<LocationSuggestion[]> {
+  const q = query.trim();
+  if (q.length < 2) return [];
+  try {
+    const url = `https://nominatim.openstreetmap.org/search?format=json&limit=5&addressdetails=0&q=${encodeURIComponent(q)}`;
+    const res = await fetch(url, {
+      headers: {
+        "User-Agent": "xixvi-shop-natal-chart/1.0 (https://xixvi.shop)",
+      },
+    });
+    if (!res.ok) return [];
+    const rows = (await res.json()) as Array<{ lat: string; lon: string; display_name: string }>;
+    return rows
+      .map((row) => ({
+        displayName: row.display_name,
+        lat: Number(row.lat),
+        lng: Number(row.lon),
+      }))
+      .filter((r) => Number.isFinite(r.lat) && Number.isFinite(r.lng));
+  } catch {
+    return [];
+  }
+}
+
 export interface NatalPlacement {
   body: string;
   sign: string;

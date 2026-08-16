@@ -39,6 +39,9 @@ export const api = {
   numerology: {
     get: ref("numerology.get"),
   },
+  geocode: {
+    search: ref("geocode.search"),
+  },
   products: {
     list: ref("products.list"),
     getById: ref("products.getById"),
