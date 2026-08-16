@@ -143,6 +143,100 @@ export const handlers: Record<string, Handler> = {
     return { success: true };
   },
 
+  /* ── subscription (The Long Read) ──────────────────────────────────── */
+
+  "subscription.status": async () => {
+    const userId = await currentUserId();
+    if (!userId) return null;
+    const row = unwrap(
+      await supabase
+        .from("subscriptions")
+        .select("status, tier, trial_end, current_period_end")
+        .eq("user_id", userId)
+        .maybeSingle(),
+    ) as {
+      status: string;
+      tier: string | null;
+      trial_end: string | null;
+      current_period_end: string | null;
+    } | null;
+    if (!row) return { entitled: false, status: "none", tier: null };
+    return {
+      entitled: row.status === "trialing" || row.status === "active",
+      status: row.status,
+      tier: row.tier,
+      trialEnd: row.trial_end,
+      currentPeriodEnd: row.current_period_end,
+    };
+  },
+
+  "subscription.startTrial": async ({ successUrl, cancelUrl, tier } = {}) => {
+    return callApi("/api/reading-checkout", { kind: "subscribe", successUrl, cancelUrl, tier });
+  },
+
+  /* ── deep readings (The Long Read content) ───────────────────────────── */
+
+  "deepReadings.mine": async () => {
+    const userId = await currentUserId();
+    if (!userId) return [];
+    const rows = unwrap(
+      await supabase
+        .from("deep_readings")
+        .select("*")
+        .eq("user_id", userId)
+        .order("created_at", { ascending: false }),
+    ) as Row[];
+    return rows;
+  },
+
+  "deepReadings.draw": async ({ spread } = {}) => {
+    return callApi("/api/deep-tarot-reading", { spread });
+  },
+
+  /* ── pay-per-question follow-ups ─────────────────────────────────────── */
+
+  "readingQuestions.mine": async () => {
+    const userId = await currentUserId();
+    if (!userId) return [];
+    const rows = unwrap(
+      await supabase
+        .from("reading_questions")
+        .select("*")
+        .eq("user_id", userId)
+        .order("created_at", { ascending: false }),
+    ) as Row[];
+    return rows;
+  },
+
+  "readingQuestions.checkout": async ({
+    question,
+    readingContext,
+    successUrl,
+    cancelUrl,
+  } = {}) => {
+    return callApi("/api/reading-checkout", {
+      kind: "question",
+      question,
+      readingContext,
+      successUrl,
+      cancelUrl,
+    });
+  },
+
+  /* ── natal chart (free) + numerology (paywalled add-on) ──────────────── */
+
+  "natalChart.get": async () => {
+    return callApi("/api/chart", { kind: "natal" });
+  },
+
+  "numerology.get": async () => {
+    return callApi("/api/chart", { kind: "numerology" });
+  },
+
+  "geocode.search": async ({ q }: { q: string }) => {
+    return callApi("/api/chart", { kind: "geocode-search", q });
+  },
+
   /* ── products ───────────────────────────────────────────────────────── */
 
   "products.list": async ({ gender, category } = {}) => {

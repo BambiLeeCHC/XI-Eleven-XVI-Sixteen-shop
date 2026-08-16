@@ -10,21 +10,7 @@ import {
   requireAdmin,
   supabaseAdmin,
 } from "./_lib/server.js";
-
-const FROM = "XI · XVI Support <support@xixvi.shop>";
-
-const escapeHtml = (value: string) =>
-  value.replace(
-    /[&<>"']/g,
-    character =>
-      ({
-        "&": "&amp;",
-        "<": "&lt;",
-        ">": "&gt;",
-        '"': "&quot;",
-        "'": "&#039;",
-      })[character] ?? character,
-  );
+import { escapeHtml, sendResendEmail, SUPPORT_FROM } from "./_lib/resend.js";
 
 export default async function handler(req: ApiRequest, res: ApiResponse) {
   if (req.method !== "POST") {
@@ -42,8 +28,7 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
       throw new HttpError(400, "Missing email fields");
     }
 
-    const apiKey = process.env.RESEND_API_KEY;
-    if (!apiKey) {
+    if (!process.env.RESEND_API_KEY) {
       throw new HttpError(
         503,
         "CRM email is not connected yet: RESEND_API_KEY is missing.",
@@ -56,7 +41,7 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
         customer_id: customerId,
         admin_id: admin.id,
         recipient: to,
-        sender: FROM,
+        sender: SUPPORT_FROM,
         subject,
         body,
         status,
@@ -65,37 +50,28 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
       });
     };
 
-    const response = await fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        from: FROM,
-        reply_to: "support@xixvi.shop",
-        to: [to],
-        subject,
-        html: `<div style="font-family:Arial,sans-serif;max-width:640px;margin:auto;color:#171717;line-height:1.6"><div style="font-size:12px;letter-spacing:.18em;color:#9a7b2f;margin-bottom:24px">XI · XVI SUPPORT</div><div>${escapeHtml(
-          body,
-        ).replace(
-          /\n/g,
-          "<br>",
-        )}</div><hr style="border:0;border-top:1px solid #eee;margin:32px 0"><p style="font-size:12px;color:#777">Reply directly to this email to reach support@xixvi.shop.</p></div>`,
-        text: body,
-      }),
+    const html = `<div style="font-family:Arial,sans-serif;max-width:640px;margin:auto;color:#171717;line-height:1.6"><div style="font-size:12px;letter-spacing:.18em;color:#9a7b2f;margin-bottom:24px">XI · XVI SUPPORT</div><div>${escapeHtml(
+      body,
+    ).replace(
+      /\n/g,
+      "<br>",
+    )}</div><hr style="border:0;border-top:1px solid #eee;margin:32px 0"><p style="font-size:12px;color:#777">Reply directly to this email to reach support@xixvi.shop.</p></div>`;
+
+    const result = await sendResendEmail({
+      from: SUPPORT_FROM,
+      to,
+      subject,
+      html,
+      text: body,
     });
 
-    const result = (await response.json().catch(() => ({}))) as any;
-    if (!response.ok) {
-      const message =
-        result?.message || `Email provider returned ${response.status}`;
-      await log("failed", undefined, message);
-      throw new HttpError(502, message);
+    if (!result.success) {
+      await log("failed", undefined, result.error);
+      throw new HttpError(502, `Email failed to send: ${result.error}`);
     }
 
-    await log("sent", result.id);
-    return res.status(200).json({ success: true, id: result.id });
+    await log("sent", result.providerId);
+    return res.status(200).json({ success: true, id: result.providerId });
   } catch (error) {
     return fail(res, error);
   }

@@ -7,6 +7,7 @@ import {
   spreadTypeOfTheDay,
 } from "../../lib/ritual";
 import { CardArt, CardBack } from "./CardArt";
+import { api, useQuery } from "../../lib/backend";
 
 /* ═══════════════════════════════════════════════════════════════════════
    THE FIVE — a real five-card spread from the XI·XVI Major Arcana.
@@ -96,7 +97,13 @@ function fallbackReading(spread: SpreadCard[]): string {
     .join("\n\n");
 }
 
-async function fetchReading(spread: SpreadCard[]): Promise<string> {
+async function fetchReading(
+  spread: SpreadCard[],
+  name?: string,
+  situation?: string,
+  genderIdentity?: string,
+  sexualOrientation?: string,
+): Promise<string> {
   const body = {
     spread: spread.map(s => ({
       position: s.slotName,
@@ -106,6 +113,10 @@ async function fetchReading(spread: SpreadCard[]): Promise<string> {
       keywords: s.card.keywords,
       meaning: s.reversed ? s.card.reversed : s.card.upright,
     })),
+    ...(name ? { name } : {}),
+    ...(situation ? { situation } : {}),
+    ...(genderIdentity ? { genderIdentity } : {}),
+    ...(sexualOrientation ? { sexualOrientation } : {}),
   };
   try {
     const res = await fetch("/api/tarot-reading", {
@@ -295,6 +306,7 @@ function SpreadCardSlot({
 }
 
 export function DrawThree() {
+  const user = useQuery(api.auth.currentUser);
   const spreadType = useMemo(() => spreadTypeOfTheDay(), []);
   const who = useMemo(() => drawerId(), []);
   const spread = useMemo(() => spreadOfTheDay(undefined, who), [who]);
@@ -304,6 +316,11 @@ export function DrawThree() {
     loadCachedReading(combo),
   );
   const [readingLoading, setReadingLoading] = useState(false);
+  // Asked fresh on every visit — deliberately not persisted, since what's
+  // going on changes visit to visit (unlike birth date, which lives on the
+  // profile).
+  const [situation, setSituation] = useState("");
+  const [situationConfirmed, setSituationConfirmed] = useState(false);
 
   const reveal = useCallback((slot: string) => {
     setRevealed(cur => {
@@ -325,14 +342,20 @@ export function DrawThree() {
   const allOpen = openCount === spread.length;
 
   useEffect(() => {
-    if (!allOpen || reading || readingLoading) return;
+    if (!allOpen || !situationConfirmed || reading || readingLoading) return;
     setReadingLoading(true);
-    fetchReading(spread).then(text => {
+    fetchReading(
+      spread,
+      user?.name,
+      situation || undefined,
+      user?.genderIdentity,
+      user?.sexualOrientation,
+    ).then(text => {
       saveCachedReading(combo, text);
       setReading(text);
       setReadingLoading(false);
     });
-  }, [allOpen, reading, readingLoading, spread, combo]);
+  }, [allOpen, situationConfirmed, situation, reading, readingLoading, spread, combo, user]);
 
   return (
     <div className="jdeck">
@@ -343,25 +366,52 @@ export function DrawThree() {
         yours until midnight.
       </p>
 
-      <div className="jdeck__row">
-        {spread.map((entry, i) => (
-          <SpreadCardSlot
-            key={entry.slot}
-            entry={entry}
-            index={i}
-            revealed={revealed.has(entry.slot)}
-            onReveal={() => reveal(entry.slot)}
+      {!situationConfirmed && (
+        <div className="jdeck__intake">
+          <label htmlFor="jdeck-situation" className="jdeck__intake-label">
+            Before you draw — what's actually going on right now?
+          </label>
+          <textarea
+            id="jdeck-situation"
+            value={situation}
+            onChange={e => setSituation(e.target.value)}
+            rows={2}
+            placeholder={'e.g. "trying to decide whether to leave my job"'}
+            className="jdeck__intake-input"
           />
-        ))}
-      </div>
-
-      {!allOpen && (
-        <button type="button" className="jdeck__all" onClick={turnAll}>
-          Turn all five ✦
-        </button>
+          <button
+            type="button"
+            className="jdeck__all"
+            onClick={() => setSituationConfirmed(true)}
+          >
+            Continue to the draw ✦
+          </button>
+        </div>
       )}
 
-      {allOpen && (
+      {situationConfirmed && (
+        <>
+          <div className="jdeck__row">
+            {spread.map((entry, i) => (
+              <SpreadCardSlot
+                key={entry.slot}
+                entry={entry}
+                index={i}
+                revealed={revealed.has(entry.slot)}
+                onReveal={() => reveal(entry.slot)}
+              />
+            ))}
+          </div>
+
+          {!allOpen && (
+            <button type="button" className="jdeck__all" onClick={turnAll}>
+              Turn all five ✦
+            </button>
+          )}
+        </>
+      )}
+
+      {allOpen && situationConfirmed && (
         <div className="jdeck__letter">
           <ReadingCollageHead spreadName={spreadType.name} />
           {readingLoading && !reading && (

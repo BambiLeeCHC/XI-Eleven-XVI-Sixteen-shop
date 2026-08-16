@@ -106,6 +106,14 @@ export function StoreHeader() {
                 >
                   <span className="nav-blog-flash__label" data-text="Blog">Blog</span>
                 </Link>
+                <Link
+                  to="/chart"
+                  className={`px-3 py-2 text-[11px] tracking-[0.18em] uppercase font-semibold transition-all ${
+                    location.pathname.startsWith("/chart") ? "text-white" : "text-white/50 hover:text-white"
+                  }`}
+                >
+                  Chart
+                </Link>
 
                 {/* Policies dropdown */}
                 <div
@@ -318,6 +326,15 @@ export function StoreHeader() {
             </Link>
             <span className="w-px h-3 bg-white/[0.14]" />
             <Link
+              to="/chart"
+              className={`px-2.5 py-1 text-[10px] tracking-[0.16em] uppercase font-semibold transition-all ${
+                location.pathname.startsWith("/chart") ? "text-white" : "text-white/55"
+              }`}
+            >
+              Chart
+            </Link>
+            <span className="w-px h-3 bg-white/[0.14]" />
+            <Link
               to="/contact"
               className={`px-2.5 py-1 text-[10px] tracking-[0.16em] uppercase font-semibold transition-all ${
                 location.pathname.startsWith("/contact") ? "text-white" : "text-white/55"
@@ -375,6 +392,7 @@ export function StoreHeader() {
               <MobileNavLink to="/favorites" label="FAVORITES" badge={favCount > 0 ? favCount : undefined} />
               <MobileNavLink to="/cart" label="CART" badge={cartCount > 0 ? cartCount : undefined} />
               <MobileNavLink to="/journal" label="BLOG — THE JOURNAL" />
+              <MobileNavLink to="/chart" label="NATAL CHART" />
               <MobileNavLink to="/about" label="ABOUT" />
               <MobileNavLink to="/size-guide" label="SIZE GUIDE" />
               <MobileNavLink to="/contact" label="CONTACT US" />

@@ -138,6 +138,10 @@ export function mapProfile(row: Row | null | undefined) {
     email: row.email ?? undefined,
     phone: row.phone ?? undefined,
     role: row.role ?? "customer",
+    birthDate: row.birth_date ?? undefined,
+    situation: row.situation ?? undefined,
+    genderIdentity: row.gender_identity ?? undefined,
+    sexualOrientation: row.sexual_orientation ?? undefined,
   };
 }
 

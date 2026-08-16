@@ -1,15 +1,19 @@
 /**
- * XI · XVI Tarot Reading Engine.
+ * XI · XVI Tarot Reading Engine — the free daily "Embracing Change" spread.
  *
  * Turns a drawn 5-card spread (cards + positions + orientations) into a
  * single, freshly-written narrative reading — not a template, not a
  * recombination of stock paragraphs. Every request sends the model the
  * canonical upright/reversed meaning of each card and the meaning of the
  * position it landed in; the model is required to synthesize a specific,
- * connected letter the way a real reader would, in the style of a
- * genuinely personal tarot reading (narrative hook, cards discussed in
- * connected groups, one true synthesis line, soft close) — never a
- * generic daily-horoscope template.
+ * connected reading the way a real reader would — direct, card-by-card,
+ * never a generic daily-horoscope template, never a narrative hook that
+ * promises to circle back later.
+ *
+ * If the reader has completed intake at sign-up (first name + what's going
+ * on), the reading is personalized: addressed by name and woven around
+ * their stated situation. Anonymous/guest readers still get the full
+ * reading, just without that layer.
  *
  * Calls Google's Gemini API using GEMINI_API_KEY (free tier). If
  * GEMINI_API_KEY isn't configured, the caller falls back to the static
@@ -22,6 +26,7 @@ import {
   fail,
   HttpError,
 } from "./_lib/server.js";
+import { generateWithGemini, type GeminiFailure } from "./_lib/gemini.js";
 
 interface SpreadCardInput {
   position: string;
@@ -41,14 +46,30 @@ VOICE AND STRUCTURE (model this closely):
 - Every paragraph should build on the one before it — by the end the reader should feel the throughline, but earn that by what each card actually says, not by announcing "these mean X together" as a separate authority-flex line.
 - Close with one short, direct synthesis of what this spread is really telling them, then one concrete, second-person nudge — one real thing to do or notice today. No dramatic pronouncements, no vague mysticism, no telling the reader how they should feel — just tell them plainly what's true and what to do with it.
 - Sparing, intentional bold (wrap in **like this**) on the two or three phrases that matter most. Do not bold more than that.
-- Write 220-320 words. No headers, no bullet lists, no emoji, no sign-off, no greeting by name — begin directly addressing the first card.`;
+- Write 220-320 words. No headers, no bullet lists, no emoji, no sign-off, no greeting by name — begin directly addressing the first card.
+- If a first name and a stated situation are given below, address that person by name once, naturally, within the opening sentence — not as a greeting line — and connect at least two of the cards directly back to what they told us, in their own terms where it fits. Don't announce that you're doing this.
+- If a gender identity and/or sexual orientation are given below, use them only to get pronouns and relationship framing right where the reading naturally touches on identity or relationships — never call them out directly, never make either the subject of the reading unless the person's own stated situation already is.`;
 
-function buildUserPrompt(spread: SpreadCardInput[]): string {
+function buildUserPrompt(
+  spread: SpreadCardInput[],
+  name?: string,
+  situation?: string,
+  genderIdentity?: string,
+  sexualOrientation?: string,
+): string {
   const lines = spread.map(
     (c, i) =>
       `${i + 1}. Position "${c.position}" (${c.positionMeaning}) → ${c.name}${c.reversed ? ", REVERSED" : ", upright"}. Canonical meaning: ${c.meaning} Keywords: ${c.keywords.join(", ")}.`,
   );
-  return `Today's spread, in draw order:\n${lines.join("\n")}\n\nWrite today's reading now, following the voice and structure rules exactly.`;
+  const identityBits = [
+    genderIdentity ? `gender identity: ${genderIdentity}` : null,
+    sexualOrientation ? `sexual orientation: ${sexualOrientation}` : null,
+  ].filter(Boolean);
+  const personalization =
+    name || situation
+      ? `\n\nThis reading is for ${name || "the reader"}. What they told us is going on right now: "${situation || "not specified"}".${identityBits.length ? ` Also on file: ${identityBits.join(", ")}.` : ""} Weave this in per the personalization rules.`
+      : "";
+  return `Today's spread, in draw order:\n${lines.join("\n")}${personalization}\n\nWrite today's reading now, following the voice and structure rules exactly.`;
 }
 
 export default async function handler(req: ApiRequest, res: ApiResponse) {
@@ -58,51 +79,29 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
   }
 
   try {
-    const { spread } = (req.body ?? {}) as { spread?: SpreadCardInput[] };
+    const { spread, name, situation, genderIdentity, sexualOrientation } =
+      (req.body ?? {}) as {
+        spread?: SpreadCardInput[];
+        name?: string;
+        situation?: string;
+        genderIdentity?: string;
+        sexualOrientation?: string;
+      };
     if (!spread || !Array.isArray(spread) || spread.length === 0) {
       throw new HttpError(400, "A spread of drawn cards is required");
     }
 
-    const apiKey = process.env.GEMINI_API_KEY;
-    if (!apiKey) {
-      return res.status(200).json({ success: false, reason: "no_key" });
-    }
-
-    const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${apiKey}`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          systemInstruction: { parts: [{ text: SYSTEM_PROMPT }] },
-          contents: [
-            { role: "user", parts: [{ text: buildUserPrompt(spread) }] },
-          ],
-          // Gemini's "thinking" tokens are billed against maxOutputTokens
-          // before any visible text is produced, so this budget needs a
-          // large headroom above the ~320-word (≈450 token) target output
-          // or the response gets cut off mid-sentence.
-          generationConfig: { temperature: 0.95, maxOutputTokens: 3000 },
-        }),
-      },
+    const result = await generateWithGemini(
+      SYSTEM_PROMPT,
+      buildUserPrompt(spread, name, situation, genderIdentity, sexualOrientation),
+      3000,
     );
 
-    if (!response.ok) {
-      console.error(
-        "Tarot reading Gemini call failed",
-        response.status,
-        await response.text().catch(() => ""),
-      );
-      return res.status(200).json({ success: false, reason: "upstream_error" });
+    if (!result.success) {
+      const failure = result as GeminiFailure;
+      return res.status(200).json({ success: false, reason: failure.reason });
     }
-
-    const json = await response.json();
-    const text = json?.candidates?.[0]?.content?.parts?.[0]?.text;
-    if (typeof text !== "string" || !text.trim()) {
-      return res.status(200).json({ success: false, reason: "empty" });
-    }
-
-    return res.status(200).json({ success: true, reading: text.trim() });
+    return res.status(200).json({ success: true, reading: result.text });
   } catch (error) {
     return fail(res, error);
   }

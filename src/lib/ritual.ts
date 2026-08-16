@@ -264,6 +264,50 @@ export function spreadTypeOfTheDay(_d: Date = new Date()): SpreadType {
   return THE_SPREAD;
 }
 
+// ── The deep spread — the paywalled, seven-card in-depth reading ──────────
+//
+// Not a daily framework: this is drawn fresh per request, specific to the
+// situation the person told us about at intake. Distinct positions from the
+// free five-card spread so it never feels like "the same reading, longer."
+
+export const DEEP_SPREAD: SpreadType = {
+  id: "root-of-the-situation",
+  name: "The Long Read",
+  intro: "Seven cards, read against what you told us: where this actually started, what's working against you, what's working for you, the choice in front of you, what you're not seeing yet, where this goes if nothing changes, and where your power in it really is.",
+  slots: [
+    { slot: "root", slotName: "Root", slotQuestion: "Where this actually started" },
+    { slot: "against", slotName: "Against You", slotQuestion: "What's working against you right now" },
+    { slot: "for", slotName: "For You", slotQuestion: "What's already working in your favor" },
+    { slot: "choice", slotName: "The Choice", slotQuestion: "The choice actually in front of you" },
+    { slot: "blindspot", slotName: "Blind Spot", slotQuestion: "What you're not seeing yet" },
+    { slot: "trajectory", slotName: "If Nothing Changes", slotQuestion: "Where this goes if nothing changes" },
+    { slot: "power", slotName: "Your Power", slotQuestion: "Where your power in this really is" },
+  ],
+};
+
+/**
+ * A fresh, non-deterministic seven-card draw for the paid deep reading. Uses
+ * crypto randomness (not the date/drawer hash) because this is a one-time
+ * paid pull tied to a specific stated situation, not a repeatable daily one.
+ */
+export function drawDeepSpread(): SpreadCard[] {
+  const used = new Set<number>();
+  const randomIndex = () => {
+    let idx = Math.floor(Math.random() * ARCANA.length);
+    let guard = 0;
+    while (used.has(idx) && guard++ < ARCANA.length) idx = (idx + 1) % ARCANA.length;
+    used.add(idx);
+    return idx;
+  };
+  return DEEP_SPREAD.slots.map(({ slot, slotName, slotQuestion }) => ({
+    slot,
+    slotName,
+    slotQuestion,
+    card: ARCANA[randomIndex()],
+    reversed: Math.random() < 0.3,
+  }));
+}
+
 /**
  * A stable, anonymous id for this browser. The draw is personal: two people
  * opening the Journal on the same day get different spreads, and the same
