@@ -21,6 +21,9 @@ export const api = {
     isAdmin: ref("users.isAdmin"),
     deleteAccount: ref("users.deleteAccount"),
   },
+  profile: {
+    updateBirthDetails: ref("profile.updateBirthDetails"),
+  },
   subscription: {
     status: ref("subscription.status"),
     startTrial: ref("subscription.startTrial"),
