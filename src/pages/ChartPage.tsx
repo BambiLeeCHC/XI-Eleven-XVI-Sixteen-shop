@@ -3,7 +3,10 @@ import { Link, useSearchParams } from "react-router-dom";
 import { SEO } from "../components/SEO";
 import { JournalSky } from "../components/journal/JournalSky";
 import { AlmanacCalendar } from "../components/journal/Almanac";
+import { NatalChartWheel } from "../components/journal/NatalChartWheel";
+import { SubscriptionTierPicker, type SubscriptionTier } from "../components/SubscriptionTierPicker";
 import { api, useAction, useQuery } from "../lib/backend";
+import { explainAspect, explainHouse, explainPlacement } from "../lib/astrologyMeanings";
 
 interface NatalPlacement {
   body: string;
@@ -13,10 +16,27 @@ interface NatalPlacement {
   retrograde: boolean;
 }
 
+interface NatalHouseCusp {
+  house: number;
+  sign: string;
+  degree: number;
+}
+
+interface NatalAspect {
+  bodyA: string;
+  bodyB: string;
+  aspect: string;
+  orb: number;
+}
+
 interface NatalChart {
   ascendant: string;
+  ascendantDegree: number;
   midheaven: string;
+  midheavenDegree: number;
   placements: NatalPlacement[];
+  houses: NatalHouseCusp[];
+  aspects: NatalAspect[];
   houseSystem: string;
   zodiac: string;
   approximateTime: boolean;
@@ -26,6 +46,12 @@ interface NatalChartResult {
   success: boolean;
   chart?: NatalChart;
   message?: string;
+}
+
+interface NatalProfileResult {
+  success: boolean;
+  narrative?: string;
+  reason?: string;
 }
 
 interface NumerologyResult {
@@ -79,15 +105,43 @@ const TABS = [
 
 type TabId = (typeof TABS)[number]["id"];
 
-function PlacementChip({ body, sign, house, retrograde }: { body: string; sign: string; house: number | null; retrograde: boolean }) {
+function PlacementRow({
+  placement,
+  expanded,
+  onToggle,
+}: {
+  placement: NatalPlacement;
+  expanded: boolean;
+  onToggle: () => void;
+}) {
+  const { body, sign, house, retrograde } = placement;
   return (
-    <div className="chart-placement">
-      <span className="chart-placement__body">{body}</span>
-      <span className={`jcol-tag jcol-tag--sm jcol-${retrograde ? "kraft" : "ink"} jcol-type`}>
-        {SIGN_GLYPH[sign] ?? ""} {sign}
-        {house ? ` · H${house}` : ""}
-        {retrograde ? " · Rx" : ""}
-      </span>
+    <div className={`chart-placement-row ${expanded ? "is-expanded" : ""}`}>
+      <button type="button" className="chart-placement-row__head" onClick={onToggle} aria-expanded={expanded}>
+        <span className="chart-placement__body">{body}</span>
+        <span className={`jcol-tag jcol-tag--sm jcol-${retrograde ? "kraft" : "ink"} jcol-type`}>
+          {SIGN_GLYPH[sign] ?? ""} {sign}
+          {house ? ` · H${house}` : ""}
+          {retrograde ? " · Rx" : ""}
+        </span>
+      </button>
+      {expanded && (
+        <p className="chart-placement-row__explain">{explainPlacement(body, sign)}</p>
+      )}
+    </div>
+  );
+}
+
+function HouseRow({ houseCusp, expanded, onToggle }: { houseCusp: NatalHouseCusp; expanded: boolean; onToggle: () => void }) {
+  return (
+    <div className={`chart-placement-row ${expanded ? "is-expanded" : ""}`}>
+      <button type="button" className="chart-placement-row__head" onClick={onToggle} aria-expanded={expanded}>
+        <span className="chart-placement__body">House {houseCusp.house}</span>
+        <span className="jcol-tag jcol-tag--sm jcol-lilac jcol-type">
+          {SIGN_GLYPH[houseCusp.sign] ?? ""} {houseCusp.sign}
+        </span>
+      </button>
+      {expanded && <p className="chart-placement-row__explain">{explainHouse(houseCusp.house)}</p>}
     </div>
   );
 }
@@ -120,10 +174,18 @@ export function ChartPage() {
     setSearchParams(t === "chart" ? {} : { tab: t }, { replace: true });
   };
 
+  const [selectedBody, setSelectedBody] = useState<string | null>(null);
+  const [expandedHouse, setExpandedHouse] = useState<number | null>(null);
+  const [showHouses, setShowHouses] = useState(false);
+
   const user = useQuery(api.auth.currentUser);
   const chartResult = useQuery<NatalChartResult>(
     api.natalChart.get,
     user ? {} : "skip",
+  );
+  const profileResult = useQuery<NatalProfileResult>(
+    api.natalProfile.get,
+    chartResult?.success ? {} : "skip",
   );
   const subscription = useQuery(api.subscription.status, user ? {} : "skip");
   const numerologyUnlocked =
@@ -133,13 +195,13 @@ export function ChartPage() {
     numerologyUnlocked ? {} : "skip",
   );
   const startTrialAction = useAction(api.subscription.startTrial);
-  const [subscribing, setSubscribing] = useState(false);
+  const [subscribingTier, setSubscribingTier] = useState<SubscriptionTier | null>(null);
 
-  const startNumerologyTrial = async () => {
-    setSubscribing(true);
+  const startTrial = async (tier: SubscriptionTier) => {
+    setSubscribingTier(tier);
     try {
       const result = await startTrialAction({
-        tier: "long_read_plus_numerology",
+        tier,
         successUrl: `${window.location.origin}/chart?tab=numerology`,
         cancelUrl: `${window.location.origin}/chart?tab=numerology`,
       });
@@ -147,7 +209,7 @@ export function ChartPage() {
     } catch {
       // surfaced implicitly by the button staying enabled
     } finally {
-      setSubscribing(false);
+      setSubscribingTier(null);
     }
   };
 
@@ -230,36 +292,116 @@ export function ChartPage() {
             )}
 
             {!loading && chart && (
-              <div className="journal-surface" style={{ padding: "1.75rem" }}>
-                <div style={{ display: "flex", justifyContent: "space-around", marginBottom: "1.25rem", textAlign: "center" }}>
-                  <div>
-                    <p className="text-[10px] uppercase tracking-wide text-muted-foreground mb-1">Ascendant</p>
-                    <span className="jcol-tag jcol-tag--sm jcol-lilac jcol-type">
-                      {SIGN_GLYPH[chart.ascendant] ?? ""} {chart.ascendant}
-                    </span>
-                  </div>
-                  <div>
-                    <p className="text-[10px] uppercase tracking-wide text-muted-foreground mb-1">Midheaven</p>
-                    <span className="jcol-tag jcol-tag--sm jcol-blush jcol-type">
-                      {SIGN_GLYPH[chart.midheaven] ?? ""} {chart.midheaven}
-                    </span>
-                  </div>
-                </div>
-                {chart.approximateTime && (
-                  <p className="text-[12px] text-muted-foreground italic mb-3">
-                    No birth time on file — this chart uses local noon, so your Ascendant, houses and Moon
-                    placement may shift once you add your exact birth time to your account.
+              <>
+                <div className="journal-surface" style={{ padding: "1.5rem" }}>
+                  <NatalChartWheel
+                    placements={chart.placements}
+                    houses={chart.houses}
+                    aspects={chart.aspects}
+                    ascendantDegree={chart.ascendantDegree}
+                    onSelectBody={(b) => setSelectedBody((cur) => (cur === b ? null : b))}
+                    selectedBody={selectedBody}
+                  />
+                  <p className="text-[11px] text-muted-foreground text-center mt-2">
+                    Tap a planet to read what it means for you. Gold lines are easy aspects, rust lines are
+                    tense ones.
                   </p>
-                )}
-                <div className="chart-placements">
-                  {chart.placements.map((p) => (
-                    <PlacementChip key={p.body} {...p} />
-                  ))}
                 </div>
-                <p className="text-[11px] text-muted-foreground mt-3">
-                  {chart.zodiac} zodiac · {chart.houseSystem} houses
-                </p>
-              </div>
+
+                <div className="journal-surface" style={{ padding: "1.75rem" }}>
+                  <div style={{ display: "flex", justifyContent: "space-around", marginBottom: "1.25rem", textAlign: "center" }}>
+                    <div>
+                      <p className="text-[10px] uppercase tracking-wide text-muted-foreground mb-1">Ascendant</p>
+                      <span className="jcol-tag jcol-tag--sm jcol-lilac jcol-type">
+                        {SIGN_GLYPH[chart.ascendant] ?? ""} {chart.ascendant}
+                      </span>
+                    </div>
+                    <div>
+                      <p className="text-[10px] uppercase tracking-wide text-muted-foreground mb-1">Midheaven</p>
+                      <span className="jcol-tag jcol-tag--sm jcol-blush jcol-type">
+                        {SIGN_GLYPH[chart.midheaven] ?? ""} {chart.midheaven}
+                      </span>
+                    </div>
+                  </div>
+                  {chart.approximateTime && (
+                    <p className="text-[12px] text-muted-foreground italic mb-3">
+                      No birth time on file — this chart uses local noon, so your Ascendant, houses and Moon
+                      placement may shift once you add your exact birth time to your account.
+                    </p>
+                  )}
+                  <div className="chart-placements-list">
+                    {chart.placements.map((p) => (
+                      <PlacementRow
+                        key={p.body}
+                        placement={p}
+                        expanded={selectedBody === p.body}
+                        onToggle={() => setSelectedBody((cur) => (cur === p.body ? null : p.body))}
+                      />
+                    ))}
+                  </div>
+                  <p className="text-[11px] text-muted-foreground mt-3">
+                    {chart.zodiac} zodiac · {chart.houseSystem} houses
+                  </p>
+                </div>
+
+                {chart.aspects.length > 0 && (
+                  <div className="journal-surface" style={{ padding: "1.75rem" }}>
+                    <p className="text-sm font-semibold mb-3">Your Tightest Aspects</p>
+                    <div className="flex flex-col gap-2">
+                      {chart.aspects.slice(0, 8).map((a, i) => (
+                        <div key={i} className="chart-aspect-row">
+                          <span className="chart-aspect-row__label">
+                            {a.bodyA} <span className="chart-aspect-row__type">{a.aspect}</span> {a.bodyB}
+                          </span>
+                          <span className="text-[12px] text-muted-foreground">{explainAspect(a.aspect)}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                <div className="journal-surface" style={{ padding: "1.75rem" }}>
+                  <button
+                    type="button"
+                    className="chart-placement-row__head"
+                    style={{ width: "100%" }}
+                    onClick={() => setShowHouses((v) => !v)}
+                    aria-expanded={showHouses}
+                  >
+                    <span className="text-sm font-semibold">The Houses</span>
+                    <span className="text-[11px] text-muted-foreground">{showHouses ? "hide" : "show"}</span>
+                  </button>
+                  {showHouses && (
+                    <div className="chart-placements-list mt-3">
+                      {chart.houses.map((h) => (
+                        <HouseRow
+                          key={h.house}
+                          houseCusp={h}
+                          expanded={expandedHouse === h.house}
+                          onToggle={() => setExpandedHouse((cur) => (cur === h.house ? null : h.house))}
+                        />
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                <div className="journal-surface" style={{ padding: "1.75rem" }}>
+                  <p className="text-sm font-semibold mb-3">Your Personality Profile</p>
+                  {profileResult === undefined && (
+                    <p className="text-sm text-muted-foreground">Writing your profile…</p>
+                  )}
+                  {profileResult && !profileResult.success && (
+                    <p className="text-sm text-red-600">
+                      Couldn't write your personality profile just now — try refreshing shortly.
+                    </p>
+                  )}
+                  {profileResult?.success && profileResult.narrative && (
+                    <div className="text-sm text-muted-foreground whitespace-pre-line">
+                      {profileResult.narrative}
+                    </div>
+                  )}
+                </div>
+              </>
             )}
           </>
         )}
@@ -273,19 +415,14 @@ export function ChartPage() {
                   Your name and birth date reduce to a set of numbers that stay constant your whole
                   life — your Life Path, Expression, Soul Urge, Personality and this year's Personal
                   Year number. Where the chart shows what the sky was doing, numerology shows what you
-                  were built to do with it.
+                  were built to do with it. Numerology only comes bundled with the Long Read — pick a
+                  tier below.
                 </p>
-                <p className="text-sm">
-                  <span className="font-semibold">7 days free</span>, then{" "}
-                  <span className="font-semibold">$12/week</span> — Long Read + Numerology.
-                </p>
-                <button
-                  onClick={startNumerologyTrial}
-                  disabled={subscribing}
-                  style={{ ...ctaButtonStyle, opacity: subscribing ? 0.6 : 1 }}
-                >
-                  {subscribing ? "Starting…" : "Start free trial ✦"}
-                </button>
+                <SubscriptionTierPicker
+                  subscribingTier={subscribingTier}
+                  onStart={startTrial}
+                  highlight="long_read_plus_numerology"
+                />
               </>
             )}
 

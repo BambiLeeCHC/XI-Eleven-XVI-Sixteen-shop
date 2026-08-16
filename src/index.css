@@ -3099,6 +3099,27 @@ footer {
 }
 .chart-placement__body { font-size: 13px; font-weight: 600; color: rgba(21,36,61,.85); }
 
+/* ── Chart page: interactive placement/house rows (click-to-expand) ─── */
+.chart-placements-list { display: flex; flex-direction: column; gap: 0; }
+.chart-placement-row { border-bottom: 1px solid rgba(0,0,0,0.06); }
+.chart-placement-row:last-child { border-bottom: none; }
+.chart-placement-row__head {
+  display: flex; justify-content: space-between; align-items: center; width: 100%;
+  padding: 0.65rem 0; background: none; border: none; cursor: pointer; text-align: left;
+  font: inherit;
+}
+.chart-placement-row.is-expanded .chart-placement-row__head { padding-bottom: 0.3rem; }
+.chart-placement-row__explain {
+  font-size: 12px; line-height: 1.55; color: rgba(21,36,61,.65);
+  padding: 0 0 0.75rem; margin: 0;
+}
+.chart-aspect-row {
+  display: flex; flex-direction: column; gap: 2px;
+  padding: 0.5rem 0.75rem; border-radius: 10px; background: rgba(29,47,79,0.04);
+}
+.chart-aspect-row__label { font-size: 12.5px; font-weight: 600; color: rgba(21,36,61,.85); }
+.chart-aspect-row__type { text-transform: capitalize; color: var(--showroom-gold, #b99545); font-weight: 700; }
+
 /* ── Daily draw → Long Read teaser ─────────────────────────────────── */
 .jdeck__long-read-tease {
   margin-top: 1.5rem; padding: 1.1rem 1.25rem; border-radius: 16px;
