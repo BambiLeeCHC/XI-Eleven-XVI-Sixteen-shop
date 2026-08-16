@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { SEO } from "../components/SEO";
 import { DockPanel, DockTab } from "../components/journal/DockPanel";
-import { AlmanacCalendar, ElevenSixteenStrip } from "../components/journal/Almanac";
+import { ElevenSixteenStrip } from "../components/journal/Almanac";
 import { DrawThree } from "../components/journal/DrawThree";
 import { DailyCode } from "../components/journal/DailyCode";
 import { JournalSky } from "../components/journal/JournalSky";
@@ -11,7 +11,7 @@ import { ShareRow } from "../components/journal/ShareRow";
 import { spreadOfTheDay } from "../lib/ritual";
 import { usePublishedPosts, type JournalPost } from "../lib/journalData";
 
-type Dock = "almanac" | "draw" | "code" | null;
+type Dock = "draw" | null;
 
 type Post = JournalPost;
 
@@ -98,24 +98,10 @@ export function JournalPage() {
         </div>
 
         {/* ── The 11:16 strip ───────────────────────────────────── */}
-        <ElevenSixteenStrip onOpenAlmanac={() => setDock("almanac")} />
+        <ElevenSixteenStrip />
 
-        {/* ── Ritual cards ──────────────────────────────────────── */}
+        {/* ── The Draw ─────────────────────────────────────────── */}
         <section className="journal-tiles">
-          <button className="journal-tile journal-tile--almanac journal-surface" onClick={() => toggle("almanac")}>
-            <span className="journal-tile__glyph" aria-hidden="true">◍</span>
-            <span className="journal-tile__label">The Almanac</span>
-            <span className="journal-tile__desc">Calendar · moon · your two 11:16s</span>
-            <span className="journal-tile__cta">Open ✦</span>
-          </button>
-          <button className="journal-tile journal-tile--code journal-surface" onClick={() => toggle("code")}>
-            <span className="journal-tile__glyph" aria-hidden="true">✦</span>
-            <span className="journal-tile__label">The Daily Code</span>
-            <span className="journal-tile__desc">
-              <DailyCode compact />
-            </span>
-            <span className="journal-tile__cta">Read today's line ✦</span>
-          </button>
           <button className="journal-tile journal-tile--draw journal-surface" onClick={() => toggle("draw")}>
             <span className="journal-tile__deck" aria-hidden="true">
               <i /><i /><i />
@@ -126,30 +112,15 @@ export function JournalPage() {
             </span>
             <span className="journal-tile__cta">Draw your five ✦</span>
           </button>
-          <Link to="/journal/deep-reading" className="journal-tile journal-tile--draw journal-surface">
-            <span className="journal-tile__deck" aria-hidden="true">
-              <i /><i /><i />
-            </span>
-            <span className="journal-tile__label">The Long Read</span>
-            <span className="journal-tile__desc">
-              Seven cards, read against what you told us — the in-depth reading.
-            </span>
-            <span className="journal-tile__cta">Go deeper ✦</span>
-          </Link>
         </section>
+
+        {/* ── The Daily Code, right on the page ─────────────────── */}
+        <div className="journal-surface" style={{ padding: "1.5rem" }}>
+          <DailyCode />
+        </div>
 
         {/* ── Body: rails flanking the feed ─────────────────────── */}
         <div className="journal-body">
-          <div className="journal-rail journal-rail--left">
-            <DockTab
-              label="Almanac"
-              glyph="◍"
-              accent="#5c9bcd"
-              active={dock === "almanac"}
-              onClick={() => toggle("almanac")}
-            />
-          </div>
-
           <div className="journal-feed">
             <div className="journal-feed__filters">
               {categories.map((c) => (
@@ -189,29 +160,11 @@ export function JournalPage() {
               active={dock === "draw"}
               onClick={() => toggle("draw")}
             />
-            <DockTab
-              label="Daily Code"
-              glyph="✦"
-              accent="#f5c97a"
-              active={dock === "code"}
-              onClick={() => toggle("code")}
-            />
           </div>
         </div>
       </div>
 
-      {/* ── Pop-over docks ─────────────────────────────────────── */}
-      <DockPanel
-        open={dock === "almanac"}
-        onClose={() => setDock(null)}
-        title="The XI·XVI Almanac"
-        eyebrow="Calendar & time"
-        side="left"
-        accent="#5c9bcd"
-      >
-        <AlmanacCalendar />
-      </DockPanel>
-
+      {/* ── Pop-over dock ──────────────────────────────────────── */}
       <DockPanel
         open={dock === "draw"}
         onClose={() => setDock(null)}
@@ -222,17 +175,6 @@ export function JournalPage() {
         accent="#c48dff"
       >
         <DrawThree />
-      </DockPanel>
-
-      <DockPanel
-        open={dock === "code"}
-        onClose={() => setDock(null)}
-        title="The Daily Code"
-        eyebrow="Sustainability & self-empowerment"
-        side="right"
-        accent="#f5c97a"
-      >
-        <DailyCode />
       </DockPanel>
     </div>
   );

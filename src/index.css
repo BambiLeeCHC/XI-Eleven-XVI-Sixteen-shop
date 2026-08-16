@@ -1704,6 +1704,7 @@ footer {
 .journal-strip__value--gold { color: #a67c2e; font-family: "Playfair Display", Georgia, serif; font-size: 15px; }
 .journal-strip__rule { width: 1px; height: 26px; background: var(--glass-line); }
 .journal-strip__cta {
+  display: inline-block; text-decoration: none;
   font-size: 10px; letter-spacing: .22em; text-transform: uppercase;
   padding: 7px 14px; border-radius: 999px;
   border: 1px solid rgba(196,141,255,.4);
@@ -1744,7 +1745,7 @@ footer {
   display: grid; grid-template-columns: 1fr; gap: 1rem;
 }
 @media (min-width: 1024px) {
-  .journal-body { grid-template-columns: 46px minmax(0,1fr) 46px; gap: 1.25rem; }
+  .journal-body { grid-template-columns: minmax(0,1fr) 46px; gap: 1.25rem; }
 }
 .journal-rail { display: none; }
 @media (min-width: 1024px) {
@@ -3032,3 +3033,88 @@ footer {
 .jdeck-read__actions li { font-size: 12px; line-height: 1.5; color: rgba(21,36,61,.75); }
 .jdeck-read__actions li + li { margin-top: .3rem; }
 .jdeck-read__actions li::marker { color: #a67c2e; font-weight: 600; }
+
+/* ── Analog clock (Local Time / Next 11:16 on the strip) ─────────────── */
+.analog-clock { width: 44px; height: 44px; display: block; }
+.analog-clock__face {
+  fill: rgba(255,255,255,.7); stroke: rgba(21,36,61,.22); stroke-width: 2.5;
+}
+.analog-clock--accent .analog-clock__face {
+  fill: rgba(122,63,208,.08); stroke: rgba(122,63,208,.45);
+}
+.analog-clock__tick { stroke: rgba(21,36,61,.35); stroke-width: 2; }
+.analog-clock--accent .analog-clock__tick { stroke: rgba(122,63,208,.4); }
+.analog-clock__hand { stroke-linecap: round; }
+.analog-clock__hand--hour { stroke: var(--ink, #15243d); stroke-width: 5; }
+.analog-clock__hand--minute { stroke: var(--ink, #15243d); stroke-width: 3.5; }
+.analog-clock__hand--second { stroke: #a67c2e; stroke-width: 1.5; }
+.analog-clock--accent .analog-clock__hand--hour,
+.analog-clock--accent .analog-clock__hand--minute { stroke: #6d3fb0; }
+.analog-clock__pin { fill: #a67c2e; }
+.analog-clock--accent .analog-clock__pin { fill: #6d3fb0; }
+
+/* ── Welcome page: playful "computing your chart" flash ──────────────── */
+.welcome-loading { display: flex; flex-direction: column; align-items: center; gap: 1rem; }
+.welcome-loading__orbit {
+  position: relative; width: 64px; height: 64px; display: block;
+  animation: welcome-spin 2.6s linear infinite;
+}
+.welcome-loading__orbit i {
+  position: absolute; width: 9px; height: 9px; border-radius: 50%;
+  background: linear-gradient(135deg, #f7e2ad, #b99545);
+  top: 50%; left: 50%; margin: -4.5px;
+  box-shadow: 0 0 10px rgba(185,149,69,.6);
+}
+.welcome-loading__orbit i:nth-child(1) { transform: translate(0, -26px); opacity: 1; }
+.welcome-loading__orbit i:nth-child(2) { transform: rotate(120deg) translate(0, -26px); opacity: .7; }
+.welcome-loading__orbit i:nth-child(3) { transform: rotate(240deg) translate(0, -26px); opacity: .45; }
+@keyframes welcome-spin { to { transform: rotate(360deg); } }
+.welcome-loading__line {
+  font-size: 13px; color: rgba(21,36,61,.6); text-align: center; min-height: 1.2em;
+}
+@media (prefers-reduced-motion: reduce) {
+  .welcome-loading__orbit { animation: none; }
+}
+
+.welcome-line { display: flex; align-items: flex-start; gap: 0.75rem; }
+.welcome-line .jcol-tag { flex-shrink: 0; margin-top: 2px; }
+
+/* ── Chart page tabs (destination-style, matches Journal chip language) ── */
+.chart-tabs { display: flex; flex-wrap: wrap; gap: .5rem; margin: 0 0 .25rem; }
+.chart-tab {
+  font-size: 11px; letter-spacing: .12em; text-transform: uppercase; font-weight: 600;
+  padding: 8px 16px; border-radius: 999px; border: 1px solid rgba(92,155,205,.28);
+  background: rgba(255,255,255,.6); color: rgba(21,36,61,.6); transition: all .2s ease;
+  cursor: pointer;
+}
+.chart-tab:hover { border-color: rgba(185,149,69,.5); color: rgba(21,36,61,.85); }
+.chart-tab.is-active {
+  background: linear-gradient(135deg, var(--showroom-gold, #b99545), #8f6f2e);
+  border-color: transparent; color: #fff;
+}
+.chart-placements { display: flex; flex-direction: column; gap: 0; }
+.chart-placement {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 0.65rem 0; border-bottom: 1px solid rgba(0,0,0,0.06);
+}
+.chart-placement__body { font-size: 13px; font-weight: 600; color: rgba(21,36,61,.85); }
+
+/* ── Daily draw → Long Read teaser ─────────────────────────────────── */
+.jdeck__long-read-tease {
+  margin-top: 1.5rem; padding: 1.1rem 1.25rem; border-radius: 16px;
+  background: linear-gradient(160deg, rgba(29,47,79,.06), rgba(185,149,69,.09));
+  border: 1px solid rgba(185,149,69,.3);
+  text-align: center;
+}
+.jdeck__long-read-tease-label {
+  font-size: 10px; letter-spacing: .2em; text-transform: uppercase;
+  color: #a67c2e; font-weight: 700; margin-bottom: .4rem;
+}
+.jdeck__long-read-tease-copy { font-size: 13px; color: rgba(21,36,61,.68); margin-bottom: .8rem; }
+.jdeck__long-read-tease-cta {
+  display: inline-block; text-decoration: none;
+  font-size: 11px; letter-spacing: .15em; text-transform: uppercase; font-weight: 700;
+  padding: 10px 20px; border-radius: 999px; color: #fff;
+  background: linear-gradient(135deg, #1d2f4f, #101c33);
+  border: 1px solid rgba(214,178,96,.6);
+}

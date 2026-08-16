@@ -633,7 +633,7 @@ export function LoginPage() {
  * Flow: email + password → OTP verification → signed in
  */
 export function SignupPage() {
-  const { signIn } = useAuthActions();
+  const { signIn, resendConfirmation } = useAuthActions() as any;
   const { isAuthenticated } = useAuthStatus();
   const navigate = useNavigate();
 
@@ -648,9 +648,10 @@ export function SignupPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // OTP verification step
-  const [needsVerification, setNeedsVerification] = useState(false);
-  const [code, setCode] = useState("");
+  // Post-registration: waiting for the user to click the confirmation
+  // link in their email (lands them on /welcome, signed in).
+  const [awaitingConfirmation, setAwaitingConfirmation] = useState(false);
+  const [resendState, setResendState] = useState<"idle" | "sending" | "sent">("idle");
 
   // Redirect once authenticated
   useEffect(() => {
@@ -675,11 +676,12 @@ export function SignupPage() {
         sexualOrientation,
         flow: "signUp",
       });
-      // signUp with email verify always returns signingIn: false → needs OTP
+      // Email confirmation is required on this project, so signUp never
+      // returns a live session — show the "check your email" screen.
       if (result?.signingIn === false) {
-        setNeedsVerification(true);
+        setAwaitingConfirmation(true);
       }
-      // In case it signs in directly
+      // In case confirmation is ever turned off, useEffect handles redirect.
     } catch (err: any) {
       const msg = err?.message || "";
       if (
@@ -696,76 +698,66 @@ export function SignupPage() {
     setLoading(false);
   };
 
-  const handleVerify = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError("");
-    setLoading(true);
+  const handleResend = async () => {
+    setResendState("sending");
     try {
-      await signIn("password", { email, code, flow: "email-verification" });
-      // useEffect handles redirect
+      await resendConfirmation(email);
     } catch {
-      setError("Invalid or expired code. Please try again.");
+      // Even on error, don't reveal account-enumeration details — show sent.
     }
-    setLoading(false);
+    setResendState("sent");
   };
 
-  // OTP verification screen
-  if (needsVerification) {
+  // "Check your email" screen — shown after a successful sign-up, until the
+  // user clicks the confirmation link in their inbox.
+  if (awaitingConfirmation) {
     return (
       <AuthShell
         eyebrow="Almost there"
-        title="Verify Email"
+        title="Check Your Email"
         subtitle={
           <>
-            We sent a 6-digit code to <span className="text-slate-700">{email}</span>
+            We sent a confirmation link to <span className="text-slate-700">{email}</span>.
             <br />
-            <span className="text-slate-400 text-[11px]">Check your inbox (and spam folder)</span>
+            <span className="text-slate-400 text-[11px]">
+              Click it to finish setting up your account — check spam if it doesn't show up in a minute.
+            </span>
           </>
         }
       >
-        <form onSubmit={handleVerify} className="space-y-4">
-          <OTPInput value={code} onChange={setCode} />
-
-          {error && <ErrorText>{error}</ErrorText>}
-
-          <button
-            type="submit"
-            disabled={loading || code.length !== 6}
-            className={primaryButtonClass}
-            style={primaryButtonStyle}
+        <div className="flex flex-col items-center gap-5 py-2">
+          <div
+            className="w-14 h-14 rounded-full flex items-center justify-center text-2xl"
+            style={{ background: "rgba(185,149,69,0.12)" }}
+            aria-hidden="true"
           >
-            {loading ? "VERIFYING..." : "VERIFY & CREATE ACCOUNT"}
-          </button>
-        </form>
+            ✉️
+          </div>
+          <p className="text-[13px] text-slate-500 text-center">
+            Once you confirm, you'll land on your personal astrology page — your free natal
+            chart included.
+          </p>
 
-        <p className="text-center text-[12px] text-slate-500 mt-6">
-          Didn't get a code?{" "}
           <button
-            onClick={async () => {
-              setError("");
-              try {
-                await signIn("password", {
-                  email,
-                  password,
-                  flow: "signUp",
-                });
-              } catch {
-                // Expected — re-sends OTP
-              }
-              setError("A new code has been sent.");
-            }}
+            type="button"
+            onClick={handleResend}
+            disabled={resendState === "sending"}
             className={linkClass}
-            style={linkStyle}
+            style={{ ...linkStyle, fontSize: 12 }}
           >
-            Resend
+            {resendState === "sending"
+              ? "Sending…"
+              : resendState === "sent"
+                ? "Sent — check your inbox"
+                : "Didn't get it? Resend the link"}
           </button>
-        </p>
+        </div>
 
         <p className="text-center text-[12px] text-slate-400 mt-3">
           <button
             onClick={() => {
-              setNeedsVerification(false);
-              setCode("");
+              setAwaitingConfirmation(false);
+              setResendState("idle");
               setError("");
             }}
             className="hover:text-slate-600"

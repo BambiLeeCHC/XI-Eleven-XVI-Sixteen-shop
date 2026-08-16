@@ -233,17 +233,23 @@ export function useAuthActions() {
         if (fields.genderIdentity) metadata.gender_identity = fields.genderIdentity;
         if (fields.sexualOrientation)
           metadata.sexual_orientation = fields.sexualOrientation;
-        const { error } = await supabase.auth.signUp({
+        const { data, error } = await supabase.auth.signUp({
           email,
           password,
           options: {
             data: Object.keys(metadata).length ? metadata : undefined,
-            emailRedirectTo: `${window.location.origin}/`,
+            // Confirmation emails land here once the user clicks the link —
+            // a personalized welcome/landing page, not the homepage.
+            emailRedirectTo: `${window.location.origin}/welcome`,
           },
         });
         if (error) throw new Error(error.message);
         invalidateQueries();
-        return { signingIn: true };
+        // Project has email confirmation required (mailer_autoconfirm off),
+        // so signUp never returns a session until the link is clicked —
+        // `signingIn: false` tells the caller to show "check your email"
+        // rather than assume the account is live.
+        return { signingIn: !!data.session };
       }
 
       if (flow === "reset") {
@@ -348,5 +354,15 @@ export function useAuthActions() {
     [],
   );
 
-  return { signIn, signOut, signInWithProvider };
+  /** Re-send the "confirm your account" email (link-based, lands on /welcome). */
+  const resendConfirmation = useCallback(async (email: string) => {
+    const { error } = await supabase.auth.resend({
+      type: "signup",
+      email: email.trim().toLowerCase(),
+      options: { emailRedirectTo: `${window.location.origin}/welcome` },
+    });
+    if (error) throw new Error(error.message);
+  }, []);
+
+  return { signIn, signOut, signInWithProvider, resendConfirmation };
 }

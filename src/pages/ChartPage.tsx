@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { SEO } from "../components/SEO";
 import { JournalSky } from "../components/journal/JournalSky";
+import { AlmanacCalendar } from "../components/journal/Almanac";
 import { api, useAction, useQuery } from "../lib/backend";
 
 interface NatalPlacement {
@@ -44,17 +45,10 @@ const NUMEROLOGY_LABELS: Record<string, string> = {
 };
 
 /**
- * The Natal Chart — a separate experience from the Journal/blog (per Tre's
- * request), living at its own route. Two layers:
- *
- *  1. Natal chart — FREE, given in full once birth date + location are on
- *     the account (collected at registration; birth time is optional).
- *  2. Numerology — the paywalled add-on (separate, higher subscription
- *     tier from the Long Read). Checkout for that tier isn't live yet —
- *     pending Tre's call on its price — so this section is teaser copy
- *     only until then.
- *
- * Signed-out visitors see marketing copy for both, to drive registration.
+ * The Chart — a full destination (like the Journal), not a single page.
+ * Four tabs: the free natal chart, the paywalled numerology add-on, the
+ * Almanac (moved here from the Journal), and a Long Read promo (moved here
+ * from the Journal's tile grid).
  */
 
 const ctaButtonStyle: Record<string, string | number> = {
@@ -76,25 +70,56 @@ const SIGN_GLYPH: Record<string, string> = {
   Libra: "♎", Scorpio: "♏", Sagittarius: "♐", Capricorn: "♑", Aquarius: "♒", Pisces: "♓",
 };
 
-function PlacementRow({ body, sign, house, retrograde }: { body: string; sign: string; house: number | null; retrograde: boolean }) {
+const TABS = [
+  { id: "chart", label: "Natal Chart" },
+  { id: "numerology", label: "Numerology" },
+  { id: "almanac", label: "Almanac" },
+  { id: "long-read", label: "The Long Read" },
+] as const;
+
+type TabId = (typeof TABS)[number]["id"];
+
+function PlacementChip({ body, sign, house, retrograde }: { body: string; sign: string; house: number | null; retrograde: boolean }) {
   return (
-    <div
-      style={{
-        display: "flex", justifyContent: "space-between", alignItems: "center",
-        padding: "0.6rem 0", borderBottom: "1px solid rgba(0,0,0,0.06)",
-      }}
-    >
-      <span className="text-sm font-medium">{body}</span>
-      <span className="text-sm text-muted-foreground">
+    <div className="chart-placement">
+      <span className="chart-placement__body">{body}</span>
+      <span className={`jcol-tag jcol-tag--sm jcol-${retrograde ? "kraft" : "ink"} jcol-type`}>
         {SIGN_GLYPH[sign] ?? ""} {sign}
-        {house ? ` · House ${house}` : ""}
+        {house ? ` · H${house}` : ""}
         {retrograde ? " · Rx" : ""}
       </span>
     </div>
   );
 }
 
+function ChartTabs({ active, onChange }: { active: TabId; onChange: (t: TabId) => void }) {
+  return (
+    <div className="chart-tabs" role="tablist">
+      {TABS.map((t) => (
+        <button
+          key={t.id}
+          role="tab"
+          aria-selected={active === t.id}
+          className={`chart-tab ${active === t.id ? "is-active" : ""}`}
+          onClick={() => onChange(t.id)}
+        >
+          {t.label}
+        </button>
+      ))}
+    </div>
+  );
+}
+
 export function ChartPage() {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const requestedTab = searchParams.get("tab") as TabId | null;
+  const [tab, setTab] = useState<TabId>(requestedTab && TABS.some((t) => t.id === requestedTab) ? requestedTab : "chart");
+
+  const setActiveTab = (t: TabId) => {
+    setTab(t);
+    setSearchParams(t === "chart" ? {} : { tab: t }, { replace: true });
+  };
+
   const user = useQuery(api.auth.currentUser);
   const chartResult = useQuery<NatalChartResult>(
     api.natalChart.get,
@@ -115,13 +140,12 @@ export function ChartPage() {
     try {
       const result = await startTrialAction({
         tier: "long_read_plus_numerology",
-        successUrl: `${window.location.origin}/chart`,
-        cancelUrl: `${window.location.origin}/chart`,
+        successUrl: `${window.location.origin}/chart?tab=numerology`,
+        cancelUrl: `${window.location.origin}/chart?tab=numerology`,
       });
       if (result?.url) window.location.href = result.url;
     } catch {
-      // surfaced implicitly by the button staying enabled — this mirrors
-      // the same lightweight error handling used on the other paywall CTA
+      // surfaced implicitly by the button staying enabled
     } finally {
       setSubscribing(false);
     }
@@ -130,36 +154,36 @@ export function ChartPage() {
   const loading = !!user && chartResult === undefined;
   const chart = chartResult?.success ? chartResult.chart ?? null : null;
   const chartError = chartResult && !chartResult.success ? chartResult.message ?? "Couldn't generate your chart." : null;
+  const sunSign = chart?.placements?.find((p) => p.body === "Sun")?.sign;
 
-  const pageTitle = "Natal Chart & Numerology — XI · XVI";
+  const pageTitle = "The Chart — Natal Chart, Numerology & Almanac — XI · XVI";
 
-  // Signed-out: marketing teaser for both the chart and numerology.
+  // Signed-out: marketing teaser for the whole destination.
   if (!user) {
     return (
       <div className="journal-page">
         <JournalSky />
         <div className="journal-stack" style={{ maxWidth: "42rem" }}>
           <SEO title={pageTitle} />
-          <div className="journal-surface journal-hero" style={{ textAlign: "center" }}>
-            <p className="uppercase tracking-widest text-xs text-muted-foreground mb-2">Free at registration</p>
-            <h1 className="text-3xl font-serif mb-3">Your Natal Chart</h1>
+          <div className="journal-surface journal-hero" style={{ textAlign: "center", position: "relative" }}>
+            <span className="jcol-patch jcol-patch--a" aria-hidden="true" />
+            <span className="jcol-tape jcol-tape--tl" aria-hidden="true" />
+            <h1 className="journal-article__title--collage" aria-label="Your Chart">
+              <span className="jcol-tag jcol-gold jcol-display" style={{ transform: "rotate(-2deg)" }}>Your</span>
+              <span className="jcol-tag jcol-ink jcol-grotesk" style={{ transform: "rotate(1.5deg)" }}>Chart</span>
+            </h1>
             <p className="text-sm text-muted-foreground mb-6">
-              The exact sky at the moment you were born — your Sun, Moon and Rising signs, every planet's
-              placement, and the houses they fall in. Not a generic sign lookup: a real chart, calculated
-              from your actual birth date, time and location, given to you in full the moment you register.
-              No credit card, no trial — it's simply part of having an account.
+              The exact sky at the moment you were born — free, in full, the moment you register.
+              Numerology, the Almanac and the Long Read all live here too.
             </p>
             <div className="journal-surface" style={{ padding: "1.25rem", textAlign: "left", marginBottom: "1.5rem" }}>
               <p className="text-sm font-semibold mb-2">Then, if you want to go deeper — Numerology</p>
               <p className="text-sm text-muted-foreground">
                 Your name and birth date reduce to a set of numbers that don't change — your Life Path,
-                your Expression number, your Soul Urge — each one a real, specific angle on how you move
-                through decisions, relationships and timing. It's the layer underneath the chart: not what
-                the sky was doing, but what you were built to do with it. Numerology is part of our
-                higher subscription tier.
+                your Expression number, your Soul Urge. Numerology is part of our higher subscription tier.
               </p>
             </div>
-            <Link to="/signup" className={undefined}>
+            <Link to="/signup">
               <button style={ctaButtonStyle}>Create your account →</button>
             </Link>
           </div>
@@ -171,119 +195,151 @@ export function ChartPage() {
   return (
     <div className="journal-page">
       <JournalSky />
-      <div className="journal-stack" style={{ maxWidth: "42rem" }}>
+      <div className="journal-stack" style={{ maxWidth: "44rem" }}>
         <SEO title={pageTitle} />
 
-        <div className="journal-surface journal-hero">
-          <p className="uppercase tracking-widest text-xs text-muted-foreground mb-2">Free, in full</p>
-          <h1 className="text-3xl font-serif mb-3">Your Natal Chart</h1>
-          <p className="text-sm text-muted-foreground">
-            The exact sky at the moment you were born, calculated from your birth date, time and location.
-          </p>
+        <div className="journal-surface journal-hero" style={{ position: "relative" }}>
+          <span className="jcol-patch jcol-patch--a" aria-hidden="true" />
+          <span className="jcol-tape jcol-tape--tl" aria-hidden="true" />
+          <h1 className="journal-article__title--collage" aria-label="The Chart">
+            <span className="jcol-tag jcol-gold jcol-display" style={{ transform: "rotate(-2deg)" }}>The</span>
+            <span className="jcol-tag jcol-ink jcol-grotesk" style={{ transform: "rotate(1.5deg)" }}>Chart</span>
+          </h1>
+          {sunSign && (
+            <p className="text-sm text-muted-foreground mb-4">
+              {SIGN_GLYPH[sunSign] ?? ""} {sunSign} sun · natal chart, numerology, the almanac and the
+              long read — all in one place.
+            </p>
+          )}
+          <ChartTabs active={tab} onChange={setActiveTab} />
         </div>
 
-        {loading && (
-          <div className="journal-surface" style={{ padding: "1.75rem" }}>
-            <p className="text-sm text-muted-foreground">Calculating your chart…</p>
-          </div>
-        )}
-
-        {!loading && chartError && (
-          <div className="journal-surface" style={{ padding: "1.75rem", display: "flex", flexDirection: "column", gap: "0.9rem" }}>
-            <p className="text-sm text-red-600">{chartError}</p>
-            <Link to="/profile" className="underline text-sm">Complete your birth details on your account →</Link>
-          </div>
-        )}
-
-        {!loading && chart && (
+        {tab === "chart" && (
           <>
-            <div className="journal-surface" style={{ padding: "1.75rem" }}>
-              <div style={{ display: "flex", justifyContent: "space-around", marginBottom: "1rem", textAlign: "center" }}>
-                <div>
-                  <p className="text-[10px] uppercase tracking-wide text-muted-foreground mb-1">Ascendant</p>
-                  <p className="text-sm font-semibold">{SIGN_GLYPH[chart.ascendant] ?? ""} {chart.ascendant}</p>
-                </div>
-                <div>
-                  <p className="text-[10px] uppercase tracking-wide text-muted-foreground mb-1">Midheaven</p>
-                  <p className="text-sm font-semibold">{SIGN_GLYPH[chart.midheaven] ?? ""} {chart.midheaven}</p>
-                </div>
+            {loading && (
+              <div className="journal-surface" style={{ padding: "1.75rem" }}>
+                <p className="text-sm text-muted-foreground">Calculating your chart…</p>
               </div>
-              {chart.approximateTime && (
-                <p className="text-[12px] text-muted-foreground italic mb-3">
-                  No birth time on file — this chart uses local noon, so your Ascendant, houses and Moon
-                  placement may shift once you add your exact birth time to your account.
-                </p>
-              )}
-              <div>
-                {chart.placements.map((p) => (
-                  <PlacementRow key={p.body} {...p} />
-                ))}
+            )}
+
+            {!loading && chartError && (
+              <div className="journal-surface" style={{ padding: "1.75rem", display: "flex", flexDirection: "column", gap: "0.9rem" }}>
+                <p className="text-sm text-red-600">{chartError}</p>
+                <Link to="/profile" className="underline text-sm">Complete your birth details on your account →</Link>
               </div>
-              <p className="text-[11px] text-muted-foreground mt-3">
-                {chart.zodiac} zodiac · {chart.houseSystem} houses
-              </p>
-            </div>
+            )}
 
-            <div className="journal-surface" style={{ padding: "1.75rem", display: "flex", flexDirection: "column", gap: "0.9rem" }}>
-              <p className="text-sm font-semibold">Numerology — the layer underneath the chart</p>
-
-              {!numerologyUnlocked && (
-                <>
-                  <p className="text-sm text-muted-foreground">
-                    Your name and birth date reduce to a set of numbers that stay constant your whole
-                    life — your Life Path, Expression, Soul Urge, Personality and this year's Personal
-                    Year number. Where the chart shows what the sky was doing, numerology shows what you
-                    were built to do with it.
-                  </p>
-                  <p className="text-sm">
-                    <span className="font-semibold">7 days free</span>, then{" "}
-                    <span className="font-semibold">$12/week</span> — Long Read + Numerology.
-                  </p>
-                  <button
-                    onClick={startNumerologyTrial}
-                    disabled={subscribing}
-                    style={{ ...ctaButtonStyle, opacity: subscribing ? 0.6 : 1 }}
-                  >
-                    {subscribing ? "Starting…" : "Start free trial ✦"}
-                  </button>
-                </>
-              )}
-
-              {numerologyUnlocked && numerologyResult === undefined && (
-                <p className="text-sm text-muted-foreground">Calculating your numbers…</p>
-              )}
-
-              {numerologyUnlocked && numerologyResult && !numerologyResult.success && (
-                <p className="text-sm text-red-600">
-                  {numerologyResult.reason ?? "Couldn't write your numerology narrative just now — try again shortly."}
-                </p>
-              )}
-
-              {numerologyUnlocked && numerologyResult?.success && (
-                <>
+            {!loading && chart && (
+              <div className="journal-surface" style={{ padding: "1.75rem" }}>
+                <div style={{ display: "flex", justifyContent: "space-around", marginBottom: "1.25rem", textAlign: "center" }}>
                   <div>
-                    {Object.entries(numerologyResult.numbers ?? {}).map(([key, value]) => (
-                      <div
-                        key={key}
-                        style={{
-                          display: "flex", justifyContent: "space-between", alignItems: "center",
-                          padding: "0.5rem 0", borderBottom: "1px solid rgba(0,0,0,0.06)",
-                        }}
-                      >
-                        <span className="text-sm font-medium">{NUMEROLOGY_LABELS[key] ?? key}</span>
-                        <span className="text-sm text-muted-foreground">{value}</span>
-                      </div>
-                    ))}
+                    <p className="text-[10px] uppercase tracking-wide text-muted-foreground mb-1">Ascendant</p>
+                    <span className="jcol-tag jcol-tag--sm jcol-lilac jcol-type">
+                      {SIGN_GLYPH[chart.ascendant] ?? ""} {chart.ascendant}
+                    </span>
                   </div>
-                  {numerologyResult.narrative && (
-                    <div className="text-sm text-muted-foreground whitespace-pre-line">
-                      {numerologyResult.narrative}
-                    </div>
-                  )}
-                </>
-              )}
-            </div>
+                  <div>
+                    <p className="text-[10px] uppercase tracking-wide text-muted-foreground mb-1">Midheaven</p>
+                    <span className="jcol-tag jcol-tag--sm jcol-blush jcol-type">
+                      {SIGN_GLYPH[chart.midheaven] ?? ""} {chart.midheaven}
+                    </span>
+                  </div>
+                </div>
+                {chart.approximateTime && (
+                  <p className="text-[12px] text-muted-foreground italic mb-3">
+                    No birth time on file — this chart uses local noon, so your Ascendant, houses and Moon
+                    placement may shift once you add your exact birth time to your account.
+                  </p>
+                )}
+                <div className="chart-placements">
+                  {chart.placements.map((p) => (
+                    <PlacementChip key={p.body} {...p} />
+                  ))}
+                </div>
+                <p className="text-[11px] text-muted-foreground mt-3">
+                  {chart.zodiac} zodiac · {chart.houseSystem} houses
+                </p>
+              </div>
+            )}
           </>
+        )}
+
+        {tab === "numerology" && (
+          <div className="journal-surface" style={{ padding: "1.75rem", display: "flex", flexDirection: "column", gap: "0.9rem" }}>
+            {!numerologyUnlocked && (
+              <>
+                <p className="text-sm font-semibold">Numerology — the layer underneath the chart</p>
+                <p className="text-sm text-muted-foreground">
+                  Your name and birth date reduce to a set of numbers that stay constant your whole
+                  life — your Life Path, Expression, Soul Urge, Personality and this year's Personal
+                  Year number. Where the chart shows what the sky was doing, numerology shows what you
+                  were built to do with it.
+                </p>
+                <p className="text-sm">
+                  <span className="font-semibold">7 days free</span>, then{" "}
+                  <span className="font-semibold">$12/week</span> — Long Read + Numerology.
+                </p>
+                <button
+                  onClick={startNumerologyTrial}
+                  disabled={subscribing}
+                  style={{ ...ctaButtonStyle, opacity: subscribing ? 0.6 : 1 }}
+                >
+                  {subscribing ? "Starting…" : "Start free trial ✦"}
+                </button>
+              </>
+            )}
+
+            {numerologyUnlocked && numerologyResult === undefined && (
+              <p className="text-sm text-muted-foreground">Calculating your numbers…</p>
+            )}
+
+            {numerologyUnlocked && numerologyResult && !numerologyResult.success && (
+              <p className="text-sm text-red-600">
+                {numerologyResult.reason ?? "Couldn't write your numerology narrative just now — try again shortly."}
+              </p>
+            )}
+
+            {numerologyUnlocked && numerologyResult?.success && (
+              <>
+                <div className="chart-placements">
+                  {Object.entries(numerologyResult.numbers ?? {}).map(([key, value]) => (
+                    <div key={key} className="chart-placement">
+                      <span className="chart-placement__body">{NUMEROLOGY_LABELS[key] ?? key}</span>
+                      <span className="jcol-tag jcol-tag--sm jcol-gold jcol-type">{value}</span>
+                    </div>
+                  ))}
+                </div>
+                {numerologyResult.narrative && (
+                  <div className="text-sm text-muted-foreground whitespace-pre-line">
+                    {numerologyResult.narrative}
+                  </div>
+                )}
+              </>
+            )}
+          </div>
+        )}
+
+        {tab === "almanac" && (
+          <div className="journal-surface" style={{ padding: "1.5rem" }}>
+            <AlmanacCalendar />
+          </div>
+        )}
+
+        {tab === "long-read" && (
+          <div className="journal-surface" style={{ padding: "1.75rem", display: "flex", flexDirection: "column", gap: "0.9rem", textAlign: "center" }}>
+            <span className="journal-tile__deck" aria-hidden="true" style={{ margin: "0 auto" }}>
+              <i /><i /><i />
+            </span>
+            <p className="text-sm font-semibold">The Long Read</p>
+            <p className="text-sm text-muted-foreground">
+              Seven cards, read against what you told us — the in-depth reading, plus a follow-up
+              question ($2.99) once you've drawn it. 7 days free, then $7/week (or $12/week with
+              Numerology unlocked too).
+            </p>
+            <Link to="/journal/deep-reading">
+              <button style={ctaButtonStyle}>Go deeper ✦</button>
+            </Link>
+          </div>
         )}
       </div>
     </div>
