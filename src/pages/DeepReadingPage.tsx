@@ -33,7 +33,9 @@ export function DeepReadingPage() {
   // Asked fresh every time, right before drawing — not stored on the
   // profile, since what's going on changes visit to visit.
   const [situation, setSituation] = useState("");
-  const [subscribing, setSubscribing] = useState(false);
+  const [subscribingTier, setSubscribingTier] = useState<
+    "long_read" | "long_read_plus_numerology" | null
+  >(null);
   const [question, setQuestion] = useState("");
   const [askingQuestion, setAskingQuestion] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -48,11 +50,12 @@ export function DeepReadingPage() {
 
   const entitled = subscription?.entitled === true;
 
-  const startTrial = async () => {
-    setSubscribing(true);
+  const startTrial = async (tier: "long_read" | "long_read_plus_numerology") => {
+    setSubscribingTier(tier);
     setError(null);
     try {
       const result = await startTrialAction({
+        tier,
         successUrl: `${window.location.origin}/journal/deep-reading`,
         cancelUrl: `${window.location.origin}/journal/deep-reading`,
       });
@@ -61,7 +64,7 @@ export function DeepReadingPage() {
     } catch (e) {
       setError(e instanceof Error ? e.message : "Couldn't start the trial.");
     } finally {
-      setSubscribing(false);
+      setSubscribingTier(null);
     }
   };
 
@@ -151,28 +154,54 @@ export function DeepReadingPage() {
         )}
 
         {!entitled && (
-          <div className="journal-surface" style={{ padding: "1.75rem", display: "flex", flexDirection: "column", gap: "0.9rem" }}>
-            <p className="text-sm">
-              <span className="font-semibold">7 days free</span>, then <span className="font-semibold">$7/week</span>.
-              Cancel anytime.
-            </p>
+          <div className="journal-surface" style={{ padding: "1.75rem", display: "flex", flexDirection: "column", gap: "1.1rem" }}>
             <p className="text-sm text-muted-foreground">
               Seven cards read directly against what's actually going on for you right now — not the
-              daily five, a genuinely deeper read, saved to your account.
+              daily five, a genuinely deeper read, saved to your account. Both tiers start with a
+              <span className="font-semibold"> 7-day free trial</span>, cancel anytime.
             </p>
-            <button
-              onClick={startTrial}
-              disabled={subscribing}
-              className="journal-tile__cta"
-              style={{
-                width: "100%", padding: "0.9rem", borderRadius: "12px", textAlign: "center",
-                background: "linear-gradient(160deg, #1d2f4f, #101c33)", color: "#f3e9d2",
-                border: "1px solid rgba(214,178,96,.6)", fontSize: "0.75rem", letterSpacing: "0.15em",
-                textTransform: "uppercase", fontWeight: 600, opacity: subscribing ? 0.6 : 1,
-              }}
-            >
-              {subscribing ? "Starting…" : "Start your 7-day free trial ✦"}
-            </button>
+
+            <div style={{ display: "flex", flexDirection: "column", gap: "0.6rem", padding: "1rem", borderRadius: "10px", border: "1px solid rgba(0,0,0,0.08)" }}>
+              <p className="text-sm">
+                <span className="font-semibold">The Long Read</span> — <span className="font-semibold">$7/week</span> after trial
+              </p>
+              <button
+                onClick={() => startTrial("long_read")}
+                disabled={subscribingTier !== null}
+                className="journal-tile__cta"
+                style={{
+                  width: "100%", padding: "0.9rem", borderRadius: "12px", textAlign: "center",
+                  background: "linear-gradient(160deg, #1d2f4f, #101c33)", color: "#f3e9d2",
+                  border: "1px solid rgba(214,178,96,.6)", fontSize: "0.75rem", letterSpacing: "0.15em",
+                  textTransform: "uppercase", fontWeight: 600, opacity: subscribingTier !== null ? 0.6 : 1,
+                }}
+              >
+                {subscribingTier === "long_read" ? "Starting…" : "Start free trial ✦"}
+              </button>
+            </div>
+
+            <div style={{ display: "flex", flexDirection: "column", gap: "0.6rem", padding: "1rem", borderRadius: "10px", border: "1px solid rgba(214,178,96,.6)" }}>
+              <p className="text-sm">
+                <span className="font-semibold">The Long Read + Numerology</span> — <span className="font-semibold">$12/week</span> after trial
+              </p>
+              <p className="text-sm text-muted-foreground">
+                Everything in The Long Read, plus your full numerology profile — Life Path, Expression,
+                Soul Urge, Personality and this year's Personal Year number.
+              </p>
+              <button
+                onClick={() => startTrial("long_read_plus_numerology")}
+                disabled={subscribingTier !== null}
+                className="journal-tile__cta"
+                style={{
+                  width: "100%", padding: "0.9rem", borderRadius: "12px", textAlign: "center",
+                  background: "linear-gradient(160deg, #1d2f4f, #101c33)", color: "#f3e9d2",
+                  border: "1px solid rgba(214,178,96,.6)", fontSize: "0.75rem", letterSpacing: "0.15em",
+                  textTransform: "uppercase", fontWeight: 600, opacity: subscribingTier !== null ? 0.6 : 1,
+                }}
+              >
+                {subscribingTier === "long_read_plus_numerology" ? "Starting…" : "Start free trial ✦"}
+              </button>
+            </div>
           </div>
         )}
 

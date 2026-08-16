@@ -1,7 +1,8 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { SEO } from "../components/SEO";
 import { JournalSky } from "../components/journal/JournalSky";
-import { api, useQuery } from "../lib/backend";
+import { api, useAction, useQuery } from "../lib/backend";
 
 interface NatalPlacement {
   body: string;
@@ -25,6 +26,22 @@ interface NatalChartResult {
   chart?: NatalChart;
   message?: string;
 }
+
+interface NumerologyResult {
+  success: boolean;
+  numbers?: Record<string, number>;
+  narrative?: string;
+  reason?: string;
+}
+
+const NUMEROLOGY_LABELS: Record<string, string> = {
+  lifePath: "Life Path",
+  expression: "Expression",
+  soulUrge: "Soul Urge",
+  personality: "Personality",
+  birthday: "Birthday",
+  personalYear: "Personal Year",
+};
 
 /**
  * The Natal Chart — a separate experience from the Journal/blog (per Tre's
@@ -83,6 +100,32 @@ export function ChartPage() {
     api.natalChart.get,
     user ? {} : "skip",
   );
+  const subscription = useQuery(api.subscription.status, user ? {} : "skip");
+  const numerologyUnlocked =
+    subscription?.entitled === true && subscription?.tier === "long_read_plus_numerology";
+  const numerologyResult = useQuery<NumerologyResult>(
+    api.numerology.get,
+    numerologyUnlocked ? {} : "skip",
+  );
+  const startTrialAction = useAction(api.subscription.startTrial);
+  const [subscribing, setSubscribing] = useState(false);
+
+  const startNumerologyTrial = async () => {
+    setSubscribing(true);
+    try {
+      const result = await startTrialAction({
+        tier: "long_read_plus_numerology",
+        successUrl: `${window.location.origin}/chart`,
+        cancelUrl: `${window.location.origin}/chart`,
+      });
+      if (result?.url) window.location.href = result.url;
+    } catch {
+      // surfaced implicitly by the button staying enabled — this mirrors
+      // the same lightweight error handling used on the other paywall CTA
+    } finally {
+      setSubscribing(false);
+    }
+  };
 
   const loading = !!user && chartResult === undefined;
   const chart = chartResult?.success ? chartResult.chart ?? null : null;
@@ -183,15 +226,62 @@ export function ChartPage() {
 
             <div className="journal-surface" style={{ padding: "1.75rem", display: "flex", flexDirection: "column", gap: "0.9rem" }}>
               <p className="text-sm font-semibold">Numerology — the layer underneath the chart</p>
-              <p className="text-sm text-muted-foreground">
-                Your name and birth date reduce to a set of numbers that stay constant your whole life —
-                your Life Path, Expression, Soul Urge, Personality and this year's Personal Year number.
-                Where the chart shows what the sky was doing, numerology shows what you were built to do
-                with it. Part of our higher subscription tier.
-              </p>
-              <button style={{ ...ctaButtonStyle, opacity: 0.6, cursor: "not-allowed" }} disabled>
-                Coming soon
-              </button>
+
+              {!numerologyUnlocked && (
+                <>
+                  <p className="text-sm text-muted-foreground">
+                    Your name and birth date reduce to a set of numbers that stay constant your whole
+                    life — your Life Path, Expression, Soul Urge, Personality and this year's Personal
+                    Year number. Where the chart shows what the sky was doing, numerology shows what you
+                    were built to do with it.
+                  </p>
+                  <p className="text-sm">
+                    <span className="font-semibold">7 days free</span>, then{" "}
+                    <span className="font-semibold">$12/week</span> — Long Read + Numerology.
+                  </p>
+                  <button
+                    onClick={startNumerologyTrial}
+                    disabled={subscribing}
+                    style={{ ...ctaButtonStyle, opacity: subscribing ? 0.6 : 1 }}
+                  >
+                    {subscribing ? "Starting…" : "Start free trial ✦"}
+                  </button>
+                </>
+              )}
+
+              {numerologyUnlocked && numerologyResult === undefined && (
+                <p className="text-sm text-muted-foreground">Calculating your numbers…</p>
+              )}
+
+              {numerologyUnlocked && numerologyResult && !numerologyResult.success && (
+                <p className="text-sm text-red-600">
+                  {numerologyResult.reason ?? "Couldn't write your numerology narrative just now — try again shortly."}
+                </p>
+              )}
+
+              {numerologyUnlocked && numerologyResult?.success && (
+                <>
+                  <div>
+                    {Object.entries(numerologyResult.numbers ?? {}).map(([key, value]) => (
+                      <div
+                        key={key}
+                        style={{
+                          display: "flex", justifyContent: "space-between", alignItems: "center",
+                          padding: "0.5rem 0", borderBottom: "1px solid rgba(0,0,0,0.06)",
+                        }}
+                      >
+                        <span className="text-sm font-medium">{NUMEROLOGY_LABELS[key] ?? key}</span>
+                        <span className="text-sm text-muted-foreground">{value}</span>
+                      </div>
+                    ))}
+                  </div>
+                  {numerologyResult.narrative && (
+                    <div className="text-sm text-muted-foreground whitespace-pre-line">
+                      {numerologyResult.narrative}
+                    </div>
+                  )}
+                </>
+              )}
             </div>
           </>
         )}

@@ -28,12 +28,19 @@ async function upsertSubscriptionFromStripe(
   userId: string,
   sub: any,
 ) {
+  // Tier is set at checkout time (subscription_data metadata) and doesn't
+  // change on Stripe's own update/delete events, so only overwrite it when
+  // Stripe actually sends one (checkout.session.completed does; a bare
+  // customer.subscription.updated/deleted for an existing sub may not).
+  const tier = sub?.metadata?.tier;
+
   await admin.from("subscriptions").upsert(
     {
       user_id: userId,
       stripe_customer_id: sub.customer,
       stripe_subscription_id: sub.id,
       status: sub.status,
+      ...(tier ? { tier } : {}),
       trial_end: sub.trial_end
         ? new Date(sub.trial_end * 1000).toISOString()
         : null,

@@ -13,11 +13,16 @@
  * the row exists for the webhook to find and answer once Stripe confirms
  * payment. Nothing is answered until payment completes.
  *
- * "subscribe": starts the Long Read subscription — a 7-day free trial,
- * then $7/week. Requires an authenticated caller (Supabase bearer token) —
- * the Stripe customer is tied to the signed-in user id via
- * metadata/client_reference_id so the webhook can write the right row to
- * `subscriptions` once Stripe confirms it.
+ * "subscribe": starts a Long Read subscription — 7-day free trial, then a
+ * weekly charge. Two tiers, both `{ tier }` in the POST body:
+ *  - "long_read" (default if omitted): $7/week, Long Read only.
+ *  - "long_read_plus_numerology": $12/week, Long Read + the numerology
+ *    add-on (priced against the market — see workspace pricing notes).
+ * Requires an authenticated caller (Supabase bearer token) — the Stripe
+ * customer is tied to the signed-in user id via metadata/
+ * client_reference_id, and the chosen tier is carried in
+ * subscription_data metadata, so the webhook can write the right
+ * `subscriptions` row (including `tier`) once Stripe confirms it.
  */
 
 import {
@@ -31,7 +36,19 @@ import {
 } from "./_lib/server.js";
 
 const QUESTION_PRICE_CENTS = 299;
-const WEEKLY_PRICE_CENTS = 700;
+
+const SUBSCRIPTION_TIERS = {
+  long_read: {
+    priceCents: 700,
+    productName: "The Long Read — weekly",
+  },
+  long_read_plus_numerology: {
+    priceCents: 1200,
+    productName: "The Long Read + Numerology — weekly",
+  },
+} as const;
+
+type SubscriptionTier = keyof typeof SUBSCRIPTION_TIERS;
 
 async function handleQuestionCheckout(req: ApiRequest, res: ApiResponse) {
   const user = await currentUser(req);
@@ -91,13 +108,18 @@ async function handleSubscribeCheckout(req: ApiRequest, res: ApiResponse) {
   const user = await currentUser(req);
   if (!user) throw new HttpError(401, "Please sign in first");
 
-  const { successUrl, cancelUrl } = (req.body ?? {}) as {
+  const { successUrl, cancelUrl, tier } = (req.body ?? {}) as {
     successUrl?: string;
     cancelUrl?: string;
+    tier?: string;
   };
   if (!successUrl || !cancelUrl) {
     throw new HttpError(400, "Invalid checkout request");
   }
+
+  const resolvedTier: SubscriptionTier =
+    tier && tier in SUBSCRIPTION_TIERS ? (tier as SubscriptionTier) : "long_read";
+  const { priceCents, productName } = SUBSCRIPTION_TIERS[resolvedTier];
 
   const params: Record<string, string> = {
     mode: "subscription",
@@ -105,12 +127,14 @@ async function handleSubscribeCheckout(req: ApiRequest, res: ApiResponse) {
     cancel_url: cancelUrl,
     client_reference_id: user.id,
     "metadata[user_id]": user.id,
+    "metadata[tier]": resolvedTier,
     "subscription_data[trial_period_days]": "7",
     "subscription_data[metadata][user_id]": user.id,
+    "subscription_data[metadata][tier]": resolvedTier,
     "line_items[0][price_data][currency]": "usd",
-    "line_items[0][price_data][product_data][name]": "The Long Read — weekly",
+    "line_items[0][price_data][product_data][name]": productName,
     "line_items[0][price_data][recurring][interval]": "week",
-    "line_items[0][price_data][unit_amount]": String(WEEKLY_PRICE_CENTS),
+    "line_items[0][price_data][unit_amount]": String(priceCents),
     "line_items[0][quantity]": "1",
     allow_promotion_codes: "true",
   };

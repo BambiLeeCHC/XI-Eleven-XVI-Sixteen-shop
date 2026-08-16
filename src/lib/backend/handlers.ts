@@ -151,21 +151,27 @@ export const handlers: Record<string, Handler> = {
     const row = unwrap(
       await supabase
         .from("subscriptions")
-        .select("status, trial_end, current_period_end")
+        .select("status, tier, trial_end, current_period_end")
         .eq("user_id", userId)
         .maybeSingle(),
-    ) as { status: string; trial_end: string | null; current_period_end: string | null } | null;
-    if (!row) return { entitled: false, status: "none" };
+    ) as {
+      status: string;
+      tier: string | null;
+      trial_end: string | null;
+      current_period_end: string | null;
+    } | null;
+    if (!row) return { entitled: false, status: "none", tier: null };
     return {
       entitled: row.status === "trialing" || row.status === "active",
       status: row.status,
+      tier: row.tier,
       trialEnd: row.trial_end,
       currentPeriodEnd: row.current_period_end,
     };
   },
 
-  "subscription.startTrial": async ({ successUrl, cancelUrl } = {}) => {
-    return callApi("/api/reading-checkout", { kind: "subscribe", successUrl, cancelUrl });
+  "subscription.startTrial": async ({ successUrl, cancelUrl, tier } = {}) => {
+    return callApi("/api/reading-checkout", { kind: "subscribe", successUrl, cancelUrl, tier });
   },
 
   /* ── deep readings (The Long Read content) ───────────────────────────── */

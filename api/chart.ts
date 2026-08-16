@@ -18,11 +18,11 @@
  * dependency for the numbers themselves; Gemini only writes the narrative
  * wrapped around them.
  *
- * NOTE: the higher tier's price/checkout isn't wired yet — pending Tre's
- * call on pricing. Until then this gates on `subscriptions.tier ===
- * 'long_read_plus_numerology'`, which no one can reach through checkout
- * yet, so the numerology branch is effectively dormant (returns 402) until
- * that tier is purchasable.
+ * The higher tier ("long_read_plus_numerology", $12/week — Long Read +
+ * Numerology) is purchasable via /api/reading-checkout's `subscribe`
+ * kind with `{ tier: "long_read_plus_numerology" }`. This gates on
+ * `subscriptions.tier === 'long_read_plus_numerology'` with an active or
+ * trialing status.
  */
 
 import {
@@ -128,7 +128,7 @@ async function handleNumerology(req: ApiRequest, res: ApiResponse) {
   if (!unlocked) {
     throw new HttpError(
       402,
-      "Numerology is part of our higher subscription tier — coming soon.",
+      "Numerology is part of the Long Read + Numerology tier ($12/week, 7-day free trial).",
     );
   }
 
