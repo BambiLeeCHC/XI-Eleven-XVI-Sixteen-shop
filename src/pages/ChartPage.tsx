@@ -6,7 +6,7 @@ import { AlmanacCalendar } from "../components/journal/Almanac";
 import { NatalChartWheel } from "../components/journal/NatalChartWheel";
 import { SubscriptionTierPicker, type SubscriptionTier } from "../components/SubscriptionTierPicker";
 import { api, useAction, useQuery } from "../lib/backend";
-import { explainAspect, explainHouse, explainPlacement } from "../lib/astrologyMeanings";
+import { explainAspectPair, explainHouseFull, explainPlacement } from "../lib/astrologyMeanings";
 
 interface NatalPlacement {
   body: string;
@@ -133,15 +133,86 @@ function PlacementRow({
 }
 
 function HouseRow({ houseCusp, expanded, onToggle }: { houseCusp: NatalHouseCusp; expanded: boolean; onToggle: () => void }) {
+  const full = explainHouseFull(houseCusp.house);
   return (
     <div className={`chart-placement-row ${expanded ? "is-expanded" : ""}`}>
       <button type="button" className="chart-placement-row__head" onClick={onToggle} aria-expanded={expanded}>
-        <span className="chart-placement__body">House {houseCusp.house}</span>
+        <span className="chart-placement__body">
+          House {houseCusp.house}
+          {full && <span className="chart-house-row__title"> — {full.title}</span>}
+        </span>
         <span className="jcol-tag jcol-tag--sm jcol-lilac jcol-type">
           {SIGN_GLYPH[houseCusp.sign] ?? ""} {houseCusp.sign}
         </span>
       </button>
-      {expanded && <p className="chart-placement-row__explain">{explainHouse(houseCusp.house)}</p>}
+      {expanded && full && (
+        <div className="chart-placement-row__explain chart-house-row__explain">
+          <p>{full.detail}</p>
+          <div className="chart-house-row__keywords">
+            {full.keywords.map((k) => (
+              <span key={k} className="jcol-tag jcol-tag--sm jcol-kraft jcol-type">
+                {k}
+              </span>
+            ))}
+          </div>
+          <p className="chart-house-row__question">{full.question}</p>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/** Minimal, safe render of sparing **bold** markup, paragraph by paragraph. */
+function BoldParagraphs({ text }: { text: string }) {
+  const paragraphs = text.trim().split(/\n{2,}/);
+  return (
+    <>
+      {paragraphs.map((p, i) => {
+        const parts = p.split(/\*\*(.+?)\*\*/g);
+        return (
+          <p key={i} className="chart-profile-section__p">
+            {parts.map((part, j) => (j % 2 === 1 ? <strong key={j}>{part}</strong> : part))}
+          </p>
+        );
+      })}
+    </>
+  );
+}
+
+const PROFILE_SECTION_STYLE: Record<string, { tone: string; rotate: string; face: string }> = {
+  "Who You Are": { tone: "jcol-gold", rotate: "-1.5deg", face: "jcol-display" },
+  "The Texture": { tone: "jcol-ink", rotate: "1deg", face: "jcol-grotesk" },
+  "The Highest Use of Your Chart": { tone: "jcol-lilac", rotate: "-1deg", face: "jcol-display" },
+};
+
+/** Splits the profile narrative on "## Section Title" markers into
+ * {title, body} sections so each can carry the same collage-tag visual
+ * treatment as the page header, rather than rendering as one text block. */
+function parseProfileSections(narrative: string): { title: string; body: string }[] {
+  const matches = [...narrative.matchAll(/^##\s+(.+)$/gm)];
+  if (matches.length === 0) return [{ title: "Your Personality Profile", body: narrative }];
+  const sections: { title: string; body: string }[] = [];
+  for (let i = 0; i < matches.length; i++) {
+    const start = (matches[i].index ?? 0) + matches[i][0].length;
+    const end = i + 1 < matches.length ? matches[i + 1].index ?? narrative.length : narrative.length;
+    sections.push({ title: matches[i][1].trim(), body: narrative.slice(start, end).trim() });
+  }
+  return sections;
+}
+
+function ProfileSection({ title, body }: { title: string; body: string }) {
+  const style = PROFILE_SECTION_STYLE[title] ?? { tone: "jcol-kraft", rotate: "0deg", face: "jcol-display" };
+  return (
+    <div className="chart-profile-section">
+      <span
+        className={`jcol-tag jcol-tag--md ${style.tone} ${style.face} chart-profile-section__title`}
+        style={{ transform: `rotate(${style.rotate})` }}
+      >
+        {title}
+      </span>
+      <div className="chart-profile-section__body">
+        <BoldParagraphs text={body} />
+      </div>
     </div>
   );
 }
@@ -346,14 +417,21 @@ export function ChartPage() {
 
                 {chart.aspects.length > 0 && (
                   <div className="journal-surface" style={{ padding: "1.75rem" }}>
-                    <p className="text-sm font-semibold mb-3">Your Tightest Aspects</p>
+                    <p className="text-sm font-semibold mb-1">Your Tightest Aspects</p>
+                    <p className="text-[12px] text-muted-foreground mb-3">
+                      The angles between your planets — the tighter the orb, the stronger the effect. Gold-toned
+                      aspects tend to feel easy; rust-toned ones create the friction that actually drives growth.
+                    </p>
                     <div className="flex flex-col gap-2">
                       {chart.aspects.slice(0, 8).map((a, i) => (
                         <div key={i} className="chart-aspect-row">
-                          <span className="chart-aspect-row__label">
-                            {a.bodyA} <span className="chart-aspect-row__type">{a.aspect}</span> {a.bodyB}
-                          </span>
-                          <span className="text-[12px] text-muted-foreground">{explainAspect(a.aspect)}</span>
+                          <div className="chart-aspect-row__head">
+                            <span className="chart-aspect-row__label">
+                              {a.bodyA} <span className="chart-aspect-row__type">{a.aspect}</span> {a.bodyB}
+                            </span>
+                            <span className="chart-aspect-row__orb">{a.orb.toFixed(1)}° orb</span>
+                          </div>
+                          <p className="chart-aspect-row__explain">{explainAspectPair(a.bodyA, a.bodyB, a.aspect)}</p>
                         </div>
                       ))}
                     </div>
@@ -385,8 +463,12 @@ export function ChartPage() {
                   )}
                 </div>
 
-                <div className="journal-surface" style={{ padding: "1.75rem" }}>
-                  <p className="text-sm font-semibold mb-3">Your Personality Profile</p>
+                <div className="journal-surface chart-profile-card" style={{ padding: "1.75rem", position: "relative" }}>
+                  <span className="jcol-patch jcol-patch--b" aria-hidden="true" />
+                  <h2 className="journal-article__title--collage chart-profile-card__heading" aria-label="Your Personality Profile">
+                    <span className="jcol-tag jcol-gold jcol-display" style={{ transform: "rotate(-2deg)" }}>Your</span>
+                    <span className="jcol-tag jcol-ink jcol-grotesk" style={{ transform: "rotate(1.5deg)" }}>Profile</span>
+                  </h2>
                   {profileResult === undefined && (
                     <p className="text-sm text-muted-foreground">Writing your profile…</p>
                   )}
@@ -396,8 +478,10 @@ export function ChartPage() {
                     </p>
                   )}
                   {profileResult?.success && profileResult.narrative && (
-                    <div className="text-sm text-muted-foreground whitespace-pre-line">
-                      {profileResult.narrative}
+                    <div className="chart-profile-sections">
+                      {parseProfileSections(profileResult.narrative).map((s, i) => (
+                        <ProfileSection key={i} title={s.title} body={s.body} />
+                      ))}
                     </div>
                   )}
                 </div>
