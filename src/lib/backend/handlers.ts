@@ -264,6 +264,10 @@ export const handlers: Record<string, Handler> = {
     return callApi("/api/chart", { kind: "natal" });
   },
 
+  "natalProfile.get": async () => {
+    return callApi("/api/chart", { kind: "natal-profile" });
+  },
+
   "numerology.get": async () => {
     return callApi("/api/chart", { kind: "numerology" });
   },

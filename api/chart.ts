@@ -33,13 +33,29 @@ import {
   HttpError,
   supabaseAdmin,
 } from "./_lib/server.js";
-import { computeNatalChart, geocodeLocation, searchLocations } from "./_lib/natalChart.js";
+import {
+  computeNatalChart,
+  geocodeLocation,
+  searchLocations,
+  type NatalChart,
+} from "./_lib/natalChart.js";
 import { generateWithGemini, type GeminiFailure } from "./_lib/gemini.js";
 import { fullNumerologyProfile, NUMBER_MEANINGS } from "../src/lib/numerology.js";
+import { BODY_MEANINGS, explainAspect } from "../src/lib/astrologyMeanings.js";
 
 const NUMEROLOGY_SYSTEM_PROMPT = `You are the XI · XVI Reader, writing the numerology narrative for the XI Eleven XVI Sixteen (xixvi.shop) brand — the paid, higher-tier companion to the natal chart. Same voice as always: direct, poignant, specific — never a generic horoscope, never hedging ("may"/"could"), never false authority.
 
 Write one paragraph per number given (Life Path, Expression, Soul Urge, Personality, Personal Year), each grounded in its literal meaning, never generic keyword soup. Close with one direct synthesis paragraph connecting the numbers into a real throughline about this person. Sparing bold on 3-4 key phrases. 350-500 words total. No headers, no bullets, no emoji, no sign-off. Address them by name once, naturally, not as a greeting.`;
+
+const NATAL_PROFILE_SYSTEM_PROMPT = `You are the XI · XVI Reader, writing the personalized personality profile for someone's free natal chart on the XI Eleven XVI Sixteen (xixvi.shop) brand. Same voice as always: direct, poignant, specific — never a generic horoscope, never hedging ("may"/"could"), never false authority, never a list of keywords.
+
+You'll be given their Sun, Moon, Ascendant, Midheaven, all other planetary placements, and their tightest aspects. Write a real synthesis, not a placement-by-placement recap:
+
+1. Open with who they are at the core — weave Sun, Moon and Ascendant into one throughline about their identity, inner world and how they come across (this is the tension/harmony between "who I am," "what I feel," and "how I'm seen").
+2. One or two paragraphs weaving the other placements and their tightest aspects into real personality texture — contradictions, strengths, where they get in their own way.
+3. Close with a paragraph titled exactly "The Highest Use of Your Chart" (as its own line, then the paragraph) — concrete, specific guidance on the best and highest thing this person could be doing with their particular astrological gifts. Ground it in real placements (e.g. what their Midheaven, Jupiter, Saturn and Mars are doing), not generic "follow your dreams" language.
+
+Sparing bold on 4-5 key phrases total. 450-600 words. No other headers, no bullets, no emoji. Address them by name once, naturally.`;
 
 /** Location autocomplete for the birth-location field. Deliberately
  * unauthenticated — this needs to work on the sign-up form, before an
@@ -52,31 +68,36 @@ async function handleGeocodeSearch(req: ApiRequest, res: ApiResponse) {
   return res.status(200).json({ success: true, suggestions });
 }
 
-async function handleNatalChart(req: ApiRequest, res: ApiResponse) {
-  const user = await currentUser(req);
-  if (!user) throw new HttpError(401, "Please sign in first");
+type ChartResolution =
+  | { ok: true; chart: NatalChart; name: string | null }
+  | { ok: false; reason: string; message: string };
 
+/**
+ * Shared birth-data → chart resolution, used by both the raw chart endpoint
+ * and the personality-profile narrative endpoint so they can't drift.
+ */
+async function resolveUserChart(userId: string): Promise<ChartResolution> {
   const admin = supabaseAdmin();
   const { data: profile, error: profileError } = await admin
     .from("profiles")
-    .select("birth_date, birth_time, birth_location, birth_lat, birth_lng")
-    .eq("id", user.id)
+    .select("name, birth_date, birth_time, birth_location, birth_lat, birth_lng")
+    .eq("id", userId)
     .maybeSingle();
   if (profileError) throw profileError;
 
   if (!profile?.birth_date) {
-    return res.status(200).json({
-      success: false,
+    return {
+      ok: false,
       reason: "missing_birth_date",
       message: "Add your birth date in your account to generate a natal chart.",
-    });
+    };
   }
   if (!profile?.birth_location) {
-    return res.status(200).json({
-      success: false,
+    return {
+      ok: false,
       reason: "missing_birth_location",
       message: "Add your birth location in your account to generate a natal chart.",
-    });
+    };
   }
 
   let lat = profile.birth_lat != null ? Number(profile.birth_lat) : null;
@@ -85,12 +106,12 @@ async function handleNatalChart(req: ApiRequest, res: ApiResponse) {
   if (lat == null || lng == null) {
     const geo = await geocodeLocation(profile.birth_location);
     if (!geo) {
-      return res.status(200).json({
-        success: false,
+      return {
+        ok: false,
         reason: "geocode_failed",
         message:
           "We couldn't place that birth location on the map — try a more specific city and state/country.",
-      });
+      };
     }
     lat = geo.lat;
     lng = geo.lng;
@@ -98,15 +119,70 @@ async function handleNatalChart(req: ApiRequest, res: ApiResponse) {
     await admin
       .from("profiles")
       .update({ birth_lat: lat, birth_lng: lng })
-      .eq("id", user.id);
+      .eq("id", userId);
   }
 
-  const chart = computeNatalChart(profile.birth_date, profile.birth_time, {
-    lat,
-    lng,
-  });
+  const chart = computeNatalChart(profile.birth_date, profile.birth_time, { lat, lng });
+  return { ok: true, chart, name: profile.name ?? null };
+}
 
-  return res.status(200).json({ success: true, chart });
+async function handleNatalChart(req: ApiRequest, res: ApiResponse) {
+  const user = await currentUser(req);
+  if (!user) throw new HttpError(401, "Please sign in first");
+
+  const resolved = await resolveUserChart(user.id);
+  if (!resolved.ok) {
+    return res.status(200).json({ success: false, reason: resolved.reason, message: resolved.message });
+  }
+
+  return res.status(200).json({ success: true, chart: resolved.chart });
+}
+
+/** The personalized personality-profile narrative — free, part of the
+ * natal chart (not paywalled). Weaves Sun/Moon/Ascendant/Midheaven, the
+ * other placements and the tightest real aspects into one synthesis, plus
+ * a closing "highest use of your chart" section. */
+async function handleNatalProfile(req: ApiRequest, res: ApiResponse) {
+  const user = await currentUser(req);
+  if (!user) throw new HttpError(401, "Please sign in first");
+
+  const resolved = await resolveUserChart(user.id);
+  if (!resolved.ok) {
+    return res.status(200).json({ success: false, reason: resolved.reason, message: resolved.message });
+  }
+
+  const { chart, name } = resolved;
+  const fullName = name || "friend";
+
+  const placementLines = chart.placements
+    .map((p) => `${p.body} in ${p.sign}${p.house ? ` (house ${p.house})` : ""}${p.retrograde ? " retrograde" : ""} — governs ${BODY_MEANINGS[p.body] ?? ""}`)
+    .join("\n");
+
+  const aspectLines = chart.aspects
+    .slice(0, 8)
+    .map((a) => `${a.bodyA} ${a.aspect} ${a.bodyB} (orb ${a.orb}°) — ${explainAspect(a.aspect)}`)
+    .join("\n");
+
+  const userPrompt = `This natal chart is for ${fullName}.
+
+Ascendant: ${chart.ascendant}
+Midheaven: ${chart.midheaven}
+
+Placements:
+${placementLines}
+
+Tightest aspects:
+${aspectLines || "None within a tight orb."}
+
+Write the personality profile now, following the voice and structure rules exactly.`;
+
+  const result = await generateWithGemini(NATAL_PROFILE_SYSTEM_PROMPT, userPrompt, 3200);
+  if (!result.success) {
+    const failure = result as GeminiFailure;
+    return res.status(200).json({ success: false, reason: failure.reason });
+  }
+
+  return res.status(200).json({ success: true, narrative: result.text });
 }
 
 async function handleNumerology(req: ApiRequest, res: ApiResponse) {
@@ -175,6 +251,9 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
     }
     if (kind === "geocode-search") {
       return await handleGeocodeSearch(req, res);
+    }
+    if (kind === "natal-profile") {
+      return await handleNatalProfile(req, res);
     }
     if (kind === "natal" || kind === undefined) {
       return await handleNatalChart(req, res);

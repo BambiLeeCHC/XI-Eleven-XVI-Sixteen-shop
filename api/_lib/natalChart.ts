@@ -88,15 +88,37 @@ export async function searchLocations(query: string): Promise<LocationSuggestion
 export interface NatalPlacement {
   body: string;
   sign: string;
+  /** Absolute ecliptic longitude, 0-360°, used to place the body on the
+   * chart wheel — NOT degree-within-sign. */
   degree: number;
   house: number | null;
   retrograde: boolean;
 }
 
+export interface NatalHouseCusp {
+  house: number;
+  sign: string;
+  /** Absolute ecliptic longitude, 0-360°, of the house cusp. */
+  degree: number;
+}
+
+export interface NatalAspect {
+  bodyA: string;
+  bodyB: string;
+  /** e.g. "conjunction", "trine", "square", "sextile", "opposition" */
+  aspect: string;
+  /** How exact the aspect is, in degrees — smaller is tighter/stronger. */
+  orb: number;
+}
+
 export interface NatalChart {
   ascendant: string;
+  ascendantDegree: number;
   midheaven: string;
+  midheavenDegree: number;
   placements: NatalPlacement[];
+  houses: NatalHouseCusp[];
+  aspects: NatalAspect[];
   houseSystem: string;
   zodiac: string;
   /** True when birth time was missing — houses/ascendant are approximate
@@ -157,10 +179,31 @@ export function computeNatalChart(
     };
   });
 
+  const houses: NatalHouseCusp[] = (horoscope._houses ?? []).map((h: any) => ({
+    house: h.id,
+    sign: h.Sign?.label ?? "",
+    degree: Math.round(h.ChartPosition.StartPosition.Ecliptic.DecimalDegrees * 100) / 100,
+  }));
+
+  const bodyKeySet = new Set(BODIES);
+  const aspects: NatalAspect[] = (horoscope.Aspects?.all ?? [])
+    .filter((a: any) => bodyKeySet.has(a.point1Key) && bodyKeySet.has(a.point2Key))
+    .map((a: any) => ({
+      bodyA: a.point1Label,
+      bodyB: a.point2Label,
+      aspect: a.aspectKey,
+      orb: Math.round(a.orb * 100) / 100,
+    }))
+    .sort((a: NatalAspect, b: NatalAspect) => a.orb - b.orb);
+
   return {
     ascendant: horoscope.Ascendant.Sign.label,
+    ascendantDegree: Math.round(horoscope.Ascendant.ChartPosition.Ecliptic.DecimalDegrees * 100) / 100,
     midheaven: horoscope.Midheaven?.Sign?.label ?? "Unknown",
+    midheavenDegree: Math.round((horoscope.Midheaven?.ChartPosition?.Ecliptic?.DecimalDegrees ?? 0) * 100) / 100,
     placements,
+    houses,
+    aspects,
     houseSystem: "Placidus",
     zodiac: "Tropical",
     approximateTime,

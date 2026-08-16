@@ -39,6 +39,9 @@ export const api = {
   natalChart: {
     get: ref("natalChart.get"),
   },
+  natalProfile: {
+    get: ref("natalProfile.get"),
+  },
   numerology: {
     get: ref("numerology.get"),
   },

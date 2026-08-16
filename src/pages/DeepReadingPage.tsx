@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { SEO } from "../components/SEO";
 import { JournalSky } from "../components/journal/JournalSky";
 import { CardArt } from "../components/journal/CardArt";
+import { SubscriptionTierPicker } from "../components/SubscriptionTierPicker";
 import { api, useAction, useQuery } from "../lib/backend";
 import { DEEP_SPREAD, drawDeepSpread, type SpreadCard } from "../lib/ritual";
 
@@ -157,51 +158,10 @@ export function DeepReadingPage() {
           <div className="journal-surface" style={{ padding: "1.75rem", display: "flex", flexDirection: "column", gap: "1.1rem" }}>
             <p className="text-sm text-muted-foreground">
               Seven cards read directly against what's actually going on for you right now — not the
-              daily five, a genuinely deeper read, saved to your account. Both tiers start with a
-              <span className="font-semibold"> 7-day free trial</span>, cancel anytime.
+              daily five, a genuinely deeper read, saved to your account. Pick the tier that's right
+              for you — Numerology is only available bundled here, not on its own.
             </p>
-
-            <div style={{ display: "flex", flexDirection: "column", gap: "0.6rem", padding: "1rem", borderRadius: "10px", border: "1px solid rgba(0,0,0,0.08)" }}>
-              <p className="text-sm">
-                <span className="font-semibold">The Long Read</span> — <span className="font-semibold">$7/week</span> after trial
-              </p>
-              <button
-                onClick={() => startTrial("long_read")}
-                disabled={subscribingTier !== null}
-                className="journal-tile__cta"
-                style={{
-                  width: "100%", padding: "0.9rem", borderRadius: "12px", textAlign: "center",
-                  background: "linear-gradient(160deg, #1d2f4f, #101c33)", color: "#f3e9d2",
-                  border: "1px solid rgba(214,178,96,.6)", fontSize: "0.75rem", letterSpacing: "0.15em",
-                  textTransform: "uppercase", fontWeight: 600, opacity: subscribingTier !== null ? 0.6 : 1,
-                }}
-              >
-                {subscribingTier === "long_read" ? "Starting…" : "Start free trial ✦"}
-              </button>
-            </div>
-
-            <div style={{ display: "flex", flexDirection: "column", gap: "0.6rem", padding: "1rem", borderRadius: "10px", border: "1px solid rgba(214,178,96,.6)" }}>
-              <p className="text-sm">
-                <span className="font-semibold">The Long Read + Numerology</span> — <span className="font-semibold">$12/week</span> after trial
-              </p>
-              <p className="text-sm text-muted-foreground">
-                Everything in The Long Read, plus your full numerology profile — Life Path, Expression,
-                Soul Urge, Personality and this year's Personal Year number.
-              </p>
-              <button
-                onClick={() => startTrial("long_read_plus_numerology")}
-                disabled={subscribingTier !== null}
-                className="journal-tile__cta"
-                style={{
-                  width: "100%", padding: "0.9rem", borderRadius: "12px", textAlign: "center",
-                  background: "linear-gradient(160deg, #1d2f4f, #101c33)", color: "#f3e9d2",
-                  border: "1px solid rgba(214,178,96,.6)", fontSize: "0.75rem", letterSpacing: "0.15em",
-                  textTransform: "uppercase", fontWeight: 600, opacity: subscribingTier !== null ? 0.6 : 1,
-                }}
-              >
-                {subscribingTier === "long_read_plus_numerology" ? "Starting…" : "Start free trial ✦"}
-              </button>
-            </div>
+            <SubscriptionTierPicker subscribingTier={subscribingTier} onStart={startTrial} highlight="long_read" />
           </div>
         )}
 
