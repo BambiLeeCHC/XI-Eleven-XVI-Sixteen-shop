@@ -59,7 +59,7 @@ export function ElevenSixteenStrip({ showAlmanacLink = true }: { showAlmanacLink
           <span className="journal-strip__value journal-strip__value--gold">{num}</span>
         </div>
         {showAlmanacLink && (
-          <Link to="/chart?tab=almanac" className="journal-strip__cta">
+          <Link to="/chart/almanac" className="journal-strip__cta">
             Open the Almanac ✦
           </Link>
         )}
