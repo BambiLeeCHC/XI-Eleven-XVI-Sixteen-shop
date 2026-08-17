@@ -101,7 +101,6 @@ function fallbackReading(spread: SpreadCard[]): string {
 async function fetchReading(
   spread: SpreadCard[],
   name?: string,
-  situation?: string,
   genderIdentity?: string,
   sexualOrientation?: string,
 ): Promise<string> {
@@ -115,7 +114,6 @@ async function fetchReading(
       meaning: s.reversed ? s.card.reversed : s.card.upright,
     })),
     ...(name ? { name } : {}),
-    ...(situation ? { situation } : {}),
     ...(genderIdentity ? { genderIdentity } : {}),
     ...(sexualOrientation ? { sexualOrientation } : {}),
   };
@@ -204,6 +202,16 @@ function ReadingCollageHead({ spreadName }: { spreadName: string }) {
 }
 
 /** Minimal, safe render of the reading's sparing **bold** markup. */
+/** The reading engine closes with a line starting "SYNOPSIS:" — split it out
+ * so it can render as its own short, distinctly-styled closing line instead
+ * of blending into the card-by-card narrative. */
+function splitSynopsis(text: string): [string, string | null] {
+  const match = text.match(/\n{1,2}SYNOPSIS:\s*([\s\S]+)$/i);
+  if (!match) return [text, null];
+  const narrative = text.slice(0, match.index).trim();
+  return [narrative, match[1].trim()];
+}
+
 function ReadingText({ text }: { text: string }) {
   const paragraphs = text.split(/\n{2,}/);
   return (
@@ -317,11 +325,6 @@ export function DrawThree() {
     loadCachedReading(combo),
   );
   const [readingLoading, setReadingLoading] = useState(false);
-  // Asked fresh on every visit — deliberately not persisted, since what's
-  // going on changes visit to visit (unlike birth date, which lives on the
-  // profile).
-  const [situation, setSituation] = useState("");
-  const [situationConfirmed, setSituationConfirmed] = useState(false);
 
   const reveal = useCallback((slot: string) => {
     setRevealed(cur => {
@@ -343,12 +346,11 @@ export function DrawThree() {
   const allOpen = openCount === spread.length;
 
   useEffect(() => {
-    if (!allOpen || !situationConfirmed || reading || readingLoading) return;
+    if (!allOpen || reading || readingLoading) return;
     setReadingLoading(true);
     fetchReading(
       spread,
       user?.name,
-      situation || undefined,
       user?.genderIdentity,
       user?.sexualOrientation,
     ).then(text => {
@@ -356,7 +358,7 @@ export function DrawThree() {
       setReading(text);
       setReadingLoading(false);
     });
-  }, [allOpen, situationConfirmed, situation, reading, readingLoading, spread, combo, user]);
+  }, [allOpen, reading, readingLoading, spread, combo, user]);
 
   return (
     <div className="jdeck">
@@ -367,52 +369,25 @@ export function DrawThree() {
         yours until midnight.
       </p>
 
-      {!situationConfirmed && (
-        <div className="jdeck__intake">
-          <label htmlFor="jdeck-situation" className="jdeck__intake-label">
-            Before you draw — what's actually going on right now?
-          </label>
-          <textarea
-            id="jdeck-situation"
-            value={situation}
-            onChange={e => setSituation(e.target.value)}
-            rows={2}
-            placeholder={'e.g. "trying to decide whether to leave my job"'}
-            className="jdeck__intake-input"
+      <div className="jdeck__row">
+        {spread.map((entry, i) => (
+          <SpreadCardSlot
+            key={entry.slot}
+            entry={entry}
+            index={i}
+            revealed={revealed.has(entry.slot)}
+            onReveal={() => reveal(entry.slot)}
           />
-          <button
-            type="button"
-            className="jdeck__all"
-            onClick={() => setSituationConfirmed(true)}
-          >
-            Continue to the draw ✦
-          </button>
-        </div>
+        ))}
+      </div>
+
+      {!allOpen && (
+        <button type="button" className="jdeck__all" onClick={turnAll}>
+          Turn all five ✦
+        </button>
       )}
 
-      {situationConfirmed && (
-        <>
-          <div className="jdeck__row">
-            {spread.map((entry, i) => (
-              <SpreadCardSlot
-                key={entry.slot}
-                entry={entry}
-                index={i}
-                revealed={revealed.has(entry.slot)}
-                onReveal={() => reveal(entry.slot)}
-              />
-            ))}
-          </div>
-
-          {!allOpen && (
-            <button type="button" className="jdeck__all" onClick={turnAll}>
-              Turn all five ✦
-            </button>
-          )}
-        </>
-      )}
-
-      {allOpen && situationConfirmed && (
+      {allOpen && (
         <div className="jdeck__letter">
           <ReadingCollageHead spreadName={spreadType.name} />
           {readingLoading && !reading && (
@@ -420,7 +395,20 @@ export function DrawThree() {
           )}
           {reading && (
             <>
-              <ReadingText text={reading} />
+              {(() => {
+                const [narrative, synopsis] = splitSynopsis(reading);
+                return (
+                  <>
+                    <ReadingText text={narrative} />
+                    {synopsis && (
+                      <div className="jdeck__synthesis">
+                        <span className="jdeck__synthesis-head">In short</span>
+                        <p>{synopsis}</p>
+                      </div>
+                    )}
+                  </>
+                );
+              })()}
               <p className="jcol-sign">Yours, until midnight.</p>
 
               <div className="jdeck__long-read-tease">

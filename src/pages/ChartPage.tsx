@@ -61,6 +61,13 @@ interface NumerologyResult {
   reason?: string;
 }
 
+const NUMEROLOGY_ERROR_COPY: Record<string, string> = {
+  no_key: "Numerology is temporarily unavailable — our team has been notified.",
+  upstream_error:
+    "Our reading service is briefly at capacity — please try again in a minute.",
+  empty: "Couldn't write your numerology narrative just now — try again shortly.",
+};
+
 const NUMEROLOGY_LABELS: Record<string, string> = {
   lifePath: "Life Path",
   expression: "Expression",
@@ -520,7 +527,8 @@ export function ChartPage() {
 
             {numerologyUnlocked && numerologyResult && !numerologyResult.success && (
               <p className="text-sm text-red-600">
-                {numerologyResult.reason ?? "Couldn't write your numerology narrative just now — try again shortly."}
+                {NUMEROLOGY_ERROR_COPY[numerologyResult.reason ?? ""] ??
+                  "Couldn't write your numerology narrative just now — try again shortly."}
               </p>
             )}
 

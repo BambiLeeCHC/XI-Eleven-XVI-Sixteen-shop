@@ -10,10 +10,11 @@
  * never a generic daily-horoscope template, never a narrative hook that
  * promises to circle back later.
  *
- * If the reader has completed intake at sign-up (first name + what's going
- * on), the reading is personalized: addressed by name and woven around
- * their stated situation. Anonymous/guest readers still get the full
- * reading, just without that layer.
+ * If the reader is signed in, the reading is lightly personalized: addressed
+ * by name once. Anonymous/guest readers still get the full reading, just
+ * without that layer. The reading always closes with a short "SYNOPSIS:"
+ * line — a plain-language personal takeaway for the whole draw — which the
+ * frontend splits out and renders as its own closing line (see DrawThree.tsx).
  *
  * Calls Google's Gemini API using GEMINI_API_KEY (free tier). If
  * GEMINI_API_KEY isn't configured, the caller falls back to the static
@@ -47,13 +48,13 @@ VOICE AND STRUCTURE (model this closely):
 - Close with one short, direct synthesis of what this spread is really telling them, then one concrete, second-person nudge — one real thing to do or notice today. No dramatic pronouncements, no vague mysticism, no telling the reader how they should feel — just tell them plainly what's true and what to do with it.
 - Sparing, intentional bold (wrap in **like this**) on the two or three phrases that matter most. Do not bold more than that.
 - Write 220-320 words. No headers, no bullet lists, no emoji, no sign-off, no greeting by name — begin directly addressing the first card.
-- If a first name and a stated situation are given below, address that person by name once, naturally, within the opening sentence — not as a greeting line — and connect at least two of the cards directly back to what they told us, in their own terms where it fits. Don't announce that you're doing this.
-- If a gender identity and/or sexual orientation are given below, use them only to get pronouns and relationship framing right where the reading naturally touches on identity or relationships — never call them out directly, never make either the subject of the reading unless the person's own stated situation already is.`;
+- If a first name is given below, address that person by name once, naturally, within the opening sentence — not as a greeting line. Don't announce that you're doing this.
+- If a gender identity and/or sexual orientation are given below, use them only to get pronouns and relationship framing right where the reading naturally touches on identity or relationships — never call them out directly, never make either the subject of the reading unless it's already clearly relevant.
+- After the full reading, leave one blank line, then write exactly one final short line starting with the literal marker "SYNOPSIS:" followed by a brief (1-2 sentence, under 40 words) plain-language personal synopsis of the whole draw — what this spread means for them today, in the most direct possible terms. No card names in the synopsis, no bold, this is the plain takeaway on its own.`;
 
 function buildUserPrompt(
   spread: SpreadCardInput[],
   name?: string,
-  situation?: string,
   genderIdentity?: string,
   sexualOrientation?: string,
 ): string {
@@ -66,8 +67,8 @@ function buildUserPrompt(
     sexualOrientation ? `sexual orientation: ${sexualOrientation}` : null,
   ].filter(Boolean);
   const personalization =
-    name || situation
-      ? `\n\nThis reading is for ${name || "the reader"}. What they told us is going on right now: "${situation || "not specified"}".${identityBits.length ? ` Also on file: ${identityBits.join(", ")}.` : ""} Weave this in per the personalization rules.`
+    name || identityBits.length
+      ? `\n\nThis reading is for ${name || "the reader"}.${identityBits.length ? ` On file: ${identityBits.join(", ")}.` : ""} Weave this in per the personalization rules.`
       : "";
   return `Today's spread, in draw order:\n${lines.join("\n")}${personalization}\n\nWrite today's reading now, following the voice and structure rules exactly.`;
 }
@@ -79,11 +80,10 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
   }
 
   try {
-    const { spread, name, situation, genderIdentity, sexualOrientation } =
+    const { spread, name, genderIdentity, sexualOrientation } =
       (req.body ?? {}) as {
         spread?: SpreadCardInput[];
         name?: string;
-        situation?: string;
         genderIdentity?: string;
         sexualOrientation?: string;
       };
@@ -93,7 +93,7 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
 
     const result = await generateWithGemini(
       SYSTEM_PROMPT,
-      buildUserPrompt(spread, name, situation, genderIdentity, sexualOrientation),
+      buildUserPrompt(spread, name, genderIdentity, sexualOrientation),
       3000,
     );
 
