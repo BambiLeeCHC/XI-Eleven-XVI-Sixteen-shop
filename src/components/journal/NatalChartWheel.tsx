@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { memo, useMemo, useState } from "react";
 
 interface WheelPlacement {
   body: string;
@@ -70,7 +70,7 @@ const SIGN_RING_R = 148;
 const HOUSE_LINE_R = 130;
 const PLANET_RING_R = 104;
 
-export function NatalChartWheel({
+export const NatalChartWheel = memo(function NatalChartWheel({
   placements,
   houses,
   aspects,
@@ -195,4 +195,4 @@ export function NatalChartWheel({
       })}
     </svg>
   );
-}
+});
