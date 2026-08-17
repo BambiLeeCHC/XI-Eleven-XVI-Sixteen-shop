@@ -2,6 +2,7 @@ import { useState } from "react";
 import { SEO } from "../../components/SEO";
 import { TrueNorthAtmosphere } from "../../components/journal/TrueNorthAtmosphere";
 import { SubscriptionTierPicker, type SubscriptionTier } from "../../components/SubscriptionTierPicker";
+import { SectionBoundary } from "../../components/journal/SectionBoundary";
 import { api, useAction, useQuery } from "../../lib/backend";
 import {
   NUMEROLOGY_ERROR_COPY,
@@ -112,7 +113,7 @@ export function NumbersPage() {
           )}
 
           {numerologyUnlocked && numerologyResult?.success && (
-            <>
+            <SectionBoundary fallbackLabel="Couldn't display your numbers just now — try refreshing.">
               <div className="chart-numbers-grid">
                 {Object.entries(numerologyResult.numbers ?? {}).map(([key, value]) => (
                   <NumberRow key={key} numKey={key} value={value} />
@@ -125,7 +126,7 @@ export function NumbersPage() {
                   ))}
                 </div>
               )}
-            </>
+            </SectionBoundary>
           )}
         </div>
       </div>

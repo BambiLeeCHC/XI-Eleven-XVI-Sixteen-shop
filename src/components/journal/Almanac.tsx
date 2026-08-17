@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import {
+  ALMANAC_DAY_VOICE,
   MONTH_NAMES,
   dateNumber,
   formatCountdown,
@@ -10,6 +11,15 @@ import {
   nextElevenSixteen,
 } from "../../lib/ritual";
 import { AnalogClock } from "./AnalogClock";
+import { MoonPhaseIcon } from "./MoonPhaseIcon";
+
+/** The day-voice line is keyed 1-9; the day number itself can land on a
+ * kept master (11/22), so reduce further just for this lookup. */
+function toSingleDigit(n: number): number {
+  let v = n;
+  while (v > 9) v = String(v).split("").reduce((a, c) => a + Number(c), 0);
+  return v;
+}
 
 function useNow(intervalMs = 1000) {
   const [now, setNow] = useState(() => new Date());
@@ -138,7 +148,8 @@ export function AlmanacCalendar() {
                 isMarkedDay(d) === "tower" ? "is-tower" : "",
               ].join(" ")}
             >
-              {d.getDate()}
+              <span className="journal-almanac__cell-num">{d.getDate()}</span>
+              <MoonPhaseIcon frac={moonPhase(d).frac} size={9} className="journal-almanac__cell-moon" />
             </button>
           )
         )}
@@ -148,6 +159,7 @@ export function AlmanacCalendar() {
       <div className="journal-almanac__legend">
         <span><i className="dot dot--signal" /> 11 · The Signal</span>
         <span><i className="dot dot--tower" /> 16 · The Tower</span>
+        <span><MoonPhaseIcon frac={0.5} size={11} /> the moon that day</span>
       </div>
 
       {/* Selected day readout */}
@@ -155,9 +167,12 @@ export function AlmanacCalendar() {
         <p className="journal-almanac__readout-date">
           {selected.toLocaleDateString([], { weekday: "long", month: "long", day: "numeric" })}
         </p>
+        <p className="journal-almanac__readout-voice">
+          {ALMANAC_DAY_VOICE[toSingleDigit(selNum)]}
+        </p>
         <div className="journal-almanac__readout-rows">
           <span>Day number</span><strong>{selNum}</strong>
-          <span>Moon</span><strong>{selMoon.glyph} {selMoon.name}</strong>
+          <span>Moon</span><strong><MoonPhaseIcon frac={selMoon.frac} size={13} /> {selMoon.name}</strong>
           <span>Illumination</span><strong>{Math.round(selMoon.illumination * 100)}%</strong>
         </div>
       </div>

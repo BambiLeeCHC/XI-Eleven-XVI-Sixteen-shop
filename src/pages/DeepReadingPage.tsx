@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { SEO } from "../components/SEO";
 import { JournalSky } from "../components/journal/JournalSky";
 import { CardArt } from "../components/journal/CardArt";
+import { SectionBoundary } from "../components/journal/SectionBoundary";
 import { SubscriptionTierPicker } from "../components/SubscriptionTierPicker";
 import { api, useAction, useQuery } from "../lib/backend";
 import { DEEP_SPREAD, drawDeepSpread, type SpreadCard } from "../lib/ritual";
@@ -197,21 +198,25 @@ export function DeepReadingPage() {
         {entitled && reading && (
           <>
             <div className="journal-surface" style={{ padding: "1.5rem" }}>
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(90px, 1fr))", gap: "0.75rem" }}>
-                {spread?.map(s => (
-                  <div key={s.slot} style={{ textAlign: "center" }}>
-                    <p className="text-[10px] uppercase tracking-wide text-muted-foreground mb-1">{s.slotName}</p>
-                    <CardArt card={s.card} reversed={s.reversed} />
-                    <p className="text-xs font-medium mt-1">{s.card.name}{s.reversed ? " (rev.)" : ""}</p>
-                  </div>
-                ))}
-              </div>
+              <SectionBoundary fallbackLabel="Couldn't display your cards just now — the reading below is still yours.">
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(90px, 1fr))", gap: "0.75rem" }}>
+                  {spread?.map(s => (
+                    <div key={s.slot} style={{ textAlign: "center" }}>
+                      <p className="text-[10px] uppercase tracking-wide text-muted-foreground mb-1">{s.slotName}</p>
+                      <CardArt card={s.card} reversed={s.reversed} />
+                      <p className="text-xs font-medium mt-1">{s.card.name}{s.reversed ? " (rev.)" : ""}</p>
+                    </div>
+                  ))}
+                </div>
+              </SectionBoundary>
             </div>
 
             <div className="journal-surface" style={{ padding: "1.75rem" }}>
-              <div className="prose prose-sm max-w-none whitespace-pre-line">
-                {reading}
-              </div>
+              <SectionBoundary fallbackLabel="Couldn't display the reading text just now — it's saved to your account either way.">
+                <div className="prose prose-sm max-w-none whitespace-pre-line">
+                  {reading}
+                </div>
+              </SectionBoundary>
             </div>
 
             <div className="journal-surface" style={{ padding: "1.75rem", display: "flex", flexDirection: "column", gap: "0.75rem" }}>

@@ -144,6 +144,7 @@ export interface MoonPhase {
   name: (typeof MOON_NAMES)[number];
   glyph: string;
   illumination: number; // 0..1
+  frac: number; // 0..1 synodic fraction — 0/1=new, 0.5=full, <0.5 waxing
 }
 
 export function moonPhase(d: Date = new Date()): MoonPhase {
@@ -160,6 +161,7 @@ export function moonPhase(d: Date = new Date()): MoonPhase {
     name: MOON_NAMES[index],
     glyph: MOON_GLYPHS[index],
     illumination,
+    frac,
   };
 }
 
@@ -201,6 +203,22 @@ export function isMarkedDay(d: Date): "signal" | "tower" | null {
   if (d.getDate() === 16) return "tower";
   return null;
 }
+
+/** One evocative line per reduced day-number (1-9) — the Almanac's own
+ * voice, distinct from the Journal's daily draw or the natal profile. Gives
+ * each day something to actually say instead of just a number and a moon
+ * phase. */
+export const ALMANAC_DAY_VOICE: Record<number, string> = {
+  1: "A day that wants you to start something, not finish it.",
+  2: "Slower than it looks — the real work today is patience.",
+  3: "Say the thing out loud. It moves faster once it's spoken.",
+  4: "Build something today that doesn't need to be interesting, just true.",
+  5: "Whatever feels restless in you is trying to tell you something.",
+  6: "Someone else's need is loud today — check whose day this actually is.",
+  7: "A good day to be alone with a question instead of an answer.",
+  8: "The numbers matter today — money, time, what you're actually spending.",
+  9: "Something is ending whether you close it out or not. Close it out.",
+};
 
 // ── The spread — one true five-card layout ─────────────────────────────
 //
