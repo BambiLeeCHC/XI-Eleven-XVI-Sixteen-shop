@@ -74,7 +74,7 @@ async function handleGeocodeSearch(req: ApiRequest, res: ApiResponse) {
 }
 
 type ChartResolution =
-  | { ok: true; chart: NatalChart; name: string | null }
+  | { ok: true; chart: NatalChart; name: string | null; sourceKey: string }
   | { ok: false; reason: string; message: string };
 
 /**
@@ -128,7 +128,11 @@ async function resolveUserChart(userId: string): Promise<ChartResolution> {
   }
 
   const chart = computeNatalChart(profile.birth_date, profile.birth_time, { lat, lng });
-  return { ok: true, chart, name: profile.name ?? null };
+  // Stable key for whatever birth inputs produced this chart — if any of
+  // these ever change (edited birth details), the key changes too, so a
+  // cached narrative keyed on the old value is correctly treated as stale.
+  const sourceKey = `${profile.birth_date}|${profile.birth_time ?? ""}|${lat}|${lng}`;
+  return { ok: true, chart, name: profile.name ?? null, sourceKey };
 }
 
 async function handleNatalChart(req: ApiRequest, res: ApiResponse) {
@@ -156,7 +160,21 @@ async function handleNatalProfile(req: ApiRequest, res: ApiResponse) {
     return res.status(200).json({ success: false, reason: resolved.reason, message: resolved.message });
   }
 
-  const { chart, name } = resolved;
+  const { chart, name, sourceKey } = resolved;
+  const admin = supabaseAdmin();
+
+  // The personality profile is written once ever per birth-data set, then
+  // reused on every subsequent visit — no repeat Gemini calls for a
+  // narrative that would just be regenerated from the same inputs.
+  const { data: cached } = await admin
+    .from("profiles")
+    .select("natal_profile_narrative, natal_profile_source_key")
+    .eq("id", user.id)
+    .maybeSingle();
+  if (cached?.natal_profile_narrative && cached.natal_profile_source_key === sourceKey) {
+    return res.status(200).json({ success: true, narrative: cached.natal_profile_narrative });
+  }
+
   const fullName = name || "friend";
 
   const placementLines = chart.placements
@@ -186,6 +204,12 @@ Write the personality profile now, following the voice and structure rules exact
     const failure = result as GeminiFailure;
     return res.status(200).json({ success: false, reason: failure.reason });
   }
+
+  // Best-effort cache write — don't fail the request if this write fails.
+  await admin
+    .from("profiles")
+    .update({ natal_profile_narrative: result.text, natal_profile_source_key: sourceKey })
+    .eq("id", user.id);
 
   return res.status(200).json({ success: true, narrative: result.text });
 }
