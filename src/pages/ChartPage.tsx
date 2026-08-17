@@ -114,7 +114,7 @@ const TABS = [
   { id: "chart", label: "Chart", glyph: "✦" },
   { id: "numerology", label: "Numbers", glyph: "◆" },
   { id: "almanac", label: "Almanac", glyph: "☾" },
-  { id: "long-read", label: "Long Read", glyph: "🂠" },
+  { id: "long-read", label: "Long Read", glyph: "♠" },
 ] as const;
 
 type TabId = (typeof TABS)[number]["id"];
