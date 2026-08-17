@@ -87,8 +87,8 @@ export function ChartHomePage() {
 
             <div className="journal-surface chart-feed-card" style={{ padding: "1.75rem", ["--i" as any]: 1 }}>
               <SectionHeading wordA="The" wordB="Houses" ariaLabel="The Houses" />
-              <p className="text-[11px] text-muted-foreground mt-1 mb-3">
-                Tap any house for its full meaning, keywords and a reflective question.
+              <p className="chart-expand-hint" style={{ marginTop: "0.25rem" }}>
+                Tap any house to open its full meaning, keywords and a reflective question ↓
               </p>
               <div className="chart-placements-list chart-houses-grid">
                 {chart.houses.map((h) => (

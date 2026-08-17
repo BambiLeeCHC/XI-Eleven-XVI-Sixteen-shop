@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
 import { NatalChartWheel } from "../../components/journal/NatalChartWheel";
 import { SignIcon } from "../../components/journal/SkyGlyphs";
 import { explainAspectPair } from "../../lib/astrologyMeanings";
@@ -24,6 +24,25 @@ export function ChartSkyPanel({
 }) {
   const [pane, setPane] = useState<"placements" | "aspects">("placements");
   const hasAspects = chart.aspects.length > 0;
+
+  // The two panes sit side by side (for the slide transform) inside one
+  // flex row, which by default sizes the whole viewport to the *taller*
+  // of the two — leaving dead space under the shorter one. Measure the
+  // active pane's real content height instead and size the viewport to
+  // just that, with the height itself transitioning like the slide does.
+  const placementsPaneRef = useRef<HTMLDivElement>(null);
+  const aspectsPaneRef = useRef<HTMLDivElement>(null);
+  const [vpHeight, setVpHeight] = useState<number | undefined>(undefined);
+
+  useLayoutEffect(() => {
+    const activeEl = pane === "placements" ? placementsPaneRef.current : aspectsPaneRef.current;
+    if (!activeEl) return;
+    const measure = () => setVpHeight(activeEl.scrollHeight);
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(activeEl);
+    return () => observer.disconnect();
+  }, [pane, selectedBody, chart.placements, chart.aspects]);
 
   return (
     <div className="journal-surface chart-feed-card chart-feed-card--wheel chart-sky-panel" style={{ padding: "1.5rem", ["--i" as any]: 0 }}>
@@ -86,9 +105,10 @@ export function ChartSkyPanel({
         <span className={`chart-slide-toggle__indicator ${pane === "aspects" ? "is-right" : ""}`} aria-hidden="true" />
       </div>
 
-      <div className="chart-slide-viewport">
+      <div className="chart-slide-viewport" style={vpHeight !== undefined ? { height: vpHeight } : undefined}>
         <div className={`chart-slide-track ${pane === "aspects" ? "is-aspects" : ""}`}>
-          <div className="chart-slide-pane">
+          <div className="chart-slide-pane" ref={placementsPaneRef}>
+            <p className="chart-expand-hint">Tap any placement to read what it means</p>
             <div className="chart-placements-list">
               {chart.placements.map((p) => (
                 <PlacementRow
@@ -104,7 +124,7 @@ export function ChartSkyPanel({
             </p>
           </div>
 
-          <div className="chart-slide-pane">
+          <div className="chart-slide-pane" ref={aspectsPaneRef}>
             {hasAspects ? (
               <>
                 <p className="text-[12px] text-muted-foreground mb-3">

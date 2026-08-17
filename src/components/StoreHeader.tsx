@@ -16,8 +16,9 @@ export function StoreHeader() {
   const favCount = useQuery(api.favorites.getCount) ?? 0;
   const [mobileOpen, setMobileOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
-  const [policiesOpen, setPoliciesOpen] = useState(false);
-  const isPolicyPage = ["/privacy", "/terms", "/shipping-policy", "/returns"].includes(location.pathname);
+  const isPolicyOrContactPage = ["/privacy", "/terms", "/shipping-policy", "/returns", "/contact"].includes(
+    location.pathname,
+  );
 
   // Close mobile menu on route change
   useEffect(() => {
@@ -118,61 +119,6 @@ export function StoreHeader() {
                     <span className="nav-truenorth__sparkle" aria-hidden="true">✦</span>
                   </span>
                 </Link>
-
-                {/* Policies dropdown */}
-                <div
-                  className="relative"
-                  onMouseEnter={() => setPoliciesOpen(true)}
-                  onMouseLeave={() => setPoliciesOpen(false)}
-                >
-                  <button
-                    type="button"
-                    className={`px-3 py-2 text-[11px] tracking-[0.18em] uppercase font-semibold transition-all ${
-                      isPolicyPage ? "text-white" : "text-white/50 hover:text-white"
-                    }`}
-                    onClick={() => setPoliciesOpen((v) => !v)}
-                  >
-                    Policies
-                  </button>
-                  {policiesOpen && (
-                    <div
-                      className="absolute top-full left-0 pt-1 min-w-[190px]"
-                      style={{ zIndex: 50 }}
-                    >
-                      <div
-                        className="flex flex-col py-2 rounded-lg overflow-y-auto"
-                        style={{
-                          background: "#fdfbf9",
-                          border: "1px solid rgba(21,36,61,0.1)",
-                          boxShadow: "0 8px 24px rgba(21,36,61,0.15)",
-                          maxHeight: "calc(100svh - 110px)",
-                        }}
-                      >
-                        <Link to="/privacy" className="px-4 py-2 text-[11px] tracking-[0.08em] uppercase font-semibold hover:bg-black/[0.03]" style={{ color: "#15243d" }}>
-                          Privacy Policy
-                        </Link>
-                        <Link to="/terms" className="px-4 py-2 text-[11px] tracking-[0.08em] uppercase font-semibold hover:bg-black/[0.03]" style={{ color: "#15243d" }}>
-                          Terms of Service
-                        </Link>
-                        <Link to="/shipping-policy" className="px-4 py-2 text-[11px] tracking-[0.08em] uppercase font-semibold hover:bg-black/[0.03]" style={{ color: "#15243d" }}>
-                          Shipping Policy
-                        </Link>
-                        <Link to="/returns" className="px-4 py-2 text-[11px] tracking-[0.08em] uppercase font-semibold hover:bg-black/[0.03]" style={{ color: "#15243d" }}>
-                          Returns & Refunds
-                        </Link>
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-                <Link
-                  to="/contact"
-                  className={`px-3 py-2 text-[11px] tracking-[0.18em] uppercase font-semibold transition-all ${
-                    location.pathname.startsWith("/contact") ? "text-white" : "text-white/50 hover:text-white"
-                  }`}
-                >
-                  Contact
-                </Link>
               </nav>
             </div>
 
@@ -268,12 +214,14 @@ export function StoreHeader() {
                 </Link>
               )}
 
-              {/* Mobile menu button */}
+              {/* More menu — Policies + Contact live here on every breakpoint, so
+                  the main bar (Women / Men / About / Blog / True North) never
+                  gets cramped or loses items in desktop-width landscape frames. */}
               <button
                 type="button"
-                className="md:hidden text-white/55 hover:text-white p-2 transition-colors"
+                className={`text-white/55 hover:text-white p-2 transition-colors ${isPolicyOrContactPage ? "text-white" : ""}`}
                 onClick={() => setMobileOpen(!mobileOpen)}
-                aria-label="Toggle menu"
+                aria-label="More menu"
               >
                 {mobileOpen ? (
                   <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -341,15 +289,6 @@ export function StoreHeader() {
                 <span className="nav-truenorth__sparkle" aria-hidden="true">✦</span>
               </span>
             </Link>
-            <span className="w-px h-3 bg-white/[0.14]" />
-            <Link
-              to="/contact"
-              className={`px-2.5 py-1 text-[10px] tracking-[0.16em] uppercase font-semibold transition-all ${
-                location.pathname.startsWith("/contact") ? "text-white" : "text-white/55"
-              }`}
-            >
-              Contact
-            </Link>
           </nav>
         </div>
       </header>
@@ -359,7 +298,7 @@ export function StoreHeader() {
 
       {/* ── Mobile Menu Overlay ── */}
       {mobileOpen && (
-        <div className="fixed inset-0 z-50 md:hidden">
+        <div className="fixed inset-0 z-50">
           {/* Backdrop */}
           <div
             className="absolute inset-0 bg-black/60 backdrop-blur-sm"
