@@ -5,6 +5,7 @@ import { SubscriptionTierPicker, type SubscriptionTier } from "../../components/
 import { SectionBoundary } from "../../components/journal/SectionBoundary";
 import { api, useAction, useQuery } from "../../lib/backend";
 import {
+  ctaButtonStyle,
   NUMEROLOGY_ERROR_COPY,
   NumberRow,
   ProfileSection,
@@ -22,10 +23,13 @@ export function NumbersPage() {
   const sunSign = useSunSign(user);
   const subscription = useQuery(api.subscription.status, user ? {} : "skip");
   const numerologyUnlocked =
-    subscription?.entitled === true && subscription?.tier === "long_read_plus_numerology";
+    subscription?.numerologyUnlocked === true ||
+    (subscription?.entitled === true && subscription?.tier === "long_read_plus_numerology");
   const numerologyResult = useQuery<NumerologyResult>(api.numerology.get, numerologyUnlocked ? {} : "skip");
   const startTrialAction = useAction(api.subscription.startTrial);
+  const numerologyCheckoutAction = useAction(api.numerology.checkout);
   const [subscribingTier, setSubscribingTier] = useState<SubscriptionTier | null>(null);
+  const [unlocking, setUnlocking] = useState(false);
 
   const startTrial = async (tier: SubscriptionTier) => {
     setSubscribingTier(tier);
@@ -40,6 +44,21 @@ export function NumbersPage() {
       // surfaced implicitly by the button staying enabled
     } finally {
       setSubscribingTier(null);
+    }
+  };
+
+  const unlockNumerology = async () => {
+    setUnlocking(true);
+    try {
+      const result = await numerologyCheckoutAction({
+        successUrl: `${window.location.origin}/chart/numbers`,
+        cancelUrl: `${window.location.origin}/chart/numbers`,
+      });
+      if (result?.url) window.location.href = result.url;
+    } catch {
+      // surfaced implicitly by the button staying enabled
+    } finally {
+      setUnlocking(false);
     }
   };
 
@@ -83,6 +102,18 @@ export function NumbersPage() {
                 life — your Life Path, Expression, Soul Urge, Personality and this year's Personal
                 Year number. Where the chart shows what the sky was doing, numerology shows what you
                 were built to do with it.
+              </p>
+              <button
+                type="button"
+                onClick={unlockNumerology}
+                disabled={unlocking}
+                style={ctaButtonStyle}
+              >
+                {unlocking ? "Opening checkout…" : "Unlock numerology — $19.99, once"}
+              </button>
+              <p className="text-xs text-muted-foreground" style={{ marginTop: "-0.4rem" }}>
+                One payment, yours for good — or get it bundled into the Long Read + Numerology
+                subscription below.
               </p>
               <SubscriptionTierPicker
                 subscribingTier={subscribingTier}
