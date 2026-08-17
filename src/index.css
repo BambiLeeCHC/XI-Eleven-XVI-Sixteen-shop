@@ -3068,19 +3068,45 @@ footer {
 .welcome-line { display: flex; align-items: flex-start; gap: 0.75rem; }
 .welcome-line .jcol-tag { flex-shrink: 0; margin-top: 2px; }
 
-/* ── Chart page tabs (destination-style, matches Journal chip language) ── */
-.chart-tabs { display: flex; flex-wrap: wrap; gap: .5rem; margin: 0 0 .25rem; }
-.chart-tab {
-  font-size: 11px; letter-spacing: .12em; text-transform: uppercase; font-weight: 600;
-  padding: 8px 16px; border-radius: 999px; border: 1px solid rgba(92,155,205,.28);
-  background: rgba(255,255,255,.6); color: rgba(21,36,61,.6); transition: all .2s ease;
-  cursor: pointer;
+/* ── Chart page quick-nav: sticky scroll-spy dock, replaces click-through
+   tab pills. Everything renders in one continuous scroll now; this just
+   jumps + highlights, with a glassy "high-tech" glow on the active item. ── */
+.chart-quicknav {
+  position: sticky; top: 0; z-index: 5; margin: 0 -0.25rem .25rem;
+  padding: .4rem; border-radius: 16px;
+  background: rgba(12,20,36,.68); backdrop-filter: blur(10px) saturate(140%);
+  -webkit-backdrop-filter: blur(10px) saturate(140%);
+  border: 1px solid rgba(214,178,96,.28);
+  box-shadow: 0 8px 24px -12px rgba(8,16,32,.55);
 }
-.chart-tab:hover { border-color: rgba(185,149,69,.5); color: rgba(21,36,61,.85); }
-.chart-tab.is-active {
-  background: linear-gradient(135deg, var(--showroom-gold, #b99545), #8f6f2e);
-  border-color: transparent; color: #fff;
+.chart-quicknav__track { display: flex; gap: .3rem; overflow-x: auto; scrollbar-width: none; }
+.chart-quicknav__track::-webkit-scrollbar { display: none; }
+.chart-quicknav__item {
+  position: relative; flex: 1 1 0; display: flex; flex-direction: column; align-items: center;
+  gap: 2px; padding: 7px 10px; border-radius: 12px; border: 1px solid transparent;
+  background: transparent; color: rgba(243,233,210,.55); cursor: pointer;
+  font-size: 10px; letter-spacing: .1em; text-transform: uppercase; font-weight: 600;
+  transition: color .2s ease, background .2s ease, transform .2s ease;
+  white-space: nowrap;
 }
+.chart-quicknav__glyph { font-size: 15px; line-height: 1; filter: grayscale(1) brightness(1.6); transition: filter .25s ease; }
+.chart-quicknav__item:hover { color: rgba(243,233,210,.85); background: rgba(255,255,255,.06); }
+.chart-quicknav__item.is-active {
+  color: #1a1408; background: linear-gradient(135deg, #e9cf8a, var(--showroom-gold, #b99545));
+  border-color: rgba(255,241,204,.6);
+  box-shadow: 0 0 0 1px rgba(233,207,138,.35), 0 0 18px -2px rgba(233,207,138,.75);
+  transform: translateY(-1px);
+  animation: chart-quicknav-flash 1.8s ease-in-out infinite;
+}
+.chart-quicknav__item.is-active .chart-quicknav__glyph { filter: none; }
+@keyframes chart-quicknav-flash {
+  0%, 100% { box-shadow: 0 0 0 1px rgba(233,207,138,.35), 0 0 18px -2px rgba(233,207,138,.75); }
+  50% { box-shadow: 0 0 0 1px rgba(233,207,138,.55), 0 0 26px 2px rgba(233,207,138,1); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .chart-quicknav__item.is-active { animation: none; }
+}
+.chart-anchor-section { scroll-margin-top: 84px; margin-bottom: 1.5rem; }
 .chart-placements { display: flex; flex-direction: column; gap: 0; }
 .chart-placement {
   display: flex; justify-content: space-between; align-items: center;
@@ -3137,15 +3163,12 @@ footer {
   0%, 100% { text-shadow: 0 0 0 rgba(207,162,53,0); }
   50% { text-shadow: 0 0 18px rgba(207,162,53,.55), 0 0 34px rgba(207,162,53,.25); }
 }
+/* Scrapped the multi-column "Instagram feed" grid — reads as one clean,
+ * top-to-bottom stack of sections instead. */
 .chart-feed {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  display: flex;
+  flex-direction: column;
   gap: 1.25rem;
-  align-items: start;
-}
-@media (min-width: 860px) {
-  .chart-feed-card--wheel,
-  .chart-feed-card--wide { grid-column: span 2; }
 }
 .chart-feed-card {
   animation: chart-card-enter 0.7s cubic-bezier(.2,.8,.2,1) both;
