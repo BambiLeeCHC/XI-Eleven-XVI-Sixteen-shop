@@ -224,8 +224,8 @@ export const handlers: Record<string, Handler> = {
     return rows;
   },
 
-  "deepReadings.draw": async ({ spread } = {}) => {
-    return callApi("/api/deep-tarot-reading", { spread });
+  "deepReadings.draw": async ({ spread, situation } = {}) => {
+    return callApi("/api/deep-tarot-reading", { spread, situation });
   },
 
   /* ── pay-per-question follow-ups ─────────────────────────────────────── */
