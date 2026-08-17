@@ -76,15 +76,12 @@ export function DeepReadingPage() {
     try {
       const drawn = drawDeepSpread();
       setSpread(drawn);
+      // Send (and let the backend save) the full spread shape — the same
+      // one this page renders from — so reopening a saved Long Read later
+      // has real `card` objects to draw the plate art from instead of a
+      // flattened prompt-only shape that crashed CardArt on reload.
       const result = await drawAction({
-        spread: drawn.map(s => ({
-          position: s.slotName,
-          positionMeaning: s.slotQuestion,
-          name: s.card.name,
-          reversed: s.reversed,
-          keywords: s.card.keywords,
-          meaning: s.reversed ? s.card.reversed : s.card.upright,
-        })),
+        spread: drawn,
         situation: situation.trim() || undefined,
       });
       if (result?.success) setReading(result.reading);

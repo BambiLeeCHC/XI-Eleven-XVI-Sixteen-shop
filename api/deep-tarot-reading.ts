@@ -26,13 +26,22 @@ import {
   SUPPORT_FROM,
 } from "./_lib/resend.js";
 
+/** The same shape DeepReadingPage draws and renders from — a full Arcana
+ * card object per position, not a flattened prompt-only shape. Saving this
+ * exact shape to `deep_readings.spread` is what lets the page redraw the
+ * card art correctly the next time the reading is reopened; a flattened
+ * shape here used to crash the card-art render on reload (no `.card`). */
 interface SpreadCardInput {
-  position: string;
-  positionMeaning: string;
-  name: string;
+  slot: string;
+  slotName: string;
+  slotQuestion: string;
   reversed: boolean;
-  keywords: string[];
-  meaning: string;
+  card: {
+    name: string;
+    keywords: string[];
+    upright: string;
+    reversed: string;
+  };
 }
 
 const SYSTEM_PROMPT = `You are the XI · XVI Reader, writing "The Long Read" — the in-depth, paid tarot reading for the XI Eleven XVI Sixteen (xixvi.shop) brand. This reader paid specifically to go deeper on a situation they described to us. Your writing is direct, poignant, and specific — never a generic horoscope, never hedging language like "may" or "could," never a false or theatrical sense of authority.
@@ -55,10 +64,10 @@ function buildUserPrompt(
   genderIdentity?: string,
   sexualOrientation?: string,
 ): string {
-  const lines = spread.map(
-    (c, i) =>
-      `${i + 1}. Position "${c.position}" (${c.positionMeaning}) → ${c.name}${c.reversed ? ", REVERSED" : ", upright"}. Canonical meaning: ${c.meaning} Keywords: ${c.keywords.join(", ")}.`,
-  );
+  const lines = spread.map((c, i) => {
+    const meaning = c.reversed ? c.card.reversed : c.card.upright;
+    return `${i + 1}. Position "${c.slotName}" (${c.slotQuestion}) → ${c.card.name}${c.reversed ? ", REVERSED" : ", upright"}. Canonical meaning: ${meaning} Keywords: ${c.card.keywords.join(", ")}.`;
+  });
   const identityBits = [
     genderIdentity ? `gender identity: ${genderIdentity}` : null,
     sexualOrientation ? `sexual orientation: ${sexualOrientation}` : null,
