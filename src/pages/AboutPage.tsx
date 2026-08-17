@@ -13,28 +13,45 @@ if (typeof document !== "undefined" && !document.getElementById(styleId)) {
       50% { transform: translateY(-12px) rotate(1deg); }
     }
     @keyframes about-pulse-glow {
-      0%, 100% { opacity: 0.3; filter: blur(40px); }
-      50% { opacity: 0.6; filter: blur(60px); }
+      0%, 100% { opacity: 0.45; filter: blur(50px); transform: scale(1); }
+      50% { opacity: 0.85; filter: blur(80px); transform: scale(1.25); }
+    }
+    @keyframes about-entrance {
+      0% { opacity: 0; transform: translateY(46px) scale(0.92); filter: blur(10px); }
+      60% { filter: blur(0px); }
+      100% { opacity: 1; transform: translateY(0) scale(1); filter: blur(0px); }
+    }
+    @keyframes about-entrance-side-l {
+      0% { opacity: 0; transform: translateX(-60px) scale(0.9); filter: blur(8px); }
+      100% { opacity: 1; transform: translateX(0) scale(1); filter: blur(0px); }
+    }
+    @keyframes about-entrance-side-r {
+      0% { opacity: 0; transform: translateX(60px) scale(0.9); filter: blur(8px); }
+      100% { opacity: 1; transform: translateX(0) scale(1); filter: blur(0px); }
+    }
+    @keyframes about-grain-drift {
+      0%, 100% { transform: translate(0,0); }
+      50% { transform: translate(-2%, -1%); }
     }
     @keyframes about-shimmer {
       0% { background-position: -200% center; }
       100% { background-position: 200% center; }
     }
     @keyframes about-flash {
-      0%, 92%, 100% { opacity: 1; text-shadow: none; }
-      94% { opacity: 0.8; text-shadow: 0 0 20px rgba(196,141,255,0.8), 0 0 40px rgba(196,141,255,0.4); }
-      96% { opacity: 1; text-shadow: 0 0 30px rgba(255,158,184,0.8), 0 0 60px rgba(255,158,184,0.3); }
-      98% { opacity: 0.9; text-shadow: 0 0 15px rgba(245,201,122,0.6); }
+      0%, 85%, 100% { opacity: 1; text-shadow: none; }
+      88% { opacity: 0.85; text-shadow: 0 0 28px rgba(176,38,255,0.95), 0 0 56px rgba(176,38,255,0.55); }
+      92% { opacity: 1; text-shadow: 0 0 42px rgba(255,46,107,0.95), 0 0 84px rgba(255,46,107,0.45); }
+      96% { opacity: 0.92; text-shadow: 0 0 22px rgba(255,184,51,0.8); }
     }
     @keyframes about-flash-alt {
-      0%, 88%, 100% { opacity: 1; text-shadow: none; }
-      90% { opacity: 0.7; text-shadow: 0 0 25px rgba(255,158,184,0.9), 0 0 50px rgba(255,158,184,0.4); }
-      93% { opacity: 1; text-shadow: 0 0 20px rgba(196,141,255,0.7); }
-      96% { opacity: 0.85; text-shadow: 0 0 35px rgba(245,201,122,0.8), 0 0 70px rgba(245,201,122,0.3); }
+      0%, 80%, 100% { opacity: 1; text-shadow: none; }
+      84% { opacity: 0.75; text-shadow: 0 0 32px rgba(255,46,107,1), 0 0 64px rgba(255,46,107,0.55); }
+      89% { opacity: 1; text-shadow: 0 0 28px rgba(176,38,255,0.9); }
+      94% { opacity: 0.9; text-shadow: 0 0 46px rgba(255,184,51,0.95), 0 0 92px rgba(255,184,51,0.4); }
     }
     @keyframes about-glow-breathe {
-      0%, 100% { box-shadow: 0 0 30px rgba(196,141,255,0.05), inset 0 0 30px rgba(196,141,255,0.02); }
-      50% { box-shadow: 0 0 50px rgba(196,141,255,0.12), inset 0 0 50px rgba(196,141,255,0.04); }
+      0%, 100% { box-shadow: 0 0 44px rgba(176,38,255,0.18), inset 0 0 44px rgba(176,38,255,0.07); }
+      50% { box-shadow: 0 0 80px rgba(176,38,255,0.24), inset 0 0 80px rgba(176,38,255,0.14); }
     }
     @keyframes about-sparkle {
       0%, 100% { opacity: 0; transform: scale(0) rotate(0deg); }
@@ -49,24 +66,28 @@ if (typeof document !== "undefined" && !document.getElementById(styleId)) {
       50% { transform: scale(1.05); }
     }
     @keyframes about-orbit {
-      0% { transform: rotate(0deg) translateX(120px) rotate(0deg); }
-      100% { transform: rotate(360deg) translateX(120px) rotate(-360deg); }
+      0% { transform: rotate(0deg) translateX(180px) rotate(0deg); }
+      100% { transform: rotate(360deg) translateX(180px) rotate(-360deg); }
     }
     @keyframes about-orbit-2 {
-      0% { transform: rotate(120deg) translateX(90px) rotate(-120deg); }
-      100% { transform: rotate(480deg) translateX(90px) rotate(-480deg); }
+      0% { transform: rotate(120deg) translateX(135px) rotate(-120deg); }
+      100% { transform: rotate(480deg) translateX(135px) rotate(-480deg); }
     }
     @keyframes about-orbit-3 {
-      0% { transform: rotate(240deg) translateX(150px) rotate(-240deg); }
-      100% { transform: rotate(600deg) translateX(150px) rotate(-600deg); }
+      0% { transform: rotate(240deg) translateX(225px) rotate(-240deg); }
+      100% { transform: rotate(600deg) translateX(225px) rotate(-600deg); }
+    }
+    @keyframes about-orbit-4 {
+      0% { transform: rotate(60deg) translateX(280px) rotate(-60deg); }
+      100% { transform: rotate(-300deg) translateX(280px) rotate(300deg); }
     }
     @keyframes about-reveal {
       0% { opacity: 0; transform: translateY(30px); }
       100% { opacity: 1; transform: translateY(0); }
     }
     @keyframes about-logo-glow {
-      0%, 100% { filter: drop-shadow(0 0 15px rgba(196,141,255,0.15)) drop-shadow(0 0 30px rgba(245,201,122,0.08)); }
-      50% { filter: drop-shadow(0 0 25px rgba(196,141,255,0.3)) drop-shadow(0 0 50px rgba(245,201,122,0.15)); }
+      0%, 100% { filter: drop-shadow(0 0 15px rgba(176,38,255,0.15)) drop-shadow(0 0 30px rgba(255,184,51,0.176)); }
+      50% { filter: drop-shadow(0 0 25px rgba(176,38,255,0.3)) drop-shadow(0 0 50px rgba(255,184,51,0.15)); }
     }
   `;
   document.head.appendChild(style);
@@ -83,9 +104,9 @@ function FlashText({
   className?: string;
 }) {
   const gradients = {
-    primary: "linear-gradient(90deg, #c48dff, #e0c0ff, #fff, #e0c0ff, #c48dff)",
-    alt: "linear-gradient(90deg, #ff9eb8, #ffc0d0, #fff, #ffc0d0, #ff9eb8)",
-    gold: "linear-gradient(90deg, #f5c97a, #ffe0a0, #fff, #ffe0a0, #f5c97a)",
+    primary: "linear-gradient(90deg, #b026ff, #d896ff, #fff, #d896ff, #b026ff)",
+    alt: "linear-gradient(90deg, #ff2e6b, #ff7fa3, #fff, #ff7fa3, #ff2e6b)",
+    gold: "linear-gradient(90deg, #ffb833, #ffd166, #fff, #ffd166, #ffb833)",
   };
   const animations = {
     primary: "about-flash 4s ease-in-out infinite",
@@ -147,13 +168,13 @@ function RevealSection({ children, className = "", style = {} }: any) {
 
 /* ─── Floating Sparkles ──────────────────────────────────────────────── */
 function Sparkles() {
-  const sparkles = Array.from({ length: 8 }, (_, i) => ({
+  const sparkles = Array.from({ length: 22 }, (_, i) => ({
     id: i,
-    left: `${10 + Math.random() * 80}%`,
-    top: `${10 + Math.random() * 80}%`,
+    left: `${5 + Math.random() * 90}%`,
+    top: `${5 + Math.random() * 90}%`,
     delay: `${Math.random() * 5}s`,
-    duration: `${2 + Math.random() * 3}s`,
-    size: 3 + Math.random() * 4,
+    duration: `${1.6 + Math.random() * 3}s`,
+    size: 3 + Math.random() * 7,
   }));
   return (
     <>
@@ -167,7 +188,7 @@ function Sparkles() {
             width: s.size,
             height: s.size,
             borderRadius: "50%",
-            background: "rgba(245,201,122,0.8)",
+            background: "rgba(255,184,51,0.8)",
             animation: `about-sparkle ${s.duration} ease-in-out infinite`,
             animationDelay: s.delay,
             pointerEvents: "none",
@@ -196,7 +217,7 @@ export function AboutPage() {
             className="absolute inset-0"
             style={{
               background:
-                "radial-gradient(ellipse at 30% 20%, rgba(36,139,212,0.08) 0%, transparent 50%), radial-gradient(ellipse at 70% 80%, rgba(255,180,170,0.05) 0%, transparent 45%), radial-gradient(ellipse at 50% 50%, rgba(245,201,122,0.03) 0%, transparent 40%), #0e0a0f",
+                "radial-gradient(ellipse at 30% 20%, rgba(36,139,212,0.176) 0%, transparent 50%), radial-gradient(ellipse at 70% 80%, rgba(255,180,170,0.11) 0%, transparent 45%), radial-gradient(ellipse at 50% 50%, rgba(255,184,51,0.066) 0%, transparent 40%), #0e0a0f",
             }}
           />
           {/* Orbiting decorative elements */}
@@ -209,7 +230,7 @@ export function AboutPage() {
                 width: 4,
                 height: 4,
                 borderRadius: "50%",
-                background: "rgba(196,141,255,0.5)",
+                background: "rgba(176,38,255,0.5)",
                 animation: "about-orbit 20s linear infinite",
               }}
             />
@@ -221,7 +242,7 @@ export function AboutPage() {
                 width: 3,
                 height: 3,
                 borderRadius: "50%",
-                background: "rgba(255,158,184,0.4)",
+                background: "rgba(255,46,107,0.4)",
                 animation: "about-orbit-2 15s linear infinite",
               }}
             />
@@ -233,8 +254,20 @@ export function AboutPage() {
                 width: 2,
                 height: 2,
                 borderRadius: "50%",
-                background: "rgba(245,201,122,0.5)",
+                background: "rgba(255,184,51,0.5)",
                 animation: "about-orbit-3 25s linear infinite",
+              }}
+            />
+            <div
+              className="absolute"
+              style={{
+                top: "50%",
+                left: "50%",
+                width: 5,
+                height: 5,
+                borderRadius: "50%",
+                background: "rgba(176,38,255,0.35)",
+                animation: "about-orbit-4 32s linear infinite",
               }}
             />
           </div>
@@ -247,7 +280,8 @@ export function AboutPage() {
               style={{
                 width: 100,
                 height: 138,
-                animation: "about-float 6s ease-in-out infinite, about-logo-glow 4s ease-in-out infinite",
+                animation:
+                  "about-entrance 1s cubic-bezier(0.16,1,0.3,1) both, about-float 6s ease-in-out infinite 1s, about-logo-glow 4s ease-in-out infinite",
               }}
             >
               <img
@@ -259,13 +293,13 @@ export function AboutPage() {
 
             <p
               className="text-[10px] tracking-[0.5em] uppercase mb-5 font-medium"
-              style={{ color: "rgba(200,160,220,0.65)" }}
+              style={{ color: "rgba(200,160,220,0.65)", animation: "about-entrance 0.9s cubic-bezier(0.16,1,0.3,1) 0.15s both" }}
             >
               OUR STORY
             </p>
             <h1
               className="text-4xl md:text-6xl text-white mb-6 font-light leading-[1.1]"
-              style={{ fontFamily: "var(--font-display)" }}
+              style={{ fontFamily: "var(--font-display)", animation: "about-entrance 1s cubic-bezier(0.16,1,0.3,1) 0.3s both" }}
             >
               Crafted with{" "}
               <FlashText variant="primary">
@@ -276,7 +310,7 @@ export function AboutPage() {
             </h1>
             <p
               className="text-[14px] md:text-[16px] leading-relaxed max-w-xl mx-auto"
-              style={{ color: "rgba(21,36,61,0.7)" }}
+              style={{ color: "rgba(21,36,61,0.7)", animation: "about-entrance 1s cubic-bezier(0.16,1,0.3,1) 0.45s both" }}
             >
               XI Eleven XVI Sixteen is a{" "}
               <FlashText variant="gold">luxury fashion house</FlashText>{" "}
@@ -288,10 +322,13 @@ export function AboutPage() {
             </p>
 
             {/* Decorative divider */}
-            <div className="flex items-center justify-center gap-3 mt-10">
-              <div style={{ width: 40, height: 1, background: "linear-gradient(90deg, transparent, rgba(196,141,255,0.4))" }} />
-              <span style={{ color: "rgba(196,141,255,0.5)", fontSize: 10 }}>✦</span>
-              <div style={{ width: 40, height: 1, background: "linear-gradient(90deg, rgba(196,141,255,0.4), transparent)" }} />
+            <div
+              className="flex items-center justify-center gap-3 mt-10"
+              style={{ animation: "about-entrance 0.9s cubic-bezier(0.16,1,0.3,1) 0.6s both" }}
+            >
+              <div style={{ width: 40, height: 1, background: "linear-gradient(90deg, transparent, rgba(176,38,255,0.4))" }} />
+              <span style={{ color: "rgba(176,38,255,0.5)", fontSize: 10 }}>✦</span>
+              <div style={{ width: 40, height: 1, background: "linear-gradient(90deg, rgba(176,38,255,0.4), transparent)" }} />
             </div>
           </div>
         </section>
@@ -313,7 +350,7 @@ export function AboutPage() {
               width: 300,
               height: 300,
               borderRadius: "50%",
-              background: "rgba(196,141,255,0.04)",
+              background: "rgba(176,38,255,0.088)",
               animation: "about-pulse-glow 8s ease-in-out infinite",
               pointerEvents: "none",
             }}
@@ -323,7 +360,7 @@ export function AboutPage() {
               <div
                 className="inline-flex items-center gap-2 px-4 py-1.5 mb-6"
                 style={{
-                  background: "rgba(36,139,212,0.05)",
+                  background: "rgba(36,139,212,0.11)",
                   border: "1px solid rgba(36,139,212,0.12)",
                   borderRadius: "10px",
                 }}
@@ -382,20 +419,19 @@ export function AboutPage() {
                   key={item.step}
                   className="p-6 text-center group"
                   style={{
-                    background: "rgba(255,240,230,0.02)",
+                    background: "rgba(255,240,230,0.044)",
                     border: "1px solid rgba(92,155,205,0.15)",
                     borderRadius: "16px",
-                    animation: "about-glow-breathe 6s ease-in-out infinite",
-                    animationDelay: item.delay,
-                    transition: "border-color 0.4s, background 0.4s",
+                    animation: `about-entrance 0.8s cubic-bezier(0.16,1,0.3,1) ${item.delay} both, about-glow-breathe 6s ease-in-out infinite ${item.delay}`,
+                    transition: "border-color 0.4s, background 0.4s, transform 0.3s",
                   }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.borderColor = "rgba(196,141,255,0.2)";
-                    e.currentTarget.style.background = "rgba(36,139,212,0.04)";
+                    e.currentTarget.style.borderColor = "rgba(176,38,255,0.2)";
+                    e.currentTarget.style.background = "rgba(36,139,212,0.088)";
                   }}
                   onMouseLeave={(e) => {
                     e.currentTarget.style.borderColor = "rgba(92,155,205,0.15)";
-                    e.currentTarget.style.background = "rgba(255,240,230,0.02)";
+                    e.currentTarget.style.background = "rgba(255,240,230,0.044)";
                   }}
                 >
                   <span className="text-2xl block mb-3">{item.icon}</span>
@@ -436,7 +472,7 @@ export function AboutPage() {
               width: 250,
               height: 250,
               borderRadius: "50%",
-              background: "rgba(100,220,180,0.03)",
+              background: "rgba(100,220,180,0.066)",
               animation: "about-pulse-glow 10s ease-in-out infinite 2s",
               pointerEvents: "none",
             }}
@@ -527,7 +563,7 @@ export function AboutPage() {
               fontFamily: "var(--font-display)",
               fontWeight: 200,
               letterSpacing: "0.1em",
-              color: "rgba(200,140,255,0.015)",
+              color: "rgba(200,140,255,0.033)",
               whiteSpace: "nowrap",
             }}
           >
@@ -568,8 +604,8 @@ export function AboutPage() {
               <div
                 className="p-8 relative overflow-hidden"
                 style={{
-                  background: "rgba(36,139,212,0.03)",
-                  border: "1px solid rgba(36,139,212,0.08)",
+                  background: "rgba(36,139,212,0.066)",
+                  border: "1px solid rgba(36,139,212,0.176)",
                   borderRadius: "20px",
                   animation: "about-glow-breathe 6s ease-in-out infinite",
                 }}
@@ -580,14 +616,14 @@ export function AboutPage() {
                   style={{
                     width: 80,
                     height: 80,
-                    background: "radial-gradient(circle at top right, rgba(196,141,255,0.08), transparent 70%)",
+                    background: "radial-gradient(circle at top right, rgba(176,38,255,0.176), transparent 70%)",
                   }}
                 />
                 <h3
                   className="text-5xl font-light text-white mb-2"
                   style={{
                     fontFamily: "var(--font-display)",
-                    background: "linear-gradient(135deg, #c48dff, #e0c0ff)",
+                    background: "linear-gradient(135deg, #b026ff, #d896ff)",
                     backgroundSize: "200% 100%",
                     animation: "about-shimmer 4s linear infinite",
                     WebkitBackgroundClip: "text",
@@ -627,8 +663,8 @@ export function AboutPage() {
               <div
                 className="p-8 relative overflow-hidden"
                 style={{
-                  background: "rgba(255,180,170,0.03)",
-                  border: "1px solid rgba(255,180,170,0.08)",
+                  background: "rgba(255,180,170,0.066)",
+                  border: "1px solid rgba(255,180,170,0.176)",
                   borderRadius: "20px",
                   animation: "about-glow-breathe 6s ease-in-out infinite 3s",
                 }}
@@ -638,14 +674,14 @@ export function AboutPage() {
                   style={{
                     width: 80,
                     height: 80,
-                    background: "radial-gradient(circle at top right, rgba(85,191,255,0.08), transparent 70%)",
+                    background: "radial-gradient(circle at top right, rgba(85,191,255,0.176), transparent 70%)",
                   }}
                 />
                 <h3
                   className="text-5xl font-light text-white mb-2"
                   style={{
                     fontFamily: "var(--font-display)",
-                    background: "linear-gradient(135deg, #ff9eb8, #f5c97a)",
+                    background: "linear-gradient(135deg, #ff2e6b, #ffb833)",
                     backgroundSize: "200% 100%",
                     animation: "about-shimmer 4s linear infinite 1s",
                     WebkitBackgroundClip: "text",
@@ -683,19 +719,19 @@ export function AboutPage() {
             <div
               className="mt-10 p-8 text-center relative overflow-hidden"
               style={{
-                background: "rgba(255,240,230,0.02)",
+                background: "rgba(255,240,230,0.044)",
                 border: "1px solid rgba(92,155,205,0.15)",
                 borderRadius: "20px",
               }}
             >
               {/* Decorative lines */}
               <div className="flex items-center justify-center gap-4 mb-5">
-                <div style={{ width: 50, height: 1, background: "linear-gradient(90deg, transparent, rgba(196,141,255,0.3))" }} />
+                <div style={{ width: 50, height: 1, background: "linear-gradient(90deg, transparent, rgba(176,38,255,0.3))" }} />
                 <span
                   className="text-2xl"
                   style={{
                     fontFamily: "var(--font-display)",
-                    background: "linear-gradient(135deg, #c48dff, #ff9eb8, #f5c97a)",
+                    background: "linear-gradient(135deg, #b026ff, #ff2e6b, #ffb833)",
                     backgroundSize: "200% 100%",
                     animation: "about-shimmer 3s linear infinite",
                     WebkitBackgroundClip: "text",
@@ -706,7 +742,7 @@ export function AboutPage() {
                 >
                   9
                 </span>
-                <div style={{ width: 50, height: 1, background: "linear-gradient(90deg, rgba(255,158,184,0.3), transparent)" }} />
+                <div style={{ width: 50, height: 1, background: "linear-gradient(90deg, rgba(255,46,107,0.3), transparent)" }} />
               </div>
               <p
                 className="text-[10px] tracking-[0.3em] uppercase mb-4 font-semibold"
@@ -791,19 +827,20 @@ export function AboutPage() {
                   key={value.title}
                   className="flex gap-4 p-6 group"
                   style={{
-                    background: "rgba(255,240,230,0.02)",
+                    background: "rgba(255,240,230,0.044)",
                     border: "1px solid rgba(92,155,205,0.15)",
                     borderRadius: "16px",
+                    animation: `about-entrance 0.8s cubic-bezier(0.16,1,0.3,1) ${_i * 0.12}s both`,
                     transition: "border-color 0.4s, background 0.4s, transform 0.3s",
                   }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.borderColor = "rgba(196,141,255,0.15)";
-                    e.currentTarget.style.background = "rgba(36,139,212,0.03)";
+                    e.currentTarget.style.borderColor = "rgba(176,38,255,0.15)";
+                    e.currentTarget.style.background = "rgba(36,139,212,0.066)";
                     e.currentTarget.style.transform = "translateY(-2px)";
                   }}
                   onMouseLeave={(e) => {
                     e.currentTarget.style.borderColor = "rgba(92,155,205,0.15)";
-                    e.currentTarget.style.background = "rgba(255,240,230,0.02)";
+                    e.currentTarget.style.background = "rgba(255,240,230,0.044)";
                     e.currentTarget.style.transform = "translateY(0)";
                   }}
                 >
@@ -847,7 +884,7 @@ export function AboutPage() {
               width: 400,
               height: 200,
               borderRadius: "50%",
-              background: "radial-gradient(ellipse, rgba(196,141,255,0.06), transparent 70%)",
+              background: "radial-gradient(ellipse, rgba(176,38,255,0.132), transparent 70%)",
               animation: "about-pulse-glow 8s ease-in-out infinite",
               pointerEvents: "none",
             }}
@@ -893,11 +930,11 @@ export function AboutPage() {
               className="inline-block px-12 py-3.5 text-[11px] tracking-[0.25em] uppercase font-bold text-white transition-all glass-shimmer"
               style={{
                 background:
-                  "linear-gradient(135deg, #c48dff 0%, #ff9eb8 50%, #f5c97a 100%)",
+                  "linear-gradient(135deg, #b026ff 0%, #ff2e6b 50%, #ffb833 100%)",
                 backgroundSize: "200% 100%",
                 animation: "gradient-loop 6s ease-in-out infinite",
                 borderRadius: "12px",
-                boxShadow: "0 4px 25px rgba(196,141,255,0.2), 0 2px 10px rgba(255,158,184,0.15)",
+                boxShadow: "0 4px 25px rgba(176,38,255,0.2), 0 2px 10px rgba(255,46,107,0.15)",
               }}
             >
               SHOP NOW
