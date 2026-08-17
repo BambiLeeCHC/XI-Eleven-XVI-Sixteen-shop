@@ -108,11 +108,15 @@ export function StoreHeader() {
                 </Link>
                 <Link
                   to="/chart"
-                  className={`px-3 py-2 text-[11px] tracking-[0.18em] uppercase font-semibold transition-all ${
+                  className={`nav-truenorth px-3 py-2 text-[11px] tracking-[0.18em] uppercase font-semibold transition-all ${
                     location.pathname.startsWith("/chart") ? "text-white" : "text-white/50 hover:text-white"
                   }`}
                 >
-                  True North
+                  <span className="nav-truenorth__label">
+                    True North
+                    <span className="nav-truenorth__orb" aria-hidden="true" />
+                    <span className="nav-truenorth__sparkle" aria-hidden="true">✦</span>
+                  </span>
                 </Link>
 
                 {/* Policies dropdown */}
@@ -327,11 +331,15 @@ export function StoreHeader() {
             <span className="w-px h-3 bg-white/[0.14]" />
             <Link
               to="/chart"
-              className={`px-2.5 py-1 text-[10px] tracking-[0.16em] uppercase font-semibold transition-all ${
+              className={`nav-truenorth px-2.5 py-1 text-[10px] tracking-[0.16em] uppercase font-semibold transition-all ${
                 location.pathname.startsWith("/chart") ? "text-white" : "text-white/55"
               }`}
             >
-              True North
+              <span className="nav-truenorth__label">
+                True North
+                <span className="nav-truenorth__orb" aria-hidden="true" />
+                <span className="nav-truenorth__sparkle" aria-hidden="true">✦</span>
+              </span>
             </Link>
             <span className="w-px h-3 bg-white/[0.14]" />
             <Link

@@ -107,6 +107,17 @@ export function fullNumerologyProfile(fullName: string, birthDate: string): Nume
   };
 }
 
+/** Plain-language "how we got this" line per category — shown above the
+ * number itself so the math isn't a black box before the reading. */
+export const NUMEROLOGY_CALC_EXPLAIN: Record<string, string> = {
+  lifePath: "Every digit of your full birth date, added together and reduced to one number.",
+  expression: "Every letter of your full birth name, converted to a number and reduced.",
+  soulUrge: "Just the vowels in your full name, converted to numbers and reduced.",
+  personality: "Just the consonants in your full name, converted to numbers and reduced.",
+  birthday: "The day of the month you were born, reduced on its own.",
+  personalYear: "Your birth month and day, added to the current year and reduced.",
+};
+
 /** Short, brand-voiced one-liners per number — used as the base copy the
  * numerology endpoint's AI narrative is written against (kept factual/plain
  * here; the endpoint adds the personalized narrative on top). */
