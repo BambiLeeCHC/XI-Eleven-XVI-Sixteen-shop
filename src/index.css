@@ -3332,6 +3332,61 @@ footer {
   animation-delay: calc(var(--i, 0) * 0.3s);
 }
 
+/* ── Your Sky panel: wheel + ASC/MC fixed on top, Placements/Aspects
+   slide underneath as one consolidated card instead of three stacked
+   ones. ──────────────────────────────────────────────────────────── */
+.chart-slide-toggle {
+  position: relative;
+  display: flex;
+  border: 1px solid rgba(29,47,79,.14);
+  border-radius: 999px;
+  padding: 3px;
+  margin-bottom: 1rem;
+  background: rgba(255,255,255,.5);
+}
+.chart-slide-toggle__btn {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  border: none;
+  background: none;
+  padding: 0.5rem 0.6rem;
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: rgba(29,47,79,.55);
+  cursor: pointer;
+  transition: color 0.25s ease;
+}
+.chart-slide-toggle__btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.chart-slide-toggle__btn.is-active { color: #1d2f4f; }
+.chart-slide-toggle__indicator {
+  position: absolute;
+  top: 3px; bottom: 3px; left: 3px;
+  width: calc(50% - 3px);
+  border-radius: 999px;
+  background: linear-gradient(160deg, #f7e2ad, #cfa235 65%, #f2d992);
+  box-shadow: 0 3px 10px rgba(185,149,69,.35);
+  transition: transform 0.3s cubic-bezier(.2,.8,.2,1);
+}
+.chart-slide-toggle__indicator.is-right { transform: translateX(100%); }
+
+.chart-slide-viewport { overflow: hidden; }
+.chart-slide-track {
+  display: flex;
+  width: 200%;
+  transform: translateX(0);
+  transition: transform 0.35s cubic-bezier(.2,.8,.2,1);
+}
+.chart-slide-track.is-aspects { transform: translateX(-50%); }
+.chart-slide-pane { width: 50%; flex-shrink: 0; }
+.chart-slide-pane:first-child { padding-right: 0.4rem; }
+.chart-slide-pane:last-child { padding-left: 0.4rem; }
+@media (prefers-reduced-motion: reduce) {
+  .chart-slide-track, .chart-slide-toggle__indicator { transition: none; }
+}
+
 /* ── Chart page: personality profile, sectioned with collage headers ── */
 .chart-profile-card__heading { margin-bottom: 1.25rem; }
 .chart-profile-sections { display: flex; flex-direction: column; gap: 1.5rem; }

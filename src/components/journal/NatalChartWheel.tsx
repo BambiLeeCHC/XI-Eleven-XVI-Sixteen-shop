@@ -1,4 +1,5 @@
 import { memo, useMemo, useState } from "react";
+import { PlanetIconG, SignIconG } from "./SkyGlyphs";
 
 interface WheelPlacement {
   body: string;
@@ -25,16 +26,6 @@ const SIGNS = [
   "Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo",
   "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces",
 ];
-
-const SIGN_GLYPH: Record<string, string> = {
-  Aries: "♈", Taurus: "♉", Gemini: "♊", Cancer: "♋", Leo: "♌", Virgo: "♍",
-  Libra: "♎", Scorpio: "♏", Sagittarius: "♐", Capricorn: "♑", Aquarius: "♒", Pisces: "♓",
-};
-
-const BODY_GLYPH: Record<string, string> = {
-  Sun: "☉", Moon: "☽", Mercury: "☿", Venus: "♀", Mars: "♂", Jupiter: "♃",
-  Saturn: "♄", Uranus: "♅", Neptune: "♆", Pluto: "♇",
-};
 
 // Harmonious aspects read as warm/gold, tense ones as a soft rust, neutral
 // (conjunction) as ink — a quick-glance read before you click into detail.
@@ -118,11 +109,9 @@ export const NatalChartWheel = memo(function NatalChartWheel({
         const p1 = polar(CENTER, CENTER, SIGN_RING_R, startAngle);
         const label = polar(CENTER, CENTER, SIGN_RING_R + 14, midAngle);
         return (
-          <g key={sign}>
+          <g key={sign} color="rgba(29,47,79,0.6)">
             <line x1={CENTER} y1={CENTER} x2={p1.x} y2={p1.y} stroke="rgba(29,47,79,0.08)" strokeWidth={1} />
-            <text x={label.x} y={label.y} textAnchor="middle" dominantBaseline="middle" fontSize={13} fill="rgba(29,47,79,0.55)">
-              {SIGN_GLYPH[sign]}
-            </text>
+            <SignIconG sign={sign} x={label.x} y={label.y} size={13} />
           </g>
         );
       })}
@@ -184,9 +173,9 @@ export const NatalChartWheel = memo(function NatalChartWheel({
             onMouseLeave={() => setHovered(null)}
           >
             <circle cx={pos.x} cy={pos.y} r={active ? 12 : 10} fill={active ? "#1d2f4f" : "#fff"} stroke="rgba(29,47,79,0.5)" strokeWidth={1} />
-            <text x={pos.x} y={pos.y} fontSize={11} textAnchor="middle" dominantBaseline="central" fill={active ? "#f3e9d2" : "#1d2f4f"}>
-              {BODY_GLYPH[p.body] ?? p.body[0]}
-            </text>
+            <g color={active ? "#f3e9d2" : "#1d2f4f"}>
+              <PlanetIconG body={p.body} x={pos.x} y={pos.y} size={13} />
+            </g>
             {p.retrograde && (
               <text x={pos.x + 10} y={pos.y - 10} fontSize={8} fill="rgba(178,84,66,0.8)">℞</text>
             )}

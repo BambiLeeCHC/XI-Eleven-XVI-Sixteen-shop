@@ -1,16 +1,13 @@
-import { useCallback, useState } from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { SEO } from "../../components/SEO";
 import { TrueNorthAtmosphere } from "../../components/journal/TrueNorthAtmosphere";
-import { NatalChartWheel } from "../../components/journal/NatalChartWheel";
 import { api, invalidateQueries, useQuery } from "../../lib/backend";
-import { explainAspectPair } from "../../lib/astrologyMeanings";
+import { ChartSkyPanel } from "./ChartSkyPanel";
 import {
   HouseRow,
   PROFILE_ERROR_COPY,
-  PlacementRow,
   ProfileSection,
-  SIGN_GLYPH,
   SectionHeading,
   TrueNorthHero,
   TrueNorthSignedOutTeaser,
@@ -26,11 +23,6 @@ import type { NatalChartResult, NatalProfileResult } from "./shared";
 export function ChartHomePage() {
   const [selectedBody, setSelectedBody] = useState<string | null>(null);
   const [expandedHouse, setExpandedHouse] = useState<number | null>(null);
-
-  const handleSelectBody = useCallback(
-    (b: string) => setSelectedBody((cur) => (cur === b ? null : b)),
-    [],
-  );
 
   const user = useQuery(api.auth.currentUser);
   const chartResult = useQuery<NatalChartResult>(api.natalChart.get, user ? {} : "skip");
@@ -90,83 +82,9 @@ export function ChartHomePage() {
 
         {!loading && chart && (
           <div className="chart-feed">
-            <div className="journal-surface chart-feed-card chart-feed-card--wheel" style={{ padding: "1.5rem", ["--i" as any]: 0 }}>
-              <SectionHeading wordA="Your" wordB="Sky" ariaLabel="Your Sky" />
-              <NatalChartWheel
-                placements={chart.placements}
-                houses={chart.houses}
-                aspects={chart.aspects}
-                ascendantDegree={chart.ascendantDegree}
-                onSelectBody={handleSelectBody}
-                selectedBody={selectedBody}
-              />
-              <p className="text-[11px] text-muted-foreground text-center mt-2">
-                Tap a planet to read what it means for you. Gold lines are easy aspects, rust lines are
-                tense ones.
-              </p>
-            </div>
+            <ChartSkyPanel chart={chart} selectedBody={selectedBody} setSelectedBody={setSelectedBody} />
 
             <div className="journal-surface chart-feed-card" style={{ padding: "1.75rem", ["--i" as any]: 1 }}>
-              <SectionHeading wordA="Your" wordB="Placements" ariaLabel="Your Placements" />
-              <div style={{ display: "flex", justifyContent: "space-around", marginBottom: "1.25rem", textAlign: "center" }}>
-                <div>
-                  <p className="text-[10px] uppercase tracking-wide text-muted-foreground mb-1">Ascendant</p>
-                  <span className="jcol-tag jcol-tag--sm jcol-lilac jcol-type">
-                    {SIGN_GLYPH[chart.ascendant] ?? ""} {chart.ascendant}
-                  </span>
-                </div>
-                <div>
-                  <p className="text-[10px] uppercase tracking-wide text-muted-foreground mb-1">Midheaven</p>
-                  <span className="jcol-tag jcol-tag--sm jcol-blush jcol-type">
-                    {SIGN_GLYPH[chart.midheaven] ?? ""} {chart.midheaven}
-                  </span>
-                </div>
-              </div>
-              {chart.approximateTime && (
-                <p className="text-[12px] text-muted-foreground italic mb-3">
-                  No birth time on file — this chart uses local noon, so your Ascendant, houses and Moon
-                  placement may shift once you add your exact birth time to your account.
-                </p>
-              )}
-              <div className="chart-placements-list">
-                {chart.placements.map((p) => (
-                  <PlacementRow
-                    key={p.body}
-                    placement={p}
-                    expanded={selectedBody === p.body}
-                    onToggle={() => setSelectedBody((cur) => (cur === p.body ? null : p.body))}
-                  />
-                ))}
-              </div>
-              <p className="text-[11px] text-muted-foreground mt-3">
-                {chart.zodiac} zodiac · {chart.houseSystem} houses
-              </p>
-            </div>
-
-            {chart.aspects.length > 0 && (
-              <div className="journal-surface chart-feed-card" style={{ padding: "1.75rem", ["--i" as any]: 2 }}>
-                <SectionHeading wordA="Tightest" wordB="Aspects" ariaLabel="Your Tightest Aspects" />
-                <p className="text-[12px] text-muted-foreground mb-3">
-                  The angles between your planets — the tighter the orb, the stronger the effect. Gold-toned
-                  aspects tend to feel easy; rust-toned ones create the friction that actually drives growth.
-                </p>
-                <div className="flex flex-col gap-2">
-                  {chart.aspects.slice(0, 8).map((a, i) => (
-                    <div key={i} className="chart-aspect-row">
-                      <div className="chart-aspect-row__head">
-                        <span className="chart-aspect-row__label">
-                          {a.bodyA} <span className="chart-aspect-row__type">{a.aspect}</span> {a.bodyB}
-                        </span>
-                        <span className="chart-aspect-row__orb">{a.orb.toFixed(1)}° orb</span>
-                      </div>
-                      <p className="chart-aspect-row__explain">{explainAspectPair(a.bodyA, a.bodyB, a.aspect)}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            <div className="journal-surface chart-feed-card" style={{ padding: "1.75rem", ["--i" as any]: 3 }}>
               <SectionHeading wordA="The" wordB="Houses" ariaLabel="The Houses" />
               <p className="text-[11px] text-muted-foreground mt-1 mb-3">
                 Tap any house for its full meaning, keywords and a reflective question.
