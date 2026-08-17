@@ -2,6 +2,7 @@ import { Link, useLocation } from "react-router-dom";
 import { api, useQuery } from "../../lib/backend";
 import { explainHouseFull, explainPlacement, explainSignInHouse } from "../../lib/astrologyMeanings";
 import { NUMEROLOGY_CALC_EXPLAIN } from "../../lib/numerology";
+import { SignIcon } from "../../components/journal/SkyGlyphs";
 
 /* ═══════════════════════════════════════════════════════════════════════
    TRUE NORTH — shared types, copy, styling and small components used
@@ -137,7 +138,7 @@ export function PlacementRow({
         <span className="chart-placement__body">{body}</span>
         <span className="chart-placement-row__head-right">
           <span className={`jcol-tag jcol-tag--sm jcol-${retrograde ? "kraft" : "ink"} jcol-type`}>
-            {SIGN_GLYPH[sign] ?? ""} {sign}
+            <SignIcon sign={sign} size={13} /> {sign}
             {house ? ` · H${house}` : ""}
             {retrograde ? " · Rx" : ""}
           </span>
@@ -170,7 +171,7 @@ export function HouseRow({
         </span>
         <span className="chart-placement-row__head-right">
           <span className="jcol-tag jcol-tag--sm jcol-lilac jcol-type">
-            {SIGN_GLYPH[houseCusp.sign] ?? ""} {houseCusp.sign}
+            <SignIcon sign={houseCusp.sign} size={13} /> {houseCusp.sign}
           </span>
           <span className="chart-placement-row__chevron" aria-hidden="true">▾</span>
         </span>
@@ -186,7 +187,7 @@ export function HouseRow({
             ))}
           </div>
           <p className="chart-house-row__sign-heading">
-            {SIGN_GLYPH[houseCusp.sign] ?? ""} {houseCusp.sign} on this cusp
+            <SignIcon sign={houseCusp.sign} size={13} /> {houseCusp.sign} on this cusp
           </p>
           <p className="chart-house-row__sign-explain">{explainSignInHouse(houseCusp.sign, houseCusp.house)}</p>
           <p className="chart-house-row__question">{full.question}</p>
