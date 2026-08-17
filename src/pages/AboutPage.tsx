@@ -462,7 +462,10 @@ export function AboutPage() {
         {/* ── Sustainability ── */}
         <section
           className="py-20 px-6 relative overflow-hidden"
-          style={{ borderTop: "1px solid rgba(92,155,205,0.15)" }}
+          style={{
+            background: "#0e0a0f",
+            borderTop: "1px solid rgba(92,155,205,0.15)",
+          }}
         >
           <div
             className="absolute"
@@ -774,7 +777,10 @@ export function AboutPage() {
         {/* ── Core Values ── */}
         <section
           className="py-20 px-6 relative"
-          style={{ borderTop: "1px solid rgba(92,155,205,0.15)" }}
+          style={{
+            background: "#0e0a0f",
+            borderTop: "1px solid rgba(92,155,205,0.15)",
+          }}
         >
           <RevealSection className="max-w-4xl mx-auto">
             <div className="text-center mb-14">
