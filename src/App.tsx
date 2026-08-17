@@ -26,7 +26,10 @@ import {
   JournalPage,
   JournalPostPage,
   DeepReadingPage,
-  ChartPage,
+  ChartHomePage,
+  NumbersPage,
+  AlmanacTNPage,
+  LongReadPromoPage,
   WelcomePage,
 } from "./pages";
 
@@ -56,7 +59,10 @@ function App() {
             <Route path="/journal" element={<JournalPage />} />
             <Route path="/journal/deep-reading" element={<DeepReadingPage />} />
             <Route path="/journal/:slug" element={<JournalPostPage />} />
-            <Route path="/chart" element={<ChartPage />} />
+            <Route path="/chart" element={<ChartHomePage />} />
+            <Route path="/chart/numbers" element={<NumbersPage />} />
+            <Route path="/chart/almanac" element={<AlmanacTNPage />} />
+            <Route path="/chart/long-read" element={<LongReadPromoPage />} />
             <Route path="/welcome" element={<WelcomePage />} />
 
             {/* Protected routes */}
