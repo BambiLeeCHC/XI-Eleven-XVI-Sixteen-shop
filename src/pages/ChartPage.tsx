@@ -526,10 +526,22 @@ export function ChartPage() {
             )}
 
             {numerologyUnlocked && numerologyResult && !numerologyResult.success && (
-              <p className="text-sm text-red-600">
-                {NUMEROLOGY_ERROR_COPY[numerologyResult.reason ?? ""] ??
-                  "Couldn't write your numerology narrative just now — try again shortly."}
-              </p>
+              <>
+                {numerologyResult.numbers && (
+                  <div className="chart-placements">
+                    {Object.entries(numerologyResult.numbers).map(([key, value]) => (
+                      <div key={key} className="chart-placement">
+                        <span className="chart-placement__body">{NUMEROLOGY_LABELS[key] ?? key}</span>
+                        <span className="jcol-tag jcol-tag--sm jcol-gold jcol-type">{value}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                <p className="text-sm text-red-600">
+                  {NUMEROLOGY_ERROR_COPY[numerologyResult.reason ?? ""] ??
+                    "Couldn't write your numerology narrative just now — try again shortly."}
+                </p>
+              </>
             )}
 
             {numerologyUnlocked && numerologyResult?.success && (
