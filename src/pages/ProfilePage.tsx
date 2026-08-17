@@ -46,7 +46,7 @@ function BirthDetailsCard({ user }: { user: any }) {
       </p>
       <p className="text-[12px] text-slate-500 mb-4">
         {hasChart
-          ? "Powers your free natal chart on the Chart page."
+          ? "Powers your free natal chart on the True North page."
           : "Add these to unlock your free natal chart — it's blocked until birth date and location are set."}
       </p>
 
@@ -164,7 +164,7 @@ export function ProfilePage() {
           >
             <span className="text-xl mb-2 block">🔮</span>
             <span className="text-[11px] tracking-wider uppercase text-slate-500">
-              My Chart
+              My True North
             </span>
           </Link>
           <Link

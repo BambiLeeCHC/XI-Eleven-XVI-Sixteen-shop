@@ -378,7 +378,7 @@ export function ChartPage() {
   const chartError = chartResult && !chartResult.success ? chartResult.message ?? "Couldn't generate your chart." : null;
   const sunSign = chart?.placements?.find((p) => p.body === "Sun")?.sign;
 
-  const pageTitle = "The Chart — Natal Chart, Numerology & Almanac — XI · XVI";
+  const pageTitle = "True North — Natal Chart, Numerology & Almanac — XI · XVI";
 
   // Signed-out: marketing teaser for the whole destination.
   if (!user) {
@@ -390,9 +390,9 @@ export function ChartPage() {
           <div className="journal-surface journal-hero" style={{ textAlign: "center", position: "relative" }}>
             <span className="jcol-patch jcol-patch--a" aria-hidden="true" />
             <span className="jcol-tape jcol-tape--tl" aria-hidden="true" />
-            <h1 className="journal-article__title--collage" aria-label="Your Chart">
-              <span className="jcol-tag jcol-gold jcol-display" style={{ transform: "rotate(-2deg)" }}>Your</span>
-              <span className="jcol-tag jcol-ink jcol-grotesk" style={{ transform: "rotate(1.5deg)" }}>Chart</span>
+            <h1 className="journal-article__title--collage" aria-label="True North">
+              <span className="jcol-tag jcol-gold jcol-display" style={{ transform: "rotate(-2deg)" }}>True</span>
+              <span className="jcol-tag jcol-ink jcol-grotesk" style={{ transform: "rotate(1.5deg)" }}>North</span>
             </h1>
             <p className="text-sm text-muted-foreground mb-6">
               The exact sky at the moment you were born — free, in full, the moment you register.
@@ -423,9 +423,9 @@ export function ChartPage() {
         <div className="journal-surface journal-hero" style={{ position: "relative" }}>
           <span className="jcol-patch jcol-patch--a" aria-hidden="true" />
           <span className="jcol-tape jcol-tape--tl" aria-hidden="true" />
-          <h1 className="journal-article__title--collage" aria-label="The Chart">
-            <span className="jcol-tag jcol-gold jcol-display" style={{ transform: "rotate(-2deg)" }}>The</span>
-            <span className="jcol-tag jcol-ink jcol-grotesk" style={{ transform: "rotate(1.5deg)" }}>Chart</span>
+          <h1 className="journal-article__title--collage" aria-label="True North">
+            <span className="jcol-tag jcol-gold jcol-display" style={{ transform: "rotate(-2deg)" }}>True</span>
+            <span className="jcol-tag jcol-ink jcol-grotesk" style={{ transform: "rotate(1.5deg)" }}>North</span>
           </h1>
           {sunSign && (
             <p className="text-sm text-muted-foreground mb-4">
