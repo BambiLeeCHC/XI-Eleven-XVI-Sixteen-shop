@@ -112,7 +112,7 @@ export function StoreHeader() {
                     location.pathname.startsWith("/chart") ? "text-white" : "text-white/50 hover:text-white"
                   }`}
                 >
-                  Chart
+                  True North
                 </Link>
 
                 {/* Policies dropdown */}
@@ -331,7 +331,7 @@ export function StoreHeader() {
                 location.pathname.startsWith("/chart") ? "text-white" : "text-white/55"
               }`}
             >
-              Chart
+              True North
             </Link>
             <span className="w-px h-3 bg-white/[0.14]" />
             <Link
@@ -392,7 +392,7 @@ export function StoreHeader() {
               <MobileNavLink to="/favorites" label="FAVORITES" badge={favCount > 0 ? favCount : undefined} />
               <MobileNavLink to="/cart" label="CART" badge={cartCount > 0 ? cartCount : undefined} />
               <MobileNavLink to="/journal" label="BLOG — THE JOURNAL" />
-              <MobileNavLink to="/chart" label="NATAL CHART" />
+              <MobileNavLink to="/chart" label="TRUE NORTH" />
               <MobileNavLink to="/about" label="ABOUT" />
               <MobileNavLink to="/size-guide" label="SIZE GUIDE" />
               <MobileNavLink to="/contact" label="CONTACT US" />

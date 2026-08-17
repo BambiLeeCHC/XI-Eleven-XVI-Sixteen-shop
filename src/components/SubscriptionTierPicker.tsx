@@ -2,7 +2,7 @@ export type SubscriptionTier = "long_read" | "long_read_plus_numerology";
 
 /**
  * The one place both tier options are explained and offered — used on the
- * Long Read paywall (DeepReadingPage) and the Chart page's Numerology tab,
+ * Long Read paywall (DeepReadingPage) and the True North page's Numerology tab,
  * so a reader always sees the exact same two clearly-labeled choices
  * instead of a single ambiguous "Start free trial" button. Numerology is
  * never sold standalone — it's always bundled with the Long Read at the

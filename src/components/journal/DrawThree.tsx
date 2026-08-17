@@ -415,7 +415,7 @@ export function DrawThree() {
                 <p className="jdeck__long-read-tease-label">One free draw a day. Want more?</p>
                 <p className="jdeck__long-read-tease-copy">
                   The Long Read goes seven cards deep, read against what's actually going on with
-                  you — plus your full natal chart and numerology on the Chart page.
+                  you — plus your full natal chart and numerology on the True North page.
                 </p>
                 <Link to="/journal/deep-reading" className="jdeck__long-read-tease-cta">
                   Go deeper with the Long Read ✦
