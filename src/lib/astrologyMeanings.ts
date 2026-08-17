@@ -24,6 +24,24 @@ export const BODY_MEANINGS: Record<string, string> = {
   Midheaven: "your public path — career, reputation, the mark you're building",
 };
 
+/** Short noun-phrase per body, for direct aspect sentences ("Mercury's
+ * communication grinds against Jupiter's growth") instead of the abstract
+ * "these forces" phrasing. */
+export const BODY_SHORT: Record<string, string> = {
+  Sun: "identity",
+  Moon: "emotions",
+  Mercury: "communication",
+  Venus: "love & values",
+  Mars: "drive",
+  Jupiter: "growth",
+  Saturn: "discipline",
+  Uranus: "individuality",
+  Neptune: "imagination",
+  Pluto: "transformation",
+  Ascendant: "first impression",
+  Midheaven: "public path",
+};
+
 export const SIGN_TRAITS: Record<string, string> = {
   Aries: "bold, direct, quick to act — thrives on challenge and momentum, impatient with hesitation",
   Taurus: "steady, sensual, values comfort and consistency — slow to move, nearly impossible to move once decided",
@@ -225,6 +243,18 @@ export const ASPECT_MEANINGS: Record<string, string> = Object.fromEntries(
   Object.entries(ASPECT_MEANINGS_FULL).map(([key, m]) => [key, m.nature]),
 );
 
+/** Direct connecting verb per aspect type, so the pair explanation reads as
+ * "Your Mercury grinds against your Jupiter" instead of describing the
+ * aspect abstractly first and the bodies second. */
+const ASPECT_VERBS: Record<string, string> = {
+  conjunction: "fuses directly with",
+  sextile: "opens an easy door for",
+  square: "grinds against",
+  trine: "flows easily into",
+  opposition: "pulls directly against",
+  quincunx: "keeps having to awkwardly adjust to",
+};
+
 /** One-line explanation for a Sun/Moon/etc-in-Sign placement. */
 export function explainPlacement(body: string, sign: string): string {
   const domain = BODY_MEANINGS[body] ?? "a part of who you are";
@@ -253,10 +283,11 @@ export function explainAspectPair(bodyA: string, bodyB: string, aspectKey: strin
   const key = aspectKey.toLowerCase();
   const meaning = ASPECT_MEANINGS_FULL[key];
   if (!meaning) return "";
-  const domainA = BODY_MEANINGS[bodyA] ?? "";
-  const domainB = BODY_MEANINGS[bodyB] ?? "";
-  const intro = domainA && domainB
-    ? `${bodyA} (${domainA}) and ${bodyB} (${domainB}) are ${meaning.nature}.`
-    : `${bodyA} and ${bodyB} are ${meaning.nature}.`;
+  const verb = ASPECT_VERBS[key] ?? "connects with";
+  const shortA = BODY_SHORT[bodyA];
+  const shortB = BODY_SHORT[bodyB];
+  const intro = shortA && shortB
+    ? `Your ${bodyA} (${shortA}) ${verb} your ${bodyB} (${shortB}).`
+    : `Your ${bodyA} ${verb} your ${bodyB}.`;
   return `${intro} ${meaning.feel}`;
 }

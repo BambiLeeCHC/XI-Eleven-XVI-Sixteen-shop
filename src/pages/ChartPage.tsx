@@ -1,12 +1,13 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { SEO } from "../components/SEO";
-import { JournalSky } from "../components/journal/JournalSky";
+import { TrueNorthAtmosphere } from "../components/journal/TrueNorthAtmosphere";
 import { AlmanacCalendar } from "../components/journal/Almanac";
 import { NatalChartWheel } from "../components/journal/NatalChartWheel";
 import { SubscriptionTierPicker, type SubscriptionTier } from "../components/SubscriptionTierPicker";
 import { api, invalidateQueries, useAction, useQuery } from "../lib/backend";
 import { explainAspectPair, explainHouseFull, explainPlacement, explainSignInHouse } from "../lib/astrologyMeanings";
+import { NUMEROLOGY_CALC_EXPLAIN } from "../lib/numerology";
 
 interface NatalPlacement {
   body: string;
@@ -133,10 +134,13 @@ function PlacementRow({
     <div className={`chart-placement-row ${expanded ? "is-expanded" : ""}`}>
       <button type="button" className="chart-placement-row__head" onClick={onToggle} aria-expanded={expanded}>
         <span className="chart-placement__body">{body}</span>
-        <span className={`jcol-tag jcol-tag--sm jcol-${retrograde ? "kraft" : "ink"} jcol-type`}>
-          {SIGN_GLYPH[sign] ?? ""} {sign}
-          {house ? ` · H${house}` : ""}
-          {retrograde ? " · Rx" : ""}
+        <span className="chart-placement-row__head-right">
+          <span className={`jcol-tag jcol-tag--sm jcol-${retrograde ? "kraft" : "ink"} jcol-type`}>
+            {SIGN_GLYPH[sign] ?? ""} {sign}
+            {house ? ` · H${house}` : ""}
+            {retrograde ? " · Rx" : ""}
+          </span>
+          <span className="chart-placement-row__chevron" aria-hidden="true">▾</span>
         </span>
       </button>
       {expanded && (
@@ -155,8 +159,11 @@ function HouseRow({ houseCusp, expanded, onToggle }: { houseCusp: NatalHouseCusp
           House {houseCusp.house}
           {full && <span className="chart-house-row__title"> — {full.title}</span>}
         </span>
-        <span className="jcol-tag jcol-tag--sm jcol-lilac jcol-type">
-          {SIGN_GLYPH[houseCusp.sign] ?? ""} {houseCusp.sign}
+        <span className="chart-placement-row__head-right">
+          <span className="jcol-tag jcol-tag--sm jcol-lilac jcol-type">
+            {SIGN_GLYPH[houseCusp.sign] ?? ""} {houseCusp.sign}
+          </span>
+          <span className="chart-placement-row__chevron" aria-hidden="true">▾</span>
         </span>
       </button>
       {expanded && full && (
@@ -201,6 +208,13 @@ const PROFILE_SECTION_STYLE: Record<string, { tone: string; rotate: string; face
   "Who You Are": { tone: "jcol-gold", rotate: "-1.5deg", face: "jcol-display" },
   "The Texture": { tone: "jcol-ink", rotate: "1deg", face: "jcol-grotesk" },
   "The Highest Use of Your Chart": { tone: "jcol-lilac", rotate: "-1deg", face: "jcol-display" },
+  "Life Path": { tone: "jcol-gold", rotate: "-1.5deg", face: "jcol-display" },
+  "Expression": { tone: "jcol-ink", rotate: "1deg", face: "jcol-grotesk" },
+  "Soul Urge": { tone: "jcol-blush", rotate: "-1deg", face: "jcol-display" },
+  "Personality": { tone: "jcol-lilac", rotate: "1.5deg", face: "jcol-grotesk" },
+  "Birthday": { tone: "jcol-kraft", rotate: "-1deg", face: "jcol-display" },
+  "Personal Year": { tone: "jcol-gold", rotate: "1deg", face: "jcol-grotesk" },
+  "The Throughline": { tone: "jcol-ink", rotate: "-1.5deg", face: "jcol-display" },
 };
 
 /** Splits the profile narrative on "## Section Title" markers into
@@ -216,6 +230,22 @@ function parseProfileSections(narrative: string): { title: string; body: string 
     sections.push({ title: matches[i][1].trim(), body: narrative.slice(start, end).trim() });
   }
   return sections;
+}
+
+/** Numerology number card — leads with the plain-language "how we got this"
+ * line before the number itself, so the math isn't a black box. */
+function NumberRow({ numKey, value }: { numKey: string; value: number }) {
+  return (
+    <div className="chart-number-row">
+      <div className="chart-number-row__head">
+        <span className="chart-placement__body">{NUMEROLOGY_LABELS[numKey] ?? numKey}</span>
+        <span className="jcol-tag jcol-tag--sm jcol-gold jcol-type">{value}</span>
+      </div>
+      {NUMEROLOGY_CALC_EXPLAIN[numKey] && (
+        <p className="chart-number-row__calc">{NUMEROLOGY_CALC_EXPLAIN[numKey]}</p>
+      )}
+    </div>
+  );
 }
 
 function ProfileSection({ title, body }: { title: string; body: string }) {
@@ -331,7 +361,6 @@ export function ChartPage() {
 
   const [selectedBody, setSelectedBody] = useState<string | null>(null);
   const [expandedHouse, setExpandedHouse] = useState<number | null>(null);
-  const [showHouses, setShowHouses] = useState(false);
 
   const handleSelectBody = useCallback(
     (b: string) => setSelectedBody((cur) => (cur === b ? null : b)),
@@ -383,8 +412,8 @@ export function ChartPage() {
   // Signed-out: marketing teaser for the whole destination.
   if (!user) {
     return (
-      <div className="journal-page">
-        <JournalSky />
+      <div className="journal-page journal-page--truenorth">
+        <TrueNorthAtmosphere />
         <div className="journal-stack" style={{ maxWidth: "42rem" }}>
           <SEO title={pageTitle} />
           <div className="journal-surface journal-hero" style={{ textAlign: "center", position: "relative" }}>
@@ -415,8 +444,8 @@ export function ChartPage() {
   }
 
   return (
-    <div className="journal-page">
-      <JournalSky />
+    <div className="journal-page journal-page--truenorth">
+      <TrueNorthAtmosphere />
       <div className="journal-stack" style={{ maxWidth: "44rem" }}>
         <SEO title={pageTitle} />
 
@@ -533,28 +562,20 @@ export function ChartPage() {
                 )}
 
                 <div className="journal-surface chart-feed-card" style={{ padding: "1.75rem", ["--i" as any]: 3 }}>
-                  <button
-                    type="button"
-                    className="chart-placement-row__head"
-                    style={{ width: "100%", alignItems: "center" }}
-                    onClick={() => setShowHouses((v) => !v)}
-                    aria-expanded={showHouses}
-                  >
-                    <SectionHeading wordA="The" wordB="Houses" ariaLabel="The Houses" />
-                    <span className="text-[11px] text-muted-foreground">{showHouses ? "hide" : "show"}</span>
-                  </button>
-                  {showHouses && (
-                    <div className="chart-placements-list mt-3">
-                      {chart.houses.map((h) => (
-                        <HouseRow
-                          key={h.house}
-                          houseCusp={h}
-                          expanded={expandedHouse === h.house}
-                          onToggle={() => setExpandedHouse((cur) => (cur === h.house ? null : h.house))}
-                        />
-                      ))}
-                    </div>
-                  )}
+                  <SectionHeading wordA="The" wordB="Houses" ariaLabel="The Houses" />
+                  <p className="text-[11px] text-muted-foreground mt-1 mb-3">
+                    Tap any house for its full meaning, keywords and a reflective question.
+                  </p>
+                  <div className="chart-placements-list chart-houses-grid">
+                    {chart.houses.map((h) => (
+                      <HouseRow
+                        key={h.house}
+                        houseCusp={h}
+                        expanded={expandedHouse === h.house}
+                        onToggle={() => setExpandedHouse((cur) => (cur === h.house ? null : h.house))}
+                      />
+                    ))}
+                  </div>
                 </div>
 
                 <div className="journal-surface chart-profile-card chart-feed-card chart-feed-card--wide" style={{ padding: "1.75rem", position: "relative", ["--i" as any]: 4 }}>
@@ -626,12 +647,9 @@ export function ChartPage() {
             {numerologyUnlocked && numerologyResult && !numerologyResult.success && (
               <>
                 {numerologyResult.numbers && (
-                  <div className="chart-placements">
+                  <div className="chart-numbers-grid">
                     {Object.entries(numerologyResult.numbers).map(([key, value]) => (
-                      <div key={key} className="chart-placement">
-                        <span className="chart-placement__body">{NUMEROLOGY_LABELS[key] ?? key}</span>
-                        <span className="jcol-tag jcol-tag--sm jcol-gold jcol-type">{value}</span>
-                      </div>
+                      <NumberRow key={key} numKey={key} value={value} />
                     ))}
                   </div>
                 )}
@@ -644,17 +662,16 @@ export function ChartPage() {
 
             {numerologyUnlocked && numerologyResult?.success && (
               <>
-                <div className="chart-placements">
+                <div className="chart-numbers-grid">
                   {Object.entries(numerologyResult.numbers ?? {}).map(([key, value]) => (
-                    <div key={key} className="chart-placement">
-                      <span className="chart-placement__body">{NUMEROLOGY_LABELS[key] ?? key}</span>
-                      <span className="jcol-tag jcol-tag--sm jcol-gold jcol-type">{value}</span>
-                    </div>
+                    <NumberRow key={key} numKey={key} value={value} />
                   ))}
                 </div>
                 {numerologyResult.narrative && (
-                  <div className="text-sm text-muted-foreground whitespace-pre-line">
-                    {numerologyResult.narrative}
+                  <div className="chart-profile-sections">
+                    {parseProfileSections(numerologyResult.narrative).map((s, i) => (
+                      <ProfileSection key={i} title={s.title} body={s.body} />
+                    ))}
                   </div>
                 )}
               </>
