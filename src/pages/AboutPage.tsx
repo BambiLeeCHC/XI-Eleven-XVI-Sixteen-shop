@@ -310,7 +310,7 @@ export function AboutPage() {
             </h1>
             <p
               className="text-[14px] md:text-[16px] leading-relaxed max-w-xl mx-auto"
-              style={{ color: "rgba(21,36,61,0.7)", animation: "about-entrance 1s cubic-bezier(0.16,1,0.3,1) 0.45s both" }}
+              style={{ color: "rgba(222,216,235,0.7)", animation: "about-entrance 1s cubic-bezier(0.16,1,0.3,1) 0.45s both" }}
             >
               XI Eleven XVI Sixteen is a{" "}
               <FlashText variant="gold">luxury fashion house</FlashText>{" "}
@@ -381,7 +381,7 @@ export function AboutPage() {
               </h2>
               <p
                 className="text-[14px] max-w-2xl mx-auto leading-relaxed"
-                style={{ color: "rgba(21,36,61,0.58)" }}
+                style={{ color: "rgba(222,216,235,0.58)" }}
               >
                 When you place an order with XI · XVI, something{" "}
                 <FlashText variant="gold">extraordinary</FlashText>{" "}
@@ -449,7 +449,7 @@ export function AboutPage() {
                   </h3>
                   <p
                     className="text-[12px] leading-relaxed"
-                    style={{ color: "rgba(21,36,61,0.52)" }}
+                    style={{ color: "rgba(222,216,235,0.52)" }}
                   >
                     {item.desc}
                   </p>
@@ -497,7 +497,7 @@ export function AboutPage() {
             </h2>
             <p
               className="text-[14px] leading-relaxed mb-10"
-              style={{ color: "rgba(21,36,61,0.58)" }}
+              style={{ color: "rgba(222,216,235,0.58)" }}
             >
               The fashion industry produces over{" "}
               <FlashText variant="alt">92 million tons</FlashText>{" "}
@@ -533,7 +533,7 @@ export function AboutPage() {
                   </p>
                   <p
                     className="text-[10px] tracking-[0.1em] uppercase"
-                    style={{ color: "rgba(21,36,61,0.5)" }}
+                    style={{ color: "rgba(222,216,235,0.5)" }}
                   >
                     {stat.label}
                   </p>
@@ -583,12 +583,12 @@ export function AboutPage() {
                 style={{ fontFamily: "var(--font-display)" }}
               >
                 <FlashText variant="primary">XI</FlashText>
-                <span style={{ color: "rgba(21,36,61,0.32)", margin: "0 12px" }}>·</span>
+                <span style={{ color: "rgba(222,216,235,0.32)", margin: "0 12px" }}>·</span>
                 <FlashText variant="alt">XVI</FlashText>
               </h2>
               <p
                 className="text-[14px] max-w-xl mx-auto leading-relaxed"
-                style={{ color: "rgba(21,36,61,0.58)" }}
+                style={{ color: "rgba(222,216,235,0.58)" }}
               >
                 Our name is a cipher — rooted in{" "}
                 <FlashText variant="gold">numerology</FlashText>,
@@ -641,7 +641,7 @@ export function AboutPage() {
                 </p>
                 <p
                   className="text-[13px] leading-relaxed"
-                  style={{ color: "rgba(21,36,61,0.6)" }}
+                  style={{ color: "rgba(222,216,235,0.6)" }}
                 >
                   In numerology, 11 is a{" "}
                   <FlashText variant="primary">Master Number</FlashText>{" "}
@@ -699,7 +699,7 @@ export function AboutPage() {
                 </p>
                 <p
                   className="text-[13px] leading-relaxed"
-                  style={{ color: "rgba(21,36,61,0.6)" }}
+                  style={{ color: "rgba(222,216,235,0.6)" }}
                 >
                   The number 16 carries the vibration of{" "}
                   <FlashText variant="alt">transformation</FlashText> and{" "}
@@ -752,7 +752,7 @@ export function AboutPage() {
               </p>
               <p
                 className="text-[14px] leading-relaxed max-w-2xl mx-auto"
-                style={{ color: "rgba(21,36,61,0.6)" }}
+                style={{ color: "rgba(222,216,235,0.6)" }}
               >
                 The sum of our name reduces to{" "}
                 <FlashText variant="gold">9</FlashText> —
@@ -855,7 +855,7 @@ export function AboutPage() {
                     </h3>
                     <p
                       className="text-[12px] leading-relaxed"
-                      style={{ color: "rgba(21,36,61,0.52)" }}
+                      style={{ color: "rgba(222,216,235,0.52)" }}
                     >
                       {value.desc}
                     </p>
@@ -920,7 +920,7 @@ export function AboutPage() {
             </h2>
             <p
               className="text-[14px] mb-8 max-w-md mx-auto"
-              style={{ color: "rgba(21,36,61,0.52)" }}
+              style={{ color: "rgba(222,216,235,0.52)" }}
             >
               Every piece is made <FlashText variant="alt">exclusively for you</FlashText> — a modern take on couture
               that's kinder to the planet.
