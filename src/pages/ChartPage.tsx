@@ -1,11 +1,11 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { SEO } from "../components/SEO";
 import { JournalSky } from "../components/journal/JournalSky";
 import { AlmanacCalendar } from "../components/journal/Almanac";
 import { NatalChartWheel } from "../components/journal/NatalChartWheel";
 import { SubscriptionTierPicker, type SubscriptionTier } from "../components/SubscriptionTierPicker";
-import { api, useAction, useQuery } from "../lib/backend";
+import { api, invalidateQueries, useAction, useQuery } from "../lib/backend";
 import { explainAspectPair, explainHouseFull, explainPlacement, explainSignInHouse } from "../lib/astrologyMeanings";
 
 interface NatalPlacement {
@@ -66,6 +66,13 @@ const NUMEROLOGY_ERROR_COPY: Record<string, string> = {
   upstream_error:
     "Our reading service is briefly at capacity — please try again in a minute.",
   empty: "Couldn't write your numerology narrative just now — try again shortly.",
+};
+
+const PROFILE_ERROR_COPY: Record<string, string> = {
+  no_key: "Your personality profile is temporarily unavailable — our team has been notified.",
+  upstream_error:
+    "Our reading service is briefly at capacity — please try again in a minute.",
+  empty: "Couldn't write your personality profile just now — try again shortly.",
 };
 
 const NUMEROLOGY_LABELS: Record<string, string> = {
@@ -246,6 +253,25 @@ function ChartTabs({ active, onChange }: { active: TabId; onChange: (t: TabId) =
   );
 }
 
+/** Same two-tag collage heading used in the page hero — applied to every
+ * section card on the natal-chart tab so the whole feed reads as one voice. */
+function SectionHeading({
+  wordA,
+  wordB,
+  ariaLabel,
+}: {
+  wordA: string;
+  wordB: string;
+  ariaLabel: string;
+}) {
+  return (
+    <h2 className="journal-article__title--collage chart-section-heading" aria-label={ariaLabel}>
+      <span className="jcol-tag jcol-gold jcol-display" style={{ transform: "rotate(-2deg)" }}>{wordA}</span>
+      <span className="jcol-tag jcol-ink jcol-grotesk" style={{ transform: "rotate(1.5deg)" }}>{wordB}</span>
+    </h2>
+  );
+}
+
 export function ChartPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const requestedTab = searchParams.get("tab") as TabId | null;
@@ -259,6 +285,11 @@ export function ChartPage() {
   const [selectedBody, setSelectedBody] = useState<string | null>(null);
   const [expandedHouse, setExpandedHouse] = useState<number | null>(null);
   const [showHouses, setShowHouses] = useState(false);
+
+  const handleSelectBody = useCallback(
+    (b: string) => setSelectedBody((cur) => (cur === b ? null : b)),
+    [],
+  );
 
   const user = useQuery(api.auth.currentUser);
   const chartResult = useQuery<NatalChartResult>(
@@ -374,14 +405,15 @@ export function ChartPage() {
             )}
 
             {!loading && chart && (
-              <>
-                <div className="journal-surface" style={{ padding: "1.5rem" }}>
+              <div className="chart-feed">
+                <div className="journal-surface chart-feed-card chart-feed-card--wheel" style={{ padding: "1.5rem", ["--i" as any]: 0 }}>
+                  <SectionHeading wordA="Your" wordB="Sky" ariaLabel="Your Sky" />
                   <NatalChartWheel
                     placements={chart.placements}
                     houses={chart.houses}
                     aspects={chart.aspects}
                     ascendantDegree={chart.ascendantDegree}
-                    onSelectBody={(b) => setSelectedBody((cur) => (cur === b ? null : b))}
+                    onSelectBody={handleSelectBody}
                     selectedBody={selectedBody}
                   />
                   <p className="text-[11px] text-muted-foreground text-center mt-2">
@@ -390,7 +422,8 @@ export function ChartPage() {
                   </p>
                 </div>
 
-                <div className="journal-surface" style={{ padding: "1.75rem" }}>
+                <div className="journal-surface chart-feed-card" style={{ padding: "1.75rem", ["--i" as any]: 1 }}>
+                  <SectionHeading wordA="Your" wordB="Placements" ariaLabel="Your Placements" />
                   <div style={{ display: "flex", justifyContent: "space-around", marginBottom: "1.25rem", textAlign: "center" }}>
                     <div>
                       <p className="text-[10px] uppercase tracking-wide text-muted-foreground mb-1">Ascendant</p>
@@ -427,8 +460,8 @@ export function ChartPage() {
                 </div>
 
                 {chart.aspects.length > 0 && (
-                  <div className="journal-surface" style={{ padding: "1.75rem" }}>
-                    <p className="text-sm font-semibold mb-1">Your Tightest Aspects</p>
+                  <div className="journal-surface chart-feed-card" style={{ padding: "1.75rem", ["--i" as any]: 2 }}>
+                    <SectionHeading wordA="Tightest" wordB="Aspects" ariaLabel="Your Tightest Aspects" />
                     <p className="text-[12px] text-muted-foreground mb-3">
                       The angles between your planets — the tighter the orb, the stronger the effect. Gold-toned
                       aspects tend to feel easy; rust-toned ones create the friction that actually drives growth.
@@ -449,15 +482,15 @@ export function ChartPage() {
                   </div>
                 )}
 
-                <div className="journal-surface" style={{ padding: "1.75rem" }}>
+                <div className="journal-surface chart-feed-card" style={{ padding: "1.75rem", ["--i" as any]: 3 }}>
                   <button
                     type="button"
                     className="chart-placement-row__head"
-                    style={{ width: "100%" }}
+                    style={{ width: "100%", alignItems: "center" }}
                     onClick={() => setShowHouses((v) => !v)}
                     aria-expanded={showHouses}
                   >
-                    <span className="text-sm font-semibold">The Houses</span>
+                    <SectionHeading wordA="The" wordB="Houses" ariaLabel="The Houses" />
                     <span className="text-[11px] text-muted-foreground">{showHouses ? "hide" : "show"}</span>
                   </button>
                   {showHouses && (
@@ -474,7 +507,7 @@ export function ChartPage() {
                   )}
                 </div>
 
-                <div className="journal-surface chart-profile-card" style={{ padding: "1.75rem", position: "relative" }}>
+                <div className="journal-surface chart-profile-card chart-feed-card chart-feed-card--wide" style={{ padding: "1.75rem", position: "relative", ["--i" as any]: 4 }}>
                   <span className="jcol-patch jcol-patch--b" aria-hidden="true" />
                   <h2 className="journal-article__title--collage chart-profile-card__heading" aria-label="Your Personality Profile">
                     <span className="jcol-tag jcol-gold jcol-display" style={{ transform: "rotate(-2deg)" }}>Your</span>
@@ -484,9 +517,20 @@ export function ChartPage() {
                     <p className="text-sm text-muted-foreground">Writing your profile…</p>
                   )}
                   {profileResult && !profileResult.success && (
-                    <p className="text-sm text-red-600">
-                      Couldn't write your personality profile just now — try refreshing shortly.
-                    </p>
+                    <div style={{ display: "flex", flexDirection: "column", gap: "0.65rem", alignItems: "flex-start" }}>
+                      <p className="text-sm text-red-600">
+                        {PROFILE_ERROR_COPY[profileResult.reason ?? ""] ??
+                          "Couldn't write your personality profile just now — try again shortly."}
+                      </p>
+                      <button
+                        type="button"
+                        onClick={() => invalidateQueries()}
+                        className="underline text-sm"
+                        style={{ background: "none", border: "none", padding: 0, cursor: "pointer" }}
+                      >
+                        Try again →
+                      </button>
+                    </div>
                   )}
                   {profileResult?.success && profileResult.narrative && (
                     <div className="chart-profile-sections">
@@ -496,7 +540,7 @@ export function ChartPage() {
                     </div>
                   )}
                 </div>
-              </>
+              </div>
             )}
           </>
         )}
