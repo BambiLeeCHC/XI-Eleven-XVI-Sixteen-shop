@@ -2648,17 +2648,6 @@ footer {
   }
 }
 
-.jdeck__intake { margin: .6rem 0 1.2rem; }
-.jdeck__intake-label {
-  display: block; font-size: 11px; line-height: 1.5;
-  color: rgba(21,36,61,.72); margin-bottom: .5rem; font-style: italic;
-}
-.jdeck__intake-input {
-  width: 100%; border: 1px solid rgba(21,36,61,.2); border-radius: 10px;
-  padding: .6rem .75rem; font-size: 13px; background: rgba(255,255,255,.7);
-  resize: vertical;
-}
-
 .jdeck__all {
   display: block; width: 100%; margin-top: 1.5rem;
   padding: 10px 14px; border-radius: 999px;
