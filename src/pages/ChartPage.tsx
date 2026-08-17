@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { SEO } from "../components/SEO";
 import { JournalSky } from "../components/journal/JournalSky";
@@ -111,10 +111,10 @@ const SIGN_GLYPH: Record<string, string> = {
 };
 
 const TABS = [
-  { id: "chart", label: "Natal Chart" },
-  { id: "numerology", label: "Numerology" },
-  { id: "almanac", label: "Almanac" },
-  { id: "long-read", label: "The Long Read" },
+  { id: "chart", label: "Chart", glyph: "✦" },
+  { id: "numerology", label: "Numbers", glyph: "◆" },
+  { id: "almanac", label: "Almanac", glyph: "☾" },
+  { id: "long-read", label: "Long Read", glyph: "🂠" },
 ] as const;
 
 type TabId = (typeof TABS)[number]["id"];
@@ -235,21 +235,28 @@ function ProfileSection({ title, body }: { title: string; body: string }) {
   );
 }
 
-function ChartTabs({ active, onChange }: { active: TabId; onChange: (t: TabId) => void }) {
+/** Sticky quick-jump dock, replacing the old click-through tab pills. Every
+ * section renders in one continuous scroll; this just smooth-scrolls to it
+ * and highlights whichever section is currently in view (scroll-spy via
+ * IntersectionObserver in the parent). */
+function ChartQuickNav({ active, onSelect }: { active: TabId; onSelect: (t: TabId) => void }) {
   return (
-    <div className="chart-tabs" role="tablist">
-      {TABS.map((t) => (
-        <button
-          key={t.id}
-          role="tab"
-          aria-selected={active === t.id}
-          className={`chart-tab ${active === t.id ? "is-active" : ""}`}
-          onClick={() => onChange(t.id)}
-        >
-          {t.label}
-        </button>
-      ))}
-    </div>
+    <nav className="chart-quicknav" aria-label="Jump to section">
+      <div className="chart-quicknav__track">
+        {TABS.map((t) => (
+          <button
+            key={t.id}
+            type="button"
+            aria-current={active === t.id}
+            className={`chart-quicknav__item ${active === t.id ? "is-active" : ""}`}
+            onClick={() => onSelect(t.id)}
+          >
+            <span className="chart-quicknav__glyph" aria-hidden="true">{t.glyph}</span>
+            <span className="chart-quicknav__label">{t.label}</span>
+          </button>
+        ))}
+      </div>
+    </nav>
   );
 }
 
@@ -277,10 +284,50 @@ export function ChartPage() {
   const requestedTab = searchParams.get("tab") as TabId | null;
   const [tab, setTab] = useState<TabId>(requestedTab && TABS.some((t) => t.id === requestedTab) ? requestedTab : "chart");
 
-  const setActiveTab = (t: TabId) => {
+  // Every section now lives in one continuous scroll — no more clicking
+  // through isolated tab views. The dock just smooth-scrolls to a section;
+  // an IntersectionObserver below keeps its highlighted item in sync with
+  // whatever the reader has actually scrolled to.
+  const sectionRefs = useRef<Partial<Record<TabId, HTMLElement | null>>>({});
+  const scrollToSection = (t: TabId) => {
     setTab(t);
     setSearchParams(t === "chart" ? {} : { tab: t }, { replace: true });
+    const el = sectionRefs.current[t];
+    if (el) {
+      const y = el.getBoundingClientRect().top + window.scrollY - 76;
+      window.scrollTo({ top: y, behavior: "smooth" });
+    }
   };
+
+  useEffect(() => {
+    const els = TABS.map((t) => sectionRefs.current[t.id]).filter(Boolean) as HTMLElement[];
+    if (els.length === 0) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visible = entries
+          .filter((e) => e.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+        if (visible) {
+          const match = TABS.find((t) => sectionRefs.current[t.id] === visible.target);
+          if (match) setTab(match.id);
+        }
+      },
+      { rootMargin: "-88px 0px -55% 0px", threshold: [0.05, 0.25, 0.5, 0.75] },
+    );
+    els.forEach((el) => observer.observe(el));
+    return () => observer.disconnect();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Deep-link support (e.g. returning from a subscription checkout at
+  // /chart?tab=numerology) — jump to the requested section once on mount.
+  useEffect(() => {
+    if (requestedTab && TABS.some((t) => t.id === requestedTab)) {
+      const raf = requestAnimationFrame(() => scrollToSection(requestedTab));
+      return () => cancelAnimationFrame(raf);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const [selectedBody, setSelectedBody] = useState<string | null>(null);
   const [expandedHouse, setExpandedHouse] = useState<number | null>(null);
@@ -386,11 +433,14 @@ export function ChartPage() {
               long read — all in one place.
             </p>
           )}
-          <ChartTabs active={tab} onChange={setActiveTab} />
+          <ChartQuickNav active={tab} onSelect={scrollToSection} />
         </div>
 
-        {tab === "chart" && (
-          <>
+        <section
+          id="chart-section-chart"
+          ref={(el) => { sectionRefs.current.chart = el; }}
+          className="chart-anchor-section"
+        >
             {loading && (
               <div className="journal-surface" style={{ padding: "1.75rem" }}>
                 <p className="text-sm text-muted-foreground">Calculating your chart…</p>
@@ -542,10 +592,14 @@ export function ChartPage() {
                 </div>
               </div>
             )}
-          </>
-        )}
+        </section>
 
-        {tab === "numerology" && (
+        <section
+          id="chart-section-numerology"
+          ref={(el) => { sectionRefs.current.numerology = el; }}
+          className="chart-anchor-section"
+        >
+          <SectionHeading wordA="Your" wordB="Numbers" ariaLabel="Your Numbers" />
           <div className="journal-surface" style={{ padding: "1.75rem", display: "flex", flexDirection: "column", gap: "0.9rem" }}>
             {!numerologyUnlocked && (
               <>
@@ -606,15 +660,25 @@ export function ChartPage() {
               </>
             )}
           </div>
-        )}
+        </section>
 
-        {tab === "almanac" && (
+        <section
+          id="chart-section-almanac"
+          ref={(el) => { sectionRefs.current.almanac = el; }}
+          className="chart-anchor-section"
+        >
+          <SectionHeading wordA="The" wordB="Almanac" ariaLabel="The Almanac" />
           <div className="journal-surface" style={{ padding: "1.5rem" }}>
             <AlmanacCalendar />
           </div>
-        )}
+        </section>
 
-        {tab === "long-read" && (
+        <section
+          id="chart-section-long-read"
+          ref={(el) => { sectionRefs.current["long-read"] = el; }}
+          className="chart-anchor-section"
+        >
+          <SectionHeading wordA="The" wordB="Long Read" ariaLabel="The Long Read" />
           <div className="journal-surface" style={{ padding: "1.75rem", display: "flex", flexDirection: "column", gap: "0.9rem", textAlign: "center" }}>
             <span className="journal-tile__deck" aria-hidden="true" style={{ margin: "0 auto" }}>
               <i /><i /><i />
@@ -629,7 +693,7 @@ export function ChartPage() {
               <button style={ctaButtonStyle}>Go deeper ✦</button>
             </Link>
           </div>
-        )}
+        </section>
       </div>
     </div>
   );
