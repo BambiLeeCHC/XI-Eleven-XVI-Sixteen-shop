@@ -4,6 +4,7 @@ import { SEO } from "../../components/SEO";
 import { TrueNorthAtmosphere } from "../../components/journal/TrueNorthAtmosphere";
 import { api, invalidateQueries, useQuery } from "../../lib/backend";
 import { ChartSkyPanel } from "./ChartSkyPanel";
+import { SectionBoundary } from "../../components/journal/SectionBoundary";
 import {
   HouseRow,
   PROFILE_ERROR_COPY,
@@ -127,11 +128,13 @@ export function ChartHomePage() {
                 </div>
               )}
               {profileResult?.success && profileResult.narrative && (
-                <div className="chart-profile-sections">
-                  {parseProfileSections(profileResult.narrative).map((s, i) => (
-                    <ProfileSection key={i} title={s.title} body={s.body} />
-                  ))}
-                </div>
+                <SectionBoundary fallbackLabel="Couldn't display your profile just now — try refreshing.">
+                  <div className="chart-profile-sections">
+                    {parseProfileSections(profileResult.narrative).map((s, i) => (
+                      <ProfileSection key={i} title={s.title} body={s.body} />
+                    ))}
+                  </div>
+                </SectionBoundary>
               )}
             </div>
           </div>

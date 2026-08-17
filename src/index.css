@@ -1844,11 +1844,15 @@ footer {
 }
 .journal-almanac__cell {
   aspect-ratio: 1; border-radius: 8px; font-size: 11px;
-  display: grid; place-items: center;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px;
   color: rgba(21,36,61,.66);
   border: 1px solid transparent;
   transition: all .15s ease;
 }
+.journal-almanac__cell-num { line-height: 1; }
+.journal-almanac__cell-moon { opacity: .55; }
+.journal-almanac__cell.is-selected .journal-almanac__cell-moon,
+.journal-almanac__cell.is-today .journal-almanac__cell-moon { opacity: .85; }
 .journal-almanac__cell:hover { background: rgba(196,141,255,.14); }
 .journal-almanac__cell.is-empty { background: transparent; }
 .journal-almanac__cell.is-today { border-color: #6d3fb0; color: #6d3fb0; font-weight: 700; }
@@ -1867,11 +1871,15 @@ footer {
   border: 1px solid var(--glass-line); border-radius: 12px; background: rgba(255,255,255,.6);
 }
 .journal-almanac__readout-date { font-family: "Playfair Display", Georgia, serif; font-size: 13.5px; color: #15243d; margin-bottom: .4rem; }
+.journal-almanac__readout-voice {
+  font-family: "Playfair Display", Georgia, serif; font-style: italic;
+  font-size: 12.5px; color: rgba(21,36,61,.72); margin-bottom: .65rem; line-height: 1.4;
+}
 .journal-almanac__readout-rows {
   display: grid; grid-template-columns: auto 1fr; gap: 3px 12px;
   font-size: 11px; color: rgba(21,36,61,.5);
 }
-.journal-almanac__readout-rows strong { color: #15243d; font-weight: 600; text-align: right; }
+.journal-almanac__readout-rows strong { color: #15243d; font-weight: 600; text-align: right; display: inline-flex; align-items: center; justify-content: flex-end; gap: 4px; }
 
 /* ── Daily Draw / Arcana card ─────────────────────────────────────────── */
 .journal-draw__back {
