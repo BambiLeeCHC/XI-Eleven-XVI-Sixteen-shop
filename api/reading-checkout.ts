@@ -23,6 +23,11 @@
  * client_reference_id, and the chosen tier is carried in
  * subscription_data metadata, so the webhook can write the right
  * `subscriptions` row (including `tier`) once Stripe confirms it.
+ *
+ * "numerology_unlock": one-time $19.99 checkout that unlocks numerology
+ * forever for the signed-in user, independent of any subscription. The
+ * webhook sets `profiles.numerology_unlocked_at` once Stripe confirms
+ * payment (metadata.kind === "numerology_unlock").
  */
 
 import {
@@ -36,6 +41,7 @@ import {
 } from "./_lib/server.js";
 
 const QUESTION_PRICE_CENTS = 299;
+const NUMEROLOGY_UNLOCK_PRICE_CENTS = 1999;
 
 const SUBSCRIPTION_TIERS = {
   long_read: {
@@ -104,6 +110,39 @@ async function handleQuestionCheckout(req: ApiRequest, res: ApiResponse) {
   return res.status(200).json({ success: true, url: session.url });
 }
 
+async function handleNumerologyUnlockCheckout(req: ApiRequest, res: ApiResponse) {
+  const user = await currentUser(req);
+  if (!user) throw new HttpError(401, "Please sign in first");
+
+  const { successUrl, cancelUrl } = (req.body ?? {}) as {
+    successUrl?: string;
+    cancelUrl?: string;
+  };
+  if (!successUrl || !cancelUrl) {
+    throw new HttpError(400, "Invalid checkout request");
+  }
+
+  const params: Record<string, string> = {
+    mode: "payment",
+    success_url: `${successUrl}?session_id={CHECKOUT_SESSION_ID}`,
+    cancel_url: cancelUrl,
+    client_reference_id: user.id,
+    "metadata[kind]": "numerology_unlock",
+    "metadata[user_id]": user.id,
+    "payment_intent_data[metadata][kind]": "numerology_unlock",
+    "payment_intent_data[metadata][user_id]": user.id,
+    "line_items[0][price_data][currency]": "usd",
+    "line_items[0][price_data][product_data][name]": "Numerology — one-time unlock",
+    "line_items[0][price_data][unit_amount]": String(NUMEROLOGY_UNLOCK_PRICE_CENTS),
+    "line_items[0][quantity]": "1",
+  };
+  if (user.email) params.customer_email = user.email;
+
+  const session = await stripePost("/checkout/sessions", params);
+
+  return res.status(200).json({ success: true, url: session.url });
+}
+
 async function handleSubscribeCheckout(req: ApiRequest, res: ApiResponse) {
   const user = await currentUser(req);
   if (!user) throw new HttpError(401, "Please sign in first");
@@ -155,6 +194,9 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
     const { kind } = (req.body ?? {}) as { kind?: string };
     if (kind === "question") return await handleQuestionCheckout(req, res);
     if (kind === "subscribe") return await handleSubscribeCheckout(req, res);
+    if (kind === "numerology_unlock") {
+      return await handleNumerologyUnlockCheckout(req, res);
+    }
     throw new HttpError(400, "Unknown checkout kind requested");
   } catch (error) {
     return fail(res, error);

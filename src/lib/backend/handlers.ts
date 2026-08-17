@@ -183,30 +183,47 @@ export const handlers: Record<string, Handler> = {
   "subscription.status": async () => {
     const userId = await currentUserId();
     if (!userId) return null;
-    const row = unwrap(
-      await supabase
+    const [subRow, profileRow] = await Promise.all([
+      supabase
         .from("subscriptions")
         .select("status, tier, trial_end, current_period_end")
         .eq("user_id", userId)
         .maybeSingle(),
-    ) as {
+      supabase
+        .from("profiles")
+        .select("numerology_unlocked_at")
+        .eq("id", userId)
+        .maybeSingle(),
+    ]);
+    const row = unwrap(subRow) as {
       status: string;
       tier: string | null;
       trial_end: string | null;
       current_period_end: string | null;
     } | null;
-    if (!row) return { entitled: false, status: "none", tier: null };
+    const profile = unwrap(profileRow) as { numerology_unlocked_at: string | null } | null;
+    const numerologyUnlocked = !!profile?.numerology_unlocked_at;
+    if (!row) return { entitled: false, status: "none", tier: null, numerologyUnlocked };
     return {
       entitled: row.status === "trialing" || row.status === "active",
       status: row.status,
       tier: row.tier,
       trialEnd: row.trial_end,
       currentPeriodEnd: row.current_period_end,
+      numerologyUnlocked,
     };
   },
 
   "subscription.startTrial": async ({ successUrl, cancelUrl, tier } = {}) => {
     return callApi("/api/reading-checkout", { kind: "subscribe", successUrl, cancelUrl, tier });
+  },
+
+  "numerology.checkout": async ({ successUrl, cancelUrl } = {}) => {
+    return callApi("/api/reading-checkout", {
+      kind: "numerology_unlock",
+      successUrl,
+      cancelUrl,
+    });
   },
 
   /* ── deep readings (The Long Read content) ───────────────────────────── */

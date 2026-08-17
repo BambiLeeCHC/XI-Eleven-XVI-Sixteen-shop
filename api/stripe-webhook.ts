@@ -9,6 +9,8 @@
  *  - checkout.session.completed (mode=subscription)                → subscriptions row created
  *  - customer.subscription.updated / deleted                        → subscriptions row kept in sync
  *  - checkout.session.completed (mode=payment, has reading_question_id) → question answered by Gemini
+ *  - checkout.session.completed (mode=payment, metadata.kind=numerology_unlock)
+ *    → profiles.numerology_unlocked_at set for that user
  */
 
 import { submitOrderToPrintful } from "./_lib/fulfill.js";
@@ -126,6 +128,14 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
         if (userId && session?.subscription) {
           const sub = await fetchStripeSubscription(session.subscription);
           if (sub) await upsertSubscriptionFromStripe(admin, userId, sub);
+        }
+      } else if (session?.metadata?.kind === "numerology_unlock") {
+        const userId = session?.metadata?.user_id || session?.client_reference_id;
+        if (userId) {
+          await admin
+            .from("profiles")
+            .update({ numerology_unlocked_at: new Date().toISOString() })
+            .eq("id", userId);
         }
       } else if (session?.metadata?.reading_question_id) {
         await admin

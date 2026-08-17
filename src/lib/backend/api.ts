@@ -44,6 +44,7 @@ export const api = {
   },
   numerology: {
     get: ref("numerology.get"),
+    checkout: ref("numerology.checkout"),
   },
   geocode: {
     search: ref("geocode.search"),
