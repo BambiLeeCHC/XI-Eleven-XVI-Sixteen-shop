@@ -12,7 +12,7 @@
  */
 
 import { submitOrderToPrintful } from "./_lib/fulfill.js";
-import { generateWithGemini, type GeminiFailure } from "./_lib/gemini.js";
+import { generateWithGroq, type GroqFailure } from "./_lib/groq.js";
 import {
   type ApiRequest,
   type ApiResponse,
@@ -74,9 +74,9 @@ async function answerQuestion(admin: ReturnType<typeof supabaseAdmin>, questionI
     : "No prior reading context provided.";
   const userPrompt = `Their reading context: ${context}\n\nTheir follow-up question: "${row.question}"\n\nAnswer it now, following the rules exactly.`;
 
-  const result = await generateWithGemini(QUESTION_SYSTEM_PROMPT, userPrompt, 1200);
+  const result = await generateWithGroq(QUESTION_SYSTEM_PROMPT, userPrompt, 1200);
   if (!result.success) {
-    const failure = result as GeminiFailure;
+    const failure = result as GroqFailure;
     console.error("Question answer generation failed", failure.reason);
     return;
   }
