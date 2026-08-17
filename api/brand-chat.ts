@@ -1,9 +1,9 @@
 /**
  * XI · XVI Style Concierge.
  *
- * Calls Google's Gemini API using GEMINI_API_KEY (free tier). If the key
- * is not present the widget answers with a graceful hand-off instead of
- * erroring — a broken concierge should never look like a broken shop.
+ * Calls Groq using GROQ_API_KEY. If the key is not present the widget
+ * answers with a graceful hand-off instead of erroring — a broken
+ * concierge should never look like a broken shop.
  */
 
 import {
@@ -12,6 +12,7 @@ import {
   fail,
   HttpError,
 } from "./_lib/server.js";
+import { generateWithGroqChat } from "./_lib/groq.js";
 
 const BRAND_SYSTEM_PROMPT = `You are the XI · XVI Style Concierge — the personal shopping assistant for XI Eleven XVI Sixteen (xixvi.shop), a premium streetwear and luxury fashion brand. You speak with warmth, confidence, and sophistication. You're knowledgeable, stylish, and genuinely excited to help customers find their perfect pieces.
 
@@ -46,46 +47,18 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
     };
     if (!message) throw new HttpError(400, "A message is required");
 
-    const apiKey = process.env.GEMINI_API_KEY;
-    if (!apiKey) {
+    const chatHistory = (history ?? []).slice(-8).map((turn) => ({
+      role: turn.role,
+      content: turn.content,
+    }));
+    chatHistory.push({ role: "user", content: message });
+
+    const result = await generateWithGroqChat(BRAND_SYSTEM_PROMPT, chatHistory, 800);
+    if (!result.success) {
+      console.error("Concierge Groq call failed", result.reason);
       return res.status(200).json({ success: true, response: FALLBACK });
     }
-
-    const contents = [
-      ...(history ?? []).slice(-8).map(turn => ({
-        role: turn.role === "assistant" ? ("model" as const) : ("user" as const),
-        parts: [{ text: turn.content }],
-      })),
-      { role: "user" as const, parts: [{ text: message }] },
-    ];
-
-    const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${apiKey}`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          systemInstruction: { parts: [{ text: BRAND_SYSTEM_PROMPT }] },
-          contents,
-          // Gemini's "thinking" tokens are billed against maxOutputTokens
-          // before any visible text is produced, so this needs a large
-          // headroom above the actual reply length or it gets cut off.
-          generationConfig: { temperature: 0.8, maxOutputTokens: 1500 },
-        }),
-      },
-    );
-
-    if (!response.ok) {
-      console.error("Concierge Gemini call failed", response.status, await response.text().catch(() => ""));
-      return res.status(200).json({ success: true, response: FALLBACK });
-    }
-
-    const json = await response.json();
-    const answer = json?.candidates?.[0]?.content?.parts?.[0]?.text;
-    return res.status(200).json({
-      success: true,
-      response: typeof answer === "string" && answer.trim() ? answer.trim() : FALLBACK,
-    });
+    return res.status(200).json({ success: true, response: result.text });
   } catch (error) {
     return fail(res, error);
   }

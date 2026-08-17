@@ -39,7 +39,7 @@ import {
   searchLocations,
   type NatalChart,
 } from "./_lib/natalChart.js";
-import { generateWithGemini, type GeminiFailure } from "./_lib/gemini.js";
+import { generateWithGroq, type GroqFailure } from "./_lib/groq.js";
 import { fullNumerologyProfile, NUMBER_MEANINGS } from "../src/lib/numerology.js";
 import { BODY_MEANINGS, explainAspect } from "../src/lib/astrologyMeanings.js";
 
@@ -199,9 +199,9 @@ ${aspectLines || "None within a tight orb."}
 
 Write the personality profile now, following the voice and structure rules exactly.`;
 
-  const result = await generateWithGemini(NATAL_PROFILE_SYSTEM_PROMPT, userPrompt, 3200);
+  const result = await generateWithGroq(NATAL_PROFILE_SYSTEM_PROMPT, userPrompt, 3200);
   if (!result.success) {
-    const failure = result as GeminiFailure;
+    const failure = result as GroqFailure;
     return res.status(200).json({ success: false, reason: failure.reason });
   }
 
@@ -254,9 +254,9 @@ async function handleNumerology(req: ApiRequest, res: ApiResponse) {
   );
   const userPrompt = `This reading is for ${fullName}.\n\nTheir numbers:\n${lines.join("\n")}\n\nWrite the numerology narrative now, following the voice and structure rules exactly.`;
 
-  const result = await generateWithGemini(NUMEROLOGY_SYSTEM_PROMPT, userPrompt, 3000);
+  const result = await generateWithGroq(NUMEROLOGY_SYSTEM_PROMPT, userPrompt, 3000);
   if (!result.success) {
-    const failure = result as GeminiFailure;
+    const failure = result as GroqFailure;
     return res.status(200).json({ success: false, reason: failure.reason, numbers });
   }
 

@@ -27,7 +27,7 @@ import {
   fail,
   HttpError,
 } from "./_lib/server.js";
-import { generateWithGemini, type GeminiFailure } from "./_lib/gemini.js";
+import { generateWithGroq, type GroqFailure } from "./_lib/groq.js";
 
 interface SpreadCardInput {
   position: string;
@@ -91,14 +91,14 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
       throw new HttpError(400, "A spread of drawn cards is required");
     }
 
-    const result = await generateWithGemini(
+    const result = await generateWithGroq(
       SYSTEM_PROMPT,
       buildUserPrompt(spread, name, genderIdentity, sexualOrientation),
       3000,
     );
 
     if (!result.success) {
-      const failure = result as GeminiFailure;
+      const failure = result as GroqFailure;
       return res.status(200).json({ success: false, reason: failure.reason });
     }
     return res.status(200).json({ success: true, reading: result.text });

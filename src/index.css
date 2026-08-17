@@ -3163,15 +3163,12 @@ footer {
   0%, 100% { text-shadow: 0 0 0 rgba(207,162,53,0); }
   50% { text-shadow: 0 0 18px rgba(207,162,53,.55), 0 0 34px rgba(207,162,53,.25); }
 }
+/* Scrapped the multi-column "Instagram feed" grid — reads as one clean,
+ * top-to-bottom stack of sections instead. */
 .chart-feed {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  display: flex;
+  flex-direction: column;
   gap: 1.25rem;
-  align-items: start;
-}
-@media (min-width: 860px) {
-  .chart-feed-card--wheel,
-  .chart-feed-card--wide { grid-column: span 2; }
 }
 .chart-feed-card {
   animation: chart-card-enter 0.7s cubic-bezier(.2,.8,.2,1) both;
