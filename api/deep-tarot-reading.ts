@@ -18,7 +18,7 @@ import {
   HttpError,
   supabaseAdmin,
 } from "./_lib/server.js";
-import { generateWithGemini, type GeminiFailure } from "./_lib/gemini.js";
+import { generateWithGroq, type GroqFailure } from "./_lib/groq.js";
 import {
   buildKeepsakeEmailHtml,
   readingTextToHtml,
@@ -103,7 +103,7 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
     }
     const situationText = situation?.trim() || "not specified";
 
-    const result = await generateWithGemini(
+    const result = await generateWithGroq(
       SYSTEM_PROMPT,
       buildUserPrompt(
         spread,
@@ -115,7 +115,7 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
       5000,
     );
     if (!result.success) {
-      const failure = result as GeminiFailure;
+      const failure = result as GroqFailure;
       return res.status(200).json({ success: false, reason: failure.reason });
     }
 
