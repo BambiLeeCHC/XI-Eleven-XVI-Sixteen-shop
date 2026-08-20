@@ -2,12 +2,17 @@
  * The Long Read — the paywalled seven-card deep reading.
  *
  * Requires an active or trialing subscription (checked server-side against
- * `subscriptions`, never trusted from the client). The card draw itself
- * happens in the browser (same pattern as the free five-card spread); this
- * endpoint writes the narrative, saves the result to `deep_readings` as a
- * keepsake, and — best-effort — emails the same keepsake via Resend. Email
- * delivery failure never blocks the reading response; the account copy is
- * always the source of truth.
+ * `subscriptions`, never trusted from the client). Subscribers receive three
+ * Long Reads per calendar day, one per time window:
+ *   morning  00:00–11:59 local (client-gated; server stores window id)
+ *   midday   12:00–16:59
+ *   evening  17:00–23:59
+ *
+ * The card draw itself happens in the browser; this endpoint writes the
+ * narrative, saves the result to `deep_readings` as a keepsake, and —
+ * best-effort — emails the same keepsake via Resend. Email delivery failure
+ * never blocks the reading response; the account copy is always the source
+ * of truth.
  */
 
 import {
@@ -29,8 +34,7 @@ import {
 /** The same shape DeepReadingPage draws and renders from — a full Arcana
  * card object per position, not a flattened prompt-only shape. Saving this
  * exact shape to `deep_readings.spread` is what lets the page redraw the
- * card art correctly the next time the reading is reopened; a flattened
- * shape here used to crash the card-art render on reload (no `.card`). */
+ * card art correctly the next time the reading is reopened. */
 interface SpreadCardInput {
   slot: string;
   slotName: string;
@@ -43,6 +47,10 @@ interface SpreadCardInput {
     reversed: string;
   };
 }
+
+export type DailyWindow = "morning" | "midday" | "evening";
+
+const VALID_WINDOWS: DailyWindow[] = ["morning", "midday", "evening"];
 
 const SYSTEM_PROMPT = `You are the XI · XVI Reader, writing "The Long Read" — the in-depth, paid tarot reading for the XI Eleven XVI Sixteen (xixvi.shop) brand. This reader paid specifically to go deeper on a situation they described to us. Your writing is direct, poignant, and specific — never a generic horoscope, never hedging language like "may" or "could," never a false or theatrical sense of authority.
 
@@ -76,6 +84,17 @@ function buildUserPrompt(
   return `This reading is for ${name}. What they told us is going on: "${situation}".${identityLine}\n\nThe seven-card spread, in draw order:\n${lines.join("\n")}\n\nWrite the Long Read now, following the voice and structure rules exactly.`;
 }
 
+/** UTC start/end of the current calendar day for quota queries. */
+function utcDayBounds(now = new Date()): { start: string; end: string } {
+  const y = now.getUTCFullYear();
+  const m = String(now.getUTCMonth() + 1).padStart(2, "0");
+  const d = String(now.getUTCDate()).padStart(2, "0");
+  return {
+    start: `${y}-${m}-${d}T00:00:00.000Z`,
+    end: `${y}-${m}-${d}T23:59:59.999Z`,
+  };
+}
+
 export default async function handler(req: ApiRequest, res: ApiResponse) {
   if (req.method !== "POST") {
     res.setHeader("Allow", "POST");
@@ -103,13 +122,40 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
       .maybeSingle();
     const name = profile?.name || "friend";
 
-    const { spread, situation } = (req.body ?? {}) as {
+    const { spread, situation, window: windowRaw } = (req.body ?? {}) as {
       spread?: SpreadCardInput[];
       situation?: string;
+      window?: string;
     };
     if (!spread || !Array.isArray(spread) || spread.length === 0) {
       throw new HttpError(400, "A spread of drawn cards is required");
     }
+
+    const windowId = (windowRaw ?? "").toLowerCase() as DailyWindow;
+    if (!VALID_WINDOWS.includes(windowId)) {
+      throw new HttpError(
+        400,
+        'A daily window is required: "morning", "midday", or "evening"',
+      );
+    }
+
+    // One Long Read per window per UTC calendar day.
+    const { start, end } = utcDayBounds();
+    const { count, error: countError } = await admin
+      .from("deep_readings")
+      .select("id", { count: "exact", head: true })
+      .eq("user_id", user.id)
+      .eq("window", windowId)
+      .gte("created_at", start)
+      .lte("created_at", end);
+    if (countError) throw countError;
+    if ((count ?? 0) >= 1) {
+      throw new HttpError(
+        429,
+        `You have already drawn the ${windowId} Long Read today. The next window opens later, or tomorrow.`,
+      );
+    }
+
     const situationText = situation?.trim() || "not specified";
 
     const result = await generateWithGroq(
@@ -130,8 +176,13 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
 
     const { data: saved, error } = await admin
       .from("deep_readings")
-      .insert({ user_id: user.id, spread, reading: result.text })
-      .select("id, created_at")
+      .insert({
+        user_id: user.id,
+        spread,
+        reading: result.text,
+        window: windowId,
+      })
+      .select("id, created_at, window")
       .single();
     if (error) throw error;
 
@@ -140,7 +191,7 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
       const emailResult = await sendResendEmail({
         from: SUPPORT_FROM,
         to: user.email,
-        subject: "Your Long Read is ready",
+        subject: `Your ${windowId} Long Read is ready`,
         html: buildKeepsakeEmailHtml({
           name,
           readingHtml: readingTextToHtml(result.text),
@@ -149,7 +200,6 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
       });
       emailed = emailResult.success;
       if (!emailResult.success) {
-        // Non-fatal: the reading is already saved to the account either way.
         console.error("Long Read keepsake email failed:", emailResult.error);
       }
     }
@@ -159,6 +209,7 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
       reading: result.text,
       id: saved.id,
       createdAt: saved.created_at,
+      window: saved.window ?? windowId,
       emailed,
     });
   } catch (error) {
