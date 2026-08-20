@@ -1,6 +1,17 @@
 import { createClient } from "@supabase/supabase-js";
 import { getSessionId } from "./session";
 
+/**
+ * Browser Supabase client (anon key + user session).
+ *
+ * Env (Vite):
+ *   VITE_SUPABASE_URL
+ *   VITE_SUPABASE_ANON_KEY
+ *
+ * Server routes use the service role via api/_lib/server.ts (supabaseAdmin).
+ * Typed Long Read helpers (window column) live in ./deepReadingsClient.ts.
+ */
+
 const url = import.meta.env.VITE_SUPABASE_URL as string;
 const key = import.meta.env.VITE_SUPABASE_ANON_KEY as string;
 
@@ -27,6 +38,6 @@ export const supabase = createClient(url ?? "", key ?? "", {
 
 export type SupabaseClient = typeof supabase;
 
-// Generated row types live in ./database.types.ts. The client is intentionally
-// untyped: the schema is mapped to the storefront's own shapes in
-// lib/backend/mappers.ts, which is where a column rename must be handled anyway.
+// Generated row types live in ./database.types.ts (optional). The client is
+// intentionally untyped at the root: schema is mapped to storefront shapes in
+// lib/backend/mappers.ts. For deep_readings + window, prefer deepReadingsClient.
