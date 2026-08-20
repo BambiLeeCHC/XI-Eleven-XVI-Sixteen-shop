@@ -4,7 +4,12 @@
  * numerology, natal profile, brand concierge).
  *
  * Requires GROQ_API_KEY on the Vercel project (Production + Preview).
- * Without it every reading returns { success: false, reason: "no_key" }.
+ *
+ * Model note (Aug 16 2026): Groq shut down llama-3.3-70b-versatile and
+ * llama-3.1-8b-instant for free/developer tiers. Current production IDs:
+ *   openai/gpt-oss-120b  (flagship)
+ *   openai/gpt-oss-20b   (fast)
+ *   qwen/qwen3.6-27b     (alt quality)
  */
 export type GroqFailure = {
   success: false;
@@ -14,11 +19,11 @@ export type GroqFailure = {
 
 export type GroqResult = { success: true; text: string } | GroqFailure;
 
-/** Primary + fallback — if Groq retires a model id, the second still works. */
+/** Primary + fallbacks after the Aug 2026 Llama deprecation. */
 const GROQ_MODELS = [
-  "llama-3.3-70b-versatile",
-  "llama-3.1-70b-versatile",
-  "llama-3.1-8b-instant",
+  "openai/gpt-oss-120b",
+  "openai/gpt-oss-20b",
+  "qwen/qwen3.6-27b",
 ] as const;
 
 type ChatMessage = { role: "system" | "user" | "assistant"; content: string };
@@ -90,7 +95,6 @@ async function callGroq(messages: ChatMessage[], maxTokens: number): Promise<Gro
     const result = await callGroqOnce(apiKey, model, messages, maxTokens);
     if (result.success) return result;
     lastFailure = result;
-    // Only fall through to the next model on upstream/model errors, not empty.
     if (result.reason === "empty") return result;
   }
 
