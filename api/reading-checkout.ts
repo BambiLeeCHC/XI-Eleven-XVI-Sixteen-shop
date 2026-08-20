@@ -13,16 +13,12 @@
  * the row exists for the webhook to find and answer once Stripe confirms
  * payment. Nothing is answered until payment completes.
  *
- * "subscribe": starts a Long Read subscription — 7-day free trial, then a
- * weekly charge. Two tiers, both `{ tier }` in the POST body:
- *  - "long_read" (default if omitted): $7/week, Long Read only.
- *  - "long_read_plus_numerology": $12/week, Long Read + the numerology
- *    add-on (priced against the market — see workspace pricing notes).
- * Requires an authenticated caller (Supabase bearer token) — the Stripe
- * customer is tied to the signed-in user id via metadata/
- * client_reference_id, and the chosen tier is carried in
- * subscription_data metadata, so the webhook can write the right
- * `subscriptions` row (including `tier`) once Stripe confirms it.
+ * "subscribe": starts a Long Read subscription — 7-day free trial, then
+ * $7/week. Only tier is "long_read" (default if omitted). Requires an
+ * authenticated caller (Supabase bearer token) — the Stripe customer is
+ * tied to the signed-in user id via metadata/client_reference_id, and the
+ * tier is carried in subscription_data metadata so the webhook can write
+ * the right `subscriptions` row once Stripe confirms it.
  *
  * "numerology_unlock": one-time $19.99 checkout that unlocks numerology
  * forever for the signed-in user, independent of any subscription. The
@@ -47,10 +43,6 @@ const SUBSCRIPTION_TIERS = {
   long_read: {
     priceCents: 700,
     productName: "The Long Read — weekly",
-  },
-  long_read_plus_numerology: {
-    priceCents: 1200,
-    productName: "The Long Read + Numerology — weekly",
   },
 } as const;
 
@@ -156,6 +148,7 @@ async function handleSubscribeCheckout(req: ApiRequest, res: ApiResponse) {
     throw new HttpError(400, "Invalid checkout request");
   }
 
+  // Only long_read remains; any other/legacy tier value falls back to it.
   const resolvedTier: SubscriptionTier =
     tier && tier in SUBSCRIPTION_TIERS ? (tier as SubscriptionTier) : "long_read";
   const { priceCents, productName } = SUBSCRIPTION_TIERS[resolvedTier];
