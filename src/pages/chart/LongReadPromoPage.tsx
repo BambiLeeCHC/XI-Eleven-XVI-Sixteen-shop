@@ -23,7 +23,8 @@ export function LongReadPromoPage() {
               <div className="journal-surface" style={{ padding: "1.25rem", textAlign: "left", marginBottom: "1.5rem" }}>
                 <p className="text-sm font-semibold mb-2">The Long Read</p>
                 <p className="text-sm text-muted-foreground">
-                  Seven cards, read against what's actually going on with you — the in-depth reading.
+                  Seven cards, three times a day — morning, midday, evening — read against what's
+                  actually going on with you.
                 </p>
               </div>
             }
@@ -40,14 +41,25 @@ export function LongReadPromoPage() {
         <SEO title={pageTitle} />
         <TrueNorthHero sunSign={sunSign} />
         <SectionHeading wordA="The" wordB="Long Read" ariaLabel="The Long Read" />
-        <div className="journal-surface" style={{ padding: "1.75rem", display: "flex", flexDirection: "column", gap: "0.9rem", textAlign: "center" }}>
+        <div
+          className="journal-surface"
+          style={{
+            padding: "1.75rem",
+            display: "flex",
+            flexDirection: "column",
+            gap: "0.9rem",
+            textAlign: "center",
+          }}
+        >
           <span className="journal-tile__deck" aria-hidden="true" style={{ margin: "0 auto" }}>
-            <i /><i /><i />
+            <i />
+            <i />
+            <i />
           </span>
           <p className="text-sm font-semibold">The Long Read</p>
           <p className="text-sm text-muted-foreground">
-            Seven cards, read against what you told us — the in-depth reading, plus a follow-up
-            question ($2.99) once you've drawn it. 7 days free, then $7/week.
+            Seven cards, three times a day — Morning, Midday, Evening — each read against what you
+            told us. Follow-up question $2.99. 7 days free, then $7/week.
           </p>
           <Link to="/journal/deep-reading">
             <button style={ctaButtonStyle}>Go deeper ✦</button>
