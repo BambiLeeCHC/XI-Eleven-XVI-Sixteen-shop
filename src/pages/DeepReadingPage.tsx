@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type CSSProperties } from "react";
 import { Link } from "react-router-dom";
 import { SEO } from "../components/SEO";
 import { JournalSky } from "../components/journal/JournalSky";
@@ -225,10 +225,10 @@ export function DeepReadingPage() {
 
   const pageTitle = "The Long Read — XI · XVI Journal";
 
-  const tabStyle = (id: DailyWindow): React.CSSProperties => {
+  const tabStyle = (id: DailyWindow): CSSProperties => {
     const state = stateFor(id);
     const selected = id === selectedWindow;
-    const base: React.CSSProperties = {
+    return {
       flex: 1,
       padding: "0.75rem 0.5rem",
       borderRadius: "10px",
@@ -242,7 +242,6 @@ export function DeepReadingPage() {
       cursor: "pointer",
       opacity: state === "locked" ? 0.55 : 1,
     };
-    return base;
   };
 
   if (!user) {
@@ -298,7 +297,6 @@ export function DeepReadingPage() {
 
         {entitled && (
           <>
-            {/* Window tabs */}
             <div
               className="journal-surface"
               style={{ padding: "0.75rem", display: "flex", gap: "0.5rem" }}
@@ -321,7 +319,10 @@ export function DeepReadingPage() {
                       {w.label}
                       {isActiveWindow ? " · now" : ""}
                     </p>
-                    <p className="text-[10px] uppercase tracking-wide text-muted-foreground" style={{ margin: "0.2rem 0 0" }}>
+                    <p
+                      className="text-[10px] uppercase tracking-wide text-muted-foreground"
+                      style={{ margin: "0.2rem 0 0" }}
+                    >
                       {state === "done" ? "Drawn" : state === "locked" ? "Later" : "Open"}
                     </p>
                   </button>
@@ -329,10 +330,14 @@ export function DeepReadingPage() {
               })}
             </div>
 
-            {/* Selected window body */}
-            <div className="journal-surface" style={{ padding: "1.5rem", display: "flex", flexDirection: "column", gap: "0.85rem" }}>
+            <div
+              className="journal-surface"
+              style={{ padding: "1.5rem", display: "flex", flexDirection: "column", gap: "0.85rem" }}
+            >
               <div>
-                <p className="text-sm font-semibold">{selectedMeta.label} · {selectedMeta.hours}</p>
+                <p className="text-sm font-semibold">
+                  {selectedMeta.label} · {selectedMeta.hours}
+                </p>
                 <p className="text-sm text-muted-foreground">{selectedMeta.blurb}</p>
               </div>
 
@@ -398,7 +403,8 @@ export function DeepReadingPage() {
                           </p>
                           <CardArt card={s.card} reversed={s.reversed} />
                           <p className="text-xs font-medium mt-1">
-                            {s.card.name}{s.reversed ? " (rev.)" : ""}
+                            {s.card.name}
+                            {s.reversed ? " (rev.)" : ""}
                           </p>
                         </div>
                       ))}
@@ -406,9 +412,7 @@ export function DeepReadingPage() {
                   </SectionBoundary>
 
                   <SectionBoundary fallbackLabel="Couldn't display the reading text just now — it's saved to your account either way.">
-                    <div className="prose prose-sm max-w-none whitespace-pre-line">
-                      {displayReading}
-                    </div>
+                    <div className="prose prose-sm max-w-none whitespace-pre-line">{displayReading}</div>
                   </SectionBoundary>
 
                   {isAdmin && selectedState === "done" && (
