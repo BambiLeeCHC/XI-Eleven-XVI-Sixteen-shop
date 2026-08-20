@@ -1,24 +1,9 @@
 /**
  * XI · XVI Tarot Reading Engine — the free daily "Embracing Change" spread.
  *
- * Turns a drawn 5-card spread (cards + positions + orientations) into a
- * single, freshly-written narrative reading — not a template, not a
- * recombination of stock paragraphs. Every request sends the model the
- * canonical upright/reversed meaning of each card and the meaning of the
- * position it landed in; the model is required to synthesize a specific,
- * connected reading the way a real reader would — direct, card-by-card,
- * never a generic daily-horoscope template, never a narrative hook that
- * promises to circle back later.
- *
- * If the reader is signed in, the reading is lightly personalized: addressed
- * by name once. Anonymous/guest readers still get the full reading, just
- * without that layer. The reading always closes with a short "SYNOPSIS:"
- * line — a plain-language personal takeaway for the whole draw — which the
- * frontend splits out and renders as its own closing line (see DrawThree.tsx).
- *
- * Calls Google's Gemini API using GEMINI_API_KEY (free tier). If
- * GEMINI_API_KEY isn't configured, the caller falls back to the static
- * per-card copy already in the deck data (see DrawThree.tsx).
+ * Powered by Groq (GROQ_API_KEY). Returns { success: false, reason, error }
+ * when the key is missing or the upstream call fails so the UI can fall back
+ * to static card copy without a silent hang.
  */
 
 import {
@@ -73,6 +58,16 @@ function buildUserPrompt(
   return `Today's spread, in draw order:\n${lines.join("\n")}${personalization}\n\nWrite today's reading now, following the voice and structure rules exactly.`;
 }
 
+function groqErrorMessage(failure: GroqFailure): string {
+  if (failure.reason === "no_key") {
+    return "Reading engine offline (GROQ_API_KEY missing). Set it in Vercel and redeploy.";
+  }
+  if (failure.reason === "upstream_error") {
+    return `Reading engine upstream error${failure.detail ? ` (${failure.detail})` : ""}.`;
+  }
+  return "Reading engine returned an empty response.";
+}
+
 export default async function handler(req: ApiRequest, res: ApiResponse) {
   if (req.method !== "POST") {
     res.setHeader("Allow", "POST");
@@ -99,7 +94,12 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
 
     if (!result.success) {
       const failure = result as GroqFailure;
-      return res.status(200).json({ success: false, reason: failure.reason });
+      return res.status(200).json({
+        success: false,
+        reason: failure.reason,
+        error: groqErrorMessage(failure),
+        detail: failure.detail,
+      });
     }
     return res.status(200).json({ success: true, reading: result.text });
   } catch (error) {
