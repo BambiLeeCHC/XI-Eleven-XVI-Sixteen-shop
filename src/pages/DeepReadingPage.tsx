@@ -1,15 +1,23 @@
 import { useEffect, useMemo, useState, type CSSProperties } from "react";
 import { Link } from "react-router-dom";
 import { SEO } from "../components/SEO";
-import { JournalSky } from "../components/journal/JournalSky";
+import { TrueNorthAtmosphere } from "../components/journal/TrueNorthAtmosphere";
 import { CardArt } from "../components/journal/CardArt";
 import { SectionBoundary } from "../components/journal/SectionBoundary";
 import { SubscriptionTierPicker, type SubscriptionTier } from "../components/SubscriptionTierPicker";
 import { api, useAction, useQuery } from "../lib/backend";
 import { DEEP_SPREAD, drawDeepSpread, type SpreadCard } from "../lib/ritual";
+import {
+  BoldParagraphs,
+  SectionHeading,
+  TrueNorthHero,
+  TrueNorthSignedOutTeaser,
+  ctaButtonStyle,
+  useSunSign,
+} from "./chart/shared";
 
 /**
- * The Long Read — paywalled seven-card deep reading, three times a day.
+ * The Long Read — True North section (same shell as Chart / Numbers / Almanac).
  *
  * Windows (local time):
  *   morning  00:00–11:59
@@ -18,6 +26,8 @@ import { DEEP_SPREAD, drawDeepSpread, type SpreadCard } from "../lib/ritual";
  *
  * One independent 7-card reading per window per day (server-enforced).
  * Admins bypass quota and subscription checks.
+ *
+ * Primary route: /chart/long-read (nav). /journal/deep-reading redirects here.
  */
 
 export type DailyWindow = "morning" | "midday" | "evening";
@@ -79,8 +89,11 @@ interface SavedDeepReading {
   createdAt?: string;
 }
 
+const LONG_READ_ORIGIN = "/chart/long-read";
+
 export function DeepReadingPage() {
   const user = useQuery(api.auth.currentUser);
+  const sunSign = useSunSign(user);
   const subscription = useQuery(api.subscription.status);
   const deepReadings = useQuery(api.deepReadings.mine) as SavedDeepReading[] | undefined;
   const startTrialAction = useAction(api.subscription.startTrial);
@@ -91,8 +104,6 @@ export function DeepReadingPage() {
   const active = useMemo(() => activeDailyWindow(now), [now]);
   const [selectedWindow, setSelectedWindow] = useState<DailyWindow>(active);
 
-  // Per-window local draft state so switching tabs doesn't wipe situation text
-  // or a just-drawn reading that hasn't been reconciled from the query yet.
   const [situations, setSituations] = useState<Record<DailyWindow, string>>({
     morning: "",
     midday: "",
@@ -110,7 +121,6 @@ export function DeepReadingPage() {
   const entitled = subscription?.entitled === true;
   const isAdmin = subscription?.isAdmin === true;
 
-  // Today's saved readings keyed by window (server may use snake_case created_at).
   const todayByWindow = useMemo(() => {
     const map: Partial<Record<DailyWindow, SavedDeepReading>> = {};
     if (!deepReadings) return map;
@@ -119,13 +129,11 @@ export function DeepReadingPage() {
       if (w !== "morning" && w !== "midday" && w !== "evening") continue;
       const created = row.created_at ?? row.createdAt;
       if (!created || !isSameLocalDay(created, now)) continue;
-      // First match wins — list is ordered newest first.
       if (!map[w]) map[w] = row;
     }
     return map;
   }, [deepReadings, now]);
 
-  // Prefer freshly drawn local state, else today's saved row for the selected window.
   const selectedSaved = todayByWindow[selectedWindow];
   const selectedLocal = localByWindow[selectedWindow];
   const displaySpread = selectedLocal?.spread ?? selectedSaved?.spread ?? null;
@@ -136,9 +144,6 @@ export function DeepReadingPage() {
     if (todayByWindow[id] || localByWindow[id]) return "done";
     if (isAdmin) return "open";
     if (windowIndex(id) > windowIndex(active)) return "locked";
-    // Current and earlier windows that weren't drawn stay open so the reader
-    // can still take a missed midday in the evening, etc. Server enforces
-    // one-per-window; time-gating only locks *future* slots.
     return "open";
   };
 
@@ -151,8 +156,8 @@ export function DeepReadingPage() {
     try {
       const result = await startTrialAction({
         tier,
-        successUrl: `${window.location.origin}/journal/deep-reading`,
-        cancelUrl: `${window.location.origin}/journal/deep-reading`,
+        successUrl: `${window.location.origin}${LONG_READ_ORIGIN}`,
+        cancelUrl: `${window.location.origin}${LONG_READ_ORIGIN}`,
       });
       if (result?.url) window.location.href = result.url;
       else setError(result?.error || "Couldn't start the trial — try again.");
@@ -205,8 +210,8 @@ export function DeepReadingPage() {
           reading: displayReading,
           window: selectedWindow,
         },
-        successUrl: `${window.location.origin}/journal/deep-reading`,
-        cancelUrl: `${window.location.origin}/journal/deep-reading`,
+        successUrl: `${window.location.origin}${LONG_READ_ORIGIN}`,
+        cancelUrl: `${window.location.origin}${LONG_READ_ORIGIN}`,
       });
       if (result?.url) window.location.href = result.url;
       else setError(result?.error || "Couldn't start checkout — try again.");
@@ -217,13 +222,12 @@ export function DeepReadingPage() {
     }
   };
 
-  // Clear follow-up draft when switching windows.
   useEffect(() => {
     setQuestion("");
     setError(null);
   }, [selectedWindow]);
 
-  const pageTitle = "The Long Read — XI · XVI Journal";
+  const pageTitle = "True North — The Long Read — XI · XVI";
 
   const tabStyle = (id: DailyWindow): CSSProperties => {
     const state = stateFor(id);
@@ -234,11 +238,11 @@ export function DeepReadingPage() {
       borderRadius: "10px",
       textAlign: "center",
       border: selected
-        ? "1px solid rgba(214,178,96,.7)"
+        ? "1px solid rgba(214,178,96,.55)"
         : "1px solid rgba(0,0,0,0.08)",
       background: selected
-        ? "linear-gradient(160deg, rgba(29,47,79,.08), rgba(16,28,51,.04))"
-        : "rgba(255,255,255,.55)",
+        ? "linear-gradient(160deg, rgba(29,47,79,.1), rgba(16,28,51,.04))"
+        : "rgba(255,255,255,.45)",
       cursor: "pointer",
       opacity: state === "locked" ? 0.55 : 1,
     };
@@ -246,36 +250,38 @@ export function DeepReadingPage() {
 
   if (!user) {
     return (
-      <div className="journal-page">
-        <JournalSky />
-        <div className="journal-stack">
+      <div className="journal-page journal-page--truenorth">
+        <TrueNorthAtmosphere />
+        <div className="journal-stack" style={{ maxWidth: "42rem" }}>
           <SEO title={pageTitle} />
-          <div className="journal-surface journal-hero" style={{ textAlign: "center" }}>
-            <p className="uppercase tracking-widest text-xs text-muted-foreground mb-2">The Long Read</p>
-            <h1 className="text-3xl font-serif mb-3">{DEEP_SPREAD.name}</h1>
-            <p className="text-sm text-muted-foreground mb-6">
-              Sign in to unlock three in-depth readings a day — morning, midday, and evening —
-              built around what's actually going on with you.
-            </p>
-            <Link to="/login" className="underline">Sign in or create an account →</Link>
-          </div>
+          <TrueNorthSignedOutTeaser
+            pageTitleTag={
+              <div className="journal-surface" style={{ padding: "1.25rem", textAlign: "left", marginBottom: "1.5rem" }}>
+                <p className="text-sm font-semibold mb-2">The Long Read</p>
+                <p className="text-sm text-muted-foreground">
+                  Seven cards, three times a day — morning, midday, evening — read against what's
+                  actually going on with you.
+                </p>
+              </div>
+            }
+          />
         </div>
       </div>
     );
   }
 
   return (
-    <div className="journal-page">
-      <JournalSky />
-      <div className="journal-stack" style={{ maxWidth: "42rem" }}>
+    <div className="journal-page journal-page--truenorth">
+      <TrueNorthAtmosphere />
+      <div className="journal-stack" style={{ maxWidth: "44rem" }}>
         <SEO title={pageTitle} />
+        <TrueNorthHero sunSign={sunSign} />
 
-        <div className="journal-surface journal-hero">
-          <p className="uppercase tracking-widest text-xs text-muted-foreground mb-2">The Long Read</p>
-          <h1 className="text-3xl font-serif mb-3">{DEEP_SPREAD.name}</h1>
-          <p className="text-sm text-muted-foreground">{DEEP_SPREAD.intro}</p>
-          <p className="text-xs text-muted-foreground mt-3">
-            Three readings a day — Morning, Midday, Evening. One draw per window.
+        <SectionHeading wordA="The" wordB="Long Read" ariaLabel="The Long Read" />
+
+        <div className="journal-surface chart-feed-card" style={{ padding: "1.5rem 1.75rem" }}>
+          <p className="text-sm text-muted-foreground" style={{ margin: 0 }}>
+            {DEEP_SPREAD.intro} Three independent draws a day — Morning, Midday, Evening.
           </p>
         </div>
 
@@ -286,19 +292,31 @@ export function DeepReadingPage() {
         )}
 
         {!entitled && (
-          <div className="journal-surface" style={{ padding: "1.75rem", display: "flex", flexDirection: "column", gap: "1.1rem" }}>
+          <div
+            className="journal-surface chart-feed-card"
+            style={{ padding: "1.75rem", display: "flex", flexDirection: "column", gap: "1.1rem" }}
+          >
+            <h2 className="journal-article__title--collage" aria-label="Unlock the Long Read">
+              <span className="jcol-tag jcol-gold jcol-display" style={{ transform: "rotate(-1.5deg)" }}>
+                Unlock
+              </span>
+              <span className="jcol-tag jcol-ink jcol-grotesk" style={{ transform: "rotate(1deg)" }}>
+                deeper
+              </span>
+            </h2>
             <p className="text-sm text-muted-foreground">
               Seven cards, three times a day, read directly against what's actually going on for you —
-              not the daily five, a genuinely deeper read, saved to your account. 7 days free, then $7/week.
+              not the daily five, a genuinely deeper read, saved to your account. 7 days free, then
+              $7/week.
             </p>
             <SubscriptionTierPicker subscribingTier={subscribingTier} onStart={startTrial} />
           </div>
         )}
 
         {entitled && (
-          <>
+          <div className="chart-feed">
             <div
-              className="journal-surface"
+              className="journal-surface chart-feed-card"
               style={{ padding: "0.75rem", display: "flex", gap: "0.5rem" }}
               role="tablist"
               aria-label="Daily Long Read windows"
@@ -331,25 +349,49 @@ export function DeepReadingPage() {
             </div>
 
             <div
-              className="journal-surface"
-              style={{ padding: "1.5rem", display: "flex", flexDirection: "column", gap: "0.85rem" }}
+              className="journal-surface chart-feed-card chart-profile-card"
+              style={{
+                padding: "1.75rem",
+                display: "flex",
+                flexDirection: "column",
+                gap: "0.95rem",
+                position: "relative",
+              }}
             >
+              <span className="jcol-patch jcol-patch--b" aria-hidden="true" />
               <div>
-                <p className="text-sm font-semibold">
-                  {selectedMeta.label} · {selectedMeta.hours}
+                <h2 className="journal-article__title--collage" aria-label={selectedMeta.label}>
+                  <span
+                    className="jcol-tag jcol-lilac jcol-display"
+                    style={{ transform: "rotate(-1.5deg)" }}
+                  >
+                    {selectedMeta.label}
+                  </span>
+                  <span className="jcol-tag jcol-ink jcol-grotesk" style={{ transform: "rotate(1deg)" }}>
+                    window
+                  </span>
+                </h2>
+                <p className="text-xs uppercase tracking-wide text-muted-foreground" style={{ marginTop: "0.65rem" }}>
+                  {selectedMeta.hours}
                 </p>
-                <p className="text-sm text-muted-foreground">{selectedMeta.blurb}</p>
+                <p className="text-sm text-muted-foreground" style={{ marginTop: "0.35rem" }}>
+                  {selectedMeta.blurb}
+                </p>
               </div>
 
               {selectedState === "locked" && (
                 <p className="text-sm text-muted-foreground">
-                  This window opens later today. You can still review Morning or Midday once you've drawn them.
+                  This window opens later today. You can still review Morning or Midday once you've
+                  drawn them.
                 </p>
               )}
 
               {selectedState === "open" && !hasReading && (
                 <>
-                  <label htmlFor="deep-situation" className="text-sm italic text-muted-foreground block">
+                  <label
+                    htmlFor="deep-situation"
+                    className="text-sm italic text-muted-foreground block"
+                  >
                     Before you draw — what's actually going on right now?
                   </label>
                   <textarea
@@ -361,25 +403,13 @@ export function DeepReadingPage() {
                     rows={2}
                     placeholder={'e.g. "trying to decide whether to leave my job"'}
                     className="w-full rounded-md border px-3 py-2 text-sm"
-                    style={{ background: "rgba(255,255,255,.7)" }}
+                    style={{ background: "rgba(255,255,255,.55)" }}
                   />
                   <button
+                    type="button"
                     onClick={drawTheLongRead}
                     disabled={drawing}
-                    style={{
-                      width: "100%",
-                      padding: "0.9rem",
-                      borderRadius: "12px",
-                      textAlign: "center",
-                      background: "linear-gradient(160deg, #1d2f4f, #101c33)",
-                      color: "#f3e9d2",
-                      border: "1px solid rgba(214,178,96,.6)",
-                      fontSize: "0.75rem",
-                      letterSpacing: "0.15em",
-                      textTransform: "uppercase",
-                      fontWeight: 600,
-                      opacity: drawing ? 0.6 : 1,
-                    }}
+                    style={{ ...ctaButtonStyle, opacity: drawing ? 0.6 : 1, width: "100%" }}
                   >
                     {drawing ? "Drawing…" : `Draw the ${selectedMeta.label} Long Read ✦`}
                   </button>
@@ -412,7 +442,27 @@ export function DeepReadingPage() {
                   </SectionBoundary>
 
                   <SectionBoundary fallbackLabel="Couldn't display the reading text just now — it's saved to your account either way.">
-                    <div className="prose prose-sm max-w-none whitespace-pre-line">{displayReading}</div>
+                    <div className="chart-profile-sections">
+                      <div className="chart-profile-section">
+                        <h3 className="journal-article__title--collage" aria-label="Your reading">
+                          <span
+                            className="jcol-tag jcol-gold jcol-display"
+                            style={{ transform: "rotate(-1.5deg)" }}
+                          >
+                            Your
+                          </span>
+                          <span
+                            className="jcol-tag jcol-ink jcol-grotesk"
+                            style={{ transform: "rotate(1deg)" }}
+                          >
+                            reading
+                          </span>
+                        </h3>
+                        <div className="chart-profile-section__body" style={{ marginTop: "0.85rem" }}>
+                          <BoldParagraphs text={displayReading || ""} />
+                        </div>
+                      </div>
+                    </div>
                   </SectionBoundary>
 
                   {isAdmin && selectedState === "done" && (
@@ -429,35 +479,42 @@ export function DeepReadingPage() {
                         letterSpacing: "0.1em",
                         textTransform: "uppercase",
                         opacity: drawing ? 0.6 : 0.85,
+                        background: "transparent",
+                        cursor: "pointer",
                       }}
                     >
                       {drawing ? "Drawing…" : "Admin · redraw this window"}
                     </button>
                   )}
 
-                  <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem", marginTop: "0.5rem" }}>
-                    <p className="text-sm font-medium">Ask a follow-up question — $2.99</p>
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: "0.75rem",
+                      marginTop: "0.35rem",
+                      paddingTop: "1rem",
+                      borderTop: "1px solid rgba(0,0,0,0.06)",
+                    }}
+                  >
+                    <p className="text-sm font-medium" style={{ margin: 0 }}>
+                      Ask a follow-up question — $2.99
+                    </p>
                     <textarea
                       value={question}
                       onChange={e => setQuestion(e.target.value)}
                       rows={2}
                       placeholder="What do you want to know more about?"
                       className="w-full rounded-md border px-3 py-2 text-sm"
-                      style={{ background: "rgba(255,255,255,.7)" }}
+                      style={{ background: "rgba(255,255,255,.55)" }}
                     />
                     <button
+                      type="button"
                       onClick={askQuestion}
                       disabled={askingQuestion || !question.trim()}
                       style={{
+                        ...ctaButtonStyle,
                         alignSelf: "flex-start",
-                        padding: "0.7rem 1.4rem",
-                        borderRadius: "10px",
-                        border: "1px solid rgba(214,178,96,.6)",
-                        fontSize: "0.7rem",
-                        letterSpacing: "0.12em",
-                        textTransform: "uppercase",
-                        fontWeight: 600,
-                        background: "rgba(255,255,255,.72)",
                         opacity: askingQuestion || !question.trim() ? 0.5 : 1,
                       }}
                     >
@@ -467,8 +524,15 @@ export function DeepReadingPage() {
                 </>
               )}
             </div>
-          </>
+          </div>
         )}
+
+        <p className="text-xs text-muted-foreground" style={{ textAlign: "center", marginTop: "0.5rem" }}>
+          Prefer the free five-card draw?{" "}
+          <Link to="/journal" className="underline">
+            Open The Journal →
+          </Link>
+        </p>
       </div>
     </div>
   );
