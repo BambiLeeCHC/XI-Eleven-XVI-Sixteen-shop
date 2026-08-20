@@ -27,6 +27,7 @@
  *  - a one-time $19.99 unlock, purchasable via /api/reading-checkout's
  *    `numerology_unlock` kind, gates on `profiles.numerology_unlocked_at`
  *    being set (written by the webhook once Stripe confirms payment).
+ *  - admin role on the profile (full bypass of every paywall).
  */
 
 import {
@@ -68,9 +69,6 @@ Concrete, specific guidance on the best and highest thing this person could be d
 
 Sparing bold on 4-5 key phrases total across all three sections. Address them by name once, naturally, in the first section only.`;
 
-/** Location autocomplete for the birth-location field. Deliberately
- * unauthenticated — this needs to work on the sign-up form, before an
- * account exists. */
 async function handleGeocodeSearch(req: ApiRequest, res: ApiResponse) {
   const queryQ = req.query?.q;
   const qFromQuery = Array.isArray(queryQ) ? queryQ[0] : queryQ;
@@ -83,10 +81,6 @@ type ChartResolution =
   | { ok: true; chart: NatalChart; name: string | null; sourceKey: string }
   | { ok: false; reason: string; message: string };
 
-/**
- * Shared birth-data → chart resolution, used by both the raw chart endpoint
- * and the personality-profile narrative endpoint so they can't drift.
- */
 async function resolveUserChart(userId: string): Promise<ChartResolution> {
   const admin = supabaseAdmin();
   const { data: profile, error: profileError } = await admin
@@ -126,7 +120,6 @@ async function resolveUserChart(userId: string): Promise<ChartResolution> {
     }
     lat = geo.lat;
     lng = geo.lng;
-    // Cache it — best-effort, don't fail the request if this write fails.
     await admin
       .from("profiles")
       .update({ birth_lat: lat, birth_lng: lng })
@@ -134,9 +127,6 @@ async function resolveUserChart(userId: string): Promise<ChartResolution> {
   }
 
   const chart = computeNatalChart(profile.birth_date, profile.birth_time, { lat, lng });
-  // Stable key for whatever birth inputs produced this chart — if any of
-  // these ever change (edited birth details), the key changes too, so a
-  // cached narrative keyed on the old value is correctly treated as stale.
   const sourceKey = `${profile.birth_date}|${profile.birth_time ?? ""}|${lat}|${lng}`;
   return { ok: true, chart, name: profile.name ?? null, sourceKey };
 }
@@ -153,10 +143,6 @@ async function handleNatalChart(req: ApiRequest, res: ApiResponse) {
   return res.status(200).json({ success: true, chart: resolved.chart });
 }
 
-/** The personalized personality-profile narrative — free, part of the
- * natal chart (not paywalled). Weaves Sun/Moon/Ascendant/Midheaven, the
- * other placements and the tightest real aspects into one synthesis, plus
- * a closing "highest use of your chart" section. */
 async function handleNatalProfile(req: ApiRequest, res: ApiResponse) {
   const user = await currentUser(req);
   if (!user) throw new HttpError(401, "Please sign in first");
@@ -169,9 +155,6 @@ async function handleNatalProfile(req: ApiRequest, res: ApiResponse) {
   const { chart, name, sourceKey } = resolved;
   const admin = supabaseAdmin();
 
-  // The personality profile is written once ever per birth-data set, then
-  // reused on every subsequent visit — no repeat Gemini calls for a
-  // narrative that would just be regenerated from the same inputs.
   const { data: cached } = await admin
     .from("profiles")
     .select("natal_profile_narrative, natal_profile_source_key")
@@ -211,7 +194,6 @@ Write the personality profile now, following the voice and structure rules exact
     return res.status(200).json({ success: false, reason: failure.reason });
   }
 
-  // Best-effort cache write — don't fail the request if this write fails.
   await admin
     .from("profiles")
     .update({ natal_profile_narrative: result.text, natal_profile_source_key: sourceKey })
@@ -233,17 +215,19 @@ async function handleNumerology(req: ApiRequest, res: ApiResponse) {
       .maybeSingle(),
     admin
       .from("profiles")
-      .select("name, birth_date, numerology_unlocked_at")
+      .select("name, birth_date, numerology_unlocked_at, role")
       .eq("id", user.id)
       .maybeSingle(),
   ]);
 
+  const isAdmin = profile?.role === "admin";
   const unlockedBySubscription =
     !!sub &&
     ["trialing", "active"].includes(sub.status) &&
     sub.tier === "long_read_plus_numerology";
   const unlockedOneTime = !!profile?.numerology_unlocked_at;
-  const unlocked = unlockedBySubscription || unlockedOneTime;
+  // Admins bypass numerology paywall entirely.
+  const unlocked = isAdmin || unlockedBySubscription || unlockedOneTime;
 
   if (!unlocked) {
     throw new HttpError(
