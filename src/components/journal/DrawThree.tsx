@@ -10,19 +10,6 @@ import {
 import { CardArt, CardBack } from "./CardArt";
 import { api, useQuery } from "../../lib/backend";
 
-/* ═══════════════════════════════════════════════════════════════════════
-   THE FIVE — a real five-card spread from the XI·XVI Major Arcana.
-
-   One spread per person per day (deterministic from a private drawer id +
-   the calendar date) — nobody sees anyone else's spread, and reloading
-   doesn't reshuffle it. Once every card is turned, the reading itself is
-   freshly written for this exact combination of cards, positions and
-   orientations by a live call to the reading engine — never assembled
-   from a fixed set of pre-written paragraphs. The ritual: shield-backed
-   cards sit face down, a tap ignites a light burst out of the card, the
-   card turns, and the reading unfolds.
-   ═══════════════════════════════════════════════════════════════════════ */
-
 const STORE_KEY = "xixvi-draw";
 const READING_STORE_KEY = "xixvi-reading";
 
@@ -45,12 +32,10 @@ function saveRevealed(slots: Set<string>) {
       JSON.stringify({ day: dayKey(), slots: [...slots] }),
     );
   } catch {
-    /* private mode — the draw simply won't persist */
+    /* private mode */
   }
 }
 
-/** Small stable hash of the drawn combination, used only as a cache key so
- * a reading isn't regenerated on every reload for the same person/day. */
 function comboKey(spread: SpreadCard[]): string {
   return spread.map(s => `${s.card.number}${s.reversed ? "R" : "U"}`).join("-");
 }
@@ -80,13 +65,10 @@ function saveCachedReading(combo: string, text: string) {
       JSON.stringify({ day: dayKey(), combo, text }),
     );
   } catch {
-    /* private mode — the reading simply regenerates next time */
+    /* private mode */
   }
 }
 
-/** Graceful degradation if the reading engine is unavailable — combines
- * each card's own canonical copy instead of a live-written letter. Not the
- * target experience, just a floor so the feature never looks broken. */
 function fallbackReading(spread: SpreadCard[]): string {
   return spread
     .map(
@@ -126,17 +108,11 @@ async function fetchReading(
     const json = await res.json();
     if (json?.success && typeof json.reading === "string") return json.reading;
   } catch {
-    /* network/engine failure — fall through to the static floor */
+    /* fall through */
   }
   return fallbackReading(spread);
 }
 
-/* ── The reading's collage head ──────────────────────────────────────────
-   Same cut-paper language as the masthead — a dateline slug, the spread's
-   name cut letter by letter, any remaining words as torn tags below — so
-   the reveal reads like a page out of the same publication instead of a
-   different product bolted on. Built from live data (day-of-month, the
-   spread's own name) so it never goes stale if the spread is renamed. */
 const COLLAGE_PAPERS = ["ink", "newsprint", "kraft", "gold", "blush", "lilac", "cream"] as const;
 const COLLAGE_FACES = ["grotesk", "display", "type"] as const;
 const COLLAGE_ROT = [-4, 3, -2, 4, -3, 2, -4.5, 3.5];
@@ -201,10 +177,6 @@ function ReadingCollageHead({ spreadName }: { spreadName: string }) {
   );
 }
 
-/** Minimal, safe render of the reading's sparing **bold** markup. */
-/** The reading engine closes with a line starting "SYNOPSIS:" — split it out
- * so it can render as its own short, distinctly-styled closing line instead
- * of blending into the card-by-card narrative. */
 function splitSynopsis(text: string): [string, string | null] {
   const match = text.match(/\n{1,2}SYNOPSIS:\s*([\s\S]+)$/i);
   if (!match) return [text, null];
@@ -417,8 +389,8 @@ export function DrawThree() {
                   The Long Read goes seven cards deep, read against what's actually going on with
                   you — plus your full natal chart and numerology on the True North page.
                 </p>
-                <Link to="/journal/deep-reading" className="jdeck__long-read-tease-cta">
-                  Go deeper with the Long Read ✦
+                <Link to="/chart/long-read" className="jdeck__long-read-tease-cta">
+                  Open the Long Read in True North ✦
                 </Link>
               </div>
             </>
