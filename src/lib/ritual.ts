@@ -6,7 +6,8 @@
  * zones without any backend state. Same date → same card, worldwide.
  */
 
-import { ARCANA, FULL_DECK, type ArcanaCard } from "../data/arcana";
+import { ARCANA, type ArcanaCard } from "../data/arcana";
+import { FULL_DECK } from "../data/fullDeck";
 import { DAILY_CODES, type DailyCode } from "../data/dailyCodes";
 
 /** Local calendar day key, e.g. "2026-07-28". */
