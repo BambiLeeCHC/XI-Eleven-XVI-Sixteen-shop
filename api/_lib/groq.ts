@@ -3,26 +3,32 @@
  * (free daily reading, deep paid reading, pay-per-question follow-up,
  * numerology, natal profile, brand concierge).
  *
- * Replaces the previous Gemini free-tier integration, which was hard-capped
- * at 20 requests/day/model shared across every AI feature on the site and
- * was the recurring cause of "AI feature is broken" reports. Groq's paid
- * key has no such shared daily cap.
+ * Requires GROQ_API_KEY on the Vercel project (Production + Preview).
+ * Without it every reading returns { success: false, reason: "no_key" }.
  */
 export type GroqFailure = {
   success: false;
   reason: "no_key" | "upstream_error" | "empty";
+  detail?: string;
 };
 
 export type GroqResult = { success: true; text: string } | GroqFailure;
 
-const GROQ_MODEL = "llama-3.3-70b-versatile";
+/** Primary + fallback — if Groq retires a model id, the second still works. */
+const GROQ_MODELS = [
+  "llama-3.3-70b-versatile",
+  "llama-3.1-70b-versatile",
+  "llama-3.1-8b-instant",
+] as const;
 
 type ChatMessage = { role: "system" | "user" | "assistant"; content: string };
 
-async function callGroq(messages: ChatMessage[], maxTokens: number): Promise<GroqResult> {
-  const apiKey = process.env.GROQ_API_KEY;
-  if (!apiKey) return { success: false, reason: "no_key" };
-
+async function callGroqOnce(
+  apiKey: string,
+  model: string,
+  messages: ChatMessage[],
+  maxTokens: number,
+): Promise<GroqResult> {
   const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
     method: "POST",
     headers: {
@@ -30,24 +36,65 @@ async function callGroq(messages: ChatMessage[], maxTokens: number): Promise<Gro
       Authorization: `Bearer ${apiKey}`,
     },
     body: JSON.stringify({
-      model: GROQ_MODEL,
+      model,
       messages,
       temperature: 0.95,
       max_tokens: maxTokens,
     }),
   });
 
+  const bodyText = await response.text().catch(() => "");
   if (!response.ok) {
-    console.error("Groq call failed", response.status, await response.text().catch(() => ""));
-    return { success: false, reason: "upstream_error" };
+    console.error("Groq call failed", model, response.status, bodyText.slice(0, 500));
+    return {
+      success: false,
+      reason: "upstream_error",
+      detail: `HTTP ${response.status}${bodyText ? `: ${bodyText.slice(0, 200)}` : ""}`,
+    };
   }
 
-  const json = await response.json();
+  let json: any;
+  try {
+    json = JSON.parse(bodyText);
+  } catch {
+    return { success: false, reason: "empty", detail: "Invalid JSON from Groq" };
+  }
+
   const text = json?.choices?.[0]?.message?.content;
   if (typeof text !== "string" || !text.trim()) {
-    return { success: false, reason: "empty" };
+    return { success: false, reason: "empty", detail: "Empty completion" };
   }
   return { success: true, text: text.trim() };
+}
+
+async function callGroq(messages: ChatMessage[], maxTokens: number): Promise<GroqResult> {
+  const apiKey = (process.env.GROQ_API_KEY || "").trim();
+  if (!apiKey) {
+    console.error(
+      "GROQ_API_KEY is missing — set it in Vercel → Project → Settings → Environment Variables (Production + Preview), then redeploy.",
+    );
+    return {
+      success: false,
+      reason: "no_key",
+      detail: "GROQ_API_KEY is not configured on the server",
+    };
+  }
+
+  let lastFailure: GroqResult = {
+    success: false,
+    reason: "upstream_error",
+    detail: "No models attempted",
+  };
+
+  for (const model of GROQ_MODELS) {
+    const result = await callGroqOnce(apiKey, model, messages, maxTokens);
+    if (result.success) return result;
+    lastFailure = result;
+    // Only fall through to the next model on upstream/model errors, not empty.
+    if (result.reason === "empty") return result;
+  }
+
+  return lastFailure;
 }
 
 /** Single system+user prompt call — the shape every reading endpoint uses. */
@@ -65,8 +112,7 @@ export async function generateWithGroq(
   );
 }
 
-/** Multi-turn variant for the brand concierge chat widget, which carries
- * conversation history rather than a single user prompt. */
+/** Multi-turn variant for the brand concierge chat widget. */
 export async function generateWithGroqChat(
   systemPrompt: string,
   history: ChatMessage[],
