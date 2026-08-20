@@ -47,8 +47,7 @@ export function LongReadPromoPage() {
           <p className="text-sm font-semibold">The Long Read</p>
           <p className="text-sm text-muted-foreground">
             Seven cards, read against what you told us — the in-depth reading, plus a follow-up
-            question ($2.99) once you've drawn it. 7 days free, then $7/week (or $12/week with
-            Numerology unlocked too).
+            question ($2.99) once you've drawn it. 7 days free, then $7/week.
           </p>
           <Link to="/journal/deep-reading">
             <button style={ctaButtonStyle}>Go deeper ✦</button>
