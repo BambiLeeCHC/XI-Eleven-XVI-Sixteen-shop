@@ -29,7 +29,6 @@ import {
   ChartHomePage,
   NumbersPage,
   AlmanacTNPage,
-  LongReadPromoPage,
   WelcomePage,
 } from "./pages";
 
@@ -57,12 +56,13 @@ function App() {
             <Route path="/contact" element={<ContactPage />} />
             <Route path="/favorites" element={<FavoritesPage />} />
             <Route path="/journal" element={<JournalPage />} />
-            <Route path="/journal/deep-reading" element={<DeepReadingPage />} />
+            {/* Long Read lives in True North nav; keep old journal URL as alias */}
+            <Route path="/journal/deep-reading" element={<Navigate to="/chart/long-read" replace />} />
             <Route path="/journal/:slug" element={<JournalPostPage />} />
             <Route path="/chart" element={<ChartHomePage />} />
             <Route path="/chart/numbers" element={<NumbersPage />} />
             <Route path="/chart/almanac" element={<AlmanacTNPage />} />
-            <Route path="/chart/long-read" element={<LongReadPromoPage />} />
+            <Route path="/chart/long-read" element={<DeepReadingPage />} />
             <Route path="/welcome" element={<WelcomePage />} />
 
             {/* Protected routes */}
