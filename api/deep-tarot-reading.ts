@@ -2,8 +2,10 @@
  * The Long Read — the paywalled seven-card deep reading.
  *
  * Requires an active or trialing subscription (checked server-side against
- * `subscriptions`, never trusted from the client). Subscribers receive three
- * Long Reads per calendar day, one per time window:
+ * `subscriptions`, never trusted from the client). Admins bypass the paywall
+ * and the daily window quota entirely.
+ *
+ * Subscribers receive three Long Reads per calendar day, one per time window:
  *   morning  00:00–11:59 local (client-gated; server stores window id)
  *   midday   12:00–16:59
  *   evening  17:00–23:59
@@ -31,10 +33,6 @@ import {
   SUPPORT_FROM,
 } from "./_lib/resend.js";
 
-/** The same shape DeepReadingPage draws and renders from — a full Arcana
- * card object per position, not a flattened prompt-only shape. Saving this
- * exact shape to `deep_readings.spread` is what lets the page redraw the
- * card art correctly the next time the reading is reopened. */
 interface SpreadCardInput {
   slot: string;
   slotName: string;
@@ -84,7 +82,6 @@ function buildUserPrompt(
   return `This reading is for ${name}. What they told us is going on: "${situation}".${identityLine}\n\nThe seven-card spread, in draw order:\n${lines.join("\n")}\n\nWrite the Long Read now, following the voice and structure rules exactly.`;
 }
 
-/** UTC start/end of the current calendar day for quota queries. */
 function utcDayBounds(now = new Date()): { start: string; end: string } {
   const y = now.getUTCFullYear();
   const m = String(now.getUTCMonth() + 1).padStart(2, "0");
@@ -106,21 +103,24 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
     if (!user) throw new HttpError(401, "Please sign in first");
 
     const admin = supabaseAdmin();
-    const { data: sub } = await admin
-      .from("subscriptions")
-      .select("status")
-      .eq("user_id", user.id)
-      .maybeSingle();
-    if (!sub || !["trialing", "active"].includes(sub.status)) {
-      throw new HttpError(402, "An active subscription is required for the Long Read");
-    }
-
     const { data: profile } = await admin
       .from("profiles")
-      .select("name, gender_identity, sexual_orientation")
+      .select("name, gender_identity, sexual_orientation, role")
       .eq("id", user.id)
       .maybeSingle();
     const name = profile?.name || "friend";
+    const isAdmin = profile?.role === "admin";
+
+    if (!isAdmin) {
+      const { data: sub } = await admin
+        .from("subscriptions")
+        .select("status")
+        .eq("user_id", user.id)
+        .maybeSingle();
+      if (!sub || !["trialing", "active"].includes(sub.status)) {
+        throw new HttpError(402, "An active subscription is required for the Long Read");
+      }
+    }
 
     const { spread, situation, window: windowRaw } = (req.body ?? {}) as {
       spread?: SpreadCardInput[];
@@ -139,21 +139,23 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
       );
     }
 
-    // One Long Read per window per UTC calendar day.
-    const { start, end } = utcDayBounds();
-    const { count, error: countError } = await admin
-      .from("deep_readings")
-      .select("id", { count: "exact", head: true })
-      .eq("user_id", user.id)
-      .eq("window", windowId)
-      .gte("created_at", start)
-      .lte("created_at", end);
-    if (countError) throw countError;
-    if ((count ?? 0) >= 1) {
-      throw new HttpError(
-        429,
-        `You have already drawn the ${windowId} Long Read today. The next window opens later, or tomorrow.`,
-      );
+    // One Long Read per window per UTC calendar day (admins unlimited).
+    if (!isAdmin) {
+      const { start, end } = utcDayBounds();
+      const { count, error: countError } = await admin
+        .from("deep_readings")
+        .select("id", { count: "exact", head: true })
+        .eq("user_id", user.id)
+        .eq("window", windowId)
+        .gte("created_at", start)
+        .lte("created_at", end);
+      if (countError) throw countError;
+      if ((count ?? 0) >= 1) {
+        throw new HttpError(
+          429,
+          `You have already drawn the ${windowId} Long Read today. The next window opens later, or tomorrow.`,
+        );
+      }
     }
 
     const situationText = situation?.trim() || "not specified";
