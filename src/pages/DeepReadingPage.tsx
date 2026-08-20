@@ -4,7 +4,7 @@ import { SEO } from "../components/SEO";
 import { JournalSky } from "../components/journal/JournalSky";
 import { CardArt } from "../components/journal/CardArt";
 import { SectionBoundary } from "../components/journal/SectionBoundary";
-import { SubscriptionTierPicker } from "../components/SubscriptionTierPicker";
+import { SubscriptionTierPicker, type SubscriptionTier } from "../components/SubscriptionTierPicker";
 import { api, useAction, useQuery } from "../lib/backend";
 import { DEEP_SPREAD, drawDeepSpread, type SpreadCard } from "../lib/ritual";
 
@@ -16,9 +16,6 @@ import { DEEP_SPREAD, drawDeepSpread, type SpreadCard } from "../lib/ritual";
  *  2. Signed in, not subscribed  → trial/subscribe paywall card
  *  3. Signed in, subscribed, no draw yet → "Draw the Long Read" CTA
  *  4. Signed in, subscribed, drawn → the reading + a follow-up question box
- *
- * FIRST DRAFT — the seven position names/copy ("The Long Read") are a new
- * creative decision that hasn't been shown to Tre yet. Flag for review.
  */
 
 export function DeepReadingPage() {
@@ -35,9 +32,7 @@ export function DeepReadingPage() {
   // Asked fresh every time, right before drawing — not stored on the
   // profile, since what's going on changes visit to visit.
   const [situation, setSituation] = useState("");
-  const [subscribingTier, setSubscribingTier] = useState<
-    "long_read" | "long_read_plus_numerology" | null
-  >(null);
+  const [subscribingTier, setSubscribingTier] = useState<SubscriptionTier | null>(null);
   const [question, setQuestion] = useState("");
   const [askingQuestion, setAskingQuestion] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -52,7 +47,7 @@ export function DeepReadingPage() {
 
   const entitled = subscription?.entitled === true;
 
-  const startTrial = async (tier: "long_read" | "long_read_plus_numerology") => {
+  const startTrial = async (tier: SubscriptionTier) => {
     setSubscribingTier(tier);
     setError(null);
     try {
@@ -156,10 +151,9 @@ export function DeepReadingPage() {
           <div className="journal-surface" style={{ padding: "1.75rem", display: "flex", flexDirection: "column", gap: "1.1rem" }}>
             <p className="text-sm text-muted-foreground">
               Seven cards read directly against what's actually going on for you right now — not the
-              daily five, a genuinely deeper read, saved to your account. Pick the tier that's right
-              for you — Numerology is only available bundled here, not on its own.
+              daily five, a genuinely deeper read, saved to your account. 7 days free, then $7/week.
             </p>
-            <SubscriptionTierPicker subscribingTier={subscribingTier} onStart={startTrial} highlight="long_read" />
+            <SubscriptionTierPicker subscribingTier={subscribingTier} onStart={startTrial} />
           </div>
         )}
 
