@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { SEO } from "../../components/SEO";
 import { TrueNorthAtmosphere } from "../../components/journal/TrueNorthAtmosphere";
-import { SubscriptionTierPicker, type SubscriptionTier } from "../../components/SubscriptionTierPicker";
 import { SectionBoundary } from "../../components/journal/SectionBoundary";
 import { api, useAction, useQuery } from "../../lib/backend";
 import {
@@ -16,36 +15,18 @@ import {
 } from "./shared";
 import type { NumerologyResult } from "./shared";
 
-/** True North — Numerology. The paid add-on layer underneath the free
- * natal chart, bundled with the Long Read subscription. */
+/** True North — Numerology. One-time unlock; no longer bundled into a weekly subscription. */
 export function NumbersPage() {
   const user = useQuery(api.auth.currentUser);
   const sunSign = useSunSign(user);
   const subscription = useQuery(api.subscription.status, user ? {} : "skip");
+  // Admin / one-time unlock / legacy plus-tier subscribers still see numerology.
   const numerologyUnlocked =
     subscription?.numerologyUnlocked === true ||
     (subscription?.entitled === true && subscription?.tier === "long_read_plus_numerology");
   const numerologyResult = useQuery<NumerologyResult>(api.numerology.get, numerologyUnlocked ? {} : "skip");
-  const startTrialAction = useAction(api.subscription.startTrial);
   const numerologyCheckoutAction = useAction(api.numerology.checkout);
-  const [subscribingTier, setSubscribingTier] = useState<SubscriptionTier | null>(null);
   const [unlocking, setUnlocking] = useState(false);
-
-  const startTrial = async (tier: SubscriptionTier) => {
-    setSubscribingTier(tier);
-    try {
-      const result = await startTrialAction({
-        tier,
-        successUrl: `${window.location.origin}/chart/numbers`,
-        cancelUrl: `${window.location.origin}/chart/numbers`,
-      });
-      if (result?.url) window.location.href = result.url;
-    } catch {
-      // surfaced implicitly by the button staying enabled
-    } finally {
-      setSubscribingTier(null);
-    }
-  };
 
   const unlockNumerology = async () => {
     setUnlocking(true);
@@ -112,14 +93,8 @@ export function NumbersPage() {
                 {unlocking ? "Opening checkout…" : "Unlock numerology — $19.99, once"}
               </button>
               <p className="text-xs text-muted-foreground" style={{ marginTop: "-0.4rem" }}>
-                One payment, yours for good — or get it bundled into the Long Read + Numerology
-                subscription below.
+                One payment, yours for good.
               </p>
-              <SubscriptionTierPicker
-                subscribingTier={subscribingTier}
-                onStart={startTrial}
-                highlight="long_read_plus_numerology"
-              />
             </>
           )}
 
