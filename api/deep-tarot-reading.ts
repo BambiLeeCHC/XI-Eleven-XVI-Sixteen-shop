@@ -15,6 +15,10 @@
  * best-effort — emails the same keepsake via Resend. Email delivery failure
  * never blocks the reading response; the account copy is always the source
  * of truth.
+ *
+ * LLM failures return success:false with a human-readable `error` string so the
+ * UI can show why (missing GROQ_API_KEY is the usual production cause).
+ * A DB save failure after a successful generation still returns the reading.
  */
 
 import {
@@ -92,6 +96,16 @@ function utcDayBounds(now = new Date()): { start: string; end: string } {
   };
 }
 
+function groqErrorMessage(failure: GroqFailure): string {
+  if (failure.reason === "no_key") {
+    return "The reading engine is offline (GROQ_API_KEY missing on the server). Add it in Vercel env and redeploy.";
+  }
+  if (failure.reason === "upstream_error") {
+    return `The reading engine failed upstream${failure.detail ? ` (${failure.detail})` : ""}. Try again in a moment.`;
+  }
+  return "The reading engine returned an empty response. Try again.";
+}
+
 export default async function handler(req: ApiRequest, res: ApiResponse) {
   if (req.method !== "POST") {
     res.setHeader("Allow", "POST");
@@ -140,6 +154,7 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
     }
 
     // One Long Read per window per UTC calendar day (admins unlimited).
+    // If the window column isn't migrated yet, skip quota (don't 500 the read).
     if (!isAdmin) {
       const { start, end } = utcDayBounds();
       const { count, error: countError } = await admin
@@ -149,8 +164,9 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
         .eq("window", windowId)
         .gte("created_at", start)
         .lte("created_at", end);
-      if (countError) throw countError;
-      if ((count ?? 0) >= 1) {
+      if (countError) {
+        console.error("window quota check failed (is window column migrated?):", countError.message);
+      } else if ((count ?? 0) >= 1) {
         throw new HttpError(
           429,
           `You have already drawn the ${windowId} Long Read today. The next window opens later, or tomorrow.`,
@@ -173,20 +189,49 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
     );
     if (!result.success) {
       const failure = result as GroqFailure;
-      return res.status(200).json({ success: false, reason: failure.reason });
+      return res.status(200).json({
+        success: false,
+        reason: failure.reason,
+        error: groqErrorMessage(failure),
+        detail: failure.detail,
+      });
     }
 
-    const { data: saved, error } = await admin
-      .from("deep_readings")
-      .insert({
-        user_id: user.id,
-        spread,
-        reading: result.text,
-        window: windowId,
-      })
-      .select("id, created_at, window")
-      .single();
-    if (error) throw error;
+    // Persist keepsake — prefer with window; fall back without if column missing.
+    let saved: { id?: string; created_at?: string; window?: string | null } | null = null;
+    {
+      const first = await admin
+        .from("deep_readings")
+        .insert({
+          user_id: user.id,
+          spread,
+          reading: result.text,
+          window: windowId,
+        })
+        .select("id, created_at, window")
+        .single();
+
+      if (first.error) {
+        console.error("deep_readings insert with window failed:", first.error.message);
+        const fallback = await admin
+          .from("deep_readings")
+          .insert({
+            user_id: user.id,
+            spread,
+            reading: result.text,
+          })
+          .select("id, created_at")
+          .single();
+        if (fallback.error) {
+          console.error("deep_readings insert fallback failed:", fallback.error.message);
+          // Still return the reading — LLM work should not be lost on a schema lag.
+        } else {
+          saved = fallback.data;
+        }
+      } else {
+        saved = first.data;
+      }
+    }
 
     let emailed = false;
     if (user.email) {
@@ -209,10 +254,11 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
     return res.status(200).json({
       success: true,
       reading: result.text,
-      id: saved.id,
-      createdAt: saved.created_at,
-      window: saved.window ?? windowId,
+      id: saved?.id ?? null,
+      createdAt: saved?.created_at ?? new Date().toISOString(),
+      window: saved?.window ?? windowId,
       emailed,
+      saved: Boolean(saved?.id),
     });
   } catch (error) {
     return fail(res, error);
