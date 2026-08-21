@@ -207,6 +207,7 @@ export function spreadTypeOfTheDay(_d: Date = new Date()): SpreadType {
 }
 
 export const DEEP_SPREAD: SpreadType = {
+  // Hope-only positions (deploy 2026-08-20) — what is working + best-case path only
   id: "root-of-the-situation",
   name: "The Long Read",
   intro:
