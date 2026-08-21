@@ -1,1 +1,128 @@
-PLACEHOLDER
+@import "tailwindcss";
+@import "tw-animate-css";
+
+/* Full brand + Journal + True North stylesheet (last known-good commit). */
+@import url("https://cdn.jsdelivr.net/gh/BambiLeeCHC/XI-Eleven-XVI-Sixteen-shop@a36848403926695ca8b16a610927377fdacc9845/src/index.css");
+
+/* ── Long Read: portrait / mobile stacking + card grid ─────────────── */
+.long-read-panel {
+  position: relative;
+  isolation: isolate;
+  overflow: visible;
+  z-index: 0;
+}
+.long-read-panel .journal-article__title--collage,
+.long-read-panel__title {
+  position: relative;
+  z-index: 2;
+  margin-bottom: 0.5rem;
+  gap: 6px;
+}
+.long-read-panel__header {
+  position: relative;
+  z-index: 2;
+  isolation: isolate;
+}
+.long-read-spread {
+  position: relative;
+  z-index: 5;
+  isolation: isolate;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.85rem 0.65rem;
+  margin-top: 0.35rem;
+  padding-top: 0.25rem;
+}
+@media (min-width: 380px) {
+  .long-read-spread { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+@media (min-width: 520px) {
+  .long-read-spread { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+@media (min-width: 640px) {
+  .long-read-spread {
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 0.75rem 0.5rem;
+  }
+}
+.long-read-card {
+  position: relative;
+  z-index: 1;
+  isolation: isolate;
+  min-width: 0;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+}
+.long-read-card .jdeck-art,
+.long-read-card svg {
+  width: 100%;
+  max-width: 110px;
+  height: auto;
+  margin: 0 auto;
+  display: block;
+}
+.long-read-slot-label,
+.long-read-card__slot {
+  position: relative;
+  z-index: 2;
+  margin: 0;
+  padding: 0.15rem 0.25rem;
+  font-size: 9px;
+  line-height: 1.25;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(21, 36, 61, 0.62);
+  background: rgba(252, 250, 244, 0.92);
+  border-radius: 4px;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.long-read-card-name,
+.long-read-card__name {
+  position: relative;
+  z-index: 1;
+  margin: 0;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.3;
+  color: rgba(21, 36, 61, 0.88);
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  word-break: break-word;
+}
+.long-read-windows {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.long-read-windows > button {
+  flex: 1 1 30%;
+  min-width: 5.5rem;
+}
+@media (max-width: 430px) {
+  .journal-page--truenorth .journal-stack,
+  .journal-page--truenorth .long-read-stack {
+    padding-left: 0.85rem;
+    padding-right: 0.85rem;
+    max-width: 100%;
+  }
+  .long-read-panel {
+    padding: 1.1rem !important;
+  }
+  .long-read-panel .journal-article__title--collage .jcol-tag {
+    font-size: clamp(1.05rem, 6.5vw, 1.45rem);
+    padding: 2px 8px 4px;
+  }
+  .long-read-spread { gap: 0.7rem 0.45rem; }
+  .long-read-card .jdeck-art,
+  .long-read-card svg { max-width: 96px; }
+}
