@@ -4,6 +4,8 @@ import { explainHouseFull, explainPlacement, explainSignInHouse } from "../../li
 import { NUMEROLOGY_CALC_EXPLAIN } from "../../lib/numerology";
 import { SignIcon } from "../../components/journal/SkyGlyphs";
 
+/* TRUE NORTH — shared types and components across Chart / Numbers / Almanac / Long Read */
+
 export interface NatalPlacement {
   body: string;
   sign: string;
@@ -108,6 +110,170 @@ export function useSunSign(user: unknown): string | undefined {
   const chartResult = useQuery<NatalChartResult>(api.natalChart.get, user ? {} : "skip");
   const chart = chartResult?.success ? chartResult.chart ?? null : null;
   return chart?.placements?.find((p) => p.body === "Sun")?.sign;
+}
+
+export function PlacementRow({
+  placement,
+  expanded,
+  onToggle,
+}: {
+  placement: NatalPlacement;
+  expanded: boolean;
+  onToggle: () => void;
+}) {
+  const { body, sign, house, retrograde } = placement;
+  return (
+    <div className={`chart-placement-row ${expanded ? "is-expanded" : ""}`}>
+      <button type="button" className="chart-placement-row__head" onClick={onToggle} aria-expanded={expanded}>
+        <span className="chart-placement__body">{body}</span>
+        <span className="chart-placement-row__head-right">
+          <span className={`jcol-tag jcol-tag--sm jcol-${retrograde ? "kraft" : "ink"} jcol-type`}>
+            <SignIcon sign={sign} size={13} /> {sign}
+            {house ? ` · H${house}` : ""}
+            {retrograde ? " · Rx" : ""}
+          </span>
+          <span className="chart-placement-row__chevron" aria-hidden="true">▾</span>
+        </span>
+      </button>
+      {expanded && (
+        <p className="chart-placement-row__explain">{explainPlacement(body, sign)}</p>
+      )}
+    </div>
+  );
+}
+
+export function HouseRow({
+  houseCusp,
+  expanded,
+  onToggle,
+}: {
+  houseCusp: NatalHouseCusp;
+  expanded: boolean;
+  onToggle: () => void;
+}) {
+  const full = explainHouseFull(houseCusp.house);
+  return (
+    <div className={`chart-placement-row ${expanded ? "is-expanded" : ""}`}>
+      <button type="button" className="chart-placement-row__head" onClick={onToggle} aria-expanded={expanded}>
+        <span className="chart-placement__body">
+          House {houseCusp.house}
+          {full && <span className="chart-house-row__title"> — {full.title}</span>}
+        </span>
+        <span className="chart-placement-row__head-right">
+          <span className="jcol-tag jcol-tag--sm jcol-lilac jcol-type">
+            <SignIcon sign={houseCusp.sign} size={13} /> {houseCusp.sign}
+          </span>
+          <span className="chart-placement-row__chevron" aria-hidden="true">▾</span>
+        </span>
+      </button>
+      {expanded && full && (
+        <div className="chart-placement-row__explain chart-house-row__explain">
+          <p>{full.detail}</p>
+          <div className="chart-house-row__keywords">
+            {full.keywords.map((k) => (
+              <span key={k} className="jcol-tag jcol-tag--sm jcol-kraft jcol-type">
+                {k}
+              </span>
+            ))}
+          </div>
+          <p className="chart-house-row__sign-heading">
+            <SignIcon sign={houseCusp.sign} size={13} /> {houseCusp.sign} on this cusp
+          </p>
+          <p className="chart-house-row__sign-explain">{explainSignInHouse(houseCusp.sign, houseCusp.house)}</p>
+          <p className="chart-house-row__question">{full.question}</p>
+        </div>
+      )}
+    </div>
+  );
+}
+
+export function BoldParagraphs({ text }: { text: string }) {
+  const paragraphs = text.trim().split(/\n{2,}/);
+  return (
+    <>
+      {paragraphs.map((p, i) => {
+        const parts = p.split(/\*\*(.+?)\*\*/g);
+        return (
+          <p key={i} className="chart-profile-section__p">
+            {parts.map((part, j) => (j % 2 === 1 ? <strong key={j}>{part}</strong> : part))}
+          </p>
+        );
+      })}
+    </>
+  );
+}
+
+export const PROFILE_SECTION_STYLE: Record<string, { tone: string; rotate: string; face: string }> = {
+  "Who You Are": { tone: "jcol-gold", rotate: "-1.5deg", face: "jcol-display" },
+  "The Texture": { tone: "jcol-ink", rotate: "1deg", face: "jcol-grotesk" },
+  "The Highest Use of Your Chart": { tone: "jcol-lilac", rotate: "-1deg", face: "jcol-display" },
+  "Life Path": { tone: "jcol-gold", rotate: "-1.5deg", face: "jcol-display" },
+  "Expression": { tone: "jcol-ink", rotate: "1deg", face: "jcol-grotesk" },
+  "Soul Urge": { tone: "jcol-blush", rotate: "-1deg", face: "jcol-display" },
+  "Personality": { tone: "jcol-lilac", rotate: "1.5deg", face: "jcol-grotesk" },
+  "Birthday": { tone: "jcol-kraft", rotate: "-1deg", face: "jcol-display" },
+  "Personal Year": { tone: "jcol-gold", rotate: "1deg", face: "jcol-grotesk" },
+  "The Throughline": { tone: "jcol-ink", rotate: "-1.5deg", face: "jcol-display" },
+};
+
+export function parseProfileSections(narrative: string): { title: string; body: string }[] {
+  const matches = [...narrative.matchAll(/^##\s+(.+)$/gm)];
+  if (matches.length === 0) return [{ title: "Your Personality Profile", body: narrative }];
+  const sections: { title: string; body: string }[] = [];
+  for (let i = 0; i < matches.length; i++) {
+    const start = (matches[i].index ?? 0) + matches[i][0].length;
+    const end = i + 1 < matches.length ? matches[i + 1].index ?? narrative.length : narrative.length;
+    sections.push({ title: matches[i][1].trim(), body: narrative.slice(start, end).trim() });
+  }
+  return sections;
+}
+
+export function NumberRow({ numKey, value }: { numKey: string; value: number }) {
+  return (
+    <div className="chart-number-row">
+      <div className="chart-number-row__head">
+        <span className="chart-placement__body">{NUMEROLOGY_LABELS[numKey] ?? numKey}</span>
+        <span className="jcol-tag jcol-tag--sm jcol-gold jcol-type">{value}</span>
+      </div>
+      {NUMEROLOGY_CALC_EXPLAIN[numKey] && (
+        <p className="chart-number-row__calc">{NUMEROLOGY_CALC_EXPLAIN[numKey]}</p>
+      )}
+    </div>
+  );
+}
+
+export function ProfileSection({ title, body }: { title: string; body: string }) {
+  const style = PROFILE_SECTION_STYLE[title] ?? { tone: "jcol-kraft", rotate: "0deg", face: "jcol-display" };
+  return (
+    <div className="chart-profile-section">
+      <span
+        className={`jcol-tag jcol-tag--md ${style.tone} ${style.face} chart-profile-section__title`}
+        style={{ transform: `rotate(${style.rotate})` }}
+      >
+        {title}
+      </span>
+      <div className="chart-profile-section__body">
+        <BoldParagraphs text={body} />
+      </div>
+    </div>
+  );
+}
+
+export function SectionHeading({
+  wordA,
+  wordB,
+  ariaLabel,
+}: {
+  wordA: string;
+  wordB: string;
+  ariaLabel: string;
+}) {
+  return (
+    <h2 className="journal-article__title--collage chart-section-heading" aria-label={ariaLabel}>
+      <span className="jcol-tag jcol-gold jcol-display" style={{ transform: "rotate(-2deg)" }}>{wordA}</span>
+      <span className="jcol-tag jcol-ink jcol-grotesk" style={{ transform: "rotate(1.5deg)" }}>{wordB}</span>
+    </h2>
+  );
 }
 
 export function TrueNorthNav() {
