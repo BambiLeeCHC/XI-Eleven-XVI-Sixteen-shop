@@ -23,17 +23,13 @@ import {
   updateOrder,
 } from "./_lib/server.js";
 
-const QUESTION_SYSTEM_PROMPT = `You are the XI · XVI Reader, answering one specific follow-up question a reader paid to ask about a tarot reading they already received. Be direct, specific, and grounded in the cards and situation given — never hedge with "may" or "could," never generic. Answer the actual question asked, in 120-200 words, second person, no greeting, no sign-off. Sparing bold (wrap in **like this**) on at most one or two key phrases.`;
+const QUESTION_SYSTEM_PROMPT = `You are the XI · XVI Reader, answering one specific follow-up question a reader paid to ask about a tarot reading they already received. Your only job is to bring hope: show what they are already doing right and the best-case path still open — even if that path is slim. Never dwell on failure, doom, or worst-case outcomes; if the cards or situation are heavy, translate them into constructive charge and the best available next move. Be direct, specific, and grounded in the cards and situation given — never hedge with "may" or "could," never generic. Answer the actual question asked, in 120-200 words, second person, no greeting, no sign-off. Sparing bold (wrap in **like this**) on at most one or two key phrases.`;
 
 async function upsertSubscriptionFromStripe(
   admin: ReturnType<typeof supabaseAdmin>,
   userId: string,
   sub: any,
 ) {
-  // Tier is set at checkout time (subscription_data metadata) and doesn't
-  // change on Stripe's own update/delete events, so only overwrite it when
-  // Stripe actually sends one (checkout.session.completed does; a bare
-  // customer.subscription.updated/deleted for an existing sub may not).
   const tier = sub?.metadata?.tier;
 
   await admin.from("subscriptions").upsert(
@@ -171,8 +167,6 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
             },
             { stage: "payment_received" },
           );
-          // Fulfillment failures must not fail the webhook: Stripe would retry
-          // the payment event and the order would be double-submitted.
           try {
             await submitOrderToPrintful(orderId);
           } catch (error) {
