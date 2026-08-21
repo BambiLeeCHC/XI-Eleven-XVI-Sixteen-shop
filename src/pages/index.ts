@@ -14,7 +14,7 @@ export { default as AdminPage } from "./AdminPage";
 export { default as FavoritesPage } from "./FavoritesPage";
 export { JournalPage } from "./JournalPage";
 export { JournalPostPage } from "./JournalPostPage";
-export { DeepReadingPage } from "./DeepReadingPage";
+export { default as DeepReadingPage } from "./DeepReadingPage";
 export { ChartHomePage } from "./chart/ChartHomePage";
 export { NumbersPage } from "./chart/NumbersPage";
 export { AlmanacTNPage } from "./chart/AlmanacTNPage";
