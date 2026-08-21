@@ -3,75 +3,101 @@
  *
  * These deliberately mirror the hook surface the storefront was written
  * against (`useQuery` / `useMutation` / `useAction` / `useAuthStatus` /
- * `useAuthActions`) so the rest of the app stays unchanged.
+ * `useAuthActions`), so migrating the data layer did not mean rewriting forty
+ * components on a live store.
+ *
+ * The one behavioural difference from the old backend: queries are not
+ * websocket-live. They refetch on mount, on sign-in/sign-out, and whenever a
+ * mutation runs — which covers everything this app actually relies on.
  */
 
+import type { Session } from "@supabase/supabase-js";
 import {
   createContext,
+  type ReactNode,
   useCallback,
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
-  type ReactNode,
 } from "react";
 import { supabase } from "../supabase";
-import type { Session, User } from "@supabase/supabase-js";
+import type { FunctionRef } from "./api";
+import { handlers } from "./handlers";
 
-type QueryKey = unknown;
+export type { FunctionRef } from "./api";
+export { api } from "./api";
 
-const queryListeners = new Set<() => void>();
+/* ── invalidation ─────────────────────────────────────────────────────── */
 
-function notifyQueries() {
-  for (const l of queryListeners) l();
-}
+let version = 0;
+const listeners = new Set<() => void>();
 
+/** Tell every mounted query to refetch. Called after each mutation. */
 export function invalidateQueries() {
-  notifyQueries();
+  version += 1;
+  for (const listener of listeners) listener();
 }
 
-/* ── auth ─────────────────────────────────────────── */
-
-interface AuthContextValue {
-  session: Session | null;
-  user: User | null;
-  loading: boolean;
+function useBackendVersion() {
+  const [, setTick] = useState(0);
+  useEffect(() => {
+    const listener = () => setTick(t => t + 1);
+    listeners.add(listener);
+    return () => {
+      listeners.delete(listener);
+    };
+  }, []);
+  return version;
 }
 
-const AuthContext = createContext<AuthContextValue>({
-  session: null,
-  user: null,
-  loading: true,
-});
+function runHandler(ref: FunctionRef, args: Record<string, any>) {
+  const handler = handlers[ref];
+  if (!handler) {
+    return Promise.reject(
+      new Error(`No backend handler registered for "${ref}"`),
+    );
+  }
+  return handler(args ?? {});
+}
 
-export function AuthProvider({ children }: { children: ReactNode }) {
-  const [session, setSession] = useState<Session | null>(null);
-  const [loading, setLoading] = useState(true);
+/* ── auth context ─────────────────────────────────────────────────────── */
+
+type AuthState = { session: Session | null; loading: boolean };
+
+const AuthContext = createContext<AuthState>({ session: null, loading: true });
+
+export function BackendProvider({ children }: { children: ReactNode }) {
+  const [state, setState] = useState<AuthState>({
+    session: null,
+    loading: true,
+  });
 
   useEffect(() => {
-    let mounted = true;
+    let active = true;
+
     supabase.auth.getSession().then(({ data }) => {
-      if (!mounted) return;
-      setSession(data.session ?? null);
-      setLoading(false);
+      if (!active) return;
+      setState({ session: data.session ?? null, loading: false });
     });
-    const { data: sub } = supabase.auth.onAuthStateChange((_event, next) => {
-      setSession(next);
-      setLoading(false);
-      invalidateQueries();
-    });
+
+    const { data: subscription } = supabase.auth.onAuthStateChange(
+      (_event, session) => {
+        if (!active) return;
+        setState({ session: session ?? null, loading: false });
+        // Identity changed — everything that depends on "who am I" is now stale.
+        invalidateQueries();
+      },
+    );
+
     return () => {
-      mounted = false;
-      sub.subscription.unsubscribe();
+      active = false;
+      subscription.subscription.unsubscribe();
     };
   }, []);
 
-  const value = useMemo(
-    () => ({ session, user: session?.user ?? null, loading }),
-    [session, loading],
-  );
-
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  return <AuthContext.Provider value={state}>{children}</AuthContext.Provider>;
 }
 
 export function useAuthState() {
@@ -83,50 +109,193 @@ export function useAuthStatus() {
   return { isLoading: loading, isAuthenticated: !!session };
 }
 
-/* ── queries ──────────────────────────────────────── */
+/* ── queries ──────────────────────────────────────────────────────────── */
 
-export function useQuery(fn: any, ..._args: any[]) {
-  // Minimal stub-compatible surface used across the app.
-  // Concrete query implementation lives elsewhere in this module in the full tree.
-  const [tick, setTick] = useState(0);
+export function useQuery<T = any>(
+  ref: FunctionRef,
+  args?: Record<string, any> | "skip",
+): T | undefined {
+  const backendVersion = useBackendVersion();
+  const { session, loading } = useAuthState();
+  const [value, setValue] = useState<T | undefined>(undefined);
+
+  const key = args === "skip" ? "skip" : JSON.stringify(args ?? {});
+  const latest = useRef(0);
+
   useEffect(() => {
-    const listener = () => setTick((t) => t + 1);
-    queryListeners.add(listener);
+    if (args === "skip" || loading) return;
+    const requestId = ++latest.current;
+    let active = true;
+
+    runHandler(ref, args ?? {})
+      .then(result => {
+        // Ignore anything that resolves after a newer request was issued.
+        if (active && requestId === latest.current) setValue(result as T);
+      })
+      .catch(error => {
+        console.error(`Query ${ref} failed:`, error?.message ?? error);
+        if (active && requestId === latest.current) setValue(undefined);
+      });
+
     return () => {
-      queryListeners.delete(listener);
+      active = false;
     };
-  }, []);
-  void tick;
-  void fn;
-  return undefined as any;
+  }, [ref, key, backendVersion, session?.user?.id, loading]);
+
+  return args === "skip" ? undefined : value;
 }
 
-export function useAction(fn: any) {
+/* ── mutations & actions ──────────────────────────────────────────────── */
+
+export function useMutation<T = any>(ref: FunctionRef) {
   return useCallback(
-    async (...args: any[]) => {
-      if (typeof fn === "function") return fn(...args);
-      return fn;
+    async (args?: Record<string, any>): Promise<T> => {
+      const result = await runHandler(ref, args ?? {});
+      invalidateQueries();
+      return result as T;
     },
-    [fn],
+    [ref],
   );
 }
 
-export function useMutation(fn: any) {
-  return useAction(fn);
+/** Actions reach outside the database (Stripe, Printful, email, AI). */
+export function useAction<T = any>(ref: FunctionRef) {
+  return useCallback(
+    async (args?: Record<string, any>): Promise<T> => {
+      const result = await runHandler(ref, args ?? {});
+      invalidateQueries();
+      return result as T;
+    },
+    [ref],
+  );
 }
 
-/* ── auth actions ─────────────────────────────────── */
+/* ── imperative client ────────────────────────────────────────────────── */
 
-export function useAuthActions() {
-  const signIn = useCallback(async (email: string, password: string) => {
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email: email.trim().toLowerCase(),
-      password,
+export function useBackend() {
+  return useMemo(
+    () => ({
+      query: (ref: FunctionRef, args?: Record<string, any>) =>
+        runHandler(ref, args ?? {}),
+      mutation: async (ref: FunctionRef, args?: Record<string, any>) => {
+        const result = await runHandler(ref, args ?? {});
+        invalidateQueries();
+        return result;
+      },
+      action: async (ref: FunctionRef, args?: Record<string, any>) => {
+        const result = await runHandler(ref, args ?? {});
+        invalidateQueries();
+        return result;
+      },
+    }),
+    [],
+  );
+}
+
+/* ── auth actions ─────────────────────────────────────────────────────── */
+
+type SignInInput = FormData | Record<string, string | undefined>;
+
+function readInput(input: SignInInput): Record<string, string> {
+  if (typeof FormData !== "undefined" && input instanceof FormData) {
+    const result: Record<string, string> = {};
+    input.forEach((value, key) => {
+      result[key] = String(value);
     });
-    if (error) throw new Error(error.message);
-    invalidateQueries();
-    return data;
-  }, []);
+    return result;
+  }
+  return Object.fromEntries(
+    Object.entries(input ?? {}).filter(([, value]) => value !== undefined),
+  ) as Record<string, string>;
+}
+
+/**
+ * Compatible with the previous auth provider's `signIn(provider, formData)`
+ * shape, including its `flow` values, so the sign-in, sign-up, email
+ * verification and password-reset screens all keep working unchanged.
+ */
+export function useAuthActions() {
+  const signIn = useCallback(
+    async (_provider: string, input: SignInInput = {}) => {
+      const fields = readInput(input);
+      const flow = fields.flow ?? "signIn";
+      const email = (fields.email ?? "").trim().toLowerCase();
+      const password = fields.password ?? "";
+      const code = fields.code ?? "";
+
+      if (flow === "signUp") {
+        const metadata: Record<string, string> = {};
+        if (fields.name) metadata.name = fields.name;
+        if (fields.birthDate) metadata.birth_date = fields.birthDate;
+        if (fields.birthTime) metadata.birth_time = fields.birthTime;
+        if (fields.birthLocation) metadata.birth_location = fields.birthLocation;
+        if (fields.situation) metadata.situation = fields.situation;
+        if (fields.genderIdentity) metadata.gender_identity = fields.genderIdentity;
+        if (fields.sexualOrientation)
+          metadata.sexual_orientation = fields.sexualOrientation;
+        const { data, error } = await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            data: Object.keys(metadata).length ? metadata : undefined,
+            // Confirmation emails land here once the user clicks the link —
+            // a personalized welcome/landing page, not the homepage.
+            emailRedirectTo: `${window.location.origin}/welcome`,
+          },
+        });
+        if (error) throw new Error(error.message);
+        invalidateQueries();
+        // Project has email confirmation required (mailer_autoconfirm off),
+        // so signUp never returns a session until the link is clicked —
+        // `signingIn: false` tells the caller to show "check your email"
+        // rather than assume the account is live.
+        return { signingIn: !!data.session };
+      }
+
+      if (flow === "reset") {
+        const { error } = await supabase.auth.resetPasswordForEmail(email, {
+          redirectTo: `${window.location.origin}/reset-password`,
+        });
+        if (error) throw new Error(error.message);
+        return { signingIn: false };
+      }
+
+      if (flow === "reset-verification") {
+        const { error: verifyError } = await supabase.auth.verifyOtp({
+          email,
+          token: code,
+          type: "recovery",
+        });
+        if (verifyError) throw new Error(verifyError.message);
+        const { error: updateError } = await supabase.auth.updateUser({
+          password,
+        });
+        if (updateError) throw new Error(updateError.message);
+        invalidateQueries();
+        return { signingIn: true };
+      }
+
+      if (flow === "email-verification") {
+        const { error } = await supabase.auth.verifyOtp({
+          email,
+          token: code,
+          type: "email",
+        });
+        if (error) throw new Error(error.message);
+        invalidateQueries();
+        return { signingIn: true };
+      }
+
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+      if (error) throw new Error(error.message);
+      invalidateQueries();
+      return { signingIn: true };
+    },
+    [],
+  );
 
   const signOut = useCallback(async () => {
     await supabase.auth.signOut();
@@ -147,5 +316,3 @@ export function useAuthActions() {
   // Email + password remains the only sign-in path.
   return { signIn, signOut, resendConfirmation };
 }
-
-export const api = {} as any;
