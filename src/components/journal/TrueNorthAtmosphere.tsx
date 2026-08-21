@@ -31,9 +31,16 @@ interface Mote {
 }
 
 export function TrueNorthAtmosphere() {
+  // Lighter particle counts on narrow viewports so True North stays smooth on phones.
+  const isNarrow =
+    typeof window !== "undefined" &&
+    typeof window.matchMedia === "function" &&
+    window.matchMedia("(max-width: 640px)").matches;
+
   const wisps = useMemo<Wisp[]>(() => {
     const rng = seededRng(1116);
-    return Array.from({ length: 6 }, () => ({
+    const n = isNarrow ? 3 : 6;
+    return Array.from({ length: n }, () => ({
       left: 6 + rng() * 88,
       delay: -(rng() * 34),
       dur: 24 + rng() * 16,
@@ -41,11 +48,12 @@ export function TrueNorthAtmosphere() {
       opacity: 0.1 + rng() * 0.14,
       drift: rng() > 0.5 ? 1 : -1,
     }));
-  }, []);
+  }, [isNarrow]);
 
   const motes = useMemo<Mote[]>(() => {
     const rng = seededRng(4477);
-    return Array.from({ length: 30 }, () => ({
+    const n = isNarrow ? 12 : 22;
+    return Array.from({ length: n }, () => ({
       left: rng() * 100,
       top: 10 + rng() * 90,
       delay: -(rng() * 16),
@@ -53,10 +61,10 @@ export function TrueNorthAtmosphere() {
       size: 1 + rng() * 2.2,
       opacity: 0.28 + rng() * 0.42,
     }));
-  }, []);
+  }, [isNarrow]);
 
   return (
-    <div className="tn-atmo" aria-hidden="true">
+    <div className="tn-atmo" aria-hidden="true" style={{ contentVisibility: "auto" as any }}>
       <style>{`
         @keyframes tn-atmo-rise {
           0%   { transform: translateY(14vh) translateX(0) scale(0.9); opacity: 0; }
