@@ -41,13 +41,45 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
   }
 
   try {
-    const { message, history } = (req.body ?? {}) as {
+    const body = (req.body ?? {}) as {
       message?: string;
       history?: Array<{ role: "user" | "assistant"; content: string }>;
+      mode?: string;
+      section?: string;
+      current?: Record<string, any>;
+      instruction?: string;
     };
+
+    // Landing-page AI assist (admin site editor)
+    if (body.mode === "landing_edit") {
+      const instruction = body.instruction?.trim();
+      if (!instruction) throw new HttpError(400, "instruction is required");
+      const system = `You edit storefront landing-page section copy for XI · XVI (xixvi.shop).
+Return STRICT JSON only: { "patch": { ...fields to overwrite on the section } }.
+Only include fields that should change. Keep voice premium, concise, and on-brand.
+Section key: ${body.section || "unknown"}
+Current JSON: ${JSON.stringify(body.current ?? {})}`;
+      const result = await generateWithGroqChat(
+        system,
+        [{ role: "user", content: instruction }],
+        900,
+      );
+      if (!result.success) {
+        return res.status(200).json({ success: false, error: "AI assist unavailable" });
+      }
+      try {
+        const raw = result.text.trim().replace(/^```json\s*/i, "").replace(/```$/i, "");
+        const parsed = JSON.parse(raw);
+        return res.status(200).json({ success: true, patch: parsed.patch || parsed });
+      } catch {
+        return res.status(200).json({ success: true, text: result.text });
+      }
+    }
+
+    const message = body.message;
     if (!message) throw new HttpError(400, "A message is required");
 
-    const chatHistory = (history ?? []).slice(-8).map((turn) => ({
+    const chatHistory = (body.history ?? []).slice(-8).map((turn) => ({
       role: turn.role,
       content: turn.content,
     }));
