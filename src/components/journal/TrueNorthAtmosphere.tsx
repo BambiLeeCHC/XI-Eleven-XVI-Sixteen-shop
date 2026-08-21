@@ -31,7 +31,6 @@ interface Mote {
 }
 
 export function TrueNorthAtmosphere() {
-  // Lighter particle counts on narrow viewports so True North stays smooth on phones.
   const isNarrow =
     typeof window !== "undefined" &&
     typeof window.matchMedia === "function" &&
@@ -64,7 +63,7 @@ export function TrueNorthAtmosphere() {
   }, [isNarrow]);
 
   return (
-    <div className="tn-atmo" aria-hidden="true" style={{ contentVisibility: "auto" as any }}>
+    <div className="tn-atmo" aria-hidden="true">
       <style>{`
         @keyframes tn-atmo-rise {
           0%   { transform: translateY(14vh) translateX(0) scale(0.9); opacity: 0; }
@@ -92,16 +91,13 @@ export function TrueNorthAtmosphere() {
         }
       `}</style>
 
-      {/* Deep jewel-tone wash — the room itself */}
       <div className="tn-atmo__wash" />
 
-      {/* Candle-glow pools, flickering at their own pace */}
       <div className="tn-atmo__candle tn-atmo-candle" style={{ left: "14%", top: "22%", animationDelay: "-1.2s" }} />
       <div className="tn-atmo__candle tn-atmo-candle" style={{ left: "82%", top: "12%", animationDelay: "-3.4s" }} />
       <div className="tn-atmo__candle tn-atmo-candle" style={{ left: "68%", top: "68%", animationDelay: "-0.6s" }} />
       <div className="tn-atmo__candle tn-atmo-candle" style={{ left: "22%", top: "78%", animationDelay: "-4.8s" }} />
 
-      {/* Drifting incense smoke */}
       {wisps.map((w, i) => (
         <div
           key={i}
@@ -117,7 +113,6 @@ export function TrueNorthAtmosphere() {
         />
       ))}
 
-      {/* Small gold motes — the hope in the room */}
       <div className="tn-atmo__motes">
         {motes.map((m, i) => (
           <span
