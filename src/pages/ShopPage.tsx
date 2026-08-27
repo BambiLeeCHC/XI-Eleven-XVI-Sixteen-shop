@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Link, useSearchParams } from "react-router-dom";
+import { Link, Navigate, useSearchParams } from "react-router-dom";
 import {
   ImpactHero,
   JournalTrueNorthRooms,
@@ -74,6 +74,9 @@ export function ShopPage() {
   const dslip = (products ?? []).find((p: any) =>
     String(p.name).startsWith("D-Slip"),
   );
+
+  if (gender === "women") return <Navigate to="/women" replace />;
+  if (gender === "men") return <Navigate to="/men" replace />;
 
   return (
     <>

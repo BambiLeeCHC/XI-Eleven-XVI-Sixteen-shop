@@ -114,82 +114,136 @@ export function JournalPage() {
       <div className="journal-stack">
         <JournalLockedHero />
 
-        {/* ── The 11:16 strip ───────────────────────────────────── */}
-        <ElevenSixteenStrip />
+        <section className="journal-rooms">
+          <div className="journal-almanac-room">
+            <p className="label-lock" style={{ color: "#0B0B0C" }}>
+              Almanac
+            </p>
+            <h2
+              className="clash mt-3"
+              style={{ fontSize: "clamp(42px, 6vw, 72px)", color: "#0B0B0C" }}
+            >
+              Open the day
+            </h2>
+            <p className="serif-quiet text-2xl mt-4 max-w-sm" style={{ color: "#0B0B0C" }}>
+              Time, kept at 11:16. Open the Almanac for the month.
+            </p>
+            <div className="mt-6">
+              <ElevenSixteenStrip />
+            </div>
+            <Link
+              to="/chart/almanac"
+              className="cta-pist mt-8"
+              style={{ boxShadow: "6px 6px 0 #0B0B0C" }}
+            >
+              Open the Almanac ✦
+            </Link>
+          </div>
 
-        {/* ── The Draw ─────────────────────────────────────────── */}
-        <section className="journal-tiles">
-          <button
-            className="journal-tile journal-tile--draw journal-surface"
-            onClick={() => toggle("draw")}
-          >
-            <span className="journal-tile__deck" aria-hidden="true">
-              <i />
-              <i />
-              <i />
-            </span>
-            <span className="journal-tile__label">The Draw</span>
-            <span className="journal-tile__desc">
-              Five cards from the Major Arcana —{" "}
+          <div className="journal-draw-room">
+            <p className="label-lock" style={{ color: "var(--lilac)" }}>
+              The Draw
+            </p>
+            <h2
+              className="clash mt-3"
+              style={{ fontSize: "clamp(36px, 5vw, 64px)" }}
+            >
+              Five cards
+            </h2>
+            <p className="serif-quiet text-xl mt-3">
               {spread.map(s => s.slotName.replace("The ", "")).join(" · ")}
-            </span>
-            <span className="journal-tile__cta">Draw your five ✦</span>
-          </button>
+            </p>
+            <div className="journal-draw-spread">
+              <div className="tarot-card c1">
+                <span className="serif-quiet">Draw 01</span>
+                <span className="clash text-xl">Action</span>
+              </div>
+              <div className="tarot-card c2">
+                <span className="serif-quiet">Draw 02</span>
+                <span className="clash text-2xl">Support</span>
+              </div>
+              <div className="tarot-card c3">
+                <span className="serif-quiet">Draw 03</span>
+                <span className="clash text-xl">Gain</span>
+              </div>
+            </div>
+            <button
+              type="button"
+              className="cta-ghost"
+              onClick={() => toggle("draw")}
+            >
+              Draw your five ✦
+            </button>
+          </div>
         </section>
 
-        {/* ── The Daily Code, right on the page ─────────────────── */}
-        <div className="journal-surface" style={{ padding: "1.5rem" }}>
-          <DailyCode />
-        </div>
+        <section className="journal-craft">
+          <p className="label-lock" style={{ color: "var(--pist)" }}>
+            XI · XVI / 023 · Craft
+          </p>
+          <p
+            className="clash mt-4"
+            style={{ fontSize: "clamp(32px, 5vw, 56px)" }}
+          >
+            Made on demand means someone waited for you. Be worth the wait.
+          </p>
+          <p className="serif-quiet text-xl mt-6">— XI · XVI</p>
+        </section>
 
-        {/* ── Body: rails flanking the feed ─────────────────────── */}
-        <div className="journal-body">
-          <div className="journal-feed">
-            <div className="journal-feed__filters">
-              {categories.map(c => (
-                <button
-                  key={c}
-                  className={`journal-chip ${category === c ? "is-active" : ""}`}
-                  onClick={() => setCategory(c)}
-                >
-                  {c}
-                </button>
-              ))}
+        <section className="journal-code-room">
+          <DailyCode />
+        </section>
+
+        <section className="journal-archive">
+          <div className="journal-body">
+            <div className="journal-feed">
+              <p className="label-lock mb-4">Archive</p>
+              <div className="journal-feed__filters">
+                {categories.map(c => (
+                  <button
+                    key={c}
+                    type="button"
+                    className={`journal-chip ${category === c ? "is-active" : ""}`}
+                    onClick={() => setCategory(c)}
+                  >
+                    {c}
+                  </button>
+                ))}
+              </div>
+
+              {posts === undefined ? (
+                <div className="journal-empty journal-surface">
+                  Opening the archive…
+                </div>
+              ) : visible.length === 0 ? (
+                <div className="journal-empty journal-surface">
+                  No entries in this section yet. The first piece is on its way.
+                </div>
+              ) : (
+                <>
+                  {lead && <PostCard post={lead} featured index={0} />}
+                  <div className="journal-grid">
+                    {rest.map((p, i) => (
+                      <PostCard key={p._id} post={p} index={i + 1} />
+                    ))}
+                  </div>
+                </>
+              )}
             </div>
 
-            {posts === undefined ? (
-              <div className="journal-empty journal-surface">
-                Opening the archive…
-              </div>
-            ) : visible.length === 0 ? (
-              <div className="journal-empty journal-surface">
-                No entries in this section yet. The first piece is on its way.
-              </div>
-            ) : (
-              <>
-                {lead && <PostCard post={lead} featured index={0} />}
-                <div className="journal-grid">
-                  {rest.map((p, i) => (
-                    <PostCard key={p._id} post={p} index={i + 1} />
-                  ))}
-                </div>
-              </>
-            )}
+            <div className="journal-rail journal-rail--right">
+              <DockTab
+                label="The Draw"
+                glyph="✧"
+                accent="#c48dff"
+                active={dock === "draw"}
+                onClick={() => toggle("draw")}
+              />
+            </div>
           </div>
-
-          <div className="journal-rail journal-rail--right">
-            <DockTab
-              label="The Draw"
-              glyph="✧"
-              accent="#c48dff"
-              active={dock === "draw"}
-              onClick={() => toggle("draw")}
-            />
-          </div>
-        </div>
+        </section>
       </div>
 
-      {/* ── Pop-over dock ──────────────────────────────────────── */}
       <DockPanel
         open={dock === "draw"}
         onClose={() => setDock(null)}
@@ -215,8 +269,9 @@ function JournalLockedHero() {
   const num = dateNumber(now);
   const hh = String(now.getHours()).padStart(2, "0");
   const mm = String(now.getMinutes()).padStart(2, "0");
+  const nextIsAm = now.getHours() < 11 || (now.getHours() === 11 && now.getMinutes() < 16);
   return (
-    <section className="px-2 pt-6 pb-4">
+    <section className="journal-locked-hero">
       <p className="label-lock" style={{ color: "var(--pist)" }}>
         XI · XVI · Est. 11:16 · No. 01
       </p>
@@ -242,7 +297,7 @@ function JournalLockedHero() {
           <p className="label-lock" style={{ color: "#102028" }}>
             Next 11:16
           </p>
-          <p className="n mt-3">PM</p>
+          <p className="n mt-3">{nextIsAm ? "AM" : "PM"}</p>
         </div>
         <div className="clock-dial blush">
           <p className="label-lock" style={{ color: "#2A1218" }}>

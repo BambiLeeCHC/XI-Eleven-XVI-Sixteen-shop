@@ -63,7 +63,7 @@ export function ImpactHero({
               <Link to={dslipHref} className="cta-pist">
                 Shop D-Slip · {priceLabel}
               </Link>
-              <Link to="/shop?gender=women" className="cta-ghost">
+              <Link to="/women" className="cta-ghost">
                 {looks} looks
               </Link>
             </div>

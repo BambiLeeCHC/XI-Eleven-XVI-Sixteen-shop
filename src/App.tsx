@@ -25,6 +25,7 @@ import {
   FavoritesPage,
   JournalPage,
   JournalPostPage,
+  CategoryPage,
   DeepReadingPage,
   ChartHomePage,
   NumbersPage,
@@ -42,6 +43,8 @@ function App() {
             {/* Public routes */}
             <Route path="/" element={<HomePage />} />
             <Route path="/shop" element={<ShopPage />} />
+            <Route path="/women" element={<CategoryPage gender="women" />} />
+            <Route path="/men" element={<CategoryPage gender="men" />} />
             <Route path="/product/:id" element={<ProductPage />} />
             <Route path="/cart" element={<CartPage />} />
             <Route path="/checkout" element={<CheckoutPage />} />

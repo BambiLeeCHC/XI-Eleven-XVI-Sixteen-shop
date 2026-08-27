@@ -31,9 +31,8 @@ export function StoreHeader() {
     };
   }, [mobileOpen]);
 
-  const womenOn = location.search.includes("women");
-  const menOn =
-    location.search.includes("men") && !location.search.includes("women");
+  const womenOn = location.pathname === "/women";
+  const menOn = location.pathname === "/men";
   const aboutOn = location.pathname.startsWith("/about");
   const journalOn = location.pathname.startsWith("/journal");
   const tnOn = location.pathname.startsWith("/chart");
@@ -53,14 +52,14 @@ export function StoreHeader() {
 
           <div className="flex flex-wrap gap-2 justify-end max-w-[720px]">
             <Link
-              to="/shop?gender=women"
+              to="/women"
               className={`chip pist ${womenOn ? "on" : ""}`}
               style={{ ["--r" as string]: "-2deg" }}
             >
               Women
             </Link>
             <Link
-              to="/shop?gender=men"
+              to="/men"
               className={`chip powder ${menOn ? "on" : ""}`}
               style={{ ["--r" as string]: "1.5deg" }}
             >
@@ -165,8 +164,8 @@ export function StoreHeader() {
               </button>
             </div>
             <nav className="flex-1 overflow-y-auto px-6 py-8 space-y-3">
-              <MobileNavLink to="/shop?gender=women" label="Women" />
-              <MobileNavLink to="/shop?gender=men" label="Men" />
+              <MobileNavLink to="/women" label="Women" />
+              <MobileNavLink to="/men" label="Men" />
               <MobileNavLink to="/shop" label="Shop all" />
               <MobileNavLink to="/about" label="About" />
               <MobileNavLink to="/journal" label="Journal" />

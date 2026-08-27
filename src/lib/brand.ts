@@ -26,6 +26,28 @@ export function styleKeyFromName(name: string): string {
   return name.split("[")[0]?.trim() || name;
 }
 
+export function groupProductsByStyle<T extends { name: string }>(
+  products: T[],
+): { key: string; items: T[] }[] {
+  const map = new Map<string, T[]>();
+  for (const product of products) {
+    const key = styleKeyFromName(product.name);
+    const bucket = map.get(key) ?? [];
+    bucket.push(product);
+    map.set(key, bucket);
+  }
+  const ordered = STYLE_ORDER.filter(key => map.has(key)).map(key => ({
+    key,
+    items: map.get(key) ?? [],
+  }));
+  for (const [key, items] of map.entries()) {
+    if (!(STYLE_ORDER as readonly string[]).includes(key)) {
+      ordered.push({ key, items });
+    }
+  }
+  return ordered;
+}
+
 export function colorFromName(name: string): string {
   const match = name.match(/\[([^\]]+)\]/);
   return match?.[1] ?? "";

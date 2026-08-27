@@ -1,7 +1,11 @@
-import { useQuery } from "../lib/backend";
 import { Link } from "react-router-dom";
-import { api } from "../lib/backend";
 import { getProductPairings } from "../data/productPairings";
+import { api, useQuery } from "../lib/backend";
+import {
+  formatPrice,
+  groupProductsByStyle,
+  styleKeyFromName,
+} from "../lib/brand";
 
 interface Product {
   _id: string;
@@ -11,40 +15,45 @@ interface Product {
   category: string;
 }
 
-export function CompleteTheLook({ currentProduct }: { currentProduct: Product }) {
+export function CompleteTheLook({
+  currentProduct,
+}: {
+  currentProduct: Product;
+}) {
   const allProducts = useQuery(api.products.list, {}) as Product[] | undefined;
 
   if (!allProducts || allProducts.length < 2) return null;
 
-  const allNames = allProducts.map((p) => p.name);
-  const { setMatches, colorAlternatives } = getProductPairings(
-    currentProduct.name,
-    allNames
-  );
+  const currentKey = styleKeyFromName(currentProduct.name);
+  const allNames = allProducts.map(p => p.name);
+  const { setMatches } = getProductPairings(currentProduct.name, allNames);
 
-  // Resolve names to product objects
-  const resolveProducts = (names: string[]) =>
-    names
-      .map((n) => allProducts.find((p) => p.name === n))
-      .filter((p): p is Product => !!p && p._id !== currentProduct._id);
+  const setByStyle = new Map<string, Product>();
+  for (const name of setMatches) {
+    const product = allProducts.find(p => p.name === name);
+    if (!product || product._id === currentProduct._id) continue;
+    const key = styleKeyFromName(product.name);
+    if (key === currentKey || setByStyle.has(key)) continue;
+    setByStyle.set(key, product);
+  }
+  const setProducts = [...setByStyle.values()];
 
-  const setProducts = resolveProducts(setMatches);
-  const altProducts = resolveProducts(colorAlternatives);
+  const alsoLike = groupProductsByStyle(allProducts)
+    .filter(group => group.key !== currentKey && !setByStyle.has(group.key))
+    .map(group => group.items[0])
+    .filter((product): product is Product => Boolean(product));
 
-  if (setProducts.length === 0 && altProducts.length === 0) return null;
+  if (setProducts.length === 0 && alsoLike.length === 0) return null;
 
   return (
-    <div className="mt-16">
-      {/* Complete the Set */}
+    <div className="mt-16 px-2 md:px-0">
       {setProducts.length > 0 && (
         <Section title="Complete the Set" products={setProducts} />
       )}
-
-      {/* You Might Also Like */}
-      {altProducts.length > 0 && (
+      {alsoLike.length > 0 && (
         <Section
           title="You Might Also Like"
-          products={altProducts}
+          products={alsoLike}
           className={setProducts.length > 0 ? "mt-12" : ""}
         />
       )}
@@ -63,26 +72,19 @@ function Section({
 }) {
   return (
     <div className={className}>
-      <h2
-        className="text-[11px] tracking-[0.25em] uppercase font-semibold mb-6"
-        style={{ color: "rgba(36,139,212,0.65)" }}
-      >
+      <h2 className="label-lock mb-6" style={{ color: "var(--pist)" }}>
         {title}
       </h2>
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-        {products.map((product) => (
+        {products.map(product => (
           <Link
             key={product._id}
             to={`/product/${product._id}`}
             className="group block"
           >
             <div
-              className="aspect-[3/4] overflow-hidden mb-3 transition-all group-hover:scale-[1.02]"
-              style={{
-                borderRadius: "12px",
-                border: "1px solid rgba(92,155,205,0.18)",
-                background: "rgba(255,240,230,0.02)",
-              }}
+              className="aspect-[3/4] overflow-hidden mb-3 bg-[#111] transition-transform group-hover:scale-[1.02]"
+              style={{ border: "2px solid var(--cream)" }}
             >
               {product.images[0] && (
                 <img
@@ -90,21 +92,17 @@ function Section({
                   alt={product.name}
                   className="w-full h-full object-cover"
                   loading="lazy"
-                  style={{ borderRadius: "11px" }}
                 />
               )}
             </div>
-            <p
-              className="text-[12px] font-medium truncate"
-              style={{ color: "rgba(21,36,61,0.75)" }}
-            >
-              {product.name}
+            <p className="clash text-[22px] normal-case">
+              {styleKeyFromName(product.name)}
             </p>
             <p
-              className="text-[12px]"
-              style={{ color: "rgba(21,36,61,0.5)" }}
+              className="serif-quiet text-[15px] mt-1"
+              style={{ color: "var(--mute)" }}
             >
-              ${(product.price / 100).toFixed(2)}
+              {formatPrice(product.price)}
             </p>
           </Link>
         ))}
