@@ -16,6 +16,8 @@ const ref = (name: string): FunctionRef => name as FunctionRef;
 export const api = {
   auth: {
     currentUser: ref("auth.currentUser"),
+    /** Alias used by Long Read; same handler as currentUser. */
+    me: ref("auth.currentUser"),
   },
   users: {
     isAdmin: ref("users.isAdmin"),

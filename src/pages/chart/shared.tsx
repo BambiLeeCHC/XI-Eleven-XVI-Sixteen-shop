@@ -1,4 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
+import { RegisterForm } from "../../components/RegisterForm";
 import { SignIcon } from "../../components/journal/SkyGlyphs";
 import {
   explainHouseFull,
@@ -477,10 +478,27 @@ export function TrueNorthSignedOutTeaser({
         long version of the story — is waiting too.
       </p>
       <div className="mt-6">{pageTitleTag}</div>
-      <Link to="/signup" className="cta-pist mt-6 inline-block">
-        Create account
-      </Link>
-      <TrueNorthNav />
+      <div
+        className="tn-register-card mt-6"
+        style={{
+          padding: "1.75rem",
+          border: "2px solid #0B0B0C",
+          background: "#F7F0E6",
+          color: "#0B0B0C",
+        }}
+      >
+        <p className="label-lock mb-3" style={{ color: "#0B0B0C" }}>
+          Create an account
+        </p>
+        <p className="serif-quiet text-base mb-4" style={{ color: "#0B0B0C" }}>
+          Birth date and location unlock your free natal chart. Birth time is
+          optional.
+        </p>
+        <RegisterForm redirectTo="/chart" showSignInLink />
+      </div>
+      <div className="mt-6">
+        <TrueNorthNav />
+      </div>
     </div>
   );
 }
