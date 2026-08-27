@@ -1,8 +1,7 @@
-import { useAuthActions } from "../lib/backend";
-import { useAuthStatus } from "../lib/backend";
-import { useState, useEffect, useRef } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { LocationAutocomplete } from "../components/LocationAutocomplete";
+import { useAuthActions, useAuthStatus } from "../lib/backend";
 
 /* ── shared shell (matches the light showroom theme used everywhere else) ── */
 
@@ -20,49 +19,40 @@ function AuthShell({
   footer?: React.ReactNode;
 }) {
   return (
-    <div className="min-h-[70vh] flex items-center justify-center px-6 py-16">
-      <div className="w-full max-w-sm">
-        <p
-          className="text-[10px] tracking-[0.3em] uppercase font-semibold text-center"
-          style={{ color: "var(--showroom-gold)" }}
-        >
+    <div
+      className="min-h-[70vh] px-6 py-16"
+      style={{ background: "var(--cream)", color: "#0B0B0C" }}
+    >
+      <div className="w-full max-w-[980px] mx-auto">
+        <p className="label-lock" style={{ color: "#0B0B0C" }}>
           {eyebrow}
         </p>
-        <h1
-          className="text-3xl font-light mt-2 mb-3 text-center"
-          style={{ fontFamily: "var(--font-display)", color: "var(--showroom-ink)" }}
-        >
-          {title}
-        </h1>
+        <h1 className="clash text-6xl md:text-8xl mt-3">{title}</h1>
         {subtitle && (
-          <p className="text-[13px] text-slate-500 text-center mb-8">{subtitle}</p>
+          <p className="serif-quiet text-2xl mt-4 max-w-2xl">{subtitle}</p>
         )}
-
-        <div className="p-6 rounded-2xl border border-[rgba(92,155,205,0.18)] bg-white/80 shadow-sm">
+        <div
+          className="mt-7 p-9"
+          style={{ border: "2px solid #0B0B0C", background: "#F7F0E6" }}
+        >
           {children}
         </div>
-
-        {footer && <div className="text-center text-[12px] text-slate-500 mt-6">{footer}</div>}
+        {footer && <div className="serif-quiet text-center mt-6">{footer}</div>}
       </div>
     </div>
   );
 }
 
-const inputClass =
-  "w-full bg-white border border-[rgba(92,155,205,0.25)] text-[15px] placeholder-slate-400 px-4 py-3 outline-none focus:border-[rgba(185,149,69,0.55)] transition-colors rounded-md";
+const inputClass = "fld-lock light";
 
-const labelClass =
-  "block text-[10px] tracking-[0.25em] uppercase text-slate-500 font-semibold mb-2";
+const labelClass = "label-lock block mb-2";
 
-const primaryButtonClass =
-  "w-full py-3 text-[11px] tracking-[0.25em] uppercase font-bold text-white transition-all disabled:opacity-50 rounded-md";
+const primaryButtonClass = "cta-pist-block";
 
-const primaryButtonStyle = {
-  background: "linear-gradient(135deg, var(--showroom-gold), #8f6f2e)",
-};
+const primaryButtonStyle = { boxShadow: "6px 6px 0 #0B0B0C", color: "#142010" };
 
-const linkClass = "font-semibold";
-const linkStyle = { color: "var(--showroom-gold)" };
+const linkClass = "underline font-semibold";
+const linkStyle = { color: "#0B0B0C" };
 
 function ErrorText({ children }: { children: React.ReactNode }) {
   return <p className="text-[12px] text-red-500 text-center">{children}</p>;
@@ -87,7 +77,9 @@ export function LoginPage() {
   const [needsVerification, setNeedsVerification] = useState(false);
   const [code, setCode] = useState("");
 
-  const [forgotStep, setForgotStep] = useState<null | "request" | "verify">(null);
+  const [forgotStep, setForgotStep] = useState<null | "request" | "verify">(
+    null,
+  );
   const [resetEmail, setResetEmail] = useState("");
   const [resetCode, setResetCode] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -113,7 +105,9 @@ export function LoginPage() {
         msg.toLowerCase().includes("not confirmed")
       ) {
         setNeedsVerification(true);
-        setError("Please confirm your email first — enter the code we sent you.");
+        setError(
+          "Please confirm your email first — enter the code we sent you.",
+        );
       } else {
         setError(msg);
       }
@@ -180,15 +174,24 @@ export function LoginPage() {
             <input
               type="email"
               value={resetEmail}
-              onChange={(e) => setResetEmail(e.target.value)}
+              onChange={e => setResetEmail(e.target.value)}
               placeholder="you@example.com"
               className={inputClass}
               required
             />
           </div>
           {error && <ErrorText>{error}</ErrorText>}
-          {resetMessage && <p className="text-[12px] text-slate-600 text-center">{resetMessage}</p>}
-          <button type="submit" disabled={loading} className={primaryButtonClass} style={primaryButtonStyle}>
+          {resetMessage && (
+            <p className="text-[12px] text-slate-600 text-center">
+              {resetMessage}
+            </p>
+          )}
+          <button
+            type="submit"
+            disabled={loading}
+            className={primaryButtonClass}
+            style={primaryButtonStyle}
+          >
             {loading ? "Sending…" : "Send reset code"}
           </button>
           <button
@@ -215,7 +218,7 @@ export function LoginPage() {
             <input
               type="text"
               value={resetCode}
-              onChange={(e) => setResetCode(e.target.value)}
+              onChange={e => setResetCode(e.target.value)}
               placeholder="6-digit code"
               className={inputClass}
               required
@@ -226,14 +229,19 @@ export function LoginPage() {
             <input
               type="password"
               value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
+              onChange={e => setNewPassword(e.target.value)}
               placeholder="••••••••"
               className={inputClass}
               required
             />
           </div>
           {error && <ErrorText>{error}</ErrorText>}
-          <button type="submit" disabled={loading} className={primaryButtonClass} style={primaryButtonStyle}>
+          <button
+            type="submit"
+            disabled={loading}
+            className={primaryButtonClass}
+            style={primaryButtonStyle}
+          >
             {loading ? "Saving…" : "Update password"}
           </button>
         </form>
@@ -253,14 +261,19 @@ export function LoginPage() {
             <input
               type="text"
               value={code}
-              onChange={(e) => setCode(e.target.value)}
+              onChange={e => setCode(e.target.value)}
               placeholder="6-digit code"
               className={inputClass}
               required
             />
           </div>
           {error && <ErrorText>{error}</ErrorText>}
-          <button type="submit" disabled={loading} className={primaryButtonClass} style={primaryButtonStyle}>
+          <button
+            type="submit"
+            disabled={loading}
+            className={primaryButtonClass}
+            style={primaryButtonStyle}
+          >
             {loading ? "Verifying…" : "Verify & sign in"}
           </button>
         </form>
@@ -271,7 +284,7 @@ export function LoginPage() {
   return (
     <AuthShell
       eyebrow="Welcome back"
-      title="Sign In"
+      title="Sign in"
       footer={
         <>
           Don't have an account?{" "}
@@ -287,7 +300,7 @@ export function LoginPage() {
           <input
             type="email"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={e => setEmail(e.target.value)}
             placeholder="you@example.com"
             className={inputClass}
             required
@@ -298,7 +311,7 @@ export function LoginPage() {
           <input
             type="password"
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={e => setPassword(e.target.value)}
             placeholder="••••••••"
             className={inputClass}
             required
@@ -317,7 +330,12 @@ export function LoginPage() {
           </button>
         </div>
         {error && <ErrorText>{error}</ErrorText>}
-        <button type="submit" disabled={loading} className={primaryButtonClass} style={primaryButtonStyle}>
+        <button
+          type="submit"
+          disabled={loading}
+          className={primaryButtonClass}
+          style={primaryButtonStyle}
+        >
           {loading ? "Signing in…" : "Sign in"}
         </button>
       </form>
@@ -379,7 +397,8 @@ export function SignupPage() {
     return (
       <AuthShell eyebrow="Check your inbox" title="Confirm your email">
         <p className="text-[13px] text-slate-600 text-center leading-relaxed">
-          We sent a confirmation link to <strong>{email}</strong>. Open it to finish setting up your account.
+          We sent a confirmation link to <strong>{email}</strong>. Open it to
+          finish setting up your account.
         </p>
         <p className="text-[12px] text-slate-500 text-center mt-4">
           Already confirmed?{" "}
@@ -394,7 +413,8 @@ export function SignupPage() {
   return (
     <AuthShell
       eyebrow="Join the inner circle"
-      title="Create Account"
+      title="Create account"
+      subtitle="Every field on the live signup. Natal chart unlocks once birth date and location are in. Birth time is optional."
       footer={
         <>
           Already have an account?{" "}
@@ -410,7 +430,7 @@ export function SignupPage() {
           <input
             type="text"
             value={name}
-            onChange={(e) => setName(e.target.value)}
+            onChange={e => setName(e.target.value)}
             placeholder="Your name"
             autoComplete="name"
             className={inputClass}
@@ -422,7 +442,7 @@ export function SignupPage() {
           <input
             type="email"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={e => setEmail(e.target.value)}
             placeholder="you@example.com"
             className={inputClass}
             required
@@ -433,7 +453,7 @@ export function SignupPage() {
           <input
             type="password"
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={e => setPassword(e.target.value)}
             placeholder="••••••••"
             className={inputClass}
             required
@@ -445,7 +465,7 @@ export function SignupPage() {
           <input
             type="date"
             value={birthDate}
-            onChange={(e) => setBirthDate(e.target.value)}
+            onChange={e => setBirthDate(e.target.value)}
             className={inputClass}
           />
         </div>
@@ -454,16 +474,25 @@ export function SignupPage() {
           <input
             type="time"
             value={birthTime}
-            onChange={(e) => setBirthTime(e.target.value)}
+            onChange={e => setBirthTime(e.target.value)}
             className={inputClass}
           />
         </div>
         <div>
           <label className={labelClass}>BIRTH LOCATION (optional)</label>
-          <LocationAutocomplete value={birthLocation} onChange={setBirthLocation} className={inputClass} />
+          <LocationAutocomplete
+            value={birthLocation}
+            onChange={setBirthLocation}
+            className={inputClass}
+          />
         </div>
         {error && <ErrorText>{error}</ErrorText>}
-        <button type="submit" disabled={loading} className={primaryButtonClass} style={primaryButtonStyle}>
+        <button
+          type="submit"
+          disabled={loading}
+          className={primaryButtonClass}
+          style={primaryButtonStyle}
+        >
           {loading ? "Creating…" : "Create account"}
         </button>
       </form>

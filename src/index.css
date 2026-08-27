@@ -4,6 +4,521 @@
 /* Full brand + Journal + True North stylesheet (last known-good commit). */
 @import url("https://cdn.jsdelivr.net/gh/BambiLeeCHC/XI-Eleven-XVI-Sixteen-shop@a36848403926695ca8b16a610927377fdacc9845/src/index.css");
 
+@theme {
+  --color-field: #0B0B0C;
+  --color-cream: #F7F0E6;
+  --color-pist: #D8F0C4;
+  --color-powder: #CDE4F5;
+  --color-blush: #F4CDD8;
+  --color-lilac: #E4D4F4;
+  --color-mute: #C9BFB3;
+  --font-clash: "Clash Display", sans-serif;
+  --font-serif-quiet: "Fraunces", "Cormorant Garamond", Georgia, serif;
+  --font-mark: "Syne", sans-serif;
+  --font-body: "Satoshi", "Inter", sans-serif;
+}
+
+:root {
+  --field: #0B0B0C;
+  --cream: #F7F0E6;
+  --pist: #D8F0C4;
+  --powder: #CDE4F5;
+  --blush: #F4CDD8;
+  --lilac: #E4D4F4;
+  --mute: #C9BFB3;
+  --font-display: "Clash Display", sans-serif;
+  --font-serif-quiet: "Fraunces", "Cormorant Garamond", Georgia, serif;
+  --font-mark: "Syne", sans-serif;
+}
+
+html,
+body,
+#root {
+  background: var(--field);
+  color: var(--cream);
+}
+
+body {
+  font-family: "Satoshi", "Inter", sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+.store-shell {
+  background: var(--field);
+  color: var(--cream);
+  min-height: 100vh;
+}
+
+.store-main {
+  background: var(--field);
+  color: var(--cream);
+}
+
+.font-clash,
+.clash {
+  font-family: "Clash Display", sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.045em;
+  line-height: 0.86;
+  text-transform: uppercase;
+}
+
+.font-serif-quiet,
+.serif-quiet {
+  font-family: "Fraunces", "Cormorant Garamond", Georgia, serif;
+  font-style: italic;
+  font-weight: 500;
+}
+
+.shop-mark {
+  font-family: "Syne", sans-serif;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  font-size: 22px;
+  line-height: 1;
+  text-transform: lowercase;
+}
+
+.label-lock {
+  font-size: 10px;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: var(--mute);
+}
+
+.seal {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: #0B0B0C;
+  border: 2px solid var(--pist);
+  padding: 10px 16px 10px 10px;
+  transform: rotate(-1.5deg);
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 2px solid #F7F0E6;
+  background: #0B0B0C;
+  padding: 9px 13px;
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: var(--cream);
+  transform: rotate(var(--r, 0deg));
+  transition: background 0.15s ease, color 0.15s ease;
+}
+.chip.pist { border-color: var(--pist); color: var(--pist); }
+.chip.powder { border-color: var(--powder); color: var(--powder); }
+.chip.blush { border-color: var(--blush); color: var(--blush); }
+.chip.lilac { border-color: var(--lilac); color: var(--lilac); }
+.chip.on { background: var(--cream); color: #0B0B0C; border-color: var(--cream); }
+.chip:hover { background: var(--cream); color: #0B0B0C; }
+
+.hangtag {
+  position: relative;
+  padding: 18px 14px 12px;
+  background: var(--blush);
+  color: #2A1218;
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  font-weight: 800;
+  transform: rotate(4deg);
+  display: inline-block;
+}
+.hangtag::before {
+  content: "";
+  position: absolute;
+  top: 6px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #0B0B0C;
+  box-shadow: 0 0 0 2px #2A1218;
+}
+
+.cta-pist {
+  background: var(--pist);
+  color: #142010;
+  padding: 18px 26px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-size: 13px;
+  font-weight: 800;
+  box-shadow: 6px 6px 0 var(--lilac);
+  display: inline-block;
+  border: 0;
+  cursor: pointer;
+}
+.cta-pist:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.cta-ghost {
+  background: transparent;
+  color: var(--powder);
+  border: 2px solid var(--powder);
+  padding: 16px 22px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-size: 12px;
+  font-weight: 800;
+  display: inline-block;
+}
+
+.kicker-lock {
+  display: inline-block;
+  background: var(--blush);
+  color: #2A1218;
+  padding: 6px 10px;
+  font-size: 11px;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  font-weight: 800;
+  transform: rotate(-1deg);
+}
+
+.bib {
+  background: #fff;
+  color: #111;
+  padding: 12px 14px;
+  transform: rotate(-6deg);
+  display: inline-block;
+  box-shadow: 8px 10px 0 var(--blush);
+}
+.bib .holes {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 8px 8px;
+}
+.bib .holes i {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #0B0B0C;
+  display: block;
+}
+.bib .num {
+  font-family: "Clash Display", sans-serif;
+  font-weight: 700;
+  font-size: 56px;
+  letter-spacing: -0.06em;
+  line-height: 0.8;
+}
+
+.price-tag {
+  background: var(--powder);
+  color: #102028;
+  padding: 26px 18px 16px;
+  transform: rotate(5deg);
+  min-width: 120px;
+  text-align: center;
+  box-shadow: 8px 10px 0 var(--pist);
+  display: inline-block;
+}
+.price-tag::before {
+  content: "";
+  display: block;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--field);
+  margin: 0 auto 8px;
+}
+.price-tag .p {
+  font-family: "Clash Display", sans-serif;
+  font-weight: 700;
+  font-size: 52px;
+  letter-spacing: -0.06em;
+  line-height: 0.9;
+}
+
+.snap {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 3px solid #fff;
+  display: inline-block;
+  cursor: pointer;
+}
+.snap.on {
+  box-shadow: 0 0 0 3px var(--pist), 0 0 0 6px #0B0B0C;
+}
+
+.size-ring {
+  width: 128px;
+  height: 128px;
+  border-radius: 50%;
+  border: 4px solid var(--lilac);
+  position: relative;
+  background: #0B0B0C;
+}
+.size-ring button,
+.size-ring span.size-tick {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-weight: 800;
+  transform: rotate(calc(var(--i) * 60deg)) translateY(-46px) rotate(calc(var(--i) * -60deg));
+  margin-left: -12px;
+  margin-top: -8px;
+  color: #888;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  padding: 0;
+}
+.size-ring button.on,
+.size-ring span.size-tick.on { color: var(--pist); }
+.size-ring .core {
+  position: absolute;
+  inset: 32px;
+  border-radius: 50%;
+  border: 2px solid var(--powder);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: "Fraunces", Georgia, serif;
+  font-style: italic;
+  font-size: 14px;
+  color: var(--powder);
+}
+
+.lock-steps {
+  display: grid;
+  grid-template-columns: 1fr;
+}
+@media (min-width: 768px) {
+  .lock-steps { grid-template-columns: 1fr 1fr 1fr; }
+}
+.lock-step {
+  padding: 48px 36px;
+  color: #0B0B0C;
+}
+.lock-step:nth-child(1) { background: var(--pist); }
+.lock-step:nth-child(2) { background: var(--powder); }
+.lock-step:nth-child(3) { background: var(--blush); }
+.lock-step .num {
+  font-family: "Syne", sans-serif;
+  font-weight: 800;
+  font-size: 18px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  opacity: 0.7;
+}
+.lock-step h3 {
+  font-family: "Fraunces", Georgia, serif;
+  font-weight: 700;
+  font-style: italic;
+  font-size: clamp(42px, 5vw, 68px);
+  line-height: 0.95;
+  margin: 14px 0 16px;
+}
+.lock-step p {
+  font-family: "Fraunces", Georgia, serif;
+  font-size: 20px;
+  line-height: 1.35;
+  max-width: 280px;
+}
+
+.ticker-lock {
+  overflow: hidden;
+  background: var(--pist);
+  color: #142010;
+}
+.ticker-lock-track {
+  display: flex;
+  gap: 2.2rem;
+  width: max-content;
+  animation: mq 32s linear infinite;
+  padding: 10px 0;
+}
+@keyframes mq {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+.ticker-lock .mq {
+  font-size: 12px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  font-weight: 800;
+}
+
+.fld-lock {
+  width: 100%;
+  background: #141210;
+  border: 1px solid rgba(247, 240, 230, 0.22);
+  color: var(--cream);
+  padding: 14px;
+  font-size: 14px;
+  font-family: inherit;
+  outline: none;
+}
+.fld-lock.light {
+  background: #fff;
+  border: 2px solid #0B0B0C;
+  color: #0B0B0C;
+}
+
+.hero-title-lock {
+  font-family: "Clash Display", sans-serif;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  word-spacing: 0.16em;
+  line-height: 1.05;
+  text-transform: uppercase;
+  font-size: clamp(36px, 5.6vw, 76px);
+  color: #F7F0E6;
+  -webkit-text-stroke: 2px #0B0B0C;
+  paint-order: stroke fill;
+  text-shadow: 0 8px 28px rgba(0,0,0,0.85), 0 2px 0 #0B0B0C, 0 0 42px rgba(0,0,0,0.55);
+  margin: 12px 0 8px;
+}
+.hero-sub-lock {
+  font-family: "Fraunces", "Cormorant Garamond", Georgia, serif;
+  font-style: italic;
+  font-weight: 500;
+  font-size: clamp(22px, 2.4vw, 34px);
+  letter-spacing: 0.01em;
+  color: #F7F0E6;
+  text-shadow: 0 6px 24px rgba(0,0,0,0.9), 0 1px 0 #0B0B0C;
+  margin: 0 0 16px;
+}
+
+.dial-lock {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  border: 4px solid var(--powder);
+  position: relative;
+  flex: 0 0 150px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: #0B0B0C;
+}
+.dial-lock::before,
+.dial-lock::after {
+  content: "";
+  position: absolute;
+  border-radius: 50%;
+}
+.dial-lock::before { inset: 12px; border: 2px solid var(--blush); }
+.dial-lock::after { inset: 26px; border: 2px solid var(--lilac); }
+.dial-lock .n {
+  font-family: "Clash Display", sans-serif;
+  font-weight: 700;
+  font-size: 42px;
+  letter-spacing: -0.05em;
+  line-height: 1;
+  color: var(--pist);
+}
+
+.clock-dial {
+  border: 2px solid var(--cream);
+  padding: 22px 16px;
+  min-height: 140px;
+}
+.clock-dial.pist { background: var(--pist); color: #142010; border-color: #142010; }
+.clock-dial.powder { background: var(--powder); color: #102028; border-color: #102028; }
+.clock-dial.blush { background: var(--blush); color: #2A1218; border-color: #2A1218; }
+.clock-dial.lilac { background: var(--lilac); color: #1A1020; border-color: #1A1020; }
+.clock-dial .n {
+  font-family: "Clash Display", sans-serif;
+  font-weight: 700;
+  font-size: 36px;
+  letter-spacing: -0.05em;
+  line-height: 0.9;
+}
+
+.tarot-card {
+  position: absolute;
+  width: 150px;
+  height: 250px;
+  border-radius: 10px;
+  border: 1px solid rgba(247,240,230,0.35);
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-shadow: 0 24px 40px rgba(0,0,0,0.4);
+}
+.tarot-card.c1 { left: 8%; top: 24px; transform: rotate(-12deg); background: linear-gradient(180deg, #2A2438, #141018); color: var(--lilac); }
+.tarot-card.c2 { left: 34%; top: 0; transform: rotate(1deg); background: linear-gradient(180deg, #F7F0E6, #E8D9C4); color: #0B0B0C; z-index: 3; width: 168px; height: 276px; }
+.tarot-card.c3 { left: 62%; top: 28px; transform: rotate(11deg); background: linear-gradient(180deg, #1A2830, #0B0B0C); color: var(--powder); }
+
+/* Guest header sits on field, not the live sky bar */
+.store-sky-nav,
+.store-announcement { display: none !important; }
+
+.guest-header {
+  background: var(--field);
+  color: var(--cream);
+}
+
+.guest-footer {
+  background: var(--field);
+  color: var(--cream);
+  border-top: 1px solid rgba(247,240,230,0.12);
+}
+
+/* True North locked chrome (overrides collage hero without touching entitlement) */
+.tn-hero-lock {
+  padding: 28px 8px 20px;
+}
+.chart-quicknav.lock-sub {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 0 0 12px;
+  background: transparent;
+  border: 0;
+}
+.chart-quicknav.lock-sub .chart-quicknav__item,
+.chart-quicknav.lock-sub a {
+  display: inline-flex;
+  align-items: center;
+  border: 2px solid var(--cream);
+  background: #0B0B0C;
+  padding: 9px 13px;
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: var(--cream);
+  text-decoration: none;
+}
+.chart-quicknav.lock-sub .chart-quicknav__item.is-active,
+.chart-quicknav.lock-sub a[aria-current="true"] {
+  background: var(--cream);
+  color: #0B0B0C;
+}
+
+.cta-pist-block {
+  background: var(--pist);
+  color: #142010;
+  width: 100%;
+  padding: 18px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-weight: 800;
+  box-shadow: 5px 5px 0 var(--lilac);
+  border: 0;
+  cursor: pointer;
+}
+
 /* ── Long Read: portrait / mobile stacking + card grid ─────────────── */
 .long-read-panel {
   position: relative;
@@ -125,4 +640,1626 @@
   .long-read-spread { gap: 0.7rem 0.45rem; }
   .long-read-card .jdeck-art,
   .long-read-card svg { max-width: 96px; }
+}
+
+
+/* ══════════════════════════════════════════════════════════════════════
+   JOURNAL LAYOUT — inlined from last-known-good (a368484).
+   Remote @import is emitted after other rules and ignored by browsers,
+   so critical journal layout lives here.
+   ══════════════════════════════════════════════════════════════════════ */
+
+@keyframes journal-aura {
+  0%, 100% { opacity: .45; transform: translate3d(0,0,0) scale(1); }
+  50%      { opacity: .8;  transform: translate3d(0,-8px,0) scale(1.04); }
+}
+@keyframes journal-scan {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+@keyframes journal-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(196,141,255,.25); }
+  50%      { box-shadow: 0 0 0 8px rgba(196,141,255,0); }
+}
+@keyframes journal-rise {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes journal-flip {
+  from { opacity: 0; transform: rotateY(-14deg) translateY(8px); }
+  to   { opacity: 1; transform: rotateY(0) translateY(0); }
+}
+
+.journal-page {
+  --ink: #15243d;
+  --ink-60: rgba(21,36,61,.6);
+  --ink-40: rgba(21,36,61,.42);
+  --ink-25: rgba(21,36,61,.26);
+  --glass: rgba(255,255,255,.66);
+  --glass-line: rgba(118,180,235,.26);
+  color: var(--ink);
+  padding-bottom: 4rem;
+}
+
+/* ── Hero ─────────────────────────────────────────────────────────────── */
+.journal-hero {
+  position: relative;
+  overflow: hidden;
+  text-align: center;
+  padding: 4.5rem 1.5rem 2.5rem;
+}
+.journal-hero__aura {
+  position: absolute; inset: -40% 10% auto 10%; height: 420px;
+  background:
+    radial-gradient(closest-side, rgba(196,141,255,.28), transparent 70%),
+    radial-gradient(closest-side, rgba(255,158,184,.22), transparent 70%);
+  background-position: 30% 40%, 70% 30%;
+  background-size: 60% 100%, 55% 100%;
+  background-repeat: no-repeat;
+  filter: blur(30px);
+  animation: journal-aura 9s ease-in-out infinite;
+  pointer-events: none;
+}
+.journal-hero__eyebrow {
+  position: relative;
+  font-size: 10px; letter-spacing: .42em; text-transform: uppercase;
+  color: var(--ink-40);
+}
+.journal-hero__title {
+  position: relative;
+  font-family: "Playfair Display", Georgia, serif;
+  font-size: clamp(2.6rem, 7vw, 4.75rem);
+  line-height: .98;
+  margin: .5rem 0 .75rem;
+  background: linear-gradient(100deg, #15243d 10%, #6d3fb0 45%, #c48dff 62%, #15243d 92%);
+  -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.journal-hero__sub {
+  position: relative;
+  font-size: 13.5px; color: var(--ink-60); max-width: 32rem; margin: 0 auto;
+}
+
+/* ── The 11:16 strip (docked, top) ────────────────────────────────────── */
+.journal-strip {
+  position: relative; overflow: hidden;
+  margin: 0 auto; max-width: 82rem;
+  border: 1px solid var(--glass-line);
+  border-radius: 14px;
+  background: linear-gradient(120deg, rgba(255,255,255,.78), rgba(238,247,255,.66));
+  box-shadow: 0 10px 40px -22px rgba(29,70,120,.5);
+  backdrop-filter: blur(10px);
+}
+.journal-strip.is-hour { animation: journal-pulse 2s ease-in-out infinite; border-color: rgba(196,141,255,.5); }
+.journal-strip__scan {
+  position: absolute; inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(196,141,255,.16), transparent);
+  animation: journal-scan 7s linear infinite;
+  pointer-events: none;
+}
+.journal-strip__cell { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.journal-strip__label { font-size: 8.5px; letter-spacing: .3em; text-transform: uppercase; color: var(--ink-25); }
+.journal-strip__value { font-size: 12.5px; font-weight: 600; color: var(--ink); }
+.journal-strip__value--accent { color: #7a3fd0; }
+.journal-strip__value--gold { color: #a67c2e; font-family: "Playfair Display", Georgia, serif; font-size: 15px; }
+.journal-strip__rule { width: 1px; height: 26px; background: var(--glass-line); }
+.journal-strip__cta {
+  display: inline-block; text-decoration: none;
+  font-size: 10px; letter-spacing: .22em; text-transform: uppercase;
+  padding: 7px 14px; border-radius: 999px;
+  border: 1px solid rgba(196,141,255,.4);
+  color: #6d3fb0; background: rgba(255,255,255,.6);
+  transition: all .2s ease;
+}
+.journal-strip__cta:hover { background: #6d3fb0; color: #fff; border-color: #6d3fb0; }
+
+/* ── Docked ritual tiles ──────────────────────────────────────────────── */
+.journal-tiles {
+  max-width: 82rem; margin: 1rem auto 0; padding: 0 .25rem;
+  display: grid; gap: .75rem; grid-template-columns: 1fr;
+}
+@media (min-width: 768px) { .journal-tiles { grid-template-columns: repeat(3, 1fr); } }
+.journal-tile {
+  position: relative; text-align: left;
+  padding: 1rem 1.1rem 1.15rem;
+  border: 1px solid var(--glass-line); border-radius: 14px;
+  background: var(--glass);
+  backdrop-filter: blur(8px);
+  transition: transform .22s ease, box-shadow .22s ease, border-color .22s ease;
+  display: flex; flex-direction: column; gap: .3rem;
+  overflow: hidden;
+}
+.journal-tile:hover { transform: translateY(-3px); box-shadow: 0 18px 42px -26px rgba(29,70,120,.65); }
+.journal-tile__glyph { font-size: 20px; line-height: 1; color: #6d3fb0; }
+.journal-tile--almanac .journal-tile__glyph { color: #2f7cb8; }
+.journal-tile--code .journal-tile__glyph { color: #a67c2e; }
+.journal-tile__label {
+  font-family: "Playfair Display", Georgia, serif; font-size: 16px; color: var(--ink);
+}
+.journal-tile__desc { font-size: 11.5px; color: var(--ink-60); line-height: 1.5; }
+.journal-tile__cta { margin-top: .35rem; font-size: 9.5px; letter-spacing: .26em; text-transform: uppercase; color: #6d3fb0; }
+
+/* ── Body layout: rails flanking the feed ─────────────────────────────── */
+.journal-body {
+  max-width: 82rem; margin: 1.75rem auto 0;
+  display: grid; grid-template-columns: 1fr; gap: 1rem;
+}
+@media (min-width: 1024px) {
+  .journal-body { grid-template-columns: minmax(0,1fr) 46px; gap: 1.25rem; }
+}
+.journal-rail { display: none; }
+@media (min-width: 1024px) {
+  .journal-rail { display: flex; flex-direction: column; gap: .75rem; align-items: center; position: sticky; top: 96px; align-self: start; }
+}
+.journal-dock-tab {
+  writing-mode: vertical-rl; text-orientation: mixed;
+  padding: 14px 8px; border-radius: 12px;
+  border: 1px solid var(--dock-accent, #c48dff);
+  background: rgba(255,255,255,.72);
+  color: var(--ink-60);
+  font-size: 10px; letter-spacing: .26em; text-transform: uppercase;
+  display: flex; align-items: center; gap: 10px;
+  transition: all .2s ease;
+  box-shadow: 0 8px 26px -18px rgba(29,70,120,.6);
+}
+.journal-dock-tab:hover, .journal-dock-tab.is-active {
+  background: var(--dock-accent); color: #fff;
+}
+.journal-dock-tab__glyph { writing-mode: horizontal-tb; font-size: 14px; }
+
+/* ── Dock pop-over panel ──────────────────────────────────────────────── */
+.journal-dock-panel {
+  position: fixed; z-index: 50;
+  width: min(360px, 92vw);
+  max-height: min(78vh, 720px);
+  overflow: hidden;
+  border: 1px solid var(--dock-accent, #c48dff);
+  border-radius: 18px;
+  background: linear-gradient(180deg, rgba(255,255,255,.94), rgba(240,248,255,.92));
+  box-shadow: 0 40px 90px -40px rgba(16,40,72,.75);
+  backdrop-filter: blur(16px);
+  animation: journal-rise .22s ease both;
+}
+.journal-dock-panel__body { overflow-y: auto; max-height: calc(min(78vh, 720px) - 70px); }
+.journal-dock-panel__glow {
+  position: absolute; inset: -30% -20% auto -20%; height: 180px;
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--dock-accent) 30%, transparent), transparent 70%);
+  filter: blur(24px); pointer-events: none;
+}
+@media (min-width: 1024px) {
+  .journal-dock-panel--left  { left: max(1rem, calc(50vw - 41rem - 4px)); top: 120px; }
+  .journal-dock-panel--right { right: max(1rem, calc(50vw - 41rem - 4px)); top: 120px; }
+}
+@media (max-width: 1023px) {
+  .journal-dock-panel {
+    left: 50%; transform: translateX(-50%);
+    bottom: 1rem; width: min(440px, 94vw); max-height: 82vh;
+  }
+  .journal-dock-panel__body { max-height: calc(82vh - 70px); }
+}
+.journal-dock-close {
+  width: 26px; height: 26px; border-radius: 999px;
+  display: grid; place-items: center;
+  border: 1px solid var(--glass-line);
+  background: rgba(255,255,255,.8);
+  color: rgba(21,36,61,.55);
+  transition: all .18s ease;
+}
+.journal-dock-close:hover { background: #15243d; color: #fff; border-color: #15243d; }
+.journal-dock__footnote {
+  margin-top: 1rem; font-size: 9px; letter-spacing: .12em;
+  color: rgba(21,36,61,.3); line-height: 1.5;
+}
+
+/* ── Almanac ──────────────────────────────────────────────────────────── */
+.journal-almanac__clock {
+  display: flex; align-items: stretch; justify-content: center; gap: .75rem;
+  border: 1px solid var(--glass-line); border-radius: 12px;
+  background: linear-gradient(120deg, rgba(255,255,255,.8), rgba(232,244,255,.7));
+  padding: .7rem .5rem;
+}
+.journal-almanac__clock-face { flex: 1; text-align: center; display: flex; flex-direction: column; gap: 2px; }
+.journal-almanac__clock-num {
+  font-family: "Playfair Display", Georgia, serif; font-size: 22px; color: #15243d; line-height: 1;
+}
+.journal-almanac__clock-sub { font-size: 8.5px; letter-spacing: .18em; text-transform: uppercase; color: rgba(21,36,61,.42); }
+.journal-almanac__clock-divider { width: 1px; background: var(--glass-line); }
+.journal-almanac__count {
+  text-align: center; margin-top: .5rem;
+  font-size: 11px; letter-spacing: .12em; color: #6d3fb0;
+}
+.journal-almanac__nav {
+  width: 26px; height: 26px; border-radius: 999px; border: 1px solid var(--glass-line);
+  color: rgba(21,36,61,.55); background: rgba(255,255,255,.7); font-size: 15px; line-height: 1;
+}
+.journal-almanac__nav:hover { background: #15243d; color: #fff; }
+.journal-almanac__month { font-family: "Playfair Display", Georgia, serif; font-size: 16px; color: #15243d; }
+.journal-almanac__year { font-size: 9px; letter-spacing: .3em; color: rgba(21,36,61,.35); }
+.journal-almanac__dow, .journal-almanac__grid {
+  display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px;
+}
+.journal-almanac__dow span {
+  text-align: center; font-size: 8.5px; letter-spacing: .12em;
+  color: rgba(21,36,61,.32); padding-bottom: 3px;
+}
+.journal-almanac__cell {
+  aspect-ratio: 1; border-radius: 8px; font-size: 11px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px;
+  color: rgba(21,36,61,.66);
+  border: 1px solid transparent;
+  transition: all .15s ease;
+}
+.journal-almanac__cell-num { line-height: 1; }
+.journal-almanac__cell-moon { opacity: .55; }
+.journal-almanac__cell.is-selected .journal-almanac__cell-moon,
+.journal-almanac__cell.is-today .journal-almanac__cell-moon { opacity: .85; }
+.journal-almanac__cell:hover { background: rgba(196,141,255,.14); }
+.journal-almanac__cell.is-empty { background: transparent; }
+.journal-almanac__cell.is-today { border-color: #6d3fb0; color: #6d3fb0; font-weight: 700; }
+.journal-almanac__cell.is-selected { background: #15243d; color: #fff; }
+.journal-almanac__cell.is-signal { box-shadow: inset 0 -3px 0 rgba(90,160,220,.75); }
+.journal-almanac__cell.is-tower  { box-shadow: inset 0 -3px 0 rgba(255,138,168,.85); }
+.journal-almanac__legend {
+  display: flex; gap: 1rem; justify-content: center; margin-top: .7rem;
+  font-size: 9px; letter-spacing: .1em; color: rgba(21,36,61,.45);
+}
+.journal-almanac__legend .dot { display: inline-block; width: 7px; height: 3px; border-radius: 2px; margin-right: 5px; }
+.journal-almanac__legend .dot--signal { background: rgba(90,160,220,.9); }
+.journal-almanac__legend .dot--tower { background: rgba(255,138,168,.95); }
+.journal-almanac__readout {
+  margin-top: .9rem; padding: .8rem .9rem;
+  border: 1px solid var(--glass-line); border-radius: 12px; background: rgba(255,255,255,.6);
+}
+.journal-almanac__readout-date { font-family: "Playfair Display", Georgia, serif; font-size: 13.5px; color: #15243d; margin-bottom: .4rem; }
+.journal-almanac__readout-voice {
+  font-family: "Playfair Display", Georgia, serif; font-style: italic;
+  font-size: 12.5px; color: rgba(21,36,61,.72); margin-bottom: .65rem; line-height: 1.4;
+}
+.journal-almanac__readout-rows {
+  display: grid; grid-template-columns: auto 1fr; gap: 3px 12px;
+  font-size: 11px; color: rgba(21,36,61,.5);
+}
+.journal-almanac__readout-rows strong { color: #15243d; font-weight: 600; text-align: right; display: inline-flex; align-items: center; justify-content: flex-end; gap: 4px; }
+
+/* ── Daily Draw / Arcana card ─────────────────────────────────────────── */
+.journal-draw__back {
+  width: 100%; aspect-ratio: 3/4.6; border-radius: 14px;
+  border: 1px solid rgba(21,36,61,.16);
+  background:
+    repeating-linear-gradient(45deg, rgba(255,255,255,.5) 0 6px, rgba(240,246,255,.5) 6px 12px),
+    linear-gradient(150deg, #1a1226, #33224a 55%, #12203a);
+  color: #f5ede6;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .6rem;
+  transition: transform .2s ease, box-shadow .2s ease;
+  box-shadow: 0 22px 50px -30px rgba(16,20,50,.9);
+}
+.journal-draw__back:hover { transform: translateY(-3px) scale(1.01); }
+.journal-draw__back-mark {
+  font-family: "Playfair Display", Georgia, serif; font-size: 30px; letter-spacing: .06em;
+  color: #f5c97a;
+}
+.journal-draw__back-mark span { color: #c48dff; margin: 0 4px; }
+.journal-draw__back-hint { font-size: 10.5px; letter-spacing: .26em; text-transform: uppercase; color: rgba(245,237,230,.75); }
+.journal-draw__back-note { font-size: 9px; letter-spacing: .1em; color: rgba(245,237,230,.4); }
+
+.journal-card { animation: journal-flip .35s ease both; }
+.journal-card__frame {
+  position: relative; aspect-ratio: 3/4.6; border-radius: 14px; overflow: hidden;
+  padding: 1rem;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .45rem;
+  text-align: center;
+  background: linear-gradient(160deg, var(--c1), var(--c2));
+  box-shadow: 0 24px 55px -30px rgba(16,20,50,.85), inset 0 0 0 1px rgba(255,255,255,.35);
+}
+.journal-card__frame::after {
+  content: ""; position: absolute; inset: 8px; border: 1px solid rgba(255,255,255,.45); border-radius: 9px; pointer-events: none;
+}
+.journal-card__roman {
+  position: absolute; top: 14px; left: 0; right: 0;
+  font-family: "Playfair Display", Georgia, serif; font-size: 12px; letter-spacing: .3em;
+  color: rgba(255,255,255,.9); text-shadow: 0 1px 6px rgba(0,0,0,.35);
+}
+.journal-card__glyph { font-size: 46px; color: #fff; text-shadow: 0 2px 18px rgba(0,0,0,.35); }
+.journal-card__name {
+  font-family: "Playfair Display", Georgia, serif; font-size: 21px; color: #fff;
+  text-shadow: 0 2px 10px rgba(0,0,0,.4);
+}
+.journal-card__sub { font-size: 10.5px; color: rgba(255,255,255,.88); max-width: 15rem; }
+.journal-card__meta {
+  position: absolute; bottom: 14px; left: 0; right: 0;
+  font-size: 8.5px; letter-spacing: .2em; text-transform: uppercase; color: rgba(255,255,255,.8);
+}
+.journal-draw__keywords { display: flex; flex-wrap: wrap; gap: 5px; justify-content: center; margin-top: .85rem; }
+.journal-draw__keywords span {
+  font-size: 9px; letter-spacing: .18em; text-transform: uppercase;
+  padding: 4px 9px; border-radius: 999px;
+  border: 1px solid rgba(21,36,61,.14); color: rgba(21,36,61,.55);
+}
+.journal-draw__reading { margin-top: .8rem; font-size: 12.5px; line-height: 1.65; color: rgba(21,36,61,.75); }
+.journal-draw__ritual, .journal-draw__shadow, .journal-code__practice {
+  margin-top: .8rem; padding: .7rem .8rem; border-radius: 10px;
+  background: rgba(196,141,255,.1); border: 1px solid rgba(196,141,255,.28);
+}
+.journal-draw__ritual-label {
+  display: block; font-size: 8.5px; letter-spacing: .3em; text-transform: uppercase;
+  color: rgba(21,36,61,.42); margin-bottom: 4px;
+}
+.journal-draw__ritual p, .journal-draw__shadow p, .journal-code__practice p {
+  font-size: 12px; color: #15243d; line-height: 1.55;
+}
+.journal-draw__material {
+  margin-top: .7rem; font-size: 10.5px; color: rgba(21,36,61,.45); letter-spacing: .04em;
+}
+.journal-draw__more {
+  margin-top: .8rem; font-size: 10px; letter-spacing: .22em; text-transform: uppercase; color: #6d3fb0;
+}
+
+/* ── Daily Code ───────────────────────────────────────────────────────── */
+.journal-code__head { display: flex; align-items: center; justify-content: space-between; }
+.journal-code__serial { font-size: 9px; letter-spacing: .26em; color: rgba(21,36,61,.4); }
+.journal-code__theme {
+  font-size: 8.5px; letter-spacing: .22em; text-transform: uppercase;
+  padding: 3px 8px; border-radius: 999px; background: rgba(245,201,122,.22); color: #7a5a18;
+}
+.journal-code__quote {
+  margin: .8rem 0 .35rem;
+  font-family: "Playfair Display", Georgia, serif;
+  font-size: 19px; line-height: 1.35; color: #15243d;
+}
+.journal-code__attr { font-size: 10px; letter-spacing: .22em; color: rgba(21,36,61,.4); }
+.journal-code__foot {
+  margin-top: .8rem; display: flex; align-items: center; justify-content: space-between;
+  font-size: 10px; color: rgba(21,36,61,.4);
+}
+.journal-code__foot button {
+  font-size: 9.5px; letter-spacing: .2em; text-transform: uppercase;
+  padding: 5px 10px; border-radius: 999px; border: 1px solid rgba(21,36,61,.16); color: rgba(21,36,61,.6);
+}
+.journal-code__foot button:hover { background: #15243d; color: #fff; }
+.journal-code__compact { font-size: 11.5px; line-height: 1.5; color: rgba(21,36,61,.6); font-style: italic; }
+
+/* ── Feed ─────────────────────────────────────────────────────────────── */
+.journal-feed { min-width: 0; }
+.journal-feed__filters { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 1.1rem; }
+.journal-chip {
+  font-size: 9.5px; letter-spacing: .22em; text-transform: uppercase;
+  padding: 7px 13px; border-radius: 999px;
+  border: 1px solid var(--glass-line); background: rgba(255,255,255,.6); color: rgba(21,36,61,.55);
+  transition: all .18s ease;
+}
+.journal-chip:hover { border-color: #6d3fb0; color: #6d3fb0; }
+.journal-chip.is-active { background: #15243d; color: #fff; border-color: #15243d; }
+
+.journal-post {
+  position: relative; isolation: isolate;
+  border: 1px solid var(--glass-line); border-radius: 16px; overflow: hidden;
+  background: var(--glass); backdrop-filter: blur(8px);
+  transition: transform .22s ease, box-shadow .22s ease;
+  display: flex; flex-direction: column;
+}
+.journal-post:hover { transform: translateY(-3px); box-shadow: 0 24px 50px -30px rgba(29,70,120,.7); }
+.journal-post__link { display: block; }
+.journal-post__cover { aspect-ratio: 16/9; overflow: hidden; }
+.journal-post__cover img { width: 100%; height: 100%; object-fit: cover; }
+.journal-post__body { padding: 1.15rem 1.25rem 1rem; }
+.journal-post__meta {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 6px;
+  font-size: 9.5px; letter-spacing: .18em; text-transform: uppercase; color: rgba(21,36,61,.4);
+}
+.journal-post__cat { font-weight: 600; letter-spacing: .1em; text-transform: none; }
+.journal-post__dot { opacity: .5; }
+.journal-post__title {
+  font-family: "Playfair Display", Georgia, serif;
+  font-size: 22px; line-height: 1.2; color: #15243d; margin: .5rem 0 .45rem;
+}
+.journal-post--featured .journal-post__title { font-size: clamp(26px, 3.4vw, 36px); }
+.journal-post--featured { margin-bottom: 1rem; margin-top: .6rem; overflow: visible; }
+.journal-post__excerpt { font-size: 13px; line-height: 1.65; color: rgba(21,36,61,.6); }
+.journal-post__more {
+  display: inline-block; margin-top: .7rem;
+  font-size: 10px; letter-spacing: .24em; text-transform: uppercase; color: #6d3fb0;
+}
+.journal-post__foot {
+  padding: .6rem 1.25rem .9rem; border-top: 1px solid rgba(118,180,235,.18);
+}
+.journal-grid { display: grid; gap: 1rem; grid-template-columns: 1fr; }
+@media (min-width: 700px) { .journal-grid { grid-template-columns: 1fr 1fr; } }
+.journal-empty {
+  text-align: center; padding: 3rem 1rem; color: rgba(21,36,61,.45); font-size: 13px;
+  border: 1px dashed var(--glass-line); border-radius: 16px;
+}
+
+/* ── Share row ────────────────────────────────────────────────────────── */
+.journal-share { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; }
+.journal-share__label {
+  font-size: 8.5px; letter-spacing: .3em; text-transform: uppercase;
+  color: rgba(21,36,61,.35); margin-right: 2px;
+}
+.journal-share__btn {
+  width: 28px; height: 28px; border-radius: 999px;
+  display: grid; place-items: center;
+  border: 1px solid rgba(21,36,61,.14);
+  background: rgba(255,255,255,.72);
+  color: rgba(21,36,61,.55);
+  transition: all .18s ease;
+}
+.journal-share__btn:hover { background: #15243d; color: #fff; border-color: #15243d; transform: translateY(-1px); }
+.journal-share--md .journal-share__btn { width: 32px; height: 32px; }
+.journal-share__copied { font-size: 10px; color: #2f7cb8; letter-spacing: .1em; }
+
+/* ── Article ──────────────────────────────────────────────────────────── */
+.journal-article { position: relative; isolation: isolate; max-width: 44rem; margin: 0 auto; padding: 2rem 1.25rem 0; }
+.journal-article__back { position: relative; z-index: 4; font-size: 10px; letter-spacing: .24em; text-transform: uppercase; color: rgba(21,36,61,.45); }
+.journal-article__back:hover { color: #6d3fb0; }
+.journal-article__cat { margin-top: 1.5rem; font-size: 9.5px; letter-spacing: .3em; text-transform: uppercase; color: #6d3fb0; }
+.journal-article__slug { position: relative; z-index: 4; justify-content: flex-start; margin-top: 1.6rem; }
+.journal-article__title {
+  font-family: "Playfair Display", Georgia, serif;
+  font-size: clamp(2rem, 5.2vw, 3.25rem); line-height: 1.06; color: #15243d; margin: .5rem 0 .6rem;
+}
+.journal-article__title--collage {
+  position: relative; z-index: 4;
+  display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px;
+  margin: .8rem 0 .9rem;
+}
+.journal-article__title--collage .jcol-tag {
+  font-family: "Bodoni Moda", "Playfair Display", Georgia, serif; font-weight: 800;
+  font-size: clamp(1.4rem, 3.6vw, 2.3rem); padding: 3px 12px 6px;
+}
+.journal-article__meta { position: relative; z-index: 4; font-size: 11px; letter-spacing: .12em; color: rgba(21,36,61,.42); }
+.journal-article__share-top { margin: 1.1rem 0 1.75rem; padding-bottom: 1.1rem; border-bottom: 1px solid var(--glass-line); }
+.journal-article__cover { border-radius: 16px; overflow: hidden; margin-bottom: 1.75rem; }
+.journal-article__cover img { width: 100%; display: block; }
+.journal-article__tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 2rem; }
+.journal-article__tags span { font-size: 10px; letter-spacing: .14em; color: rgba(21,36,61,.42); }
+.journal-article__share-bottom {
+  margin-top: 2rem; padding: 1.2rem 1.25rem; border-radius: 14px;
+  border: 1px solid var(--glass-line); background: rgba(255,255,255,.6);
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .8rem;
+}
+.journal-article__share-bottom p { font-size: 12.5px; color: rgba(21,36,61,.6); }
+.journal-article__next { margin-top: 2.5rem; }
+.journal-article__next h3 {
+  font-size: 9.5px; letter-spacing: .3em; text-transform: uppercase; color: rgba(21,36,61,.4); margin-bottom: .8rem;
+}
+.journal-article__next-list { display: grid; gap: .6rem; }
+.journal-article__next-list a {
+  display: grid; gap: 3px; padding: .8rem 1rem; border-radius: 12px;
+  border: 1px solid var(--glass-line); background: rgba(255,255,255,.55);
+  transition: all .18s ease;
+}
+.journal-article__next-list a:hover { border-color: #6d3fb0; transform: translateX(3px); }
+.journal-article__next-list strong { font-family: "Playfair Display", Georgia, serif; font-size: 15px; color: #15243d; font-weight: 500; }
+.journal-article__next-list em { font-size: 10px; letter-spacing: .18em; color: rgba(21,36,61,.35); font-style: normal; }
+
+/* ── Prose (post body + editor surface) ───────────────────────────────── */
+.journal-prose { color: rgba(21,36,61,.82); font-size: 15.5px; line-height: 1.8; }
+.journal-prose > * + * { margin-top: 1.1rem; }
+.journal-prose p.lede { font-size: 18.5px; line-height: 1.6; color: #15243d; font-family: "Playfair Display", Georgia, serif; }
+.journal-prose h2 {
+  font-family: "Playfair Display", Georgia, serif; font-size: 26px; line-height: 1.2; color: #15243d;
+  margin-top: 2.1rem;
+}
+.journal-prose h3 { font-family: "Playfair Display", Georgia, serif; font-size: 20px; color: #15243d; margin-top: 1.7rem; }
+.journal-prose strong { color: #15243d; font-weight: 650; }
+.journal-prose em { font-style: italic; }
+.journal-prose a { color: #6d3fb0; text-decoration: underline; text-underline-offset: 3px; }
+.journal-prose ul, .journal-prose ol { padding-left: 1.35rem; }
+.journal-prose ul { list-style: disc; }
+.journal-prose ol { list-style: decimal; }
+.journal-prose li + li { margin-top: .5rem; }
+.journal-prose li::marker { color: #c48dff; }
+.journal-prose blockquote {
+  border-left: 2px solid #c48dff; padding: .35rem 0 .35rem 1.1rem;
+  font-family: "Playfair Display", Georgia, serif; font-size: 19px; line-height: 1.45; color: #15243d;
+}
+.journal-prose img { border-radius: 12px; max-width: 100%; }
+.journal-prose p.signoff { font-size: 12px; letter-spacing: .3em; color: rgba(21,36,61,.42); }
+
+/* ── Mobile stacked rituals ───────────────────────────────────────────── */
+.journal-mobile-rituals { display: grid; gap: 1rem; margin-top: 2rem; }
+@media (min-width: 1024px) { .journal-mobile-rituals { display: none; } }
+.journal-inline-card {
+  border: 1px solid var(--glass-line); border-radius: 16px; padding: 1.1rem 1.2rem;
+  background: var(--glass);
+}
+.journal-inline-card > h3 {
+  font-size: 9.5px; letter-spacing: .3em; text-transform: uppercase;
+  color: rgba(21,36,61,.4); margin-bottom: .8rem;
+}
+
+/* ── Admin: inputs + rich text editor ─────────────────────────────────── */
+.admin-input {
+  width: 100%; padding: .6rem .75rem; border-radius: 8px;
+  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(255,255,255,.1);
+  color: rgba(255,255,255,.9); font-size: 13px;
+  outline: none; transition: border-color .18s ease;
+}
+.admin-input::placeholder { color: rgba(255,255,255,.28); }
+.admin-input:focus { border-color: rgba(245,158,11,.5); }
+.admin-input option { background: #16111a; }
+
+.rte { border: 1px solid rgba(255,255,255,.1); border-radius: 10px; overflow: hidden; background: rgba(255,255,255,.02); }
+.rte__toolbar {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 3px;
+  padding: 6px 8px; border-bottom: 1px solid rgba(255,255,255,.08);
+  background: rgba(255,255,255,.03);
+}
+.rte__btn {
+  min-width: 28px; height: 26px; padding: 0 7px; border-radius: 6px;
+  font-size: 11.5px; color: rgba(255,255,255,.6);
+  background: transparent; transition: all .15s ease;
+}
+.rte__btn:hover { background: rgba(255,255,255,.1); color: #fff; }
+.rte__btn--toggle.is-on { background: rgba(245,158,11,.2); color: #fcd34d; }
+.rte__divider { width: 1px; height: 18px; background: rgba(255,255,255,.1); margin: 0 4px; }
+.rte__surface {
+  padding: 1.1rem 1.25rem; outline: none;
+  background: #fbfdff; color: rgba(21,36,61,.85);
+  overflow-y: auto; max-height: 60vh;
+}
+.rte__surface:empty::before { content: attr(data-placeholder); color: rgba(21,36,61,.3); }
+.rte__source {
+  width: 100%; padding: 1rem 1.1rem; background: #0d0d12; color: #b9e6ff;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; line-height: 1.6;
+  outline: none; border: 0; resize: vertical;
+}
+.rte__status {
+  display: flex; justify-content: space-between; gap: 1rem; flex-wrap: wrap;
+  padding: 6px 10px; border-top: 1px solid rgba(255,255,255,.08);
+  font-size: 10px; color: rgba(255,255,255,.3);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   NAV — BLOG LINK: cinematic light emanating FROM the letters
+   The glow is glyph-shaped only: a blurred copy of the word rises
+   out of itself and dissolves, while a specular shimmer travels
+   across the letterforms. No halo, no box, no plate behind it.
+   ══════════════════════════════════════════════════════════════ */
+
+.nav-blog-flash {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  color: #fff;
+  transition: color 0.35s ease;
+}
+
+.nav-blog-flash__label {
+  position: relative;
+  display: inline-block;
+  /* specular sweep lives in the text fill itself */
+  background-image: linear-gradient(
+    98deg,
+    #ffffff 0%,
+    #ffffff 30%,
+    #fffaf0 39%,
+    #ffe9b8 46%,
+    #f5c97a 50%,
+    #ffe9b8 54%,
+    #fffaf0 61%,
+    #ffffff 70%,
+    #ffffff 100%
+  );
+  background-size: 340% 100%;
+  background-position: 120% 0;
+  background-repeat: repeat-x;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  animation:
+    navBlogSweep 7.2s cubic-bezier(0.36, 0.02, 0.2, 1) infinite,
+    navBlogIgnite 7.2s cubic-bezier(0.25, 0.6, 0.2, 1) infinite;
+  will-change: background-position, filter;
+}
+
+/* The rising light: an exact blurred duplicate of the glyphs, so the
+   flare has the shape of the word and appears to come out of it. */
+.nav-blog-flash__label::before,
+.nav-blog-flash__label::after {
+  content: attr(data-text);
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  color: #fffdf4;
+  -webkit-text-fill-color: #fffdf4;
+  background: none;
+  opacity: 0;
+  will-change: transform, opacity, filter;
+}
+
+/* tight core flare — the ignition */
+.nav-blog-flash__label::before {
+  filter: blur(2px);
+  animation: navBlogCore 7.2s cubic-bezier(0.2, 0.7, 0.25, 1) infinite;
+}
+
+/* soft plume — light lifting off the letters and dissolving upward */
+.nav-blog-flash__label::after {
+  filter: blur(5px);
+  animation: navBlogPlume 7.2s cubic-bezier(0.16, 0.84, 0.24, 1) infinite;
+}
+
+/* specular sweep travels across the letterforms */
+@keyframes navBlogSweep {
+  0%, 14% { background-position: 120% 0; }
+  46% { background-position: -20% 0; }
+  62%, 100% { background-position: -70% 0; }
+}
+
+/* the glyphs themselves brighten from within, then settle */
+@keyframes navBlogIgnite {
+  0%, 8% { filter: drop-shadow(0 0 0 rgba(255, 250, 226, 0)); }
+  15% { filter: drop-shadow(0 0 6px rgba(255, 250, 226, 0.85)) drop-shadow(0 0 14px rgba(245, 201, 122, 0.45)); }
+  30% { filter: drop-shadow(0 0 3px rgba(255, 250, 226, 0.45)) drop-shadow(0 0 9px rgba(245, 201, 122, 0.22)); }
+  48%, 100% { filter: drop-shadow(0 0 0 rgba(255, 250, 226, 0)); }
+}
+
+@keyframes navBlogCore {
+  0%, 9% { opacity: 0; transform: translateY(0) scale(1); }
+  14% { opacity: 0.8; transform: translateY(-1px) scale(1.012); }
+  26% { opacity: 0.28; transform: translateY(-3px) scale(1.03); }
+  38%, 100% { opacity: 0; transform: translateY(-5px) scale(1.04); }
+}
+
+@keyframes navBlogPlume {
+  0%, 10% { opacity: 0; transform: translateY(0) scale(1); filter: blur(4px); }
+  17% { opacity: 0.5; transform: translateY(-4px) scale(1.04); filter: blur(6px); }
+  30% { opacity: 0.22; transform: translateY(-9px) scale(1.09); filter: blur(9px); }
+  44%, 100% { opacity: 0; transform: translateY(-14px) scale(1.13); filter: blur(13px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nav-blog-flash__label,
+  .nav-blog-flash__label::before,
+  .nav-blog-flash__label::after { animation: none; }
+  .nav-blog-flash__label::before,
+  .nav-blog-flash__label::after { display: none; }
+  .nav-blog-flash__label { color: #fff; -webkit-text-fill-color: #fff; background: none; }
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   NAV — "True North" crystal-ball spin. Every ~9s the lettering shrinks,
+   spins through a soft violet orb glow (like it's being read inside a
+   crystal ball), spins back out to full size, then a small gold sparkle
+   flashes just after it settles.
+   ══════════════════════════════════════════════════════════════════════ */
+
+.nav-truenorth {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.nav-truenorth__label {
+  position: relative;
+  display: inline-block;
+  transform-style: preserve-3d;
+  animation: navTrueNorthSpin 9s cubic-bezier(0.45, 0.05, 0.35, 1) infinite;
+  will-change: transform;
+}
+
+/* the violet crystal-ball glow, only visible during the spin */
+.nav-truenorth__orb {
+  content: "";
+  position: absolute;
+  inset: -8px -12px;
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(196, 140, 255, 0.65), rgba(120, 60, 200, 0.3) 55%, transparent 78%);
+  filter: blur(5px);
+  opacity: 0;
+  z-index: -1;
+  pointer-events: none;
+  animation: navTrueNorthOrb 9s ease-in-out infinite;
+}
+
+/* the sparkle that flashes right after the lettering spins back into place */
+.nav-truenorth__sparkle {
+  position: absolute;
+  right: -13px;
+  top: -3px;
+  font-size: 10px;
+  color: #f0d9a0;
+  opacity: 0;
+  pointer-events: none;
+  animation: navTrueNorthSparkle 9s ease-in-out infinite;
+}
+
+@keyframes navTrueNorthSpin {
+  0%, 58% { transform: scale(1) rotateY(0deg); }
+  68% { transform: scale(0.5) rotateY(200deg); }
+  78% { transform: scale(0.5) rotateY(360deg); }
+  88%, 100% { transform: scale(1) rotateY(360deg); }
+}
+
+@keyframes navTrueNorthOrb {
+  0%, 55%, 100% { opacity: 0; transform: scale(0.6); }
+  65% { opacity: 1; transform: scale(1); }
+  81% { opacity: 1; transform: scale(1.06); }
+  91% { opacity: 0; transform: scale(1.12); }
+}
+
+@keyframes navTrueNorthSparkle {
+  0%, 85% { opacity: 0; transform: scale(0.5) rotate(0deg); }
+  90% { opacity: 1; transform: scale(1.25) rotate(18deg); }
+  96% { opacity: 1; transform: scale(1) rotate(0deg); }
+  100% { opacity: 0; transform: scale(0.8) rotate(-12deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nav-truenorth__label { animation: none; }
+  .nav-truenorth__orb,
+  .nav-truenorth__sparkle { display: none; }
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+
+   THE JOURNAL — V2: living sky backdrop + card-centric surfaces
+   The page is a stack of glass cards floating in the house sky. Every
+   surface here is translucent on purpose so the sky reads behind it.
+   ══════════════════════════════════════════════════════════════════════ */
+
+/* ── The sky ──────────────────────────────────────────────────────────── */
+.jsky {
+  position: fixed; inset: 0; z-index: 0;
+  overflow: hidden; pointer-events: none;
+}
+.jsky__wash {
+  position: absolute; inset: 0;
+  background-size: cover;
+  transition: background-image 2.5s ease;
+}
+.jsky__clouds {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  overflow: visible;
+}
+.jsky__lum { position: absolute; transform: translate(-50%, -50%); }
+.jsky__lum-halo {
+  position: absolute; left: 50%; top: 50%;
+  width: 340px; height: 340px; border-radius: 50%;
+  transform: translate(-50%, -50%);
+}
+.jsky__lum-core {
+  position: absolute; left: 50%; top: 50%;
+  width: 62px; height: 62px; border-radius: 50%;
+  transform: translate(-50%, -50%);
+}
+.jsky__lum-phase {
+  position: absolute; left: 50%; top: calc(50% + 48px);
+  transform: translateX(-50%);
+  font-size: 9px; letter-spacing: .22em; white-space: nowrap;
+  color: rgba(226,236,255,.5);
+}
+.jsky__rain { position: absolute; inset: 0; }
+.jsky-drop {
+  position: absolute; top: 0; width: 1.4px; border-radius: 1px;
+  background: linear-gradient(180deg, transparent, rgba(206,226,255,.9));
+}
+.jsky__flash { position: absolute; inset: 0; background: rgba(214,230,255,.5); animation: jsky-flicker 9s ease-in-out infinite; }
+/* Veil: lifts the whole field toward the pale-sky brand tone so ink text on
+   glass stays readable at every hour, including deep night. */
+.jsky__veil {
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(120% 70% at 50% 0%, rgba(255,255,255,.16), transparent 62%),
+    linear-gradient(180deg, rgba(246,251,255,.16) 0%, rgba(246,251,255,.08) 36%, rgba(246,251,255,.14) 74%, rgba(255,255,255,.26) 100%);
+}
+.jsky--night .jsky__veil,
+.jsky--dusk .jsky__veil {
+  background:
+    radial-gradient(120% 70% at 50% 0%, rgba(255,255,255,.1), transparent 60%),
+    linear-gradient(180deg, rgba(226,238,255,.14) 0%, rgba(220,234,255,.1) 40%, rgba(232,242,255,.18) 100%);
+}
+.jsky__grain {
+  position: absolute; inset: 0; opacity: .18;
+  background-image: radial-gradient(circle at center, rgba(255,255,255,.5) .5px, transparent .6px);
+  background-size: 3px 3px;
+  mix-blend-mode: soft-light;
+}
+
+/* ── Page shell ───────────────────────────────────────────────────────── */
+.journal-page { position: relative; z-index: 0; background: transparent; padding-bottom: 4rem; }
+.journal-stack {
+  position: relative; z-index: 1;
+  max-width: 84rem; margin: 0 auto;
+  padding: 1.5rem 1rem 0;
+  display: flex; flex-direction: column; gap: 1rem;
+}
+@media (min-width: 768px) { .journal-stack { padding: 2rem 1.5rem 0; gap: 1.25rem; } }
+
+/* The shared card surface: frosted glass, gold-free, sky visible behind. */
+.journal-surface {
+  position: relative;
+  border-radius: 22px;
+  border: 1px solid rgba(255,255,255,.6);
+  background: linear-gradient(170deg, rgba(255,255,255,.74), rgba(240,247,255,.6));
+  box-shadow:
+    0 1px 0 rgba(255,255,255,.7) inset,
+    0 26px 60px -34px rgba(12,34,64,.55),
+    0 6px 20px -14px rgba(12,34,64,.28);
+  backdrop-filter: blur(18px) saturate(1.15);
+  -webkit-backdrop-filter: blur(18px) saturate(1.15);
+}
+
+/* Hero becomes a card rather than a full-bleed band. */
+.journal-hero { padding: 2.75rem 1.5rem 2.25rem; }
+@media (min-width: 768px) { .journal-hero { padding: 3.5rem 2rem 3rem; } }
+.journal-hero__aura { inset: -55% 8% auto 8%; opacity: .7; }
+
+/* Strip / tiles / posts / dock inherit the same glass language. */
+.journal-strip {
+  max-width: none; border-radius: 18px;
+  border-color: rgba(255,255,255,.6);
+  background: linear-gradient(170deg, rgba(255,255,255,.78), rgba(238,247,255,.64));
+  backdrop-filter: blur(16px) saturate(1.12);
+  -webkit-backdrop-filter: blur(16px) saturate(1.12);
+  box-shadow: 0 20px 46px -30px rgba(12,34,64,.55);
+}
+.journal-tiles { margin: 0; }
+.journal-tile { border-radius: 20px; border-color: rgba(255,255,255,.6); }
+.journal-post {
+  border-radius: 20px; border-color: rgba(255,255,255,.6);
+  background: linear-gradient(170deg, rgba(255,255,255,.8), rgba(241,248,255,.68));
+  backdrop-filter: blur(16px) saturate(1.12);
+  -webkit-backdrop-filter: blur(16px) saturate(1.12);
+  box-shadow: 0 22px 52px -32px rgba(12,34,64,.55);
+}
+.journal-chip {
+  background: rgba(255,255,255,.72);
+  border-color: rgba(255,255,255,.7);
+  backdrop-filter: blur(10px);
+}
+.journal-body { margin-top: 0; }
+.journal-article { max-width: none; padding: 2rem 1.5rem 2.5rem; }
+@media (min-width: 768px) { .journal-article { padding: 2.75rem 3rem 3rem; } }
+.journal-dock-tab {
+  background: rgba(255,255,255,.72);
+  backdrop-filter: blur(10px);
+  border-color: rgba(255,255,255,.7);
+}
+
+/* Miniature three-card stack on the Draw tile. */
+.journal-tile__deck { display: flex; align-items: flex-end; gap: 4px; height: 26px; }
+.journal-tile__deck i {
+  display: block; width: 13px; height: 20px; border-radius: 3px;
+  background: linear-gradient(160deg, #1d2f4f, #101c33);
+  border: 1px solid rgba(214,178,96,.6);
+  box-shadow: 0 3px 8px -4px rgba(12,34,64,.7);
+}
+.journal-tile__deck i:nth-child(1) { transform: rotate(-9deg) translateY(1px); }
+.journal-tile__deck i:nth-child(3) { transform: rotate(9deg) translateY(1px); }
+.journal-tile__deck i:nth-child(2) { height: 24px; }
+
+/* ── Dock panel: proper mobile sheet ─────────────────────────────────── */
+.journal-dock-panel__head {
+  position: sticky; top: 0; z-index: 2;
+  display: flex; align-items: flex-start; justify-content: space-between; gap: .75rem;
+  padding: .9rem 1.1rem .7rem;
+  background: linear-gradient(180deg, rgba(255,255,255,.96), rgba(255,255,255,.82));
+  border-bottom: 1px solid rgba(118,180,235,.2);
+}
+.journal-dock-panel__body { padding: 1rem 1.1rem 1.25rem; }
+@media (min-width: 1024px) {
+  .journal-dock-panel--wide { width: min(560px, 46vw); }
+}
+@media (max-width: 1023px) {
+  /* Centred bottom sheet. Uses left/right + auto margins rather than a
+     translateX, because the entry animation owns `transform` and would
+     otherwise cancel the centring (this is what pushed the Almanac
+     off-screen on phones). */
+  .journal-dock-panel {
+    left: .75rem; right: .75rem; width: auto;
+    max-width: 30rem; margin-inline: auto;
+    top: auto;
+    bottom: max(.75rem, env(safe-area-inset-bottom));
+    max-height: min(84dvh, 84vh);
+    display: flex; flex-direction: column;
+    border-radius: 22px;
+  }
+  .journal-dock-panel__body {
+    flex: 1 1 auto; min-height: 0;
+    max-height: none;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+    padding-bottom: 1.5rem;
+  }
+}
+/* Landscape phones: the sheet gets the full height it can and scrolls. */
+@media (max-width: 1023px) and (max-height: 520px) {
+  .journal-dock-panel { top: .5rem; bottom: .5rem; max-height: none; }
+  .jdeck-slot__head { min-height: 0; }
+}
+
+/* ── Almanac on small frames ─────────────────────────────────────────── */
+@media (max-width: 420px) {
+  .journal-almanac__clock { gap: .5rem; }
+  .journal-almanac__clock-num { font-size: 20px; }
+  .journal-almanac__cell { font-size: 11px; }
+  .journal-almanac__dow, .journal-almanac__grid { gap: 3px; }
+  .journal-almanac__readout-rows { font-size: 11px; }
+  .journal-strip__rule { display: none; }
+}
+.journal-almanac__grid, .journal-almanac__dow { min-width: 0; }
+.journal-almanac__cell { min-width: 0; aspect-ratio: 1 / 1; }
+
+/* ══════════════════════════════════════════════════════════════════════
+   THE DRAW — three-card spread, shield-backed, flash reveal
+   ══════════════════════════════════════════════════════════════════════ */
+.jdeck__framework {
+  font-size: 10px;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: #a67c2e;
+  font-weight: 600;
+  margin-bottom: .25rem;
+}
+.jdeck__intro { font-size: 11.5px; line-height: 1.6; color: rgba(21,36,61,.55); margin-bottom: .9rem; }
+.jdeck__row { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: .4rem; }
+@media (max-width: 640px) { .jdeck__row { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .5rem; } }
+@media (min-width: 480px) and (min-width: 641px) { .jdeck__row { gap: .7rem; } }
+.jdeck__row--single { grid-template-columns: minmax(0, 1fr); max-width: 200px; margin: 0 auto; }
+
+.jdeck__letter {
+  position: relative;
+  isolation: isolate;
+  margin-top: 1.3rem;
+  padding: 1.5rem 1.3rem 1.4rem;
+  border-radius: 10px;
+  background: #f7f4ec;
+  box-shadow: 0 20px 44px -26px rgba(12,34,64,.5);
+  overflow: hidden;
+}
+.jdeck__letter-loading {
+  position: relative; z-index: 4;
+  font-size: 12px;
+  font-style: italic;
+  color: rgba(21,36,61,.5);
+  text-align: center;
+}
+.jdeck-letter__p {
+  position: relative; z-index: 4;
+  font-size: 13.5px;
+  line-height: 1.75;
+  color: #24365a;
+  margin-bottom: .85rem;
+}
+.jdeck-letter__p:last-child { margin-bottom: 0; }
+.jdeck-letter__p strong {
+  background-image: linear-gradient(135deg, #f7e2ad, #cfa235 55%, #f2d992);
+  color: #2a1f07;
+  padding: 0 3px;
+  box-shadow: 2px 2px 0 rgba(21,36,61,.1);
+}
+
+/* The reading's collage head — dateline, cut-letter spread name, torn tags */
+.jdeck__collage-head { position: relative; text-align: center; padding-bottom: .9rem; margin-bottom: .2rem; }
+.jdeck__collage-title {
+  position: relative; z-index: 4;
+  margin: .7rem 0 .3rem;
+  display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: center;
+  gap: 3px; line-height: 1;
+}
+.jdeck__collage-sub {
+  position: relative; z-index: 4;
+  margin: 0 0 .5rem; display: flex; flex-wrap: wrap; align-items: baseline; justify-content: center; gap: 5px;
+}
+
+.jdeck__letter .jcol-sign { display: block; text-align: center; margin-top: 1rem; }
+
+.jdeck__synthesis {
+  margin-top: 1.1rem;
+  padding: .85rem .95rem;
+  border-radius: 10px;
+  background: rgba(196,141,255,.08);
+  border: 1px solid rgba(196,141,255,.3);
+}
+.jdeck__synthesis-head {
+  display: block;
+  font-size: 10px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: #7a4bd0;
+  font-weight: 600;
+  margin-bottom: .35rem;
+}
+.jdeck__synthesis p { font-size: 12px; line-height: 1.65; color: rgba(21,36,61,.75); }
+
+.jdeck__deeper { margin-top: 1.2rem; text-align: center; }
+.jdeck__all--deeper {
+  background: transparent;
+  color: #7a4bd0;
+  border-color: rgba(122,75,208,.4);
+}
+.jdeck__all--deeper:hover { background: #7a4bd0; color: #fff; border-color: #7a4bd0; }
+
+.jdeck-slot { display: flex; flex-direction: column; gap: .4rem; min-width: 0; }
+.jdeck-slot__head { text-align: center; min-height: 2.4rem; }
+.jdeck-slot__name {
+  display: block; font-family: "Playfair Display", Georgia, serif;
+  font-size: 12.5px; color: #15243d; letter-spacing: .04em;
+}
+.jdeck-slot__q {
+  display: block; font-size: 8.5px; letter-spacing: .1em;
+  text-transform: uppercase; color: rgba(21,36,61,.38); line-height: 1.35;
+}
+
+.jdeck-card {
+  position: relative; width: 100%; aspect-ratio: 2 / 3;
+  perspective: 1100px; border: 0; background: none; padding: 0;
+  cursor: pointer;
+}
+.jdeck-card__inner {
+  position: absolute; inset: 0;
+  transform-style: preserve-3d;
+  transition: transform .78s cubic-bezier(.2,.8,.2,1);
+  border-radius: 12px;
+}
+.jdeck-card.is-open .jdeck-card__inner { transform: rotateY(180deg); }
+.jdeck-card__side {
+  position: absolute; inset: 0;
+  border-radius: 12px; overflow: hidden;
+  backface-visibility: hidden; -webkit-backface-visibility: hidden;
+  box-shadow: 0 18px 40px -22px rgba(9,20,40,.85), 0 0 0 1px rgba(255,255,255,.35);
+}
+.jdeck-card__side--front { transform: rotateY(180deg); background: #101c33; }
+.jdeck-card:hover .jdeck-card__side--back { box-shadow: 0 24px 48px -20px rgba(9,20,40,.9), 0 0 0 1px rgba(214,178,96,.55); }
+.jdeck-back-art, .jdeck-art { width: 100%; height: 100%; display: block; }
+.jdeck-card__tap {
+  position: absolute; left: 50%; bottom: -1.1rem; transform: translateX(-50%);
+  font-size: 8px; letter-spacing: .2em; text-transform: uppercase;
+  color: rgba(21,36,61,.4); white-space: nowrap;
+}
+
+/* The ignition: light leaves the card itself, then the card turns. */
+.jdeck-card__burst {
+  position: absolute; left: 50%; top: 50%;
+  width: 118%; aspect-ratio: 1; border-radius: 50%;
+  transform: translate(-50%, -50%) scale(.35);
+  opacity: 0; pointer-events: none; z-index: 3;
+  background: radial-gradient(circle, rgba(255,255,255,.95) 0%, rgba(255,236,182,.7) 26%, rgba(196,141,255,.28) 52%, transparent 72%);
+  filter: blur(2px);
+}
+.jdeck-card.is-igniting .jdeck-card__burst { animation: jdeck-burst .62s cubic-bezier(.16,.84,.24,1) both; }
+.jdeck-card.is-igniting .jdeck-card__side--back { animation: jdeck-charge .33s ease-in both; }
+@keyframes jdeck-burst {
+  0%   { opacity: 0; transform: translate(-50%, -50%) scale(.3); }
+  28%  { opacity: 1; transform: translate(-50%, -50%) scale(.92); }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(1.55); }
+}
+@keyframes jdeck-charge {
+  0%   { filter: brightness(1); }
+  100% { filter: brightness(1.7) saturate(1.2); }
+}
+.jdeck-card.is-open .jdeck-card__side--front { animation: jdeck-settle .9s ease-out both; }
+@keyframes jdeck-settle {
+  0%   { filter: brightness(1.9) saturate(1.25); }
+  100% { filter: brightness(1) saturate(1); }
+}
+
+/* Card face */
+.jdeck-face { position: absolute; inset: 0; display: flex; flex-direction: column; }
+.jdeck-face__plate { position: relative; flex: 1 1 auto; min-height: 0; }
+.jdeck-face__roman {
+  position: absolute; top: 6px; left: 0; right: 0; text-align: center;
+  font-family: "Playfair Display", Georgia, serif;
+  font-size: 10px; letter-spacing: .26em; color: rgba(255,255,255,.85);
+}
+.jdeck-face__rev {
+  margin-left: 4px; font-style: normal;
+  font-family: Inter, system-ui, sans-serif;
+  font-size: 7.5px; letter-spacing: .18em; text-transform: uppercase;
+  color: rgba(226,214,186,.6);
+}
+.jdeck-face__plaque {
+  flex: 0 0 auto; padding: .4rem .35rem .5rem; text-align: center;
+  background: linear-gradient(180deg, #16253f, #0e1a2e);
+  border-top: 1px solid rgba(214,178,96,.45);
+}
+.jdeck-face__name {
+  display: block; font-family: "Playfair Display", Georgia, serif;
+  font-size: 11px; color: #f4e7c4; letter-spacing: .05em; line-height: 1.15;
+}
+.jdeck-face__sub { display: none; }
+@media (min-width: 520px) {
+  .jdeck-face__name { font-size: 12.5px; }
+  .jdeck-face__sub {
+    display: block; margin-top: 2px;
+    font-size: 7.5px; letter-spacing: .06em; color: rgba(226,214,186,.6); line-height: 1.3;
+  }
+}
+
+.jdeck__all {
+  display: block; width: 100%; margin-top: 1.5rem;
+  padding: 10px 14px; border-radius: 999px;
+  font-size: 9.5px; letter-spacing: .26em; text-transform: uppercase;
+  border: 1px solid rgba(109,63,176,.35); color: #6d3fb0;
+  background: rgba(255,255,255,.6);
+  transition: all .2s ease;
+}
+.jdeck__all:hover { background: #15243d; color: #fff; border-color: #15243d; }
+
+.jdeck__readings { margin-top: 1.4rem; display: flex; flex-direction: column; gap: .9rem; }
+.jdeck-read {
+  border: 1px solid rgba(118,180,235,.24); border-radius: 14px;
+  background: rgba(255,255,255,.62); padding: .85rem .95rem;
+  animation: journal-rise .3s ease both;
+}
+.jdeck-read__head { display: flex; flex-wrap: wrap; align-items: baseline; gap: .45rem; }
+.jdeck-read__slot {
+  font-size: 8.5px; letter-spacing: .26em; text-transform: uppercase; color: #6d3fb0;
+}
+.jdeck-read__card {
+  font-family: "Playfair Display", Georgia, serif; font-size: 13.5px; color: #15243d;
+}
+.jdeck-read__keys { display: flex; flex-wrap: wrap; gap: 5px; margin: .5rem 0 .55rem; }
+.jdeck-read__keys span {
+  font-size: 8.5px; letter-spacing: .16em; text-transform: uppercase;
+  padding: 3px 8px; border-radius: 999px;
+  background: rgba(196,141,255,.14); color: #5c3494;
+}
+.jdeck-read__body { font-size: 12.5px; line-height: 1.65; color: rgba(21,36,61,.72); }
+.jdeck-read__ritual {
+  margin-top: .6rem; padding: .55rem .7rem; border-radius: 10px;
+  background: rgba(245,201,122,.14); border: 1px solid rgba(245,201,122,.32);
+}
+.jdeck-read__ritual span {
+  font-size: 8px; letter-spacing: .26em; text-transform: uppercase; color: #7a5a18;
+}
+.jdeck-read__ritual p { margin-top: 3px; font-size: 12px; line-height: 1.55; color: rgba(21,36,61,.72); }
+.jdeck-read__material { margin-top: .5rem; font-size: 10px; color: rgba(21,36,61,.45); }
+
+@media (prefers-reduced-motion: reduce) {
+  .jdeck-card__inner { transition: none; }
+  .jdeck-card__burst { animation: none !important; }
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   THE MASTHEAD — ransom-note collage
+   Cut letters on torn paper stock, tape, pen scribbles, signed off by
+   hand. Deliberately loud, deliberately expensive-looking: the palette is
+   held to newsprint / cream / kraft / ink / gold plus the two brand
+   accents, so the noise stays editorial rather than chaotic.
+   ══════════════════════════════════════════════════════════════════════ */
+.jmast {
+  position: relative;
+  padding: 2.6rem 1.25rem 2.4rem;
+  text-align: center;
+  overflow: hidden;
+  isolation: isolate;
+}
+@media (min-width: 768px) { .jmast { padding: 3.4rem 2.5rem 3rem; } }
+
+/* Backing scraps — big torn rectangles pasted behind the type. */
+.jmast__patch {
+  position: absolute; z-index: -1; pointer-events: none;
+  background-repeat: no-repeat;
+  opacity: .55;
+}
+.jmast__patch--a {
+  left: 4%; top: 12%; width: 46%; height: 46%;
+  background-image: repeating-linear-gradient(0deg, rgba(21,36,61,.05) 0 1px, transparent 1px 5px);
+  background-color: rgba(252,250,244,.55);
+  transform: rotate(-2.2deg);
+  clip-path: polygon(1% 4%, 62% 0, 99% 6%, 97% 92%, 40% 100%, 3% 95%);
+}
+.jmast__patch--b {
+  right: 6%; top: 24%; width: 40%; height: 40%;
+  background-color: rgba(232,222,203,.5);
+  transform: rotate(3deg);
+  clip-path: polygon(2% 8%, 55% 2%, 98% 0, 96% 88%, 48% 100%, 0 90%);
+}
+.jmast__patch--c {
+  left: 26%; bottom: 6%; width: 48%; height: 30%;
+  background-color: rgba(255,255,255,.42);
+  transform: rotate(-1.4deg);
+  clip-path: polygon(0 12%, 52% 0, 100% 10%, 98% 86%, 46% 100%, 2% 90%);
+}
+/* Tape */
+.jmast__tape {
+  position: absolute; z-index: 2; pointer-events: none;
+  width: 92px; height: 26px;
+  background: linear-gradient(100deg, rgba(255,255,255,.5), rgba(238,232,214,.62));
+  border-left: 1px solid rgba(255,255,255,.5);
+  border-right: 1px solid rgba(255,255,255,.5);
+  box-shadow: 0 2px 8px -4px rgba(12,34,64,.4);
+  opacity: .8;
+}
+.jmast__tape--tl { left: -18px; top: 34px; transform: rotate(-38deg); }
+.jmast__tape--br { right: -16px; bottom: 44px; transform: rotate(-32deg); }
+
+.jmast__pen { position: absolute; z-index: 3; pointer-events: none; }
+.jmast__pen--arrow { left: 2%; top: 26%; width: 62px; height: 62px; }
+@media (max-width: 700px) { .jmast__pen--arrow { display: none; } }
+.jmast__pen--rule {
+  left: 50%; transform: translateX(-50%);
+  bottom: 27%; width: min(24rem, 76%); height: 18px;
+}
+
+/* Dateline slug */
+.jmast__slug {
+  position: relative; z-index: 4;
+  display: flex; align-items: center; justify-content: center; gap: .6rem;
+  font-family: "Special Elite", "Courier New", monospace;
+  font-size: 9.5px; letter-spacing: .34em; text-transform: uppercase;
+  color: rgba(21,36,61,.5);
+}
+.jmast__slug i { width: 16px; height: 1px; background: rgba(21,36,61,.28); }
+
+/* ── The cut letters ─────────────────────────────────────────────────── */
+.jmast__title {
+  position: relative; z-index: 4;
+  margin: .9rem 0 .1rem;
+  display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: center;
+  gap: 2px;
+  line-height: 1;
+}
+.jmast__wordgroup { display: inline-flex; flex-wrap: nowrap; align-items: flex-end; gap: 2px; }
+.jmast__title { gap: clamp(.5rem, 1.6vw, 1.1rem); }
+.jmast__space { width: clamp(.55rem, 1.6vw, 1.1rem); }
+.jmast__scrap {
+  display: inline-block;
+  padding: .06em .16em .1em;
+  font-size: clamp(2.05rem, 8.2vw, 5.6rem);
+  line-height: .96;
+  transform: rotate(var(--rot, 0deg)) translateY(var(--dy, 0)) scale(var(--sc, 1));
+  box-shadow: 0 8px 18px -10px rgba(12,34,64,.55), 0 1px 0 rgba(255,255,255,.6) inset;
+  clip-path: polygon(2% 5%, 48% 0, 99% 4%, 97% 95%, 52% 100%, 1% 96%);
+  transition: transform .35s cubic-bezier(.2,.8,.2,1);
+}
+.jmast__title:hover .jmast__scrap { transform: rotate(calc(var(--rot, 0deg) * .35)) translateY(0) scale(var(--sc, 1)); }
+
+/* Paper stocks */
+.jmast__scrap--newsprint {
+  background-color: #f7f4ec; color: #17233a;
+  background-image: repeating-linear-gradient(0deg, rgba(21,36,61,.055) 0 1px, transparent 1px 4px);
+}
+.jmast__scrap--cream { background-color: #fdf6e6; color: #1d2b45; }
+.jmast__scrap--kraft { background-color: #dcc7a6; color: #3a2c17; }
+.jmast__scrap--ink   { background-color: #15243d; color: #f6f2e6; }
+.jmast__scrap--gold  {
+  background-image: linear-gradient(135deg, #f7e2ad, #cfa235 55%, #f2d992);
+  color: #2a1f07;
+}
+.jmast__scrap--lilac { background-color: #ddc7fb; color: #331a52; }
+.jmast__scrap--blush { background-color: #ffd2de; color: #4a1626; }
+
+/* Faces */
+.jmast__face--grotesk { font-family: Anton, "Arial Black", sans-serif; letter-spacing: .01em; }
+.jmast__face--display { font-family: "Bodoni Moda", "Playfair Display", Georgia, serif; font-weight: 800; }
+.jmast__face--type    { font-family: "Special Elite", "Courier New", monospace; }
+.jmast__face--slab    { font-family: "Playfair Display", Georgia, serif; font-weight: 600; }
+.jmast__face--script  { font-family: Caveat, "Segoe Script", cursive; }
+
+/* ── The standfirst, same trick at reading size ──────────────────────── */
+.jmast__stand {
+  position: relative; z-index: 4;
+  margin: 1.1rem auto .1rem; max-width: 34rem;
+  display: flex; flex-wrap: wrap; align-items: baseline; justify-content: center;
+  gap: 5px;
+}
+.jmast__word {
+  display: inline-block;
+  padding: 2px 7px 3px;
+  font-size: clamp(12px, 1.5vw, 15px);
+  letter-spacing: .01em;
+  transform: rotate(var(--rot, 0deg));
+  box-shadow: 0 4px 10px -7px rgba(12,34,64,.5);
+  clip-path: polygon(2% 6%, 46% 0, 99% 5%, 97% 94%, 50% 100%, 1% 95%);
+}
+
+/* ── Handwritten sign-off ────────────────────────────────────────────── */
+.jmast__sign {
+  position: relative; z-index: 4;
+  margin-top: 1.3rem;
+  font-family: Caveat, "Segoe Script", cursive;
+  font-size: clamp(22px, 3.4vw, 32px);
+  color: #24365a;
+  transform: rotate(-1.6deg);
+}
+.jmast__sign::after {
+  content: ""; display: block;
+  width: 210px; max-width: 62%; height: 10px; margin: 1px auto 0;
+  background: no-repeat center / 100% 100%
+    url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 220 12'%3E%3Cpath d='M4 8 C44 2 78 10 116 5 C150 1 186 9 216 4' fill='none' stroke='rgba(36,54,90,0.5)' stroke-width='2.2' stroke-linecap='round'/%3E%3C/svg%3E");
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .jmast__title:hover .jmast__scrap { transform: rotate(var(--rot, 0deg)) translateY(var(--dy, 0)) scale(var(--sc, 1)); }
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   COLLAGE UTILITIES — the masthead's cut-paper language, shared.
+
+   Same recipe as .jmast (torn patches, tape, cut letters, torn word-tags,
+   pen scribble, handwritten close) exposed as reusable classes so the
+   reading reveal, the feed cards and the article header can all speak in
+   the same voice as the masthead instead of inventing a new one.
+   ══════════════════════════════════════════════════════════════════════ */
+.jcol-patch { position: absolute; z-index: -1; pointer-events: none; opacity: .5; }
+.jcol-patch--a {
+  left: 3%; top: 8%; width: 44%; height: 44%;
+  background-image: repeating-linear-gradient(0deg, rgba(21,36,61,.05) 0 1px, transparent 1px 5px);
+  background-color: rgba(252,250,244,.5);
+  transform: rotate(-2deg);
+  clip-path: polygon(1% 4%, 62% 0, 99% 6%, 97% 92%, 40% 100%, 3% 95%);
+}
+.jcol-patch--b {
+  right: 5%; top: 20%; width: 38%; height: 38%;
+  background-color: rgba(232,222,203,.45);
+  transform: rotate(2.6deg);
+  clip-path: polygon(2% 8%, 55% 2%, 98% 0, 96% 88%, 48% 100%, 0 90%);
+}
+.jcol-tape { position: absolute; z-index: 2; pointer-events: none; width: 74px; height: 22px;
+  background: linear-gradient(100deg, rgba(255,255,255,.5), rgba(238,232,214,.6));
+  border-left: 1px solid rgba(255,255,255,.5); border-right: 1px solid rgba(255,255,255,.5);
+  box-shadow: 0 2px 8px -4px rgba(12,34,64,.4); opacity: .75;
+}
+.jcol-tape--tl { left: -14px; top: 18px; transform: rotate(-36deg); }
+.jcol-tape--br { right: -12px; bottom: 22px; transform: rotate(-30deg); }
+
+.jcol-slug {
+  position: relative; z-index: 4;
+  display: flex; align-items: center; justify-content: center; gap: .55rem; flex-wrap: wrap;
+  font-family: "Special Elite", "Courier New", monospace;
+  font-size: 9.5px; letter-spacing: .3em; text-transform: uppercase;
+  color: rgba(21,36,61,.5);
+}
+.jcol-slug i { width: 14px; height: 1px; background: rgba(21,36,61,.28); display: inline-block; }
+
+.jcol-cut {
+  display: inline-block; padding: .07em .17em .11em;
+  box-shadow: 0 8px 18px -10px rgba(12,34,64,.55), 0 1px 0 rgba(255,255,255,.6) inset;
+  clip-path: polygon(2% 5%, 48% 0, 99% 4%, 97% 95%, 52% 100%, 1% 96%);
+}
+.jcol-cut--lg { font-size: clamp(1.6rem, 6vw, 3rem); line-height: .96; }
+.jcol-cut--md { font-size: clamp(1.05rem, 3.2vw, 1.6rem); line-height: .98; }
+
+.jcol-tag {
+  display: inline-block; padding: 2px 9px 4px;
+  letter-spacing: .01em;
+  box-shadow: 0 4px 10px -7px rgba(12,34,64,.5);
+  clip-path: polygon(2% 6%, 46% 0, 99% 5%, 97% 94%, 50% 100%, 1% 95%);
+}
+.jcol-tag--sm { font-size: clamp(10px, 1.4vw, 12px); }
+.jcol-tag--md { font-size: clamp(13px, 2vw, 17px); text-transform: uppercase; }
+
+/* Paper stocks */
+.jcol-newsprint { background-color: #f7f4ec; color: #17233a; background-image: repeating-linear-gradient(0deg, rgba(21,36,61,.055) 0 1px, transparent 1px 4px); }
+.jcol-cream { background-color: #fdf6e6; color: #1d2b45; }
+.jcol-kraft { background-color: #dcc7a6; color: #3a2c17; }
+.jcol-ink   { background-color: #15243d; color: #f6f2e6; }
+.jcol-gold  { background-image: linear-gradient(135deg, #f7e2ad, #cfa235 55%, #f2d992); color: #2a1f07; }
+.jcol-lilac { background-color: #ddc7fb; color: #331a52; }
+.jcol-blush { background-color: #ffd2de; color: #4a1626; }
+
+/* Faces */
+.jcol-grotesk { font-family: Anton, "Arial Black", sans-serif; letter-spacing: .01em; }
+.jcol-display { font-family: "Bodoni Moda", "Playfair Display", Georgia, serif; font-weight: 800; }
+.jcol-type    { font-family: "Special Elite", "Courier New", monospace; }
+.jcol-slab    { font-family: "Playfair Display", Georgia, serif; font-weight: 600; }
+.jcol-script  { font-family: Caveat, "Segoe Script", cursive; }
+
+.jcol-pen-rule { display: block; width: min(18rem, 70%); height: 12px; margin: .5rem auto 1rem; }
+
+.jcol-sign {
+  position: relative; z-index: 4;
+  font-family: Caveat, "Segoe Script", cursive;
+  font-size: clamp(19px, 2.6vw, 25px);
+  color: #24365a;
+  transform: rotate(-1.2deg);
+}
+.jcol-sign::after {
+  content: ""; display: block;
+  width: 160px; max-width: 58%; height: 9px; margin: 1px auto 0;
+  background: no-repeat center / 100% 100%
+    url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 220 12'%3E%3Cpath d='M4 8 C44 2 78 10 116 5 C150 1 186 9 216 4' fill='none' stroke='rgba(36,54,90,0.5)' stroke-width='2.2' stroke-linecap='round'/%3E%3C/svg%3E");
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   ARTICLE FIGURES — quiet moments in the margin, never exhibits.
+   No frames, no captions, no card chrome: the image simply appears in the
+   column of text and the prose keeps walking past it.
+   ══════════════════════════════════════════════════════════════════════ */
+.journal-prose figure { margin: .2rem 0 .9rem; }
+.journal-figure {
+  width: min(184px, 30%);
+  border: 0;
+  background: none;
+  box-shadow: none;
+  overflow: visible;
+}
+.journal-figure img {
+  display: block; width: 100%;
+  border-radius: 6px;
+  /* Sit back into the page rather than sitting on top of it. */
+  opacity: .92;
+  filter: saturate(.92);
+  /* Feathered edges so the picture dissolves into the page instead of
+     sitting on it in a frame. */
+  mask-image: radial-gradient(78% 82% at 50% 45%, #000 24%, rgba(0,0,0,.78) 52%, rgba(0,0,0,.3) 76%, transparent 96%);
+  -webkit-mask-image: radial-gradient(78% 82% at 50% 45%, #000 24%, rgba(0,0,0,.78) 52%, rgba(0,0,0,.3) 76%, transparent 96%);
+}
+/* Captions are gone by design — the alt text carries the meaning. */
+.journal-figure figcaption { display: none; }
+.journal-figure--right { float: right; margin: .35rem -1.4rem .9rem 1.5rem; }
+.journal-figure--left  { float: left;  margin: .35rem 1.5rem .9rem -1.4rem; }
+/* Cut-out silhouette: the paragraph text follows the mannequin's edge. */
+.journal-figure--cutout {
+  width: min(190px, 30%);
+}
+.journal-figure--cutout img {
+  mask-image: none; -webkit-mask-image: none;
+  opacity: .95;
+  filter: saturate(.92) drop-shadow(0 18px 26px rgba(12,34,64,.28));
+}
+.journal-figure--cutout.journal-figure--right img { shape-outside: margin-box; }
+/* Swatch trio — three small material notes, stacked down the margin. */
+/* Swatch cluster — three small material notes, cascading past the text
+   like chips dropped on the page. */
+.journal-swatches { width: 118px; display: block; padding: 0; background: none; border: 0; }
+.journal-swatches img {
+  width: 78px; aspect-ratio: 1; object-fit: cover; border-radius: 999px;
+  mask-image: none; -webkit-mask-image: none;
+  opacity: .95;
+  border: 1px solid rgba(255,255,255,.75);
+  box-shadow: 0 10px 18px -14px rgba(12,34,64,.45);
+}
+.journal-swatches img:nth-child(1) { margin-left: 0; }
+.journal-swatches img:nth-child(2) { margin-left: 30px; margin-top: -18px; }
+.journal-swatches img:nth-child(3) { margin-left: 6px; margin-top: -16px; }
+@media (max-width: 900px) {
+  .journal-figure--right { margin-right: 0; }
+  .journal-figure--left  { margin-left: 0; }
+}
+@media (max-width: 560px) {
+  .journal-figure { width: 44%; }
+  .journal-figure--cutout { width: 40%; }
+  .journal-swatches { width: 108px; }
+  .journal-swatches img { width: 68px; }
+}
+.journal-prose::after { content: ""; display: block; clear: both; }
+.journal-masthead-shell { position: relative; overflow: hidden; }
+.journal-masthead-shell .journal-hero__aura { inset: -60% 6% auto 6%; opacity: .5; }
+
+/* Comfortable measure for long-form reading, and keep lists from
+   interleaving with floated figures. */
+.journal-article { max-width: 58rem; margin-inline: auto; }
+.journal-prose ul, .journal-prose ol, .journal-prose blockquote { overflow: hidden; }
+
+/* Card back: the real logo file sits over the engraved plate. */
+.jdeck-back { position: absolute; inset: 0; }
+.jdeck-back__logo {
+  position: absolute; left: 50%; top: 50%;
+  width: 46%; transform: translate(-50%, -52%);
+  filter: drop-shadow(0 6px 14px rgba(6,12,26,.6));
+}
+.jdeck-face__roman { display: none; }
+.jdeck-read__meaning {
+  margin-bottom: .45rem; font-size: 13.5px; line-height: 1.55;
+  color: #15243d; font-family: "Playfair Display", Georgia, serif;
+}
+.jdeck-read__actions { margin-top: .35rem; padding-left: 1.05rem; list-style: decimal; }
+.jdeck-read__actions li { font-size: 12px; line-height: 1.5; color: rgba(21,36,61,.75); }
+.jdeck-read__actions li + li { margin-top: .3rem; }
+.jdeck-read__actions li::marker { color: #a67c2e; font-weight: 600; }
+
+/* ── Analog clock (Local Time / Next 11:16 on the strip) ─────────────── */
+.analog-clock { width: 44px; height: 44px; display: block; }
+.analog-clock__face {
+  fill: rgba(255,255,255,.7); stroke: rgba(21,36,61,.22); stroke-width: 2.5;
+}
+.analog-clock--accent .analog-clock__face {
+  fill: rgba(122,63,208,.08); stroke: rgba(122,63,208,.45);
+}
+.analog-clock__tick { stroke: rgba(21,36,61,.35); stroke-width: 2; }
+.analog-clock--accent .analog-clock__tick { stroke: rgba(122,63,208,.4); }
+.analog-clock__hand { stroke-linecap: round; }
+.analog-clock__hand--hour { stroke: var(--ink, #15243d); stroke-width: 5; }
+.analog-clock__hand--minute { stroke: var(--ink, #15243d); stroke-width: 3.5; }
+.analog-clock__hand--second { stroke: #a67c2e; stroke-width: 1.5; }
+.analog-clock--accent .analog-clock__hand--hour,
+.analog-clock--accent .analog-clock__hand--minute { stroke: #6d3fb0; }
+.analog-clock__pin { fill: #a67c2e; }
+.analog-clock--accent .analog-clock__pin { fill: #6d3fb0; }
+
+
+/* ── Locked IMPACT journal chrome on dark field ───────────────────────── */
+.journal-page {
+  color: var(--cream);
+  background: transparent;
+  position: relative;
+  z-index: 0;
+  padding-bottom: 4rem;
+}
+.journal-stack {
+  position: relative;
+  z-index: 1;
+  max-width: 84rem;
+  margin: 0 auto;
+  padding: 1.5rem 1rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+@media (min-width: 768px) {
+  .journal-stack { padding: 2rem 1.5rem 0; }
+}
+.journal-locked-hero {
+  padding: 28px 8px 36px;
+  color: var(--cream);
+}
+.journal-rooms {
+  display: grid;
+  grid-template-columns: 1fr;
+}
+@media (min-width: 768px) {
+  .journal-rooms { grid-template-columns: 1fr 1.1fr; }
+}
+.journal-almanac-room {
+  background: var(--cream);
+  color: #0B0B0C;
+  padding: 48px 32px;
+}
+.journal-almanac-room .journal-strip {
+  background: #fff;
+  border-color: rgba(11,11,12,0.16);
+}
+.journal-draw-room {
+  background: #0E0C12;
+  color: var(--cream);
+  padding: 48px 32px;
+}
+.journal-draw-spread {
+  height: 300px;
+  position: relative;
+  margin: 28px 0 32px;
+}
+.journal-craft {
+  padding: 64px 32px;
+  max-width: 820px;
+  color: var(--cream);
+}
+.journal-code-room {
+  background: var(--cream);
+  color: #0B0B0C;
+  padding: 48px 32px;
+}
+.journal-code-room .journal-code,
+.journal-code-room .journal-code__quote,
+.journal-code-room .journal-code__attr,
+.journal-code-room .journal-draw__ritual-label,
+.journal-code-room .journal-code__practice p,
+.journal-code-room .journal-dock__footnote {
+  color: #0B0B0C;
+}
+.journal-archive {
+  padding: 48px 8px 24px;
+}
+.journal-surface,
+.journal-post,
+.journal-empty,
+.journal-dock-panel,
+.journal-chip,
+.journal-strip {
+  color: #15243d;
+}
+.journal-page .jsky {
+  opacity: 0.45;
+}
+.journal-tile {
+  cursor: pointer;
+}
+@media (max-width: 767px) {
+  .journal-almanac-room,
+  .journal-draw-room,
+  .journal-code-room,
+  .journal-craft {
+    padding: 36px 22px;
+  }
+  .journal-draw-spread { height: 240px; }
+  .journal-draw-spread .tarot-card { width: 110px; height: 186px; }
+  .journal-draw-spread .tarot-card.c2 { width: 124px; height: 204px; }
 }
