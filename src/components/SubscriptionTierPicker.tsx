@@ -16,16 +16,17 @@ export function SubscriptionTierPicker({
 }) {
   const ctaStyle: Record<string, string | number> = {
     width: "100%",
-    padding: "0.9rem",
-    borderRadius: "12px",
+    padding: "18px",
     textAlign: "center",
-    background: "linear-gradient(160deg, #1d2f4f, #101c33)",
-    color: "#f3e9d2",
-    border: "1px solid rgba(214,178,96,.6)",
-    fontSize: "0.75rem",
-    letterSpacing: "0.15em",
+    background: "#D8F0C4",
+    color: "#142010",
+    border: 0,
+    boxShadow: "6px 6px 0 #E4D4F4",
+    fontSize: "13px",
+    letterSpacing: "0.18em",
     textTransform: "uppercase",
-    fontWeight: 600,
+    fontWeight: 800,
+    cursor: "pointer",
   };
 
   return (
@@ -36,14 +37,16 @@ export function SubscriptionTierPicker({
           flexDirection: "column",
           gap: "0.6rem",
           padding: "1rem",
-          borderRadius: "10px",
-          border: "1px solid rgba(214,178,96,.6)",
+          border: "2px solid #0B0B0C",
+          background: "#F7F0E6",
+          color: "#0B0B0C",
         }}
       >
         <p className="text-sm font-semibold">The Long Read — $7/week</p>
         <p className="text-sm text-muted-foreground">
-          Seven cards read directly against what's actually going on for you right now, plus a
-          follow-up question ($2.99). Numerology is available separately as a one-time unlock.
+          Seven cards read directly against what's actually going on for you
+          right now, plus a follow-up question ($2.99). Numerology is available
+          separately as a one-time unlock.
         </p>
         <button
           onClick={() => onStart("long_read")}

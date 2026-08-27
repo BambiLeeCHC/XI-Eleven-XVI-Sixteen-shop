@@ -140,30 +140,27 @@ function getDeliveryDateRange(rate: ShippingRate): string {
 /* ─── Shared styles ──────────────────────────────────────────────────── */
 
 const glassCard: React.CSSProperties = {
-  background: "rgba(255,240,230,0.03)",
-  border: "1px solid rgba(92,155,205,0.18)",
-  borderRadius: "14px",
-  backdropFilter: "blur(8px)",
+  background: "#F7F0E6",
+  border: "2px solid #0B0B0C",
+  color: "#0B0B0C",
 };
 
 const inputStyle: React.CSSProperties = {
-  background: "rgba(255,240,230,0.04)",
-  border: "1px solid rgba(92,155,205,0.22)",
-  borderRadius: "10px",
-  color: "rgba(21,36,61,0.92)",
+  background: "#F7F0E6",
+  border: "2px solid #0B0B0C",
+  color: "#0B0B0C",
   fontSize: "13px",
   padding: "12px 14px",
   outline: "none",
   width: "100%",
-  transition: "border-color 0.2s",
 };
 
 const labelStyle: React.CSSProperties = {
-  color: "rgba(21,36,61,0.6)",
+  color: "#0B0B0C",
   fontSize: "10px",
   letterSpacing: "0.15em",
   textTransform: "uppercase" as const,
-  fontWeight: 600,
+  fontWeight: 800,
   marginBottom: "6px",
   display: "block",
 };
@@ -469,10 +466,7 @@ export function CheckoutPage() {
           {step === 1 ? "Cart" : "Back"}
         </button>
         <div className="flex-1" />
-        <h1
-          className="text-2xl sm:text-3xl text-white font-light"
-          style={{ fontFamily: "var(--font-display)" }}
-        >
+        <h1 className="clash text-2xl sm:text-3xl" style={{ color: "#F7F0E6" }}>
           Checkout
         </h1>
         <div className="flex-1" />
@@ -1112,7 +1106,7 @@ export function CheckoutPage() {
                 ["◇", "Secure Stripe Checkout"],
                 ["✦", "Free Standard Shipping"],
                 ["📦", "Tracked Delivery"],
-                ["🪡", "Made to Order"],
+                ["🪡", "Made on demand"],
               ].map(([icon, label]) => (
                 <div key={label} className="flex items-center gap-2 px-2.5 py-2 rounded-lg" style={{ background: "rgba(255,240,230,0.025)", border: "1px solid rgba(240,210,190,0.07)" }}>
                   <span className="text-[12px]">{icon}</span>
@@ -1359,14 +1353,7 @@ function ActionButton({
       type="button"
       onClick={onClick}
       disabled={loading || disabled}
-      className="w-full py-4 text-[11px] tracking-[0.25em] uppercase font-bold text-white transition-all duration-300 glass-shimmer disabled:opacity-50 disabled:cursor-not-allowed"
-      style={{
-        background:
-          "linear-gradient(135deg, #c48dff 0%, #ff9eb8 50%, #f5c97a 100%)",
-        backgroundSize: "200% 100%",
-        animation: "gradient-loop 6s ease-in-out infinite",
-        borderRadius: "12px",
-      }}
+      className="cta-pist-block w-full disabled:opacity-50 disabled:cursor-not-allowed"
     >
       {loading ? (
         <span className="flex items-center justify-center gap-2">

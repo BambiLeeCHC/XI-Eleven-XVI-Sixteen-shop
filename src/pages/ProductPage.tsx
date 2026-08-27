@@ -1,13 +1,22 @@
-import { useQuery, useMutation } from "../lib/backend";
-import { useState, useRef, useCallback, useEffect } from "react";
-import { useParams, Link } from "react-router-dom";
-import { api } from "../lib/backend";
-import { useSessionId } from "../hooks/useSessionId";
-import { SEO, buildProductJsonLd, buildBreadcrumbJsonLd } from "../components/SEO";
-import { getProductSEO } from "../data/seoMeta";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { Link, useParams } from "react-router-dom";
 import { CompleteTheLook } from "../components/CompleteTheLook";
 import { ProductFitGuide } from "../components/ProductFitGuide";
+import {
+  buildBreadcrumbJsonLd,
+  buildProductJsonLd,
+  SEO,
+} from "../components/SEO";
 import { getProductRotation } from "../data/productRotations";
+import { getProductSEO } from "../data/seoMeta";
+import { useSessionId } from "../hooks/useSessionId";
+import { api, useMutation, useQuery } from "../lib/backend";
+import {
+  colorFromName,
+  formatPrice,
+  snapHex,
+  styleKeyFromName,
+} from "../lib/brand";
 
 /** Extract just the size label from a variant name like "D-SLIP DRESS [BLACK] / XS" → "XS" */
 function cleanSizeLabel(size: string): string {
@@ -35,13 +44,17 @@ function Product360Viewer({
   const dragStartX = useRef(0);
   const dragStartIndex = useRef(0);
   const containerRef = useRef<HTMLDivElement>(null);
-  const autoRotateInterval = useRef<ReturnType<typeof setInterval> | null>(null);
+  const autoRotateInterval = useRef<ReturnType<typeof setInterval> | null>(
+    null,
+  );
 
   // A true rotation is an explicit, approved eight-frame sequence. Ordinary
   // gallery images must never be inferred to be a 360° view.
   const angleImages = rotationImages?.length === 8 ? rotationImages : [];
   const has360 = angleImages.length === 8;
-  const displayImage = is360Mode ? angleImages[currentIndex % angleImages.length] : images[currentIndex];
+  const displayImage = is360Mode
+    ? angleImages[currentIndex % angleImages.length]
+    : images[currentIndex];
 
   // Keep rotation frames off the network until the shopper explicitly opens
   // 360° mode, then warm the remaining frames for smooth dragging.
@@ -57,7 +70,7 @@ function Product360Viewer({
   useEffect(() => {
     if (isAutoRotating && is360Mode) {
       autoRotateInterval.current = setInterval(() => {
-        setCurrentIndex((prev) => (prev + 1) % angleImages.length);
+        setCurrentIndex(prev => (prev + 1) % angleImages.length);
       }, 600);
     }
     return () => {
@@ -73,7 +86,7 @@ function Product360Viewer({
       dragStartX.current = clientX;
       dragStartIndex.current = currentIndex;
     },
-    [is360Mode, currentIndex]
+    [is360Mode, currentIndex],
   );
 
   const handleDragMove = useCallback(
@@ -85,10 +98,13 @@ function Product360Viewer({
       const width = container.offsetWidth;
       const sensitivity = width / angleImages.length;
       const indexDelta = Math.round(dx / sensitivity);
-      const newIndex = ((dragStartIndex.current - indexDelta) % angleImages.length + angleImages.length) % angleImages.length;
+      const newIndex =
+        (((dragStartIndex.current - indexDelta) % angleImages.length) +
+          angleImages.length) %
+        angleImages.length;
       setCurrentIndex(newIndex);
     },
-    [isDragging, is360Mode, angleImages.length]
+    [isDragging, is360Mode, angleImages.length],
   );
 
   const handleDragEnd = useCallback(() => {
@@ -102,8 +118,10 @@ function Product360Viewer({
   const onMouseLeave = () => handleDragEnd();
 
   // Touch events
-  const onTouchStart = (e: React.TouchEvent) => handleDragStart(e.touches[0].clientX);
-  const onTouchMove = (e: React.TouchEvent) => handleDragMove(e.touches[0].clientX);
+  const onTouchStart = (e: React.TouchEvent) =>
+    handleDragStart(e.touches[0].clientX);
+  const onTouchMove = (e: React.TouchEvent) =>
+    handleDragMove(e.touches[0].clientX);
   const onTouchEnd = () => handleDragEnd();
 
   const enter360 = () => {
@@ -173,7 +191,14 @@ function Product360Viewer({
                 border: "1px solid rgba(185,149,69,0.35)",
               }}
             >
-              <span className="text-[18px]" style={{ animation: isAutoRotating ? "spin360 2s linear infinite" : "none" }}>
+              <span
+                className="text-[18px]"
+                style={{
+                  animation: isAutoRotating
+                    ? "spin360 2s linear infinite"
+                    : "none",
+                }}
+              >
                 ↻
               </span>
               <span className="text-[10px] tracking-[0.2em] uppercase text-white/70">
@@ -198,13 +223,13 @@ function Product360Viewer({
                 step="1"
                 value={currentIndex % angleImages.length}
                 aria-label={`Rotate ${name}`}
-                onChange={(event) => {
+                onChange={event => {
                   setCurrentIndex(Number(event.target.value));
                   setIsAutoRotating(false);
                 }}
-                onPointerDown={(event) => event.stopPropagation()}
-                onMouseDown={(event) => event.stopPropagation()}
-                onTouchStart={(event) => event.stopPropagation()}
+                onPointerDown={event => event.stopPropagation()}
+                onMouseDown={event => event.stopPropagation()}
+                onTouchStart={event => event.stopPropagation()}
                 className="w-40 accent-[#b99545]"
               />
               <div className="flex gap-1.5" aria-hidden="true">
@@ -213,7 +238,10 @@ function Product360Viewer({
                     key={i}
                     className="transition-all duration-200"
                     style={{
-                      width: i === currentIndex % angleImages.length ? "16px" : "6px",
+                      width:
+                        i === currentIndex % angleImages.length
+                          ? "16px"
+                          : "6px",
                       height: "6px",
                       borderRadius: "3px",
                       background:
@@ -246,7 +274,7 @@ function Product360Viewer({
             {/* Play / Pause */}
             <button
               type="button"
-              onClick={(e) => {
+              onClick={e => {
                 e.stopPropagation();
                 setIsAutoRotating(!isAutoRotating);
               }}
@@ -280,7 +308,9 @@ function Product360Viewer({
             }}
           >
             <span style={{ fontSize: "16px" }}>↻</span>
-            <span className="text-[10px] tracking-[0.2em] uppercase font-semibold">360° VIEW</span>
+            <span className="text-[10px] tracking-[0.2em] uppercase font-semibold">
+              360° VIEW
+            </span>
           </button>
         )}
       </div>
@@ -303,7 +333,12 @@ function Product360Viewer({
                 background: "rgba(255,240,230,0.02)",
               }}
             >
-              <img src={img} alt="" className="w-full h-full object-cover" style={{ borderRadius: "8px" }} />
+              <img
+                src={img}
+                alt=""
+                className="w-full h-full object-cover"
+                style={{ borderRadius: "8px" }}
+              />
             </button>
           ))}
 
@@ -316,11 +351,17 @@ function Product360Viewer({
               style={{
                 border: "1px solid rgba(185,149,69,0.35)",
                 borderRadius: "10px",
-                background: "linear-gradient(135deg, rgba(185,149,69,0.08), rgba(185,149,69,0.05))",
+                background:
+                  "linear-gradient(135deg, rgba(185,149,69,0.08), rgba(185,149,69,0.05))",
               }}
             >
-              <span style={{ fontSize: "18px", color: "rgba(21,36,61,0.55)" }}>↻</span>
-              <span className="text-[8px] tracking-wider uppercase" style={{ color: "rgba(185,149,69,0.8)" }}>
+              <span style={{ fontSize: "18px", color: "rgba(21,36,61,0.55)" }}>
+                ↻
+              </span>
+              <span
+                className="text-[8px] tracking-wider uppercase"
+                style={{ color: "rgba(185,149,69,0.8)" }}
+              >
                 8-angle 360°
               </span>
             </button>
@@ -344,10 +385,11 @@ export function ProductPage() {
   const { id } = useParams<{ id: string }>();
   const product = useQuery(
     api.products.getById,
-    id ? { productId: id as string } : "skip"
+    id ? { productId: id as string } : "skip",
   );
   const addToCart = useMutation(api.cart.addItem);
   const sessionId = useSessionId();
+  const allProducts = useQuery(api.products.list, {}) ?? [];
   const [selectedSize, setSelectedSize] = useState<string>("");
   const [selectedColor, setSelectedColor] = useState<string>("");
   const [added, setAdded] = useState(false);
@@ -367,7 +409,11 @@ export function ProductPage() {
     return (
       <div className="min-h-[80vh] flex items-center justify-center flex-col gap-4">
         <p style={{ color: "rgba(21,36,61,0.65)" }}>Product not found.</p>
-        <Link to="/shop" className="text-[12px] tracking-wider uppercase" style={{ color: "rgba(21,36,61,0.75)" }}>
+        <Link
+          to="/shop"
+          className="text-[12px] tracking-wider uppercase"
+          style={{ color: "rgba(21,36,61,0.75)" }}
+        >
           ← Back to Shop
         </Link>
       </div>
@@ -395,7 +441,10 @@ export function ProductPage() {
     const seen: string[] = [];
     for (const variant of (product.printfulVariants || []) as any[]) {
       const color = variant?.color;
-      if (color && !seen.some((c) => c.toLowerCase() === String(color).toLowerCase())) {
+      if (
+        color &&
+        !seen.some(c => c.toLowerCase() === String(color).toLowerCase())
+      ) {
         seen.push(String(color));
       }
     }
@@ -406,7 +455,8 @@ export function ProductPage() {
   const variantForSize = (size: string, color?: string) =>
     (product.printfulVariants || []).find((variant: any) => {
       const variantSize = variant.size || variant.name?.split(" / ").pop();
-      const sizeMatches = cleanSizeLabel(variantSize || "") === cleanSizeLabel(size);
+      const sizeMatches =
+        cleanSizeLabel(variantSize || "") === cleanSizeLabel(size);
       if (!sizeMatches) return false;
       if (!hasColorAxis) return true;
       const wanted = color ?? selectedColor;
@@ -417,9 +467,9 @@ export function ProductPage() {
     const variant = variantForSize(size);
     return Boolean(
       variant?.id &&
-      variant?.is_ignored !== true &&
-      variant?.availability_status !== "out_of_stock" &&
-      variant?.availability_status !== "discontinued",
+        variant?.is_ignored !== true &&
+        variant?.availability_status !== "out_of_stock" &&
+        variant?.availability_status !== "discontinued",
     );
   };
   const deliveryStart = new Date();
@@ -438,298 +488,259 @@ export function ProductPage() {
 
   return (
     <>
-    <SEO
-      title={productSeo.title}
-      description={productSeo.description}
-      image={product.images?.[0]}
-      url={`/product/${product._id}`}
-      type="product"
-      jsonLd={[productJsonLd, breadcrumbLd]}
-    />
-    <div className="max-w-6xl mx-auto px-6 lg:px-12 py-12">
-      {/* Breadcrumb */}
-      <div className="mb-8">
-        <Link
-          to="/shop"
-          className="text-[11px] tracking-[0.15em] uppercase transition-colors"
-          style={{ color: "rgba(21,36,61,0.52)" }}
-        >
-          ← Back to Collection
-        </Link>
-      </div>
-
-      <div className="grid md:grid-cols-2 gap-12">
-        {/* 360° Image Viewer */}
-        <Product360Viewer
-          images={product.images || []}
-          rotationImages={
-            product.rotationImages?.length === 8
-              ? product.rotationImages
-              : getProductRotation(product.name)
-          }
-          name={product.name}
-        />
-
-        {/* Product Info */}
-        <div className="flex flex-col">
-          <p className="text-[10px] tracking-[0.3em] uppercase mb-2" style={{ color: "rgba(21,36,61,0.55)" }}>
-            {product.category}
-          </p>
-          <h1
-            className="text-3xl md:text-4xl font-light mb-4"
-            style={{ fontFamily: "var(--font-display)", color: "#15243d" }}
+      <SEO
+        title={productSeo.title}
+        description={productSeo.description}
+        image={product.images?.[0]}
+        url={`/product/${product._id}`}
+        type="product"
+        jsonLd={[productJsonLd, breadcrumbLd]}
+      />
+      <div className="px-4 md:px-0">
+        <div className="mb-4 px-6 pt-4">
+          <Link
+            to="/shop"
+            className="text-[11px] tracking-[0.15em] uppercase"
+            style={{ color: "var(--mute)" }}
           >
-            {product.name}
-          </h1>
-          <p className="text-2xl mb-6" style={{ color: "rgba(21,36,61,0.88)" }}>
-            ${(product.price / 100).toFixed(2)}
-          </p>
+            ← Back to Collection
+          </Link>
+        </div>
 
-          {/* ── Details / Fit Guide Section ── */}
-          <div
-            style={{
-              background: activeTab === "fit"
-                ? "linear-gradient(165deg, rgba(245,238,230,0.97), rgba(235,228,220,0.95))"
-                : "linear-gradient(165deg, rgba(245,238,230,0.06), rgba(235,228,220,0.03))",
-              borderRadius: "16px",
-              border: activeTab === "fit"
-                ? "1px solid rgba(200,180,160,0.3)"
-                : "1px solid rgba(21,36,61,0.12)",
-              padding: "0",
-              marginBottom: "24px",
-              transition: "all 0.35s ease",
-              boxShadow: activeTab === "fit"
-                ? "0 8px 40px rgba(185,149,69,0.10), 0 2px 12px rgba(0,0,0,0.1)"
-                : "none",
-              overflow: "hidden",
-            }}
-          >
-            {/* Tab buttons */}
-            <div className="flex gap-0" style={{ borderBottom: activeTab === "fit" ? "1px solid rgba(185,149,69,0.45)" : "1px solid rgba(21,36,61,0.10)" }}>
-              <button
-                type="button"
-                onClick={() => setActiveTab("details")}
-                className="flex-1 py-3.5 text-[11px] tracking-[0.2em] uppercase font-bold transition-all relative"
-                style={{
-                  color: activeTab === "details"
-                    ? (activeTab === "fit" ? "rgba(30,25,20,0.8)" : "#15243d")
-                    : (activeTab === "fit" ? "rgba(30,25,20,0.35)" : "rgba(21,36,61,0.5)"),
-                  background: "transparent",
-                  border: "none",
-                  cursor: "pointer",
-                }}
-              >
-                Details
-                {activeTab === "details" && (
-                  <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-3/4 h-[2.5px]"
-                    style={{ background: "linear-gradient(90deg, #b99545, #d9b876)", borderRadius: "2px" }} />
-                )}
-              </button>
-              <button
-                type="button"
-                onClick={() => setActiveTab("fit")}
-                className="flex-1 py-3.5 text-[11px] tracking-[0.2em] uppercase font-bold transition-all relative flex items-center justify-center gap-1.5"
-                style={{
-                  color: activeTab === "fit"
-                    ? "rgba(30,25,20,0.9)"
-                    : "rgba(21,36,61,0.5)",
-                  background: "transparent",
-                  border: "none",
-                  cursor: "pointer",
-                }}
-              >
-                <span>Fit Guide</span>
-                <span className="text-[9px]" style={{ color: activeTab === "fit" ? "rgba(185,149,69,0.95)" : "rgba(185,149,69,0.85)" }}>✦</span>
-                {activeTab === "fit" && (
-                  <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-3/4 h-[2.5px]"
-                    style={{ background: "linear-gradient(90deg, #b99545, #d9b876)", borderRadius: "2px" }} />
-                )}
-              </button>
+        <div className="grid md:grid-cols-[1.15fr_.85fr] min-h-[70vh]">
+          <div className="relative bg-[#111] min-h-[70vh] px-4 py-6">
+            <div className="absolute left-6 top-7 z-[3]">
+              <div className="bib">
+                <div className="holes">
+                  <i />
+                  <i />
+                  <i />
+                </div>
+                <p className="serif-quiet text-sm">Live SKU</p>
+                <p className="num">01</p>
+                <p className="text-[11px] tracking-[0.16em] uppercase font-bold">
+                  {product.name}
+                </p>
+              </div>
             </div>
+            <Product360Viewer
+              images={product.images || []}
+              rotationImages={
+                product.rotationImages?.length === 8
+                  ? product.rotationImages
+                  : getProductRotation(product.name)
+              }
+              name={product.name}
+            />
+          </div>
 
-            {/* Tab Content */}
-            <div style={{ padding: activeTab === "fit" ? "20px 16px" : "16px 16px" }}>
+          <div className="px-8 py-8 flex flex-col">
+            <p className="clash text-6xl">{styleKeyFromName(product.name)}</p>
+            <p className="serif-quiet text-xl mt-2">Made on demand.</p>
+            <p
+              className="clash mt-4"
+              style={{
+                fontSize: 64,
+                color: "var(--pist)",
+                letterSpacing: "-0.06em",
+              }}
+            >
+              {formatPrice(product.price)}
+            </p>
+
+            {(() => {
+              const style = styleKeyFromName(product.name);
+              const siblings = allProducts.filter(
+                (p: any) => styleKeyFromName(p.name) === style,
+              );
+              const useSiblings = !hasColorAxis && siblings.length > 1;
+              if (hasColorAxis) {
+                return (
+                  <div className="mt-6">
+                    <p
+                      className="label-lock mb-2"
+                      style={{ color: "var(--pist)" }}
+                    >
+                      Select a colour
+                    </p>
+                    <div className="flex gap-2.5 flex-wrap">
+                      {colorOptions.map((color: string) => (
+                        <button
+                          type="button"
+                          key={color}
+                          aria-label={color}
+                          className={`snap ${selectedColor === color ? "on" : ""}`}
+                          style={{ background: snapHex(color) }}
+                          onClick={() => setSelectedColor(color)}
+                        />
+                      ))}
+                    </div>
+                    <p className="serif-quiet mt-3 text-[15px]">
+                      {selectedColor || colorFromName(product.name) || "Colour"}{" "}
+                      · {colorOptions.length} live SKUs
+                    </p>
+                  </div>
+                );
+              }
+              if (useSiblings) {
+                return (
+                  <div className="mt-6">
+                    <p
+                      className="label-lock mb-2"
+                      style={{ color: "var(--pist)" }}
+                    >
+                      Select a colour
+                    </p>
+                    <div className="flex gap-2.5 flex-wrap">
+                      {siblings.map((item: any) => {
+                        const color = colorFromName(item.name) || item.name;
+                        return (
+                          <Link
+                            key={item._id}
+                            to={`/product/${item._id}`}
+                            aria-label={color}
+                            className={`snap ${item._id === product._id ? "on" : ""}`}
+                            style={{ background: snapHex(color) }}
+                          />
+                        );
+                      })}
+                    </div>
+                    <p className="serif-quiet mt-3 text-[15px]">
+                      {product.name} · {siblings.length} live SKUs. Color is the
+                      SKU.
+                    </p>
+                  </div>
+                );
+              }
+              return null;
+            })()}
+
+            {product.sizes?.length > 0 && (
+              <div className="mt-6">
+                <p
+                  className="label-lock mb-1"
+                  style={{ color: "var(--lilac)" }}
+                >
+                  Select a size
+                </p>
+                <div className="size-ring">
+                  {product.sizes.slice(0, 6).map((raw: string, i: number) => {
+                    const available = isSizeAvailable(raw);
+                    return (
+                      <button
+                        type="button"
+                        key={raw}
+                        className={selectedSize === raw ? "on" : ""}
+                        style={{
+                          ["--i" as string]: i,
+                          opacity: available ? 1 : 0.35,
+                        }}
+                        onClick={() => available && setSelectedSize(raw)}
+                        disabled={!available}
+                      >
+                        {cleanSizeLabel(raw)}
+                      </button>
+                    );
+                  })}
+                  <div className="core">Size</div>
+                </div>
+              </div>
+            )}
+
+            <div
+              className="mt-4 mb-4"
+              style={{
+                background: activeTab === "fit" ? "#F4EFE8" : "transparent",
+                border: "1px solid rgba(247,240,230,0.16)",
+                padding: 12,
+              }}
+            >
+              <div className="flex gap-2 mb-3">
+                <button
+                  type="button"
+                  className={`chip ${activeTab === "details" ? "on" : ""}`}
+                  onClick={() => setActiveTab("details")}
+                >
+                  Details
+                </button>
+                <button
+                  type="button"
+                  className={`chip pist ${activeTab === "fit" ? "on" : ""}`}
+                  onClick={() => setActiveTab("fit")}
+                >
+                  Fit guide
+                </button>
+              </div>
               {activeTab === "details" ? (
-                <p className="text-[14px] leading-relaxed whitespace-pre-line" style={{ color: "rgba(21,36,61,0.55)" }}>
+                <p
+                  className="text-[14px] leading-relaxed whitespace-pre-line"
+                  style={{ color: "rgba(247,240,230,0.7)" }}
+                >
                   {product.description}
                 </p>
               ) : (
                 <ProductFitGuide
-                  product={{ name: product.name, category: product.category, sizes: product.sizes || [], images: product.images || [] }}
-                  externalSize={selectedSize ? cleanSizeLabel(selectedSize) : undefined}
-                  onSizeSelect={(size) => {
-                    const match = product.sizes?.find((s: string) => cleanSizeLabel(s) === size);
+                  product={{
+                    name: product.name,
+                    category: product.category,
+                    sizes: product.sizes || [],
+                    images: product.images || [],
+                  }}
+                  externalSize={
+                    selectedSize ? cleanSizeLabel(selectedSize) : undefined
+                  }
+                  onSizeSelect={s => {
+                    const match = product.sizes?.find(
+                      (x: string) => cleanSizeLabel(x) === s,
+                    );
                     if (match) setSelectedSize(match);
                   }}
                   lightMode={true}
                 />
               )}
             </div>
-          </div>
 
-          {/* Colour Selector — only for listings with more than one colourway */}
-          {hasColorAxis && (
-            <div className="mb-8">
-              <p
-                className="text-[10px] tracking-[0.25em] uppercase font-semibold mb-3"
-                style={{ color: "rgba(21,36,61,0.6)" }}
-              >
-                COLOUR{selectedColor ? ` — ${selectedColor}` : ""}
-              </p>
-              <div className="flex flex-wrap gap-2">
-                {colorOptions.map((color: string) => (
-                  <button
-                    type="button"
-                    key={color}
-                    onClick={() => setSelectedColor(color)}
-                    className="px-4 py-2 text-[11px] tracking-wider uppercase transition-all"
-                    style={{
-                      color: selectedColor === color ? "#ffffff" : "rgba(21,36,61,0.65)",
-                      background: selectedColor === color ? "#15243d" : "transparent",
-                      border:
-                        selectedColor === color
-                          ? "1px solid #15243d"
-                          : "1px solid rgba(21,36,61,0.16)",
-                      borderRadius: "10px",
-                      cursor: "pointer",
-                    }}
-                    title={`Select ${color}`}
-                  >
-                    {color}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Size Selector */}
-          {product.sizes?.length > 0 && (
-            <div className="mb-8">
-              <p
-                className="text-[10px] tracking-[0.25em] uppercase font-semibold mb-3"
-                style={{ color: "rgba(21,36,61,0.6)" }}
-              >
-                SIZE
-              </p>
-              <div className="flex flex-wrap gap-2">
-                {product.sizes.map((size: string) => {
-                  const available = isSizeAvailable(size);
-                  return (
-                  <button
-                    type="button"
-                    key={size}
-                    onClick={() => available && setSelectedSize(size)}
-                    disabled={!available}
-                    className="px-4 py-2 text-[11px] tracking-wider uppercase transition-all"
-                    style={{
-                      color: selectedSize === size ? "#ffffff" : "rgba(21,36,61,0.65)",
-                      background: selectedSize === size ? "#15243d" : "transparent",
-                      border:
-                        selectedSize === size
-                          ? "1px solid #15243d"
-                          : "1px solid rgba(21,36,61,0.16)",
-                      borderRadius: "10px",
-                      opacity: available ? 1 : 0.32,
-                      textDecoration: available ? "none" : "line-through",
-                      cursor: available ? "pointer" : "not-allowed",
-                    }}
-                    title={available ? `Select ${cleanSizeLabel(size)}` : "Currently unavailable"}
-                  >
-                    {cleanSizeLabel(size)}
-                  </button>
-                  );
-                })}
-              </div>
-              <p className="text-[9px] mt-2" style={{ color: "rgba(21,36,61,0.4)" }}>
-                Unavailable variants cannot be added to cart.
-              </p>
-            </div>
-          )}
-
-          <div className="mb-4 px-4 py-3 rounded-xl" style={{ background: "rgba(16,185,129,0.045)", border: "1px solid rgba(16,185,129,0.13)" }}>
-            <p className="text-[10px] tracking-[0.13em] uppercase font-semibold" style={{ color: "rgba(22,163,74,0.9)" }}>
+            <p
+              className="text-[10px] tracking-[0.13em] uppercase font-semibold"
+              style={{ color: "var(--pist)" }}
+            >
               Estimated delivery {deliveryWindow}
             </p>
-            <p className="text-[10px] mt-1" style={{ color: "rgba(21,36,61,0.48)" }}>
-              Includes 2–5 business days to make your piece plus standard tracked shipping. Final options are calculated for your address at checkout.
+            <p
+              className="text-[10px] mt-1 mb-4"
+              style={{ color: "rgba(247,240,230,0.48)" }}
+            >
+              Includes 2–5 business days to make your piece plus standard
+              tracked shipping. Final options are calculated for your address at
+              checkout.
+            </p>
+
+            <button
+              type="button"
+              onClick={handleAddToCart}
+              disabled={
+                (product.sizes?.length > 0 && !selectedSize) ||
+                (hasColorAxis && !selectedColor)
+              }
+              className="cta-pist w-full text-center"
+            >
+              {added
+                ? "Added to cart"
+                : hasColorAxis && !selectedColor
+                  ? "Select a colour"
+                  : product.sizes?.length > 0 && !selectedSize
+                    ? "Select a size"
+                    : "Add to cart"}
+            </button>
+            <p className="serif-quiet mt-4 text-[15px] opacity-80">
+              Made on demand · Free shipping · Easy returns
             </p>
           </div>
-          <p className="text-[10px] leading-relaxed mb-4" style={{ color: "rgba(21,36,61,0.42)" }}>
-            {typeof navigator !== "undefined" && !navigator.language.toLowerCase().startsWith("en-us")
-              ? "Fulfilled from the closest available production facility when possible. International orders may be split into multiple tracked packages; local customs duties or import taxes may apply."
-              : "Fulfilled from the closest available production facility when possible. Some orders may arrive in multiple tracked packages."}
-          </p>
-
-          {/* Add to Cart */}
-          <button
-            type="button"
-            onClick={handleAddToCart}
-            disabled={(product.sizes?.length > 0 && !selectedSize) || (hasColorAxis && !selectedColor)}
-            className="w-full py-4 text-[12px] tracking-[0.25em] uppercase font-bold text-white transition-all duration-300 disabled:opacity-30 disabled:cursor-not-allowed"
-            style={{
-              background: added
-                ? "linear-gradient(135deg, #10b981, #059669)"
-                : "linear-gradient(135deg, #15243d 0%, #2a3d5c 100%)",
-              backgroundSize: "200% 100%",
-              border: "none",
-              borderRadius: "12px",
-              boxShadow: added
-                ? "0 4px 20px rgba(16,185,129,0.3)"
-                : "0 6px 24px rgba(21,36,61,0.22)",
-              letterSpacing: "0.25em",
-            }}
-          >
-            {added
-              ? "✓ ADDED TO CART"
-              : hasColorAxis && !selectedColor
-                ? "SELECT A COLOUR"
-                : product.sizes?.length > 0 && !selectedSize
-                  ? "SELECT A SIZE"
-                  : "ADD TO CART"}
-          </button>
-
-          {/* Trust signals */}
-          {/* Made for You callout */}
-          <div className="flex items-start gap-3 mt-6 p-4" style={{
-            background: "rgba(185,149,69,0.06)",
-            border: "1px solid rgba(185,149,69,0.10)",
-            borderRadius: "12px",
-          }}>
-            <span className="text-base shrink-0 mt-0.5">✦</span>
-            <div>
-              <p className="text-[11px] font-semibold tracking-[0.1em] uppercase mb-1" style={{ color: "rgba(185,149,69,0.95)" }}>Made Exclusively for You</p>
-              <p className="text-[10px] leading-relaxed" style={{ color: "rgba(21,36,61,0.5)" }}>
-                This piece is crafted on demand — produced the moment you order, just for you. No mass production, no waste. Production takes 2–5 business days.
-              </p>
-            </div>
-          </div>
-
-          <div className="flex gap-6 mt-6 pt-5" style={{ borderTop: "1px solid rgba(21,36,61,0.12)" }}>
-            <div className="flex items-center gap-2">
-              <span className="text-sm">📦</span>
-              <span className="text-[10px]" style={{ color: "rgba(21,36,61,0.52)" }}>
-                Free Shipping
-              </span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="text-sm">🪡</span>
-              <span className="text-[10px]" style={{ color: "rgba(21,36,61,0.52)" }}>
-                Made to Order
-              </span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="text-sm">🔒</span>
-              <span className="text-[10px]" style={{ color: "rgba(21,36,61,0.52)" }}>
-                Secure Checkout
-              </span>
-            </div>
-          </div>
         </div>
-      </div>
 
-      {/* Complete the Look */}
-      <CompleteTheLook currentProduct={product} />
-    </div>
+        {/* Complete the Look */}
+        <CompleteTheLook currentProduct={product} />
+      </div>
     </>
   );
 }

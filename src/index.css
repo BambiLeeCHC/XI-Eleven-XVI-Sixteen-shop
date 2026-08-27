@@ -4,6 +4,521 @@
 /* Full brand + Journal + True North stylesheet (last known-good commit). */
 @import url("https://cdn.jsdelivr.net/gh/BambiLeeCHC/XI-Eleven-XVI-Sixteen-shop@a36848403926695ca8b16a610927377fdacc9845/src/index.css");
 
+@theme {
+  --color-field: #0B0B0C;
+  --color-cream: #F7F0E6;
+  --color-pist: #D8F0C4;
+  --color-powder: #CDE4F5;
+  --color-blush: #F4CDD8;
+  --color-lilac: #E4D4F4;
+  --color-mute: #C9BFB3;
+  --font-clash: "Clash Display", sans-serif;
+  --font-serif-quiet: "Fraunces", "Cormorant Garamond", Georgia, serif;
+  --font-mark: "Syne", sans-serif;
+  --font-body: "Satoshi", "Inter", sans-serif;
+}
+
+:root {
+  --field: #0B0B0C;
+  --cream: #F7F0E6;
+  --pist: #D8F0C4;
+  --powder: #CDE4F5;
+  --blush: #F4CDD8;
+  --lilac: #E4D4F4;
+  --mute: #C9BFB3;
+  --font-display: "Clash Display", sans-serif;
+  --font-serif-quiet: "Fraunces", "Cormorant Garamond", Georgia, serif;
+  --font-mark: "Syne", sans-serif;
+}
+
+html,
+body,
+#root {
+  background: var(--field);
+  color: var(--cream);
+}
+
+body {
+  font-family: "Satoshi", "Inter", sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+.store-shell {
+  background: var(--field);
+  color: var(--cream);
+  min-height: 100vh;
+}
+
+.store-main {
+  background: var(--field);
+  color: var(--cream);
+}
+
+.font-clash,
+.clash {
+  font-family: "Clash Display", sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.045em;
+  line-height: 0.86;
+  text-transform: uppercase;
+}
+
+.font-serif-quiet,
+.serif-quiet {
+  font-family: "Fraunces", "Cormorant Garamond", Georgia, serif;
+  font-style: italic;
+  font-weight: 500;
+}
+
+.shop-mark {
+  font-family: "Syne", sans-serif;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  font-size: 22px;
+  line-height: 1;
+  text-transform: lowercase;
+}
+
+.label-lock {
+  font-size: 10px;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: var(--mute);
+}
+
+.seal {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: #0B0B0C;
+  border: 2px solid var(--pist);
+  padding: 10px 16px 10px 10px;
+  transform: rotate(-1.5deg);
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 2px solid #F7F0E6;
+  background: #0B0B0C;
+  padding: 9px 13px;
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: var(--cream);
+  transform: rotate(var(--r, 0deg));
+  transition: background 0.15s ease, color 0.15s ease;
+}
+.chip.pist { border-color: var(--pist); color: var(--pist); }
+.chip.powder { border-color: var(--powder); color: var(--powder); }
+.chip.blush { border-color: var(--blush); color: var(--blush); }
+.chip.lilac { border-color: var(--lilac); color: var(--lilac); }
+.chip.on { background: var(--cream); color: #0B0B0C; border-color: var(--cream); }
+.chip:hover { background: var(--cream); color: #0B0B0C; }
+
+.hangtag {
+  position: relative;
+  padding: 18px 14px 12px;
+  background: var(--blush);
+  color: #2A1218;
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  font-weight: 800;
+  transform: rotate(4deg);
+  display: inline-block;
+}
+.hangtag::before {
+  content: "";
+  position: absolute;
+  top: 6px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #0B0B0C;
+  box-shadow: 0 0 0 2px #2A1218;
+}
+
+.cta-pist {
+  background: var(--pist);
+  color: #142010;
+  padding: 18px 26px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-size: 13px;
+  font-weight: 800;
+  box-shadow: 6px 6px 0 var(--lilac);
+  display: inline-block;
+  border: 0;
+  cursor: pointer;
+}
+.cta-pist:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.cta-ghost {
+  background: transparent;
+  color: var(--powder);
+  border: 2px solid var(--powder);
+  padding: 16px 22px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-size: 12px;
+  font-weight: 800;
+  display: inline-block;
+}
+
+.kicker-lock {
+  display: inline-block;
+  background: var(--blush);
+  color: #2A1218;
+  padding: 6px 10px;
+  font-size: 11px;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  font-weight: 800;
+  transform: rotate(-1deg);
+}
+
+.bib {
+  background: #fff;
+  color: #111;
+  padding: 12px 14px;
+  transform: rotate(-6deg);
+  display: inline-block;
+  box-shadow: 8px 10px 0 var(--blush);
+}
+.bib .holes {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 8px 8px;
+}
+.bib .holes i {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #0B0B0C;
+  display: block;
+}
+.bib .num {
+  font-family: "Clash Display", sans-serif;
+  font-weight: 700;
+  font-size: 56px;
+  letter-spacing: -0.06em;
+  line-height: 0.8;
+}
+
+.price-tag {
+  background: var(--powder);
+  color: #102028;
+  padding: 26px 18px 16px;
+  transform: rotate(5deg);
+  min-width: 120px;
+  text-align: center;
+  box-shadow: 8px 10px 0 var(--pist);
+  display: inline-block;
+}
+.price-tag::before {
+  content: "";
+  display: block;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--field);
+  margin: 0 auto 8px;
+}
+.price-tag .p {
+  font-family: "Clash Display", sans-serif;
+  font-weight: 700;
+  font-size: 52px;
+  letter-spacing: -0.06em;
+  line-height: 0.9;
+}
+
+.snap {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 3px solid #fff;
+  display: inline-block;
+  cursor: pointer;
+}
+.snap.on {
+  box-shadow: 0 0 0 3px var(--pist), 0 0 0 6px #0B0B0C;
+}
+
+.size-ring {
+  width: 128px;
+  height: 128px;
+  border-radius: 50%;
+  border: 4px solid var(--lilac);
+  position: relative;
+  background: #0B0B0C;
+}
+.size-ring button,
+.size-ring span.size-tick {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-weight: 800;
+  transform: rotate(calc(var(--i) * 60deg)) translateY(-46px) rotate(calc(var(--i) * -60deg));
+  margin-left: -12px;
+  margin-top: -8px;
+  color: #888;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  padding: 0;
+}
+.size-ring button.on,
+.size-ring span.size-tick.on { color: var(--pist); }
+.size-ring .core {
+  position: absolute;
+  inset: 32px;
+  border-radius: 50%;
+  border: 2px solid var(--powder);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: "Fraunces", Georgia, serif;
+  font-style: italic;
+  font-size: 14px;
+  color: var(--powder);
+}
+
+.lock-steps {
+  display: grid;
+  grid-template-columns: 1fr;
+}
+@media (min-width: 768px) {
+  .lock-steps { grid-template-columns: 1fr 1fr 1fr; }
+}
+.lock-step {
+  padding: 48px 36px;
+  color: #0B0B0C;
+}
+.lock-step:nth-child(1) { background: var(--pist); }
+.lock-step:nth-child(2) { background: var(--powder); }
+.lock-step:nth-child(3) { background: var(--blush); }
+.lock-step .num {
+  font-family: "Syne", sans-serif;
+  font-weight: 800;
+  font-size: 18px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  opacity: 0.7;
+}
+.lock-step h3 {
+  font-family: "Fraunces", Georgia, serif;
+  font-weight: 700;
+  font-style: italic;
+  font-size: clamp(42px, 5vw, 68px);
+  line-height: 0.95;
+  margin: 14px 0 16px;
+}
+.lock-step p {
+  font-family: "Fraunces", Georgia, serif;
+  font-size: 20px;
+  line-height: 1.35;
+  max-width: 280px;
+}
+
+.ticker-lock {
+  overflow: hidden;
+  background: var(--pist);
+  color: #142010;
+}
+.ticker-lock-track {
+  display: flex;
+  gap: 2.2rem;
+  width: max-content;
+  animation: mq 32s linear infinite;
+  padding: 10px 0;
+}
+@keyframes mq {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+.ticker-lock .mq {
+  font-size: 12px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  font-weight: 800;
+}
+
+.fld-lock {
+  width: 100%;
+  background: #141210;
+  border: 1px solid rgba(247, 240, 230, 0.22);
+  color: var(--cream);
+  padding: 14px;
+  font-size: 14px;
+  font-family: inherit;
+  outline: none;
+}
+.fld-lock.light {
+  background: #fff;
+  border: 2px solid #0B0B0C;
+  color: #0B0B0C;
+}
+
+.hero-title-lock {
+  font-family: "Clash Display", sans-serif;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  word-spacing: 0.16em;
+  line-height: 1.05;
+  text-transform: uppercase;
+  font-size: clamp(36px, 5.6vw, 76px);
+  color: #F7F0E6;
+  -webkit-text-stroke: 2px #0B0B0C;
+  paint-order: stroke fill;
+  text-shadow: 0 8px 28px rgba(0,0,0,0.85), 0 2px 0 #0B0B0C, 0 0 42px rgba(0,0,0,0.55);
+  margin: 12px 0 8px;
+}
+.hero-sub-lock {
+  font-family: "Fraunces", "Cormorant Garamond", Georgia, serif;
+  font-style: italic;
+  font-weight: 500;
+  font-size: clamp(22px, 2.4vw, 34px);
+  letter-spacing: 0.01em;
+  color: #F7F0E6;
+  text-shadow: 0 6px 24px rgba(0,0,0,0.9), 0 1px 0 #0B0B0C;
+  margin: 0 0 16px;
+}
+
+.dial-lock {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  border: 4px solid var(--powder);
+  position: relative;
+  flex: 0 0 150px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: #0B0B0C;
+}
+.dial-lock::before,
+.dial-lock::after {
+  content: "";
+  position: absolute;
+  border-radius: 50%;
+}
+.dial-lock::before { inset: 12px; border: 2px solid var(--blush); }
+.dial-lock::after { inset: 26px; border: 2px solid var(--lilac); }
+.dial-lock .n {
+  font-family: "Clash Display", sans-serif;
+  font-weight: 700;
+  font-size: 42px;
+  letter-spacing: -0.05em;
+  line-height: 1;
+  color: var(--pist);
+}
+
+.clock-dial {
+  border: 2px solid var(--cream);
+  padding: 22px 16px;
+  min-height: 140px;
+}
+.clock-dial.pist { background: var(--pist); color: #142010; border-color: #142010; }
+.clock-dial.powder { background: var(--powder); color: #102028; border-color: #102028; }
+.clock-dial.blush { background: var(--blush); color: #2A1218; border-color: #2A1218; }
+.clock-dial.lilac { background: var(--lilac); color: #1A1020; border-color: #1A1020; }
+.clock-dial .n {
+  font-family: "Clash Display", sans-serif;
+  font-weight: 700;
+  font-size: 36px;
+  letter-spacing: -0.05em;
+  line-height: 0.9;
+}
+
+.tarot-card {
+  position: absolute;
+  width: 150px;
+  height: 250px;
+  border-radius: 10px;
+  border: 1px solid rgba(247,240,230,0.35);
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-shadow: 0 24px 40px rgba(0,0,0,0.4);
+}
+.tarot-card.c1 { left: 8%; top: 24px; transform: rotate(-12deg); background: linear-gradient(180deg, #2A2438, #141018); color: var(--lilac); }
+.tarot-card.c2 { left: 34%; top: 0; transform: rotate(1deg); background: linear-gradient(180deg, #F7F0E6, #E8D9C4); color: #0B0B0C; z-index: 3; width: 168px; height: 276px; }
+.tarot-card.c3 { left: 62%; top: 28px; transform: rotate(11deg); background: linear-gradient(180deg, #1A2830, #0B0B0C); color: var(--powder); }
+
+/* Guest header sits on field, not the live sky bar */
+.store-sky-nav,
+.store-announcement { display: none !important; }
+
+.guest-header {
+  background: var(--field);
+  color: var(--cream);
+}
+
+.guest-footer {
+  background: var(--field);
+  color: var(--cream);
+  border-top: 1px solid rgba(247,240,230,0.12);
+}
+
+/* True North locked chrome (overrides collage hero without touching entitlement) */
+.tn-hero-lock {
+  padding: 28px 8px 20px;
+}
+.chart-quicknav.lock-sub {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 0 0 12px;
+  background: transparent;
+  border: 0;
+}
+.chart-quicknav.lock-sub .chart-quicknav__item,
+.chart-quicknav.lock-sub a {
+  display: inline-flex;
+  align-items: center;
+  border: 2px solid var(--cream);
+  background: #0B0B0C;
+  padding: 9px 13px;
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: var(--cream);
+  text-decoration: none;
+}
+.chart-quicknav.lock-sub .chart-quicknav__item.is-active,
+.chart-quicknav.lock-sub a[aria-current="true"] {
+  background: var(--cream);
+  color: #0B0B0C;
+}
+
+.cta-pist-block {
+  background: var(--pist);
+  color: #142010;
+  width: 100%;
+  padding: 18px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-weight: 800;
+  box-shadow: 5px 5px 0 var(--lilac);
+  border: 0;
+  cursor: pointer;
+}
+
 /* ── Long Read: portrait / mobile stacking + card grid ─────────────── */
 .long-read-panel {
   position: relative;
