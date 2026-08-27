@@ -162,113 +162,115 @@ export function ShopPage() {
           </p>
         </aside>
 
-        <div className="relative min-h-[92vh] overflow-hidden bg-black">
-          {sku?.images?.[0] ? (
-            <img
-              src={sku.images[0]}
-              alt={sku.name}
-              className="absolute inset-0 w-full h-full object-cover"
-              style={{ objectPosition: "center 18%" }}
-            />
-          ) : null}
+        <div className="flex flex-col min-h-[92vh] bg-black">
+          <div className="relative flex flex-1 items-center justify-center p-6">
+            {sku?.images?.[0] ? (
+              <img
+                src={sku.images[0]}
+                alt={sku.name}
+                className="max-h-[58vh] max-w-[560px] w-full object-contain"
+              />
+            ) : null}
+
+            {sku ? (
+              <>
+                <div className="bib absolute left-6 top-7 z-[3]">
+                  <div className="holes">
+                    <i />
+                    <i />
+                    <i />
+                  </div>
+                  <p className="text-[11px] tracking-[0.2em] uppercase font-extrabold">
+                    {displayProductName(sku.name)}
+                  </p>
+                </div>
+                <div className="price-tag absolute right-7 top-9 z-[3]">
+                  <p className="serif-quiet">Hang</p>
+                  <p className="p">{formatPrice(sku.price)}</p>
+                </div>
+              </>
+            ) : (
+              <div className="serif-quiet">No looks in this filter.</div>
+            )}
+          </div>
 
           {sku ? (
-            <>
-              <div className="bib absolute left-6 top-7 z-[3]">
-                <div className="holes">
-                  <i />
-                  <i />
-                  <i />
+            <div
+              className="relative grid gap-4 items-end m-5"
+              style={{
+                gridTemplateColumns: "1.2fr auto auto",
+                background: "#0B0B0C",
+                border: "3px solid var(--cream)",
+                padding: "16px 18px",
+              }}
+            >
+              <div>
+                <p
+                  className="label-lock mb-2"
+                  style={{ color: "var(--pist)" }}
+                >
+                  Select a colour
+                </p>
+                <div className="flex gap-2.5 flex-wrap">
+                  {current?.items.map((item: any) => {
+                    const color = colorFromName(item.name) || item.name;
+                    const on = item._id === sku._id;
+                    return (
+                      <button
+                        type="button"
+                        key={item._id}
+                        aria-label={color}
+                        className={`snap ${on ? "on" : ""}`}
+                        style={{ background: snapHex(color) }}
+                        onClick={() => setSkuId(item._id)}
+                      />
+                    );
+                  })}
                 </div>
-                <p className="text-[11px] tracking-[0.2em] uppercase font-extrabold">
+                <p className="serif-quiet mt-3 text-[15px]">
                   {displayProductName(sku.name)}
+                  {current?.items.length > 1
+                    ? ` · ${colorCountLabel(current.items.length)}`
+                    : ""}
                 </p>
               </div>
-              <div className="price-tag absolute right-7 top-9 z-[3]">
-                <p className="serif-quiet">Hang</p>
-                <p className="p">{formatPrice(sku.price)}</p>
-              </div>
-              <div
-                className="absolute left-5 right-5 bottom-5 z-[3] grid gap-4 items-end"
-                style={{
-                  gridTemplateColumns: "1.2fr auto auto",
-                  background: "#0B0B0C",
-                  border: "3px solid var(--cream)",
-                  padding: "16px 18px",
-                }}
-              >
-                <div>
-                  <p
-                    className="label-lock mb-2"
-                    style={{ color: "var(--pist)" }}
-                  >
-                    Select a colour
-                  </p>
-                  <div className="flex gap-2.5 flex-wrap">
-                    {current?.items.map((item: any) => {
-                      const color = colorFromName(item.name) || item.name;
-                      const on = item._id === sku._id;
+              <div>
+                <p
+                  className="label-lock mb-2 text-center"
+                  style={{ color: "var(--lilac)" }}
+                >
+                  Select a size
+                </p>
+                <div className="size-ring mx-auto">
+                  {(sku.sizes || ["XS", "S", "M", "L", "XL"])
+                    .slice(0, 6)
+                    .map((label: string, i: number) => {
+                      const clean =
+                        String(label).split("/").pop()?.trim() || label;
                       return (
                         <button
                           type="button"
-                          key={item._id}
-                          aria-label={color}
-                          className={`snap ${on ? "on" : ""}`}
-                          style={{ background: snapHex(color) }}
-                          onClick={() => setSkuId(item._id)}
-                        />
+                          key={label}
+                          className={size === label ? "on" : ""}
+                          style={{ ["--i" as string]: i }}
+                          onClick={() => setSize(label)}
+                        >
+                          {clean}
+                        </button>
                       );
                     })}
-                  </div>
-                  <p className="serif-quiet mt-3 text-[15px]">
-                    {displayProductName(sku.name)}
-                    {current?.items.length > 1
-                      ? ` · ${colorCountLabel(current.items.length)}`
-                      : ""}
-                  </p>
+                  <div className="core">Size</div>
                 </div>
-                <div>
-                  <p
-                    className="label-lock mb-2 text-center"
-                    style={{ color: "var(--lilac)" }}
-                  >
-                    Select a size
-                  </p>
-                  <div className="size-ring mx-auto">
-                    {(sku.sizes || ["XS", "S", "M", "L", "XL"])
-                      .slice(0, 6)
-                      .map((label: string, i: number) => {
-                        const clean =
-                          String(label).split("/").pop()?.trim() || label;
-                        return (
-                          <button
-                            type="button"
-                            key={label}
-                            className={size === label ? "on" : ""}
-                            style={{ ["--i" as string]: i }}
-                            onClick={() => setSize(label)}
-                          >
-                            {clean}
-                          </button>
-                        );
-                      })}
-                    <div className="core">Size</div>
-                  </div>
-                </div>
-                <Link
-                  to={`/product/${sku._id}`}
-                  className="cta-pist text-center"
-                  style={{ boxShadow: "5px 5px 0 var(--blush)" }}
-                >
-                  Add to cart
-                </Link>
               </div>
-            </>
-          ) : (
-            <div className="absolute inset-0 flex items-center justify-center serif-quiet">
-              No looks in this filter.
+              <Link
+                to={`/product/${sku._id}`}
+                className="cta-pist text-center"
+                style={{ boxShadow: "5px 5px 0 var(--blush)" }}
+              >
+                Add to cart
+              </Link>
             </div>
-          )}
+          ) : null}
         </div>
       </section>
 

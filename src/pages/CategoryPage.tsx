@@ -80,23 +80,22 @@ export function CategoryPage({ gender }: { gender: Gender }) {
               return (
                 <article
                   key={group.key}
-                  className="relative min-h-[480px] overflow-hidden bg-neutral-900"
+                  className="flex flex-col bg-neutral-900"
                 >
                   <Link
                     to={`/product/${hero._id}`}
-                    className="absolute inset-0 block"
+                    className="flex items-center justify-center p-4"
                   >
                     {hero.images?.[0] ? (
                       <img
                         src={hero.images[0]}
                         alt={group.key}
-                        className="absolute inset-0 w-full h-full object-cover"
-                        style={{ objectPosition: "center 18%" }}
+                        className="max-h-[340px] w-full object-contain"
                       />
                     ) : null}
                   </Link>
                   <div
-                    className="absolute left-4 right-4 bottom-4 z-[2]"
+                    className="relative mx-4 mb-4"
                     style={{
                       background: "#0B0B0C",
                       border: "2px solid var(--cream)",

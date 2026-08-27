@@ -135,7 +135,7 @@ export function ProductHighlight({
 
   return (
     <section
-      className="grid md:grid-cols-[240px_1fr] min-h-[88vh]"
+      className="grid md:grid-cols-[240px_1fr] min-h-[72vh]"
       style={{ background: "var(--cream)", color: "#0B0B0C" }}
     >
       <aside
@@ -188,18 +188,22 @@ export function ProductHighlight({
         })}
       </aside>
 
-      <div className="relative min-h-[88vh] overflow-hidden bg-black">
-        {selected.images?.[0] ? (
-          <img
-            src={selected.images[0]}
-            alt={displayProductName(selected.name)}
-            className="absolute inset-0 w-full h-full object-cover"
-            style={{ objectPosition: "center 18%" }}
-          />
-        ) : null}
+      <div className="grid md:grid-cols-[minmax(0,1fr)_minmax(280px,1fr)] min-h-[72vh] items-stretch">
+        <div
+          className="flex items-center justify-center p-6"
+          style={{ background: "#111" }}
+        >
+          {selected.images?.[0] ? (
+            <img
+              src={selected.images[0]}
+              alt={displayProductName(selected.name)}
+              className="max-h-[62vh] max-w-[520px] w-full object-contain"
+            />
+          ) : null}
+        </div>
 
         <div
-          className="absolute left-5 right-5 bottom-5 z-[3] grid gap-5 md:grid-cols-[1.2fr_auto] items-end"
+          className="relative grid gap-5 md:grid-cols-[1.2fr_auto] items-end"
           style={{
             background: "var(--cream)",
             color: "#0B0B0C",
