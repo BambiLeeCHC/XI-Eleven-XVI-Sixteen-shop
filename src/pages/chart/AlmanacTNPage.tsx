@@ -1,16 +1,31 @@
 import { SEO } from "../../components/SEO";
 import { TrueNorthAtmosphere } from "../../components/journal/TrueNorthAtmosphere";
 import { AlmanacCalendar } from "../../components/journal/Almanac";
-import { api, useQuery } from "../../lib/backend";
 import { SectionHeading, TrueNorthHero, TrueNorthSignedOutTeaser, useSunSign } from "./shared";
+import { useTrueNorthAuth } from "./session";
 
 /** True North — The Almanac. Moved here from the Journal's tile grid. */
 export function AlmanacTNPage() {
-  const user = useQuery(api.auth.currentUser);
+  const { user, isAuthenticated, authLoading } = useTrueNorthAuth();
   const sunSign = useSunSign(user);
   const pageTitle = "True North — The Almanac — XI · XVI";
 
-  if (!user) {
+  if (authLoading) {
+    return (
+      <div className="journal-page journal-page--truenorth">
+        <TrueNorthAtmosphere />
+        <div className="journal-stack" style={{ maxWidth: "42rem" }}>
+          <SEO title={pageTitle} />
+          <TrueNorthHero sunSign={sunSign} />
+          <div className="journal-surface" style={{ padding: "1.75rem" }}>
+            <p className="text-sm">Loading…</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
     return (
       <div className="journal-page journal-page--truenorth">
         <TrueNorthAtmosphere />

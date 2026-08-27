@@ -5,7 +5,7 @@ import { TrueNorthAtmosphere } from "../components/journal/TrueNorthAtmosphere";
 import { CardArt } from "../components/journal/CardArt";
 import { SectionBoundary } from "../components/journal/SectionBoundary";
 import { SubscriptionTierPicker, type SubscriptionTier } from "../components/SubscriptionTierPicker";
-import { api, useAction, useQuery } from "../lib/backend";
+import { api, useAction, useAuthStatus, useQuery } from "../lib/backend";
 import { DEEP_SPREAD, drawDeepSpread, type SpreadCard } from "../lib/ritual";
 import {
   BoldParagraphs,
@@ -77,9 +77,16 @@ interface SavedDeepReading {
 const LONG_READ_ORIGIN = "/chart/long-read";
 
 export default function DeepReadingPage() {
-  const user = useQuery(api.auth.me) as any;
+  const { isAuthenticated, isLoading: authLoading } = useAuthStatus();
+  const user = useQuery(
+    api.auth.currentUser,
+    authLoading || !isAuthenticated ? "skip" : {},
+  ) as any;
   const sunSign = useSunSign(user);
-  const subscription = useQuery(api.subscription.status);
+  const subscription = useQuery(
+    api.subscription.status,
+    authLoading || !isAuthenticated ? "skip" : {},
+  );
   const deepReadings = useQuery(api.deepReadings.mine) as SavedDeepReading[] | undefined;
   const startTrialAction = useAction(api.subscription.startTrial);
   const drawAction = useAction(api.deepReadings.draw);
@@ -100,7 +107,7 @@ export default function DeepReadingPage() {
   const [question, setQuestion] = useState("");
   const [askingQuestion, setAskingQuestion] = useState(false);
 
-  const isAdmin = Boolean(user?.role === "admin");
+  const isAdmin = Boolean(user?.role === "admin" || subscription?.isAdmin);
   const entitled =
     isAdmin ||
     subscription?.status === "active" ||
@@ -218,7 +225,22 @@ export default function DeepReadingPage() {
 
   const pageTitle = "The Long Read · True North";
 
-  if (!user) {
+  if (authLoading) {
+    return (
+      <div className="journal-page journal-page--truenorth">
+        <TrueNorthAtmosphere />
+        <div className="journal-stack" style={{ maxWidth: "42rem", width: "100%" }}>
+          <SEO title={pageTitle} />
+          <TrueNorthHero sunSign={sunSign} />
+          <div className="journal-surface" style={{ padding: "1.75rem" }}>
+            <p className="text-sm">Loading your reading…</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
     return (
       <div className="journal-page journal-page--truenorth">
         <TrueNorthAtmosphere />
@@ -235,6 +257,21 @@ export default function DeepReadingPage() {
               </div>
             }
           />
+        </div>
+      </div>
+    );
+  }
+
+  if (subscription === undefined) {
+    return (
+      <div className="journal-page journal-page--truenorth">
+        <TrueNorthAtmosphere />
+        <div className="journal-stack" style={{ maxWidth: "42rem", width: "100%" }}>
+          <SEO title={pageTitle} />
+          <TrueNorthHero sunSign={sunSign} />
+          <div className="journal-surface" style={{ padding: "1.75rem" }}>
+            <p className="text-sm">Loading your reading…</p>
+          </div>
         </div>
       </div>
     );

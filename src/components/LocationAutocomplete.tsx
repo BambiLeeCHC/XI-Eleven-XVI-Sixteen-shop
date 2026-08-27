@@ -14,12 +14,18 @@ const defaultInputClass =
 export function LocationAutocomplete({
   value,
   onChange,
-  inputClassName = defaultInputClass,
+  inputClassName,
+  className,
+  required = false,
 }: {
   value: string;
   onChange: (value: string) => void;
   inputClassName?: string;
+  /** Restyle AuthPages passed className; keep it as an alias. */
+  className?: string;
+  required?: boolean;
 }) {
+  const resolvedClass = inputClassName || className || defaultInputClass;
   const search = useAction(api.geocode.search);
   const [suggestions, setSuggestions] = useState<{ displayName: string }[]>([]);
   const [open, setOpen] = useState(false);
@@ -72,7 +78,8 @@ export function LocationAutocomplete({
         onFocus={() => value.trim().length >= 2 && setOpen(true)}
         placeholder="City, State/Country"
         autoComplete="off"
-        className={inputClassName}
+        className={resolvedClass}
+        required={required}
       />
       {open && (loading || suggestions.length > 0) && (
         <div className="absolute z-10 mt-1 w-full bg-white border border-[rgba(92,155,205,0.25)] rounded-md shadow-lg max-h-60 overflow-auto">

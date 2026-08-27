@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { SEO } from "../../components/SEO";
 import { TrueNorthAtmosphere } from "../../components/journal/TrueNorthAtmosphere";
 import { api, invalidateQueries, useQuery } from "../../lib/backend";
+import { TrueNorthBirthCard, useTrueNorthAuth } from "./session";
 import { ChartSkyPanel } from "./ChartSkyPanel";
 import { SectionBoundary } from "../../components/journal/SectionBoundary";
 import {
@@ -25,21 +26,40 @@ export function ChartHomePage() {
   const [selectedBody, setSelectedBody] = useState<string | null>(null);
   const [expandedHouse, setExpandedHouse] = useState<number | null>(null);
 
-  const user = useQuery(api.auth.currentUser);
-  const chartResult = useQuery<NatalChartResult>(api.natalChart.get, user ? {} : "skip");
+  const { user, isAuthenticated, authLoading, profileLoading } = useTrueNorthAuth();
+  const chartResult = useQuery<NatalChartResult>(
+    api.natalChart.get,
+    isAuthenticated && user?.birthDate && user?.birthLocation ? {} : "skip",
+  );
   const profileResult = useQuery<NatalProfileResult>(
     api.natalProfile.get,
     chartResult?.success ? {} : "skip",
   );
 
-  const loading = !!user && chartResult === undefined;
+  const hasBirth = Boolean(user?.birthDate && user?.birthLocation);
+  const loading = hasBirth && chartResult === undefined;
   const chart = chartResult?.success ? chartResult.chart ?? null : null;
   const chartError = chartResult && !chartResult.success ? chartResult.message ?? "Couldn't generate your chart." : null;
   const sunSign = chart?.placements?.find((p) => p.body === "Sun")?.sign;
 
   const pageTitle = "True North — Your Natal Chart — XI · XVI";
 
-  if (!user) {
+  if (authLoading || profileLoading) {
+    return (
+      <div className="journal-page journal-page--truenorth">
+        <TrueNorthAtmosphere />
+        <div className="journal-stack" style={{ maxWidth: "42rem" }}>
+          <SEO title={pageTitle} />
+          <TrueNorthHero />
+          <div className="journal-surface" style={{ padding: "1.75rem" }}>
+            <p className="text-sm">Loading your chart…</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
     return (
       <div className="journal-page journal-page--truenorth">
         <TrueNorthAtmosphere />
@@ -67,6 +87,10 @@ export function ChartHomePage() {
       <div className="journal-stack" style={{ maxWidth: "44rem" }}>
         <SEO title={pageTitle} />
         <TrueNorthHero sunSign={sunSign} />
+
+        {isAuthenticated && (!user?.birthDate || !user?.birthLocation) && (
+          <TrueNorthBirthCard user={user} />
+        )}
 
         {loading && (
           <div className="journal-surface" style={{ padding: "1.75rem" }}>

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { LocationAutocomplete } from "../components/LocationAutocomplete";
+import { RegisterForm } from "../components/RegisterForm";
 import { useAuthActions, useAuthStatus } from "../lib/backend";
 
 /* ── shared shell (matches the light showroom theme used everywhere else) ── */
@@ -347,19 +347,8 @@ export function LoginPage() {
  * Sign-Up Page — email + password only (OAuth removed).
  */
 export function SignupPage() {
-  const { signIn } = useAuthActions();
   const { isAuthenticated } = useAuthStatus();
   const navigate = useNavigate();
-
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [birthDate, setBirthDate] = useState("");
-  const [birthTime, setBirthTime] = useState("");
-  const [birthLocation, setBirthLocation] = useState("");
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [checkEmail, setCheckEmail] = useState(false);
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -367,135 +356,13 @@ export function SignupPage() {
     }
   }, [isAuthenticated, navigate]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError("");
-    setLoading(true);
-    try {
-      const result = await signIn("password", {
-        flow: "signUp",
-        email,
-        password,
-        name,
-        birthDate,
-        birthTime,
-        birthLocation,
-      });
-      if (result?.signingIn) {
-        navigate("/profile", { replace: true });
-      } else {
-        setCheckEmail(true);
-      }
-    } catch (err: any) {
-      setError(err?.message || "Couldn't create account.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  if (checkEmail) {
-    return (
-      <AuthShell eyebrow="Check your inbox" title="Confirm your email">
-        <p className="text-[13px] text-slate-600 text-center leading-relaxed">
-          We sent a confirmation link to <strong>{email}</strong>. Open it to
-          finish setting up your account.
-        </p>
-        <p className="text-[12px] text-slate-500 text-center mt-4">
-          Already confirmed?{" "}
-          <Link to="/login" className={linkClass} style={linkStyle}>
-            Sign in
-          </Link>
-        </p>
-      </AuthShell>
-    );
-  }
-
   return (
     <AuthShell
       eyebrow="Join the inner circle"
       title="Create account"
-      subtitle="Every field on the live signup. Natal chart unlocks once birth date and location are in. Birth time is optional."
-      footer={
-        <>
-          Already have an account?{" "}
-          <Link to="/login" className={linkClass} style={linkStyle}>
-            Sign in
-          </Link>
-        </>
-      }
+      subtitle="Natal chart unlocks once birth date and location are in. Birth time is optional."
     >
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label className={labelClass}>NAME</label>
-          <input
-            type="text"
-            value={name}
-            onChange={e => setName(e.target.value)}
-            placeholder="Your name"
-            autoComplete="name"
-            className={inputClass}
-            required
-          />
-        </div>
-        <div>
-          <label className={labelClass}>EMAIL</label>
-          <input
-            type="email"
-            value={email}
-            onChange={e => setEmail(e.target.value)}
-            placeholder="you@example.com"
-            className={inputClass}
-            required
-          />
-        </div>
-        <div>
-          <label className={labelClass}>PASSWORD</label>
-          <input
-            type="password"
-            value={password}
-            onChange={e => setPassword(e.target.value)}
-            placeholder="••••••••"
-            className={inputClass}
-            required
-            minLength={8}
-          />
-        </div>
-        <div>
-          <label className={labelClass}>BIRTH DATE</label>
-          <input
-            type="date"
-            value={birthDate}
-            onChange={e => setBirthDate(e.target.value)}
-            className={inputClass}
-          />
-        </div>
-        <div>
-          <label className={labelClass}>BIRTH TIME (optional)</label>
-          <input
-            type="time"
-            value={birthTime}
-            onChange={e => setBirthTime(e.target.value)}
-            className={inputClass}
-          />
-        </div>
-        <div>
-          <label className={labelClass}>BIRTH LOCATION (optional)</label>
-          <LocationAutocomplete
-            value={birthLocation}
-            onChange={setBirthLocation}
-            className={inputClass}
-          />
-        </div>
-        {error && <ErrorText>{error}</ErrorText>}
-        <button
-          type="submit"
-          disabled={loading}
-          className={primaryButtonClass}
-          style={primaryButtonStyle}
-        >
-          {loading ? "Creating…" : "Create account"}
-        </button>
-      </form>
+      <RegisterForm redirectTo="/chart" showSignInLink />
     </AuthShell>
   );
 }

@@ -478,6 +478,25 @@ body {
 .tn-hero-lock {
   padding: 28px 8px 20px;
 }
+
+/* True North IMPACT surface — cream page so Clash/pistachio chrome reads,
+   instead of inheriting the dark store-shell with a guest-only CTA. */
+.journal-page--truenorth {
+  background: var(--cream);
+  color: #0B0B0C;
+  min-height: 70vh;
+}
+.journal-page--truenorth .clash,
+.journal-page--truenorth .serif-quiet {
+  color: #0B0B0C;
+}
+.journal-page--truenorth .text-muted-foreground {
+  color: rgba(11, 11, 12, 0.62);
+}
+.tn-register-card .fld-lock.light {
+  background: #fff;
+}
+
 .chart-quicknav.lock-sub {
   display: flex;
   flex-wrap: wrap;
