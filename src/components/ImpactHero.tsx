@@ -1,25 +1,31 @@
 import { Link } from "react-router-dom";
 import {
   CAMPAIGN_KICKER,
+  colorCountLabel,
+  colorFromName,
   formatPrice,
   HERO_SUB,
   HERO_TITLE,
   IMPACT_HERO_URL,
+  padCount,
+  snapHex,
   TRUST_ITEMS,
 } from "../lib/brand";
+
+export type HeroColorItem = { _id: string; name: string };
 
 export function ImpactHero({
   dslipHref,
   dslipPrice,
-  lookCount,
+  dslipColors = [],
   showDial = true,
 }: {
   dslipHref: string;
   dslipPrice?: number;
-  lookCount?: number;
+  dslipColors?: HeroColorItem[];
   showDial?: boolean;
 }) {
-  const looks = lookCount && lookCount > 0 ? lookCount : 8;
+  const colorCount = dslipColors.length;
   const priceLabel = dslipPrice ? formatPrice(dslipPrice) : "$98";
 
   return (
@@ -63,9 +69,27 @@ export function ImpactHero({
               <Link to={dslipHref} className="cta-pist">
                 Shop D-Slip · {priceLabel}
               </Link>
-              <Link to="/women" className="cta-ghost">
-                {looks} looks
-              </Link>
+              {colorCount > 0 ? (
+                <Link to={dslipHref} className="cta-ghost">
+                  {colorCountLabel(colorCount)}
+                </Link>
+              ) : null}
+              {colorCount > 0 ? (
+                <div className="flex gap-2.5 items-center flex-wrap">
+                  {dslipColors.map(item => {
+                    const color = colorFromName(item.name) || item.name;
+                    return (
+                      <Link
+                        key={item._id}
+                        to={`/product/${item._id}`}
+                        aria-label={color}
+                        className="snap"
+                        style={{ background: snapHex(color) }}
+                      />
+                    );
+                  })}
+                </div>
+              ) : null}
             </div>
             <div className="flex flex-wrap gap-3.5 mt-4">
               {TRUST_ITEMS.map(item => (
@@ -79,11 +103,11 @@ export function ImpactHero({
               ))}
             </div>
           </div>
-          {showDial ? (
+          {showDial && colorCount > 0 ? (
             <div className="dial-lock">
               <span className="n">01</span>
               <span className="serif-quiet text-[13px] mt-0.5">
-                of {String(looks).padStart(2, "0")} looks
+                of {padCount(colorCount)} colors
               </span>
             </div>
           ) : null}
@@ -118,7 +142,7 @@ export function PistachioTicker() {
 export function ProcessSteps({
   titles = ["Select", "Produce", "Receive"],
   copy = [
-    "Style, then color (the live SKU), then size.",
+    "Style, then color, then size.",
     "Made on demand. Two to five business days.",
     "Free shipping. Easy returns.",
   ],

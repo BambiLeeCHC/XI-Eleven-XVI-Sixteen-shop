@@ -4,6 +4,7 @@ import { buildBreadcrumbJsonLd, SEO } from "../components/SEO";
 import { PAGE_SEO } from "../data/seoMeta";
 import { api, useQuery } from "../lib/backend";
 import {
+  colorCountLabel,
   colorFromName,
   formatPrice,
   groupProductsByStyle,
@@ -18,13 +19,18 @@ export function CategoryPage({ gender }: { gender: Gender }) {
   const path = gender === "women" ? "/women" : "/men";
   const title = gender === "women" ? "Women" : "Men";
   const accent = gender === "women" ? "var(--pist)" : "var(--powder)";
-  const lede =
-    gender === "women"
-      ? "Looks for her. One card per style. Every colour is its own SKU."
-      : "Looks for him. One card per style. Every colour is its own SKU.";
+  const lede = gender === "women" ? "Looks for her." : "Looks for him.";
 
   const groups = useMemo(
-    () => groupProductsByStyle((products ?? []) as { name: string; _id: string; price: number; images: string[] }[]),
+    () =>
+      groupProductsByStyle(
+        (products ?? []) as {
+          name: string;
+          _id: string;
+          price: number;
+          images: string[];
+        }[],
+      ),
     [products],
   );
 
@@ -53,11 +59,11 @@ export function CategoryPage({ gender }: { gender: Gender }) {
           {title}
         </h1>
         <p className="serif-quiet text-2xl mt-5 max-w-xl">{lede}</p>
-        <p className="label-lock mt-6" style={{ color: "var(--mute)" }}>
-          {products === undefined
-            ? "Loading looks…"
-            : `${groups.length} styles · SKUs intact`}
-        </p>
+        {products === undefined ? (
+          <p className="label-lock mt-6" style={{ color: "var(--mute)" }}>
+            Loading looks…
+          </p>
+        ) : null}
       </section>
 
       <section className="px-7 pb-16">
@@ -100,8 +106,10 @@ export function CategoryPage({ gender }: { gender: Gender }) {
                     <Link to={`/product/${hero._id}`}>
                       <p className="clash text-[32px]">{group.key}</p>
                       <p className="serif-quiet mt-1 text-[15px]">
-                        {formatPrice(hero.price)} · {group.items.length} live
-                        SKUs
+                        {formatPrice(hero.price)}
+                        {group.items.length > 1
+                          ? ` · ${colorCountLabel(group.items.length)}`
+                          : ""}
                       </p>
                     </Link>
                     <p

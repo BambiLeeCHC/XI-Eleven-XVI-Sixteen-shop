@@ -6,12 +6,16 @@ import {
   PistachioTicker,
   ProcessSteps,
 } from "../components/ImpactHero";
+import { ProductHighlight } from "../components/ProductHighlight";
 import { buildBreadcrumbJsonLd, SEO } from "../components/SEO";
 import { PAGE_SEO } from "../data/seoMeta";
 import { api, useQuery } from "../lib/backend";
 import {
+  colorCountLabel,
   colorFromName,
+  displayProductName,
   formatPrice,
+  itemsForStyle,
   STYLE_ORDER,
   snapHex,
   styleKeyFromName,
@@ -53,7 +57,9 @@ export function ShopPage() {
       bucket.push(product);
       map.set(key, bucket);
     }
-    const ordered = STYLE_ORDER.filter(key => map.has(key)).map(key => ({
+    const ordered: { key: string; items: any[] }[] = STYLE_ORDER.filter(key =>
+      map.has(key),
+    ).map(key => ({
       key,
       items: map.get(key) ?? [],
     }));
@@ -71,9 +77,8 @@ export function ShopPage() {
   const sku = current?.items.find(p => p._id === skuId) ?? current?.items[0];
   const [size, setSize] = useState<string>("");
 
-  const dslip = (products ?? []).find((p: any) =>
-    String(p.name).startsWith("D-Slip"),
-  );
+  const dslipColors = itemsForStyle(products ?? [], "D-Slip");
+  const dslip = dslipColors[0];
 
   if (gender === "women") return <Navigate to="/women" replace />;
   if (gender === "men") return <Navigate to="/men" replace />;
@@ -89,7 +94,7 @@ export function ShopPage() {
       <ImpactHero
         dslipHref={dslip ? `/product/${dslip._id}` : "/shop"}
         dslipPrice={dslip?.price}
-        lookCount={groups.length || 8}
+        dslipColors={dslipColors}
       />
       <PistachioTicker />
 
@@ -153,7 +158,7 @@ export function ShopPage() {
             className="serif-quiet mt-10 text-[15px]"
             style={{ color: "var(--pist)" }}
           >
-            {groups.length} styles · SKUs intact
+            {groups.length} styles
           </p>
         </aside>
 
@@ -175,19 +180,8 @@ export function ShopPage() {
                   <i />
                   <i />
                 </div>
-                <p
-                  className="serif-quiet text-[14px]"
-                  style={{ textTransform: "none", letterSpacing: 0 }}
-                >
-                  Live SKU
-                </p>
-                <p className="num">
-                  {String(
-                    groups.findIndex(g => g.key === current?.key) + 1 || 1,
-                  ).padStart(2, "0")}
-                </p>
                 <p className="text-[11px] tracking-[0.2em] uppercase font-extrabold">
-                  {sku.name}
+                  {displayProductName(sku.name)}
                 </p>
               </div>
               <div className="price-tag absolute right-7 top-9 z-[3]">
@@ -227,7 +221,10 @@ export function ShopPage() {
                     })}
                   </div>
                   <p className="serif-quiet mt-3 text-[15px]">
-                    {sku.name} · {current?.items.length} live SKUs
+                    {displayProductName(sku.name)}
+                    {current?.items.length > 1
+                      ? ` · ${colorCountLabel(current.items.length)}`
+                      : ""}
                   </p>
                 </div>
                 <div>
@@ -275,59 +272,7 @@ export function ShopPage() {
         </div>
       </section>
 
-      <section
-        id="men"
-        className="px-7 py-14"
-        style={{ background: "#F4EFE8", color: "#0B0B0C" }}
-      >
-        <div className="flex items-end justify-between gap-6">
-          <h2 className="clash" style={{ fontSize: "clamp(42px, 6vw, 72px)" }}>
-            Complete
-            <br />
-            the set
-          </h2>
-          <p className="serif-quiet text-[22px] max-w-sm">
-            Three pieces that sit with D-Slip. Same SKUs. No leftover grid.
-          </p>
-        </div>
-        <div className="grid md:grid-cols-3 gap-4 mt-7">
-          {["B-Lift", "J-Glitch", "T-Icon"].map(key => {
-            const item = (products ?? []).find((p: any) =>
-              String(p.name).startsWith(key),
-            );
-            if (!item) return null;
-            return (
-              <Link
-                key={key}
-                to={`/product/${item._id}`}
-                className="relative min-h-[420px] overflow-hidden block bg-neutral-300"
-              >
-                {item.images?.[0] ? (
-                  <img
-                    src={item.images[0]}
-                    alt={item.name}
-                    className="absolute inset-0 w-full h-full object-cover"
-                  />
-                ) : null}
-                <div className="absolute left-4 right-4 bottom-4">
-                  <p
-                    className="clash text-[32px] text-white"
-                    style={{ textShadow: "0 2px 12px #000" }}
-                  >
-                    {key}
-                  </p>
-                  <span
-                    className="inline-block mt-1.5 px-2 py-1 text-[12px] font-extrabold"
-                    style={{ background: "#0B0B0C", color: "var(--pist)" }}
-                  >
-                    {formatPrice(item.price)}
-                  </span>
-                </div>
-              </Link>
-            );
-          })}
-        </div>
-      </section>
+      <ProductHighlight products={products ?? []} />
 
       <ProcessSteps />
       <JournalTrueNorthRooms />

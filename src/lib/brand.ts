@@ -36,7 +36,9 @@ export function groupProductsByStyle<T extends { name: string }>(
     bucket.push(product);
     map.set(key, bucket);
   }
-  const ordered = STYLE_ORDER.filter(key => map.has(key)).map(key => ({
+  const ordered: { key: string; items: T[] }[] = STYLE_ORDER.filter(key =>
+    map.has(key),
+  ).map(key => ({
     key,
     items: map.get(key) ?? [],
   }));
@@ -84,6 +86,29 @@ export function formatPrice(cents: number | undefined | null): string {
 
 export function padCount(n: number): string {
   return String(Math.max(0, n)).padStart(2, "0");
+}
+
+/** Guest-facing product name: "J-Glitch Jersey [Black]" → "J-Glitch Jersey Black". */
+export function displayProductName(name: string): string {
+  return name.replace(/\[|\]/g, "").replace(/\s+/g, " ").trim();
+}
+
+export function colorCountLabel(n: number): string {
+  return n === 1 ? "1 color" : `${n} colors`;
+}
+
+export type CatalogItem = {
+  _id: string;
+  name: string;
+  price?: number;
+  images?: string[];
+};
+
+export function itemsForStyle(
+  products: CatalogItem[] | undefined,
+  style: string,
+): CatalogItem[] {
+  return (products ?? []).filter(p => styleKeyFromName(p.name) === style);
 }
 
 export const TRUST_ITEMS = [

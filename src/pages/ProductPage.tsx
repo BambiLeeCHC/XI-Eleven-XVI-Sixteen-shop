@@ -12,7 +12,9 @@ import { getProductSEO } from "../data/seoMeta";
 import { useSessionId } from "../hooks/useSessionId";
 import { api, useMutation, useQuery } from "../lib/backend";
 import {
+  colorCountLabel,
   colorFromName,
+  displayProductName,
   formatPrice,
   snapHex,
   styleKeyFromName,
@@ -516,10 +518,11 @@ export function ProductPage() {
                   <i />
                   <i />
                 </div>
-                <p className="serif-quiet text-sm">Live SKU</p>
-                <p className="num">01</p>
-                <p className="text-[11px] tracking-[0.16em] uppercase font-bold">
-                  {product.name}
+                <p
+                  className="text-[13px] tracking-[0.12em] uppercase font-bold max-w-[180px] leading-snug"
+                  style={{ textTransform: "uppercase" }}
+                >
+                  {displayProductName(product.name)}
                 </p>
               </div>
             </div>
@@ -576,8 +579,10 @@ export function ProductPage() {
                       ))}
                     </div>
                     <p className="serif-quiet mt-3 text-[15px]">
-                      {selectedColor || colorFromName(product.name) || "Colour"}{" "}
-                      · {colorOptions.length} live SKUs
+                      {selectedColor || colorFromName(product.name) || "Colour"}
+                      {colorOptions.length > 1
+                        ? ` · ${colorCountLabel(colorOptions.length)}`
+                        : ""}
                     </p>
                   </div>
                 );
@@ -606,8 +611,10 @@ export function ProductPage() {
                       })}
                     </div>
                     <p className="serif-quiet mt-3 text-[15px]">
-                      {product.name} · {siblings.length} live SKUs. Color is the
-                      SKU.
+                      {displayProductName(product.name)}
+                      {siblings.length > 1
+                        ? ` · ${colorCountLabel(siblings.length)}`
+                        : ""}
                     </p>
                   </div>
                 );
