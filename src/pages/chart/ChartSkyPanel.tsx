@@ -128,7 +128,7 @@ export function ChartSkyPanel({
               {hasAspects ? (
                 <>
                   <p className="tn-sky__hint" style={{ marginBottom: "0.85rem" }}>
-                    The tighter the orb, the stronger the effect. Gold-toned aspects tend to feel easy; rust-toned ones create the friction that actually drives growth.
+                    The tighter the orb, the stronger it lands. Easy aspects stay quiet; tense ones carry the heat.
                   </p>
                   <div className="flex flex-col gap-2">
                     {chart.aspects.slice(0, 8).map((a, i) => (

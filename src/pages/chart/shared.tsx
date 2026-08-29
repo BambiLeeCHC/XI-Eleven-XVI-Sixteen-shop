@@ -231,6 +231,7 @@ export function HouseRow({
           <span className="label-lock">{full?.title ?? `House ${houseCusp.house}`}</span>
           <span className="tn-house__sign">
             <SignIcon sign={houseCusp.sign} size={16} /> {houseCusp.sign}
+            {full?.summary ? ` · ${full.summary}` : ""}
           </span>
         </span>
         <span className="tn-house__bodies">
@@ -240,6 +241,7 @@ export function HouseRow({
             </span>
           ))}
         </span>
+        <span className="chart-placement-row__chevron" aria-hidden="true">▾</span>
       </button>
       {expanded && full && (
         <div className="tn-house__open">
@@ -262,7 +264,7 @@ export function HouseRow({
           <p className="chart-house-row__sign-explain">
             {explainSignInHouse(houseCusp.sign, houseCusp.house)}
           </p>
-          <p className="chart-house-row__question">{full.question}</p>
+          {full.question ? <p className="chart-house-row__question">{full.question}</p> : null}
         </div>
       )}
     </div>

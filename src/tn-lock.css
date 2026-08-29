@@ -677,10 +677,19 @@
   border: 0;
   color: #142010;
 }
+.journal-page--truenorth .chart-placement-row {
+  background: #fff;
+  box-shadow: 3px 3px 0 var(--powder);
+  margin-bottom: 8px;
+}
+.journal-page--truenorth .chart-placement-row__head {
+  padding: 0.75rem 0.85rem;
+}
 .journal-page--truenorth .chart-aspect-row {
   background: #fff;
   border-radius: 0;
   box-shadow: 3px 3px 0 var(--lilac);
+  padding: 0.85rem 0.95rem;
 }
 .journal-page--truenorth .chart-aspect-row__type { color: #142010; }
 .journal-page--truenorth .chart-houses-grid .chart-placement-row {
@@ -863,7 +872,7 @@
 .tn-house.is-expanded { grid-column: 1 / -1; }
 .tn-house__head {
   display: grid;
-  grid-template-columns: auto 1fr auto;
+  grid-template-columns: auto 1fr auto auto;
   gap: 0.7rem;
   align-items: center;
   width: 100%;
@@ -894,9 +903,8 @@
 }
 .tn-house__copy .label-lock {
   color: #142010;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  white-space: normal;
+  line-height: 1.25;
 }
 .tn-house__sign {
   display: inline-flex;
