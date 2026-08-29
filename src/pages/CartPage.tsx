@@ -4,7 +4,7 @@ import { PAGE_SEO } from "../data/seoMeta";
 import { useSessionId } from "../hooks/useSessionId";
 import { api, useMutation, useQuery } from "../lib/backend";
 import { formatPrice, styleKeyFromName } from "../lib/brand";
-import { heroShot, hiResProductImage } from "../lib/productImage";
+import { hiResProductImage } from "../lib/productImage";
 
 export function CartPage() {
   const sessionId = useSessionId();
@@ -52,21 +52,18 @@ export function CartPage() {
               className="flex gap-5 py-5"
               style={{ borderBottom: "1px solid rgba(247,240,230,0.16)" }}
             >
-              <div className="w-28 h-36 overflow-hidden shrink-0 product-stage">
-                {(() => {
-                  const shot = heroShot(item.product.name, item.product.images);
-                  return shot ? (
-                    <img
-                      src={hiResProductImage(shot.src, 480)}
-                      alt={item.product.name}
-                      className={`w-full h-full object-contain ${shot.kind === "studio" ? "is-studio" : ""}`}
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center">
-                      ✦
-                    </div>
-                  );
-                })()}
+              <div className="w-28 h-36 overflow-hidden shrink-0" style={{ background: "var(--cream)" }}>
+                {item.product.images?.[0] ? (
+                  <img
+                    src={hiResProductImage(item.product.images[0], 480)}
+                    alt={item.product.name}
+                    className="w-full h-full object-contain"
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center">
+                    ✦
+                  </div>
+                )}
               </div>
               <div className="flex-1 min-w-0">
                 <Link

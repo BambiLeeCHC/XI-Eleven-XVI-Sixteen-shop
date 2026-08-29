@@ -2,7 +2,7 @@ import { useRef, useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useQuery } from "../lib/backend";
 import { api } from "../lib/backend";
-import { heroShot, hiResProductImage } from "../lib/productImage";
+import { hiResProductImage } from "../lib/productImage";
 
 interface CategoryDef {
   label: string;
@@ -31,9 +31,7 @@ function CategoryCard({ cat }: { cat: CategoryDef }) {
     category: cat.filter.category,
   });
 
-  const shot = products?.[0]
-    ? heroShot(products[0].name, products[0].images)
-    : null;
+  const img = products?.[0]?.images?.[0];
   const shopUrl = cat.filter.gender
     ? `/shop?gender=${cat.filter.gender}`
     : `/shop?category=${cat.filter.category}`;
@@ -53,11 +51,11 @@ function CategoryCard({ cat }: { cat: CategoryDef }) {
           }}
         >
           <div className="relative product-stage" style={{ height: "220px", overflow: "hidden" }}>
-            {shot ? (
+            {img ? (
               <img
-                src={hiResProductImage(shot.src, 720)}
+                src={hiResProductImage(img, 720)}
                 alt={cat.label}
-                className={`w-full h-full object-contain ${shot.kind === "studio" ? "is-studio" : ""}`}
+                className="w-full h-full object-contain"
                 loading="lazy"
               />
             ) : (
