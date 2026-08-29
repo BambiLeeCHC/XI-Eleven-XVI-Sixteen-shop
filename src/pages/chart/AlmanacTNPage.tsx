@@ -1,16 +1,32 @@
 import { SEO } from "../../components/SEO";
 import { TrueNorthAtmosphere } from "../../components/journal/TrueNorthAtmosphere";
 import { AlmanacCalendar } from "../../components/journal/Almanac";
-import { api, useQuery } from "../../lib/backend";
+import { api, useAuthStatus, useQuery } from "../../lib/backend";
 import { SectionHeading, TrueNorthHero, TrueNorthSignedOutTeaser, useSunSign } from "./shared";
 
-/** True North — The Almanac. Moved here from the Journal's tile grid. */
 export function AlmanacTNPage() {
-  const user = useQuery(api.auth.currentUser);
+  const { isLoading: authLoading, isAuthenticated } = useAuthStatus();
+  const user = useQuery(
+    api.auth.currentUser,
+    authLoading || !isAuthenticated ? "skip" : {},
+  );
   const sunSign = useSunSign(user);
   const pageTitle = "True North — The Almanac — XI · XVI";
 
-  if (!user) {
+  if (authLoading) {
+    return (
+      <div className="journal-page journal-page--truenorth">
+        <TrueNorthAtmosphere />
+        <div className="journal-stack" style={{ maxWidth: "42rem" }}>
+          <SEO title={pageTitle} />
+          <TrueNorthHero sunSign={sunSign} />
+          <p className="serif-quiet text-xl" style={{ color: "#F4EFE6" }}>Opening the Almanac…</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
     return (
       <div className="journal-page journal-page--truenorth">
         <TrueNorthAtmosphere />

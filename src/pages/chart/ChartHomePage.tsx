@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { SEO } from "../../components/SEO";
 import { TrueNorthAtmosphere } from "../../components/journal/TrueNorthAtmosphere";
-import { api, invalidateQueries, useQuery } from "../../lib/backend";
+import { api, invalidateQueries, useAuthStatus, useQuery } from "../../lib/backend";
 import { ChartSkyPanel } from "./ChartSkyPanel";
 import { SectionBoundary } from "../../components/journal/SectionBoundary";
 import {
@@ -16,30 +16,47 @@ import {
 } from "./shared";
 import type { NatalChartResult, NatalProfileResult } from "./shared";
 
-/**
- * True North — the free natal chart. First of the four True North
- * destinations (Chart / Numbers / Almanac / Long Read), each now its own
- * page rather than one long scroll.
- */
 export function ChartHomePage() {
   const [selectedBody, setSelectedBody] = useState<string | null>(null);
   const [expandedHouse, setExpandedHouse] = useState<number | null>(null);
 
-  const user = useQuery(api.auth.currentUser);
-  const chartResult = useQuery<NatalChartResult>(api.natalChart.get, user ? {} : "skip");
+  const { isLoading: authLoading, isAuthenticated } = useAuthStatus();
+  const user = useQuery(
+    api.auth.currentUser,
+    authLoading || !isAuthenticated ? "skip" : {},
+  );
+  const chartResult = useQuery<NatalChartResult>(
+    api.natalChart.get,
+    isAuthenticated ? {} : "skip",
+  );
   const profileResult = useQuery<NatalProfileResult>(
     api.natalProfile.get,
     chartResult?.success ? {} : "skip",
   );
 
-  const loading = !!user && chartResult === undefined;
+  const loading = isAuthenticated && chartResult === undefined;
   const chart = chartResult?.success ? chartResult.chart ?? null : null;
   const chartError = chartResult && !chartResult.success ? chartResult.message ?? "Couldn't generate your chart." : null;
   const sunSign = chart?.placements?.find((p) => p.body === "Sun")?.sign;
 
   const pageTitle = "True North — Your Natal Chart — XI · XVI";
 
-  if (!user) {
+  if (authLoading) {
+    return (
+      <div className="journal-page journal-page--truenorth">
+        <TrueNorthAtmosphere />
+        <div className="journal-stack" style={{ maxWidth: "42rem" }}>
+          <SEO title={pageTitle} />
+          <TrueNorthHero />
+          <p className="serif-quiet text-xl" style={{ color: "#F4EFE6" }}>
+            Opening your chart…
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
     return (
       <div className="journal-page journal-page--truenorth">
         <TrueNorthAtmosphere />
@@ -128,7 +145,7 @@ export function ChartHomePage() {
                 </div>
               )}
               {profileResult?.success && profileResult.narrative && (
-                <SectionBoundary fallbackLabel="Couldn't display your profile just now — try refreshing.">
+                <SectionBoundary fallbackLabel="Couldn't display your profile just now — try refreshing." >
                   <div className="chart-profile-sections">
                     {parseProfileSections(profileResult.narrative).map((s, i) => (
                       <ProfileSection key={i} title={s.title} body={s.body} />
