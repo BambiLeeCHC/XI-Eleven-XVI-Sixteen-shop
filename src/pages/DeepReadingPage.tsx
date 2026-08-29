@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type CSSProperties } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { SEO } from "../components/SEO";
 import { TrueNorthAtmosphere } from "../components/journal/TrueNorthAtmosphere";
@@ -75,13 +75,6 @@ interface SavedDeepReading {
 }
 
 const LONG_READ_ORIGIN = "/chart/long-read";
-
-const lockCardStyle: CSSProperties = {
-  padding: "1.5rem 1.6rem",
-  background: "#F4EFE6",
-  color: "#0B0B0C",
-  boxShadow: "6px 6px 0 #E4D4F4",
-};
 
 function fallbackReading(spread: SpreadCard[], situation: string) {
   const sit = situation || "what you are carrying today";
@@ -280,17 +273,18 @@ export default function DeepReadingPage() {
   const tabClass = (id: DailyWindow) => {
     const state = stateFor(id);
     const selected = id === selectedWindow;
-    return `chip ${selected ? "on" : ""} ${state === "locked" ? "opacity-50" : ""}`;
+    const isNow = id === active;
+    return `tn-window${selected ? " is-active" : ""}${state === "locked" ? " is-locked" : ""}${state === "done" ? " is-done" : ""}${isNow ? " is-now" : ""}`;
   };
 
   if (authLoading || entitlementLoading) {
     return (
       <div className="journal-page journal-page--truenorth">
         <TrueNorthAtmosphere />
-        <div className="journal-stack long-read-stack" style={{ maxWidth: "44rem", width: "100%" }}>
+        <div className="journal-stack long-read-stack tn-shell">
           <SEO title={pageTitle} />
           <TrueNorthHero sunSign={sunSign} />
-          <p className="serif-quiet text-xl" style={{ color: "#F4EFE6" }}>
+          <p className="serif-quiet tn-opening">
             Opening your Long Read…
           </p>
         </div>
@@ -302,15 +296,13 @@ export default function DeepReadingPage() {
     return (
       <div className="journal-page journal-page--truenorth">
         <TrueNorthAtmosphere />
-        <div className="journal-stack long-read-stack" style={{ maxWidth: "42rem", width: "100%" }}>
+        <div className="journal-stack long-read-stack tn-shell">
           <SEO title={pageTitle} />
           <TrueNorthSignedOutTeaser
             pageTitleTag={
-              <div className="long-read-lock-card" style={{ ...lockCardStyle, textAlign: "left", marginBottom: "1.5rem" }}>
-                <p className="label-lock" style={{ color: "#142010", marginBottom: "0.55rem" }}>
-                  The Long Read
-                </p>
-                <p className="serif-quiet text-xl" style={{ color: "#142010", margin: 0 }}>
+              <div className="tn-card tn-invite-card">
+                <p className="label-lock">The Long Read</p>
+                <p className="serif-quiet tn-invite-card__copy">
                   Seven cards, three times a day — morning, midday, evening — read against what's
                   actually going on with you. 7-day free trial, then $7/week.
                 </p>
@@ -325,33 +317,33 @@ export default function DeepReadingPage() {
   return (
     <div className="journal-page journal-page--truenorth">
       <TrueNorthAtmosphere />
-      <div className="journal-stack long-read-stack" style={{ maxWidth: "44rem", width: "100%" }}>
+      <div className="journal-stack long-read-stack tn-shell">
         <SEO title={pageTitle} />
         <TrueNorthHero sunSign={sunSign} />
         <SectionHeading wordA="The" wordB="Long Read" ariaLabel="The Long Read" />
-        <div className="long-read-lock-card" style={lockCardStyle}>
-          <p className="serif-quiet text-lg" style={{ margin: 0, color: "#142010" }}>
+        <div className="tn-card tn-lede-card">
+          <p className="serif-quiet tn-lede">
             {DEEP_SPREAD.intro} Three independent draws a day — Morning, Midday, Evening.
           </p>
         </div>
         {error && (
-          <div className="long-read-lock-card" style={{ ...lockCardStyle, boxShadow: "6px 6px 0 #F4C4B0" }}>
-            <p className="text-sm" style={{ color: "#8E1D2C", margin: 0 }}>{error}</p>
+          <div className="tn-card tn-card--alert">
+            <p className="tn-alert">{error}</p>
           </div>
         )}
         {!entitled && (
-          <div className="long-read-lock-card" style={{ ...lockCardStyle, display: "flex", flexDirection: "column", gap: "1.1rem" }}>
-            <p className="label-lock" style={{ color: "#142010" }}>Unlock the Long Read</p>
-            <h2 className="clash" style={{ fontSize: "clamp(32px, 6vw, 48px)", color: "#0B0B0C", margin: 0 }}>Seven cards. Three windows.</h2>
-            <p className="serif-quiet text-xl" style={{ color: "#142010", margin: 0 }}>
+          <div className="tn-card tn-paywall">
+            <p className="label-lock">Unlock the Long Read</p>
+            <h2 className="clash tn-paywall__title">Seven cards. Three windows.</h2>
+            <p className="serif-quiet tn-lede">
               Read directly against what's actually going on for you — not the daily five, a genuinely deeper read, saved to your account. 7 days free, then $7/week.
             </p>
             <SubscriptionTierPicker subscribingTier={subscribingTier} onStart={startTrial} />
           </div>
         )}
         {entitled && (
-          <div className="chart-feed">
-            <div className="lock-sub long-read-windows" role="tablist" aria-label="Daily Long Read windows">
+          <div className="chart-feed tn-feed">
+            <div className="tn-windows" role="tablist" aria-label="Daily Long Read windows">
               {WINDOWS.map(w => {
                 const state = stateFor(w.id);
                 const isActiveWindow = w.id === active;
@@ -364,27 +356,29 @@ export default function DeepReadingPage() {
                     onClick={() => setSelectedWindow(w.id)}
                     className={tabClass(w.id)}
                   >
-                    {w.label}
-                    {isActiveWindow ? " · now" : ""}
-                    {state === "done" ? " · drawn" : state === "locked" ? " · later" : ""}
+                    <span className="label-lock">{w.hours}</span>
+                    <span className="clash tn-window__title">{w.label}</span>
+                    <span className="tn-window__meta">
+                      {isActiveWindow ? "Now" : state === "done" ? "Drawn" : state === "locked" ? "Later" : "Open"}
+                    </span>
                   </button>
                 );
               })}
             </div>
-            <div className="long-read-lock-card long-read-panel" style={{ ...lockCardStyle, padding: "1.75rem", display: "flex", flexDirection: "column", gap: "0.95rem", position: "relative" }}>
+            <div className="tn-card long-read-lock-card long-read-panel tn-salon">
               <div className="long-read-panel__header">
-                <p className="label-lock" style={{ color: "#142010" }}>{selectedMeta.hours}</p>
-                <h2 className="clash" style={{ fontSize: "clamp(36px, 6vw, 56px)", color: "#0B0B0C", margin: "0.35rem 0 0" }}>{selectedMeta.label}</h2>
-                <p className="serif-quiet text-xl" style={{ marginTop: "0.45rem", color: "#142010" }}>{selectedMeta.blurb}</p>
+                <p className="label-lock">{selectedMeta.hours}</p>
+                <h2 className="clash tn-salon__title">{selectedMeta.label}</h2>
+                <p className="serif-quiet tn-lede">{selectedMeta.blurb}</p>
               </div>
               {selectedState === "locked" && (
-                <p className="serif-quiet" style={{ color: "#142010" }}>
+                <p className="serif-quiet tn-lede">
                   This window opens later today. You can still review Morning or Midday once you've drawn them.
                 </p>
               )}
               {selectedState === "open" && !hasReading && (
                 <>
-                  <label htmlFor="deep-situation" className="label-lock" style={{ color: "#142010" }}>
+                  <label htmlFor="deep-situation" className="label-lock">
                     Before you draw — what's actually going on right now?
                   </label>
                   <textarea
@@ -393,10 +387,9 @@ export default function DeepReadingPage() {
                     onChange={e => setSituations(prev => ({ ...prev, [selectedWindow]: e.target.value }))}
                     rows={2}
                     placeholder={'e.g. "trying to decide whether to leave my job"'}
-                    className="w-full rounded-md border px-3 py-2 text-sm"
-                    style={{ background: "rgba(255,255,255,.72)", color: "#0B0B0C" }}
+                    className="tn-field"
                   />
-                  <button type="button" onClick={drawTheLongRead} disabled={drawing} className="cta-pist" style={{ opacity: drawing ? 0.6 : 1, width: "100%", cursor: "pointer" }}>
+                  <button type="button" onClick={drawTheLongRead} disabled={drawing} className="cta-pist tn-draw" style={{ opacity: drawing ? 0.6 : 1 }}>
                     {drawing ? "Drawing…" : `Draw the ${selectedMeta.label} Long Read ✦`}
                   </button>
                 </>
@@ -404,12 +397,12 @@ export default function DeepReadingPage() {
               {hasReading && (
                 <>
                   <SectionBoundary fallbackLabel="Couldn't display your cards just now — the reading below is still yours.">
-                    <div className="long-read-spread">
+                    <div className="long-read-spread tn-spread">
                       {displaySpread?.map(s => (
                         <div key={s.slot} className="long-read-card">
-                          <p className="long-read-slot-label label-lock" style={{ color: "#142010" }}>{s.slotName}</p>
+                          <p className="long-read-slot-label label-lock">{s.slotName}</p>
                           <CardArt card={s.card} reversed={s.reversed} />
-                          <p className="long-read-card-name text-xs font-medium mt-1">
+                          <p className="long-read-card-name">
                             {s.card.name}{s.reversed ? " (rev.)" : ""}
                           </p>
                         </div>
@@ -417,10 +410,10 @@ export default function DeepReadingPage() {
                     </div>
                   </SectionBoundary>
                   <SectionBoundary fallbackLabel="Couldn't display the reading text just now — it's saved to your account either way.">
-                    <div className="chart-profile-sections" style={{ position: "relative", zIndex: 2, isolation: "isolate" }}>
-                      <div className="chart-profile-section">
-                        <p className="label-lock" style={{ color: "#142010" }}>Your reading</p>
-                        <div className="chart-profile-section__body" style={{ marginTop: "0.85rem" }}>
+                    <div className="chart-profile-sections tn-letter__body">
+                      <div className="chart-profile-section is-lede">
+                        <p className="label-lock">Your reading</p>
+                        <div className="chart-profile-section__body">
                           <BoldParagraphs text={displayReading || ""} />
                         </div>
                       </div>
@@ -431,9 +424,9 @@ export default function DeepReadingPage() {
                       {drawing ? "Drawing…" : "Admin · redraw this window"}
                     </button>
                   )}
-                  <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem", marginTop: "0.35rem", paddingTop: "1rem", borderTop: "1px solid rgba(11,11,12,0.12)" }}>
-                    <p className="label-lock" style={{ color: "#142010", margin: 0 }}>Ask a follow-up — $2.99</p>
-                    <textarea value={question} onChange={e => setQuestion(e.target.value)} rows={2} placeholder="What do you want to know more about?" className="w-full rounded-md border px-3 py-2 text-sm" style={{ background: "rgba(255,255,255,.72)", color: "#0B0B0C" }} />
+                  <div className="tn-followup">
+                    <p className="label-lock">Ask a follow-up — $2.99</p>
+                    <textarea value={question} onChange={e => setQuestion(e.target.value)} rows={2} placeholder="What do you want to know more about?" className="tn-field" />
                     <button type="button" onClick={askQuestion} disabled={askingQuestion || !question.trim()} className="cta-pist" style={{ alignSelf: "flex-start", opacity: askingQuestion || !question.trim() ? 0.5 : 1, cursor: askingQuestion || !question.trim() ? "default" : "pointer" }}>
                       {askingQuestion ? "Starting…" : "Ask — $2.99"}
                     </button>

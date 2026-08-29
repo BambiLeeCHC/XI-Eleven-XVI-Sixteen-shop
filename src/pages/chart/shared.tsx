@@ -7,6 +7,7 @@ import {
 } from "../../lib/astrologyMeanings";
 import { api, useQuery } from "../../lib/backend";
 import { NUMEROLOGY_CALC_EXPLAIN } from "../../lib/numerology";
+import { moonPhase } from "../../lib/ritual";
 
 /* ═══════════════════════════════════════════════════════════════════════
    TRUE NORTH — shared types, copy, styling and small components used
@@ -127,10 +128,10 @@ export const SIGN_GLYPH: Record<string, string> = {
 /** The four True North destinations — now separate routes instead of
  * anchors in one long scroll. */
 export const TRUE_NORTH_PAGES = [
-  { path: "/chart", label: "Chart", glyph: "✦" },
-  { path: "/chart/numbers", label: "Numbers", glyph: "◆" },
-  { path: "/chart/almanac", label: "Almanac", glyph: "☾" },
-  { path: "/chart/long-read", label: "Long Read", glyph: "♠" },
+  { path: "/chart", label: "Chart", glyph: "✦", blurb: "The sky the second you were born." },
+  { path: "/chart/numbers", label: "Numbers", glyph: "◆", blurb: "The constants underneath the chart." },
+  { path: "/chart/almanac", label: "Almanac", glyph: "☾", blurb: "The day's mood, in one page." },
+  { path: "/chart/long-read", label: "Long Read", glyph: "♠", blurb: "Seven cards. Three windows a day." },
 ] as const;
 
 /** Fetches just the natal chart, for the sun-sign line in the hero — every
@@ -318,8 +319,7 @@ export function parseProfileSections(
   return sections;
 }
 
-/** Numerology number card — leads with the plain-language "how we got this"
- * line before the number itself, so the math isn't a black box. */
+/** Numerology number card — Clash display figure, then the math in quiet type. */
 export function NumberRow({
   numKey,
   value,
@@ -328,33 +328,24 @@ export function NumberRow({
   value: number;
 }) {
   return (
-    <div className="chart-number-row">
-      <div className="chart-number-row__head">
-        <span className="chart-placement__body">
-          {NUMEROLOGY_LABELS[numKey] ?? numKey}
-        </span>
-        <span className="lock-pill num">
-          {value}
-        </span>
-      </div>
+    <div className="tn-number">
+      <span className="label-lock tn-number__label">
+        {NUMEROLOGY_LABELS[numKey] ?? numKey}
+      </span>
+      <span className="clash tn-number__value">{value}</span>
       {NUMEROLOGY_CALC_EXPLAIN[numKey] && (
-        <p className="chart-number-row__calc">
-          {NUMEROLOGY_CALC_EXPLAIN[numKey]}
-        </p>
+        <p className="tn-number__calc">{NUMEROLOGY_CALC_EXPLAIN[numKey]}</p>
       )}
     </div>
   );
 }
 
-/** Real page-to-page nav (was a scroll-spy dock over one long page) — each
- * destination now loads on its own, so switching is an actual navigation,
- * not a jump within a single heavy scroll. */
+/** Real page-to-page nav — four destinations, one observatory. */
 export function TrueNorthNav() {
   const location = useLocation();
-  const tone = ["", "powder", "blush", "lilac"];
   return (
-    <nav className="chart-quicknav lock-sub" aria-label="True North sections">
-      {TRUE_NORTH_PAGES.map((p, i) => {
+    <nav className="tn-rail" aria-label="True North sections">
+      {TRUE_NORTH_PAGES.map(p => {
         const active =
           p.path === "/chart"
             ? location.pathname === "/chart"
@@ -364,9 +355,10 @@ export function TrueNorthNav() {
             key={p.path}
             to={p.path}
             aria-current={active ? "true" : undefined}
-            className={`chip ${tone[i] || ""} ${active ? "on" : ""}`}
+            className={`tn-rail__item ${active ? "is-active" : ""}`}
           >
-            {p.label}
+            <span className="tn-rail__glyph" aria-hidden="true">{p.glyph}</span>
+            <span className="tn-rail__label">{p.label}</span>
           </Link>
         );
       })}
@@ -374,30 +366,54 @@ export function TrueNorthNav() {
   );
 }
 
-/** The shared hero every True North page opens with — title, sun-sign line,
- * and the page nav. Kept identical across pages so switching between them
- * feels like one destination, not four different apps. */
+function TrueNorthSkyline({ sunSign }: { sunSign?: string }) {
+  const moon = moonPhase();
+  const hour = new Date().toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
+  return (
+    <p className="tn-skyline">
+      <span>{hour}</span>
+      <span aria-hidden="true">·</span>
+      <span>
+        {moon.glyph} {moon.name}
+      </span>
+      {sunSign && (
+        <>
+          <span aria-hidden="true">·</span>
+          <span>
+            {SIGN_GLYPH[sunSign] ?? ""} {sunSign} sun
+          </span>
+        </>
+      )}
+    </p>
+  );
+}
+
+/** Shared observatory header — identical across Chart, Numbers, Almanac, Long Read. */
 export function TrueNorthHero({ sunSign }: { sunSign?: string }) {
   return (
-    <div className="tn-hero-lock" style={{ position: "relative" }}>
-      <span className="kicker-lock">Your own private cosmology</span>
-      <h1
-        className="clash mt-6"
-        style={{ fontSize: "clamp(56px, 10vw, 120px)" }}
-        aria-label="True North"
-      >
-        True North
-      </h1>
-      {sunSign && (
-        <p className="serif-quiet text-2xl mt-4 max-w-2xl">
-          {SIGN_GLYPH[sunSign] ?? ""} {sunSign} sun — the exact sky the second
-          you were born.
-        </p>
-      )}
-      <div className="mt-6">
-        <TrueNorthNav />
+    <header className="tn-hero">
+      <div className="tn-hero__mast">
+        <div className="tn-hero__copy">
+          <span className="kicker-lock">Your own private cosmology</span>
+          <h1 className="clash tn-hero__title" aria-label="True North">
+            True North
+          </h1>
+          <p className="serif-quiet tn-hero__lede">
+            {sunSign
+              ? `The exact sky the second you were born — ${sunSign} sun, decoded in full.`
+              : "The exact sky the second you were born, decoded in full."}
+          </p>
+          <TrueNorthSkyline sunSign={sunSign} />
+        </div>
+        {sunSign && (
+          <div className="tn-hero__orb" aria-hidden="true">
+            <span className="tn-hero__orb-glyph">{SIGN_GLYPH[sunSign]}</span>
+            <span className="tn-hero__orb-sign">{sunSign}</span>
+          </div>
+        )}
       </div>
-    </div>
+      <TrueNorthNav />
+    </header>
   );
 }
 
@@ -408,25 +424,34 @@ export function TrueNorthSignedOutTeaser({
   pageTitleTag: React.ReactNode;
 }) {
   return (
-    <div className="tn-hero-lock" style={{ position: "relative" }}>
-      <span className="kicker-lock">Your own private cosmology</span>
-      <h1
-        className="clash mt-6"
-        style={{ fontSize: "clamp(56px, 10vw, 120px)" }}
-        aria-label="True North"
-      >
-        True North
-      </h1>
-      <p className="serif-quiet text-2xl mt-5 max-w-2xl">
-        The exact sky the second you were born — decoded, in full, free the
-        moment you register. What's underneath it — your numbers, your days, the
-        long version of the story — is waiting too.
-      </p>
-      <div className="mt-6">{pageTitleTag}</div>
-      <Link to="/signup" className="cta-pist mt-6 inline-block">
+    <header className="tn-hero">
+      <div className="tn-hero__mast">
+        <div className="tn-hero__copy">
+          <span className="kicker-lock">Your own private cosmology</span>
+          <h1 className="clash tn-hero__title" aria-label="True North">
+            True North
+          </h1>
+          <p className="serif-quiet tn-hero__lede">
+            The exact sky the second you were born — decoded, in full, the moment
+            you register. What's underneath it is waiting too.
+          </p>
+          <TrueNorthSkyline />
+        </div>
+      </div>
+      <div className="tn-invite">{pageTitleTag}</div>
+      <Link to="/signup" className="cta-pist tn-hero__cta">
         Create account
       </Link>
+      <ul className="tn-destinations">
+        {TRUE_NORTH_PAGES.map(p => (
+          <li key={p.path} className="tn-destination">
+            <span className="tn-destination__glyph" aria-hidden="true">{p.glyph}</span>
+            <span className="label-lock">{p.label}</span>
+            <span className="serif-quiet tn-destination__blurb">{p.blurb}</span>
+          </li>
+        ))}
+      </ul>
       <TrueNorthNav />
-    </div>
+    </header>
   );
 }

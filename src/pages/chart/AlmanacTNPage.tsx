@@ -17,10 +17,10 @@ export function AlmanacTNPage() {
     return (
       <div className="journal-page journal-page--truenorth">
         <TrueNorthAtmosphere />
-        <div className="journal-stack" style={{ maxWidth: "42rem" }}>
+        <div className="journal-stack tn-shell">
           <SEO title={pageTitle} />
           <TrueNorthHero sunSign={sunSign} />
-          <p className="serif-quiet text-xl" style={{ color: "#F4EFE6" }}>Opening the Almanac…</p>
+          <p className="serif-quiet tn-opening">Opening the Almanac…</p>
         </div>
       </div>
     );
@@ -30,13 +30,13 @@ export function AlmanacTNPage() {
     return (
       <div className="journal-page journal-page--truenorth">
         <TrueNorthAtmosphere />
-        <div className="journal-stack" style={{ maxWidth: "42rem" }}>
+        <div className="journal-stack tn-shell">
           <SEO title={pageTitle} />
           <TrueNorthSignedOutTeaser
             pageTitleTag={
-              <div className="journal-surface" style={{ padding: "1.25rem", textAlign: "left", marginBottom: "1.5rem" }}>
-                <p className="label-lock" style={{ color: "#142010" }}>The Almanac</p>
-                <p className="serif-quiet mt-2" style={{ color: "#142010" }}>
+              <div className="tn-card tn-invite-card">
+                <p className="label-lock">The Almanac</p>
+                <p className="serif-quiet tn-invite-card__copy">
                   The sky's day-to-day moods, laid out like an old-world almanac.
                 </p>
               </div>
@@ -50,11 +50,11 @@ export function AlmanacTNPage() {
   return (
     <div className="journal-page journal-page--truenorth">
       <TrueNorthAtmosphere />
-      <div className="journal-stack" style={{ maxWidth: "44rem" }}>
+      <div className="journal-stack tn-shell">
         <SEO title={pageTitle} />
         <TrueNorthHero sunSign={sunSign} />
         <SectionHeading wordA="The" wordB="Almanac" ariaLabel="The Almanac" />
-        <div className="journal-surface" style={{ padding: "1.5rem" }}>
+        <div className="tn-card tn-almanac">
           <AlmanacCalendar />
         </div>
       </div>

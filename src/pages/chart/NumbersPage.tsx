@@ -4,7 +4,6 @@ import { TrueNorthAtmosphere } from "../../components/journal/TrueNorthAtmospher
 import { SectionBoundary } from "../../components/journal/SectionBoundary";
 import { api, useAction, useQuery } from "../../lib/backend";
 import {
-  ctaButtonStyle,
   NUMEROLOGY_ERROR_COPY,
   NumberRow,
   ProfileSection,
@@ -49,13 +48,13 @@ export function NumbersPage() {
     return (
       <div className="journal-page journal-page--truenorth">
         <TrueNorthAtmosphere />
-        <div className="journal-stack" style={{ maxWidth: "42rem" }}>
+        <div className="journal-stack tn-shell">
           <SEO title={pageTitle} />
           <TrueNorthSignedOutTeaser
             pageTitleTag={
-              <div className="journal-surface" style={{ padding: "1.25rem", textAlign: "left", marginBottom: "1.5rem" }}>
-                <p className="label-lock" style={{ color: "#142010" }}>Numerology</p>
-                <p className="serif-quiet mt-2" style={{ color: "#142010" }}>
+              <div className="tn-card tn-invite-card">
+                <p className="label-lock">Numerology</p>
+                <p className="serif-quiet tn-invite-card__copy">
                   Your name and birth date reduce to a set of numbers that don't change — your Life Path,
                   your Expression number, your Soul Urge.
                 </p>
@@ -70,15 +69,16 @@ export function NumbersPage() {
   return (
     <div className="journal-page journal-page--truenorth">
       <TrueNorthAtmosphere />
-      <div className="journal-stack" style={{ maxWidth: "44rem" }}>
+      <div className="journal-stack tn-shell">
         <SEO title={pageTitle} />
         <TrueNorthHero sunSign={sunSign} />
 
-        <div className="journal-surface" style={{ padding: "1.75rem", display: "flex", flexDirection: "column", gap: "0.9rem" }}>
+        <div className="tn-card tn-numbers-wrap">
           {!numerologyUnlocked && (
             <>
-              <p className="label-lock" style={{ color: "#142010" }}>Numerology — the layer underneath the chart</p>
-              <p className="serif-quiet" style={{ color: "#142010" }}>
+              <p className="label-lock">Numerology — the layer underneath the chart</p>
+              <h2 className="clash tn-paywall__title">The numbers that don't move</h2>
+              <p className="serif-quiet tn-lede">
                 Your name and birth date reduce to a set of numbers that stay constant your whole
                 life — your Life Path, Expression, Soul Urge, Personality and this year's Personal
                 Year number. Where the chart shows what the sky was doing, numerology shows what you
@@ -88,30 +88,29 @@ export function NumbersPage() {
                 type="button"
                 onClick={unlockNumerology}
                 disabled={unlocking}
-                style={ctaButtonStyle}
+                className="cta-pist tn-draw"
+                style={{ opacity: unlocking ? 0.6 : 1 }}
               >
                 {unlocking ? "Opening checkout…" : "Unlock numerology — $19.99, once"}
               </button>
-              <p className="text-xs text-muted-foreground" style={{ marginTop: "-0.4rem" }}>
-                One payment, yours for good.
-              </p>
+              <p className="tn-sky__note">One payment, yours for good.</p>
             </>
           )}
 
           {numerologyUnlocked && numerologyResult === undefined && (
-            <p className="text-sm text-muted-foreground">Calculating your numbers…</p>
+            <p className="tn-sky__note">Calculating your numbers…</p>
           )}
 
           {numerologyUnlocked && numerologyResult && !numerologyResult.success && (
             <>
               {numerologyResult.numbers && (
-                <div className="chart-numbers-grid">
+                <div className="chart-numbers-grid tn-numbers">
                   {Object.entries(numerologyResult.numbers).map(([key, value]) => (
                     <NumberRow key={key} numKey={key} value={value} />
                   ))}
                 </div>
               )}
-              <p className="text-sm text-red-600">
+              <p className="tn-alert">
                 {NUMEROLOGY_ERROR_COPY[numerologyResult.reason ?? ""] ??
                   "Couldn't write your numerology narrative just now — try again shortly."}
               </p>
@@ -120,13 +119,13 @@ export function NumbersPage() {
 
           {numerologyUnlocked && numerologyResult?.success && (
             <SectionBoundary fallbackLabel="Couldn't display your numbers just now — try refreshing.">
-              <div className="chart-numbers-grid">
+              <div className="chart-numbers-grid tn-numbers">
                 {Object.entries(numerologyResult.numbers ?? {}).map(([key, value]) => (
                   <NumberRow key={key} numKey={key} value={value} />
                 ))}
               </div>
               {numerologyResult.narrative && (
-                <div className="chart-profile-sections">
+                <div className="chart-profile-sections tn-letter__body">
                   {parseProfileSections(numerologyResult.narrative).map((s, i) => (
                     <ProfileSection key={i} title={s.title} body={s.body} />
                   ))}

@@ -45,10 +45,10 @@ export function ChartHomePage() {
     return (
       <div className="journal-page journal-page--truenorth">
         <TrueNorthAtmosphere />
-        <div className="journal-stack" style={{ maxWidth: "42rem" }}>
+        <div className="journal-stack tn-shell">
           <SEO title={pageTitle} />
           <TrueNorthHero />
-          <p className="serif-quiet text-xl" style={{ color: "#F4EFE6" }}>
+          <p className="serif-quiet tn-opening">
             Opening your chart…
           </p>
         </div>
@@ -60,15 +60,14 @@ export function ChartHomePage() {
     return (
       <div className="journal-page journal-page--truenorth">
         <TrueNorthAtmosphere />
-        <div className="journal-stack" style={{ maxWidth: "42rem" }}>
+        <div className="journal-stack tn-shell">
           <SEO title={pageTitle} />
           <TrueNorthSignedOutTeaser
             pageTitleTag={
-              <div className="journal-surface" style={{ padding: "1.25rem", textAlign: "left", marginBottom: "1.5rem" }}>
-                <p className="label-lock" style={{ color: "#142010" }}>Then, if you want to go deeper</p>
-                <p className="serif-quiet mt-2" style={{ color: "#142010" }}>
-                  Your name and birth date reduce to a set of numbers that don't change — your Life Path,
-                  your Expression number, your Soul Urge.
+              <div className="tn-card tn-invite-card">
+                <p className="label-lock">Your natal chart</p>
+                <p className="serif-quiet tn-invite-card__copy">
+                  The exact sky the second you were born — placements, houses, and a profile written for you. Free the moment you register.
                 </p>
               </div>
             }
@@ -81,31 +80,31 @@ export function ChartHomePage() {
   return (
     <div className="journal-page journal-page--truenorth">
       <TrueNorthAtmosphere />
-      <div className="journal-stack" style={{ maxWidth: "44rem" }}>
+      <div className="journal-stack tn-shell">
         <SEO title={pageTitle} />
         <TrueNorthHero sunSign={sunSign} />
 
         {loading && (
-          <div className="journal-surface" style={{ padding: "1.75rem" }}>
-            <p className="text-sm text-muted-foreground">Calculating your chart…</p>
+          <div className="tn-card">
+            <p className="tn-sky__note">Calculating your chart…</p>
           </div>
         )}
 
         {!loading && chartError && (
-          <div className="journal-surface" style={{ padding: "1.75rem", display: "flex", flexDirection: "column", gap: "0.9rem" }}>
-            <p className="text-sm text-red-600">{chartError}</p>
-            <Link to="/profile" className="underline text-sm">Complete your birth details on your account →</Link>
+          <div className="tn-card tn-card--alert">
+            <p className="tn-alert">{chartError}</p>
+            <Link to="/profile" className="tn-inline">Complete your birth details on your account →</Link>
           </div>
         )}
 
         {!loading && chart && (
-          <div className="chart-feed">
+          <div className="chart-feed tn-feed">
             <ChartSkyPanel chart={chart} selectedBody={selectedBody} setSelectedBody={setSelectedBody} />
 
-            <div className="journal-surface chart-feed-card" style={{ padding: "1.75rem", ["--i" as any]: 1 }}>
+            <div className="tn-card chart-feed-card" style={{ ["--i" as any]: 1 }}>
               <SectionHeading wordA="The" wordB="Houses" ariaLabel="The Houses" />
-              <p className="chart-expand-hint" style={{ marginTop: "0.25rem" }}>
-                Tap any house to open its full meaning, keywords and a reflective question ↓
+              <p className="chart-expand-hint">
+                Tap any house to open its full meaning, keywords and a reflective question.
               </p>
               <div className="chart-placements-list chart-houses-grid">
                 {chart.houses.map((h) => (
@@ -119,21 +118,21 @@ export function ChartHomePage() {
               </div>
             </div>
 
-            <div className="journal-surface chart-profile-card chart-feed-card chart-feed-card--wide" style={{ padding: "1.75rem", position: "relative", ["--i" as any]: 4 }}>
+            <div className="tn-card tn-letter chart-feed-card chart-feed-card--wide" style={{ position: "relative", ["--i" as any]: 4 }}>
               <SectionHeading wordA="Your" wordB="Profile" ariaLabel="Your Personality Profile" />
               {profileResult === undefined && (
-                <p className="text-sm text-muted-foreground">Writing your profile…</p>
+                <p className="tn-sky__note">Writing your profile…</p>
               )}
               {profileResult && !profileResult.success && (
-                <div style={{ display: "flex", flexDirection: "column", gap: "0.65rem", alignItems: "flex-start" }}>
-                  <p className="text-sm text-red-600">
+                <div className="tn-card--alert" style={{ display: "flex", flexDirection: "column", gap: "0.65rem", alignItems: "flex-start" }}>
+                  <p className="tn-alert">
                     {PROFILE_ERROR_COPY[profileResult.reason ?? ""] ??
                       "Couldn't write your personality profile just now — try again shortly."}
                   </p>
                   <button
                     type="button"
                     onClick={() => invalidateQueries()}
-                    className="underline text-sm"
+                    className="tn-inline"
                     style={{ background: "none", border: "none", padding: 0, cursor: "pointer" }}
                   >
                     Try again →
@@ -142,7 +141,7 @@ export function ChartHomePage() {
               )}
               {profileResult?.success && profileResult.narrative && (
                 <SectionBoundary fallbackLabel="Couldn't display your profile just now — try refreshing." >
-                  <div className="chart-profile-sections">
+                  <div className="chart-profile-sections tn-letter__body">
                     {parseProfileSections(profileResult.narrative).map((s, i) => (
                       <ProfileSection key={i} title={s.title} body={s.body} />
                     ))}

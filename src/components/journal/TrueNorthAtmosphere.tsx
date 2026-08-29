@@ -91,14 +91,15 @@ export function TrueNorthAtmosphere() {
         }
       `}</style>
 
-      {/* Deep jewel-tone wash — the room itself */}
+      {/* IMPACT field — pistachio, lilac, cream motes on the shop's dark */}
       <div className="tn-atmo__wash" />
 
-      {/* Candle-glow pools, flickering at their own pace */}
-      <div className="tn-atmo__candle tn-atmo-candle" style={{ left: "14%", top: "22%", animationDelay: "-1.2s" }} />
-      <div className="tn-atmo__candle tn-atmo-candle" style={{ left: "82%", top: "12%", animationDelay: "-3.4s" }} />
-      <div className="tn-atmo__candle tn-atmo-candle" style={{ left: "68%", top: "68%", animationDelay: "-0.6s" }} />
-      <div className="tn-atmo__candle tn-atmo-candle" style={{ left: "22%", top: "78%", animationDelay: "-4.8s" }} />
+      {/* Soft glow pools */}
+      <div className="tn-atmo__candle tn-atmo-candle" style={{ left: "14%", top: "18%", animationDelay: "-1.2s" }} />
+      <div className="tn-atmo__candle tn-atmo-candle" style={{ left: "86%", top: "10%", animationDelay: "-3.4s" }} />
+      <div className="tn-atmo__candle tn-atmo-candle" style={{ left: "72%", top: "72%", animationDelay: "-0.6s" }} />
+      <div className="tn-atmo__candle tn-atmo-candle" style={{ left: "18%", top: "78%", animationDelay: "-4.8s" }} />
+      <div className="tn-atmo__horizon" />
 
       {/* Drifting incense smoke */}
       {wisps.map((w, i) => (

@@ -45,110 +45,109 @@ export function ChartSkyPanel({
   }, [pane, selectedBody, chart.placements, chart.aspects]);
 
   return (
-    <div className="journal-surface chart-feed-card chart-feed-card--wheel chart-sky-panel" style={{ padding: "1.5rem", ["--i" as any]: 0 }}>
-      <SectionHeading wordA="Your" wordB="Sky" ariaLabel="Your Sky" />
-      <NatalChartWheel
-        placements={chart.placements}
-        houses={chart.houses}
-        aspects={chart.aspects}
-        ascendantDegree={chart.ascendantDegree}
-        onSelectBody={(b) => setSelectedBody(selectedBody === b ? null : b)}
-        selectedBody={selectedBody}
-      />
-      <p className="text-[11px] text-muted-foreground text-center mt-2 mb-4">
-        Tap a planet to read what it means for you. Gold lines are easy aspects, rust lines are
-        tense ones.
-      </p>
-
-      <div style={{ display: "flex", justifyContent: "space-around", marginBottom: "1.25rem", textAlign: "center" }}>
-        <div>
-          <p className="text-[10px] uppercase tracking-wide text-muted-foreground mb-1">Ascendant</p>
-          <span className="lock-pill">
-            <SignIcon sign={chart.ascendant} size={13} /> {chart.ascendant}
-          </span>
-        </div>
-        <div>
-          <p className="text-[10px] uppercase tracking-wide text-muted-foreground mb-1">Midheaven</p>
-          <span className="lock-pill blush">
-            <SignIcon sign={chart.midheaven} size={13} /> {chart.midheaven}
-          </span>
-        </div>
-      </div>
-      {chart.approximateTime && (
-        <p className="text-[12px] text-muted-foreground italic mb-3">
-          No birth time on file — this chart uses local noon, so your Ascendant, houses and Moon
-          placement may shift once you add your exact birth time to your account.
+    <div className="tn-card tn-sky chart-feed-card chart-feed-card--wheel chart-sky-panel" style={{ ["--i" as any]: 0 }}>
+      <div className="tn-sky__stage">
+        <SectionHeading wordA="Your" wordB="Sky" ariaLabel="Your Sky" />
+        <NatalChartWheel
+          placements={chart.placements}
+          houses={chart.houses}
+          aspects={chart.aspects}
+          ascendantDegree={chart.ascendantDegree}
+          onSelectBody={(b) => setSelectedBody(selectedBody === b ? null : b)}
+          selectedBody={selectedBody}
+        />
+        <p className="tn-sky__hint">
+          Tap a planet. Gold lines are easy aspects, rust lines are tense ones.
         </p>
-      )}
-
-      {/* the slide-over: Placements <-> Tightest Aspects */}
-      <div className="chart-slide-toggle" role="tablist" aria-label="Placements or Tightest Aspects">
-        <button
-          type="button"
-          role="tab"
-          aria-selected={pane === "placements"}
-          className={`chart-slide-toggle__btn ${pane === "placements" ? "is-active" : ""}`}
-          onClick={() => setPane("placements")}
-        >
-          Placements
-        </button>
-        <button
-          type="button"
-          role="tab"
-          aria-selected={pane === "aspects"}
-          className={`chart-slide-toggle__btn ${pane === "aspects" ? "is-active" : ""}`}
-          onClick={() => setPane("aspects")}
-          disabled={!hasAspects}
-        >
-          Tightest Aspects
-        </button>
-        <span className={`chart-slide-toggle__indicator ${pane === "aspects" ? "is-right" : ""}`} aria-hidden="true" />
+        <div className="tn-sky__angles">
+          <div>
+            <p className="label-lock">Ascendant</p>
+            <span className="lock-pill">
+              <SignIcon sign={chart.ascendant} size={13} /> {chart.ascendant}
+            </span>
+          </div>
+          <div>
+            <p className="label-lock">Midheaven</p>
+            <span className="lock-pill blush">
+              <SignIcon sign={chart.midheaven} size={13} /> {chart.midheaven}
+            </span>
+          </div>
+        </div>
+        {chart.approximateTime && (
+          <p className="tn-sky__note">
+            No birth time on file — this chart uses local noon, so your Ascendant, houses and Moon
+            may shift once you add the exact time.
+          </p>
+        )}
       </div>
 
-      <div className="chart-slide-viewport" style={vpHeight !== undefined ? { height: vpHeight } : undefined}>
-        <div className={`chart-slide-track ${pane === "aspects" ? "is-aspects" : ""}`}>
-          <div className="chart-slide-pane" ref={placementsPaneRef}>
-            <p className="chart-expand-hint">Tap any placement to read what it means</p>
-            <div className="chart-placements-list">
-              {chart.placements.map((p) => (
-                <PlacementRow
-                  key={p.body}
-                  placement={p}
-                  expanded={selectedBody === p.body}
-                  onToggle={() => setSelectedBody(selectedBody === p.body ? null : p.body)}
-                />
-              ))}
-            </div>
-            <p className="text-[11px] text-muted-foreground mt-3">
-              {chart.zodiac} zodiac · {chart.houseSystem} houses
-            </p>
-          </div>
+      <div className="tn-sky__index">
+        <div className="chart-slide-toggle" role="tablist" aria-label="Placements or Tightest Aspects">
+          <button
+            type="button"
+            role="tab"
+            aria-selected={pane === "placements"}
+            className={`chart-slide-toggle__btn ${pane === "placements" ? "is-active" : ""}`}
+            onClick={() => setPane("placements")}
+          >
+            Placements
+          </button>
+          <button
+            type="button"
+            role="tab"
+            aria-selected={pane === "aspects"}
+            className={`chart-slide-toggle__btn ${pane === "aspects" ? "is-active" : ""}`}
+            onClick={() => setPane("aspects")}
+            disabled={!hasAspects}
+          >
+            Tightest Aspects
+          </button>
+          <span className={`chart-slide-toggle__indicator ${pane === "aspects" ? "is-right" : ""}`} aria-hidden="true" />
+        </div>
 
-          <div className="chart-slide-pane" ref={aspectsPaneRef}>
-            {hasAspects ? (
-              <>
-                <p className="text-[12px] text-muted-foreground mb-3">
-                  The angles between your planets — the tighter the orb, the stronger the effect.
-                  Gold-toned aspects tend to feel easy; rust-toned ones create the friction that
-                  actually drives growth.
-                </p>
-                <div className="flex flex-col gap-2">
-                  {chart.aspects.slice(0, 8).map((a, i) => (
-                    <div key={i} className="chart-aspect-row">
-                      <div className="chart-aspect-row__head">
-                        <span className="chart-aspect-row__label">
-                          {a.bodyA} <span className="chart-aspect-row__type">{a.aspect}</span> {a.bodyB}
-                        </span>
-                        <span className="chart-aspect-row__orb">{a.orb.toFixed(1)}° orb</span>
+        <div className="chart-slide-viewport" style={vpHeight !== undefined ? { height: vpHeight } : undefined}>
+          <div className={`chart-slide-track ${pane === "aspects" ? "is-aspects" : ""}`}>
+            <div className="chart-slide-pane" ref={placementsPaneRef}>
+              <p className="chart-expand-hint">Tap any placement to read what it means</p>
+              <div className="chart-placements-list">
+                {chart.placements.map((p) => (
+                  <PlacementRow
+                    key={p.body}
+                    placement={p}
+                    expanded={selectedBody === p.body}
+                    onToggle={() => setSelectedBody(selectedBody === p.body ? null : p.body)}
+                  />
+                ))}
+              </div>
+              <p className="tn-sky__note" style={{ marginTop: "0.85rem" }}>
+                {chart.zodiac} zodiac · {chart.houseSystem} houses
+              </p>
+            </div>
+
+            <div className="chart-slide-pane" ref={aspectsPaneRef}>
+              {hasAspects ? (
+                <>
+                  <p className="tn-sky__hint" style={{ marginBottom: "0.85rem" }}>
+                    The tighter the orb, the stronger the effect. Gold-toned aspects tend to feel easy; rust-toned ones create the friction that actually drives growth.
+                  </p>
+                  <div className="flex flex-col gap-2">
+                    {chart.aspects.slice(0, 8).map((a, i) => (
+                      <div key={i} className="chart-aspect-row">
+                        <div className="chart-aspect-row__head">
+                          <span className="chart-aspect-row__label">
+                            {a.bodyA} <span className="chart-aspect-row__type">{a.aspect}</span> {a.bodyB}
+                          </span>
+                          <span className="chart-aspect-row__orb">{a.orb.toFixed(1)}° orb</span>
+                        </div>
+                        <p className="chart-aspect-row__explain">{explainAspectPair(a.bodyA, a.bodyB, a.aspect)}</p>
                       </div>
-                      <p className="chart-aspect-row__explain">{explainAspectPair(a.bodyA, a.bodyB, a.aspect)}</p>
-                    </div>
-                  ))}
-                </div>
-              </>
-            ) : (
-              <p className="text-sm text-muted-foreground">No tight aspects to show yet.</p>
-            )}
+                    ))}
+                  </div>
+                </>
+              ) : (
+                <p className="tn-sky__note">No tight aspects to show yet.</p>
+              )}
+            </div>
           </div>
         </div>
       </div>
