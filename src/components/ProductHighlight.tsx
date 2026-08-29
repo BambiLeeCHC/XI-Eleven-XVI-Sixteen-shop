@@ -9,6 +9,7 @@ import {
   groupProductsByStyle,
   snapHex,
 } from "../lib/brand";
+import { hiResProductImage } from "../lib/productImage";
 
 type HighlightProduct = {
   _id: string;
@@ -190,16 +191,18 @@ export function ProductHighlight({
 
       <div className="grid md:grid-cols-[minmax(0,1fr)_minmax(280px,1fr)] min-h-[72vh] items-stretch">
         <div
-          className="flex items-center justify-center p-6"
-          style={{ background: "#111" }}
+          className="flex items-center justify-center p-6 product-stage"
+          style={{ background: "var(--cream)" }}
         >
           {selected.images?.[0] ? (
             <img
-              src={selected.images[0]}
+              src={hiResProductImage(selected.images[0], 1600)}
               alt={displayProductName(selected.name)}
-              className="max-h-[62vh] max-w-[520px] w-full object-contain"
+              className="product-stage__shot"
+              decoding="async"
             />
           ) : null}
+          <span className="product-stage__grain" aria-hidden="true" />
         </div>
 
         <div

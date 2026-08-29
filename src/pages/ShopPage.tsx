@@ -20,6 +20,7 @@ import {
   snapHex,
   styleKeyFromName,
 } from "../lib/brand";
+import { hiResProductImage } from "../lib/productImage";
 
 export function ShopPage() {
   const [searchParams] = useSearchParams();
@@ -162,15 +163,18 @@ export function ShopPage() {
           </p>
         </aside>
 
-        <div className="flex flex-col min-h-[92vh] bg-black">
-          <div className="relative flex flex-1 items-center justify-center p-6">
+        <div className="flex flex-col min-h-[92vh]" style={{ background: "var(--cream)" }}>
+          <div className="relative flex flex-1 items-center justify-center p-6 product-stage">
             {sku?.images?.[0] ? (
               <img
-                src={sku.images[0]}
+                src={hiResProductImage(sku.images[0], 1800)}
                 alt={sku.name}
-                className="max-h-[58vh] max-w-[560px] w-full object-contain"
+                className="product-stage__shot"
+                decoding="async"
+                fetchPriority="high"
               />
             ) : null}
+            <span className="product-stage__grain" aria-hidden="true" />
 
             {sku ? (
               <>

@@ -19,6 +19,7 @@ import {
   snapHex,
   styleKeyFromName,
 } from "../lib/brand";
+import { hiResProductImage } from "../lib/productImage";
 
 /** Extract just the size label from a variant name like "D-SLIP DRESS [BLACK] / XS" → "XS" */
 function cleanSizeLabel(size: string): string {
@@ -139,17 +140,13 @@ function Product360Viewer({
   };
 
   return (
-    <div>
-      {/* Main Image */}
+    <div className="pdp-gallery">
       <div
         ref={containerRef}
         role="region"
         aria-label={`${name} product gallery${has360 ? " with 360 degree view" : ""}`}
-        className="aspect-[3/4] overflow-hidden mb-4 relative group"
+        className="pdp-gallery__stage product-stage"
         style={{
-          background: "linear-gradient(145deg, #f7f5f1, #efece6)",
-          border: "1px solid rgba(21,36,61,0.10)",
-          borderRadius: "16px",
           cursor: is360Mode ? (isDragging ? "grabbing" : "grab") : "default",
           userSelect: "none",
           touchAction: is360Mode ? "none" : "pan-y",
@@ -164,60 +161,45 @@ function Product360Viewer({
       >
         {displayImage ? (
           <img
-            src={displayImage}
+            src={hiResProductImage(displayImage, 1800)}
             alt={is360Mode ? `${name}, angle ${currentIndex + 1} of 8` : name}
-            className={`w-full h-full pointer-events-none ${
-              is360Mode ? "object-contain" : "object-cover"
-            }`}
-            style={{ borderRadius: "15px" }}
+            className="pdp-gallery__shot"
             draggable={false}
+            decoding="async"
+            fetchPriority="high"
           />
         ) : (
-          <div className="w-full h-full flex items-center justify-center">
-            <span style={{ color: "rgba(21,36,61,0.08)" }} className="text-6xl">
-              ✦
-            </span>
-          </div>
+          <div className="pdp-gallery__empty">✦</div>
+        )}
+        <span className="product-stage__grain" aria-hidden="true" />
+
+        {!is360Mode && images.length > 1 && (
+          <>
+            <button
+              type="button"
+              className="pdp-gallery__nav pdp-gallery__nav--prev"
+              aria-label="Previous photo"
+              onClick={() => setCurrentIndex((i) => (i - 1 + images.length) % images.length)}
+            >
+              ‹
+            </button>
+            <button
+              type="button"
+              className="pdp-gallery__nav pdp-gallery__nav--next"
+              aria-label="Next photo"
+              onClick={() => setCurrentIndex((i) => (i + 1) % images.length)}
+            >
+              ›
+            </button>
+          </>
         )}
 
-        {/* 360° Mode Overlay */}
         {is360Mode && (
           <>
-            {/* Rotation indicator */}
-            <div
-              className="absolute top-4 left-1/2 -translate-x-1/2 flex items-center gap-2 px-4 py-2"
-              style={{
-                background: "rgba(0,0,0,0.65)",
-                backdropFilter: "blur(12px)",
-                borderRadius: "20px",
-                border: "1px solid rgba(185,149,69,0.35)",
-              }}
-            >
-              <span
-                className="text-[18px]"
-                style={{
-                  animation: isAutoRotating
-                    ? "spin360 2s linear infinite"
-                    : "none",
-                }}
-              >
-                ↻
-              </span>
-              <span className="text-[10px] tracking-[0.2em] uppercase text-white/70">
-                {isAutoRotating ? "AUTO" : "DRAG TO ROTATE"}
-              </span>
+            <div className="pdp-gallery__360-chip">
+              <span>{isAutoRotating ? "AUTO" : "DRAG TO ROTATE"}</span>
             </div>
-
-            {/* Angle indicator dots */}
-            <div
-              className="absolute bottom-4 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
-              style={{
-                background: "rgba(0,0,0,0.5)",
-                backdropFilter: "blur(8px)",
-                borderRadius: "12px",
-                padding: "6px 10px",
-              }}
-            >
+            <div className="pdp-gallery__360-controls">
               <input
                 type="range"
                 min="0"
@@ -232,152 +214,54 @@ function Product360Viewer({
                 onPointerDown={event => event.stopPropagation()}
                 onMouseDown={event => event.stopPropagation()}
                 onTouchStart={event => event.stopPropagation()}
-                className="w-40 accent-[#b99545]"
+                className="pdp-gallery__dial"
               />
-              <div className="flex gap-1.5" aria-hidden="true">
-                {angleImages.map((_, i) => (
-                  <span
-                    key={i}
-                    className="transition-all duration-200"
-                    style={{
-                      width:
-                        i === currentIndex % angleImages.length
-                          ? "16px"
-                          : "6px",
-                      height: "6px",
-                      borderRadius: "3px",
-                      background:
-                        i === currentIndex % angleImages.length
-                          ? "linear-gradient(135deg, #b99545, #d9b876)"
-                          : "rgba(255,255,255,0.3)",
-                    }}
-                  />
-                ))}
-              </div>
             </div>
-
-            {/* Close 360 button */}
-            <button
-              type="button"
-              onClick={exit360}
-              className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center transition-all"
-              style={{
-                background: "rgba(0,0,0,0.6)",
-                backdropFilter: "blur(8px)",
-                borderRadius: "50%",
-                border: "1px solid rgba(255,255,255,0.15)",
-                color: "white",
-                fontSize: "14px",
-              }}
-            >
+            <button type="button" onClick={exit360} className="pdp-gallery__icon pdp-gallery__icon--tr" aria-label="Close 360">
               ✕
             </button>
-
-            {/* Play / Pause */}
             <button
               type="button"
               onClick={e => {
                 e.stopPropagation();
                 setIsAutoRotating(!isAutoRotating);
               }}
-              className="absolute top-4 left-4 w-8 h-8 flex items-center justify-center transition-all"
-              style={{
-                background: "rgba(0,0,0,0.6)",
-                backdropFilter: "blur(8px)",
-                borderRadius: "50%",
-                border: "1px solid rgba(255,255,255,0.15)",
-                color: "white",
-                fontSize: "12px",
-              }}
+              className="pdp-gallery__icon pdp-gallery__icon--tl"
+              aria-label={isAutoRotating ? "Pause rotation" : "Play rotation"}
             >
               {isAutoRotating ? "⏸" : "▶"}
             </button>
           </>
         )}
 
-        {/* 360° Enter Button (shown when NOT in 360 mode, product has enough images) */}
         {!is360Mode && has360 && (
-          <button
-            type="button"
-            onClick={enter360}
-            className="absolute bottom-4 right-4 flex items-center gap-2 px-4 py-2 transition-all"
-            style={{
-              background: "rgba(0,0,0,0.65)",
-              backdropFilter: "blur(12px)",
-              borderRadius: "20px",
-              border: "1px solid rgba(185,149,69,0.4)",
-              color: "white",
-            }}
-          >
-            <span style={{ fontSize: "16px" }}>↻</span>
-            <span className="text-[10px] tracking-[0.2em] uppercase font-semibold">
-              360° VIEW
-            </span>
+          <button type="button" onClick={enter360} className="pdp-gallery__360">
+            ↻ 360°
           </button>
         )}
       </div>
 
-      {/* Thumbnail Strip (hidden in 360 mode) */}
       {!is360Mode && (images.length > 1 || has360) && (
-        <div className="flex gap-2 overflow-x-auto pb-1">
+        <div className="pdp-gallery__thumbs">
           {images.map((img, i) => (
             <button
               type="button"
               key={i}
               onClick={() => setCurrentIndex(i)}
-              className="w-16 h-20 flex-shrink-0 overflow-hidden transition-all"
-              style={{
-                border:
-                  i === currentIndex
-                    ? "2px solid rgba(185,149,69,0.85)"
-                    : "1px solid rgba(21,36,61,0.14)",
-                borderRadius: "10px",
-                background: "rgba(255,240,230,0.02)",
-              }}
+              className={`pdp-gallery__thumb ${i === currentIndex ? "is-on" : ""}`}
+              aria-label={`Photo ${i + 1}`}
             >
-              <img
-                src={img}
-                alt=""
-                className="w-full h-full object-cover"
-                style={{ borderRadius: "8px" }}
-              />
+              <img src={hiResProductImage(img, 400)} alt="" />
             </button>
           ))}
-
-          {/* 360 quick-enter thumbnail */}
           {has360 && (
-            <button
-              type="button"
-              onClick={enter360}
-              className="w-16 h-20 flex-shrink-0 flex flex-col items-center justify-center gap-1 transition-all"
-              style={{
-                border: "1px solid rgba(185,149,69,0.35)",
-                borderRadius: "10px",
-                background:
-                  "linear-gradient(135deg, rgba(185,149,69,0.08), rgba(185,149,69,0.05))",
-              }}
-            >
-              <span style={{ fontSize: "18px", color: "rgba(21,36,61,0.55)" }}>
-                ↻
-              </span>
-              <span
-                className="text-[8px] tracking-wider uppercase"
-                style={{ color: "rgba(185,149,69,0.8)" }}
-              >
-                8-angle 360°
-              </span>
+            <button type="button" onClick={enter360} className="pdp-gallery__thumb pdp-gallery__thumb--360">
+              ↻
+              <span>360°</span>
             </button>
           )}
         </div>
       )}
-
-      {/* CSS for spin animation */}
-      <style>{`
-        @keyframes spin360 {
-          from { transform: rotate(0deg); }
-          to { transform: rotate(360deg); }
-        }
-      `}</style>
     </div>
   );
 }
@@ -510,7 +394,7 @@ export function ProductPage() {
         </div>
 
         <div className="grid md:grid-cols-[1.15fr_.85fr] min-h-[70vh]">
-          <div className="relative bg-[#111] min-h-[70vh] px-4 py-6">
+          <div className="relative min-h-[70vh] px-4 py-6" style={{ background: "var(--cream)" }}>
             <div className="absolute left-6 top-7 z-[3]">
               <div className="bib">
                 <div className="holes">

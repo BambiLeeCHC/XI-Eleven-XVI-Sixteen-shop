@@ -6,6 +6,7 @@ import {
   groupProductsByStyle,
   styleKeyFromName,
 } from "../lib/brand";
+import { hiResProductImage } from "../lib/productImage";
 
 interface Product {
   _id: string;
@@ -83,14 +84,14 @@ function Section({
             className="group block"
           >
             <div
-              className="aspect-[3/4] overflow-hidden mb-3 bg-[#111] transition-transform group-hover:scale-[1.02]"
-              style={{ border: "2px solid var(--cream)" }}
+              className="aspect-[3/4] overflow-hidden mb-3 product-stage transition-transform group-hover:scale-[1.02]"
+              style={{ border: "2px solid var(--cream)", background: "var(--cream)" }}
             >
               {product.images[0] && (
                 <img
-                  src={product.images[0]}
+                  src={hiResProductImage(product.images[0], 800)}
                   alt={product.name}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-contain"
                   loading="lazy"
                 />
               )}
