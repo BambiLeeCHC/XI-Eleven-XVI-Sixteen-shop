@@ -53,8 +53,11 @@ export function AlmanacTNPage() {
       <div className="journal-stack tn-shell">
         <SEO title={pageTitle} />
         <TrueNorthHero sunSign={sunSign} />
-        <SectionHeading wordA="The" wordB="Almanac" ariaLabel="The Almanac" />
         <div className="tn-card tn-almanac">
+          <SectionHeading wordA="The" wordB="Almanac" ariaLabel="The Almanac" />
+          <p className="chart-expand-hint">
+            The day's mood, the moon, and the 11:16 hour — tap a date to read it.
+          </p>
           <AlmanacCalendar />
         </div>
       </div>

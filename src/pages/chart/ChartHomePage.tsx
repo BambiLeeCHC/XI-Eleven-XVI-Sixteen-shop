@@ -6,7 +6,9 @@ import { api, invalidateQueries, useAuthStatus, useQuery } from "../../lib/backe
 import { ChartSkyPanel } from "./ChartSkyPanel";
 import { SectionBoundary } from "../../components/journal/SectionBoundary";
 import {
+  AspectRow,
   HouseRow,
+  PlacementRow,
   PROFILE_ERROR_COPY,
   ProfileSection,
   SectionHeading,
@@ -19,6 +21,7 @@ import type { NatalChartResult, NatalProfileResult } from "./shared";
 export function ChartHomePage() {
   const [selectedBody, setSelectedBody] = useState<string | null>(null);
   const [expandedHouse, setExpandedHouse] = useState<number | null>(null);
+  const [expandedAspect, setExpandedAspect] = useState<number | null>(null);
 
   const { isLoading: authLoading, isAuthenticated } = useAuthStatus();
   const user = useQuery(
@@ -102,6 +105,44 @@ export function ChartHomePage() {
             <ChartSkyPanel chart={chart} selectedBody={selectedBody} setSelectedBody={setSelectedBody} />
 
             <div className="tn-card chart-feed-card" style={{ ["--i" as any]: 1 }}>
+              <SectionHeading wordA="The" wordB="Placements" ariaLabel="The Placements" />
+              <p className="chart-expand-hint">
+                Tap a planet. The sign is how that part of you actually moves.
+              </p>
+              <div className="tn-houses">
+                {chart.placements.map((p) => (
+                  <PlacementRow
+                    key={p.body}
+                    placement={p}
+                    expanded={selectedBody === p.body}
+                    onToggle={() => setSelectedBody(selectedBody === p.body ? null : p.body)}
+                  />
+                ))}
+              </div>
+            </div>
+
+            <div className="tn-card chart-feed-card" style={{ ["--i" as any]: 2 }}>
+              <SectionHeading wordA="Tightest" wordB="Aspects" ariaLabel="Tightest Aspects" />
+              <p className="chart-expand-hint">
+                The tighter the orb, the stronger the conversation between two planets.
+              </p>
+              {chart.aspects.length > 0 ? (
+                <div className="tn-houses">
+                  {chart.aspects.map((a, i) => (
+                    <AspectRow
+                      key={`${a.bodyA}-${a.aspect}-${a.bodyB}-${i}`}
+                      aspect={a}
+                      expanded={expandedAspect === i}
+                      onToggle={() => setExpandedAspect((cur) => (cur === i ? null : i))}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <p className="tn-sky__note">No tight aspects to show yet.</p>
+              )}
+            </div>
+
+            <div className="tn-card chart-feed-card" style={{ ["--i" as any]: 3 }}>
               <SectionHeading wordA="The" wordB="Houses" ariaLabel="The Houses" />
               <p className="chart-expand-hint">
                 Tap a house. The sign on the cusp is how that room of your life actually runs.

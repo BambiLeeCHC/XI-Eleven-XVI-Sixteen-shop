@@ -342,7 +342,7 @@ export default function DeepReadingPage() {
           </div>
         )}
         {entitled && (
-          <div className="chart-feed tn-feed">
+          <div className="chart-feed tn-feed tn-longread">
             <div className="tn-windows" role="tablist" aria-label="Daily Long Read windows">
               {WINDOWS.map(w => {
                 const state = stateFor(w.id);
@@ -385,7 +385,7 @@ export default function DeepReadingPage() {
                     id="deep-situation"
                     value={situations[selectedWindow]}
                     onChange={e => setSituations(prev => ({ ...prev, [selectedWindow]: e.target.value }))}
-                    rows={2}
+                    rows={4}
                     placeholder={'e.g. "trying to decide whether to leave my job"'}
                     className="tn-field"
                   />
@@ -426,7 +426,7 @@ export default function DeepReadingPage() {
                   )}
                   <div className="tn-followup">
                     <p className="label-lock">Ask a follow-up — $2.99</p>
-                    <textarea value={question} onChange={e => setQuestion(e.target.value)} rows={2} placeholder="What do you want to know more about?" className="tn-field" />
+                    <textarea value={question} onChange={e => setQuestion(e.target.value)} rows={3} placeholder="What do you want to know more about?" className="tn-field" />
                     <button type="button" onClick={askQuestion} disabled={askingQuestion || !question.trim()} className="cta-pist" style={{ alignSelf: "flex-start", opacity: askingQuestion || !question.trim() ? 0.5 : 1, cursor: askingQuestion || !question.trim() ? "default" : "pointer" }}>
                       {askingQuestion ? "Starting…" : "Ask — $2.99"}
                     </button>

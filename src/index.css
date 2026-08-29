@@ -556,8 +556,8 @@ body {
 }
 @media (min-width: 640px) {
   .long-read-spread {
-    grid-template-columns: repeat(7, minmax(0, 1fr));
-    gap: 0.75rem 0.5rem;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1.1rem 0.9rem;
   }
 }
 .long-read-card {
@@ -574,7 +574,7 @@ body {
 .long-read-card .jdeck-art,
 .long-read-card svg {
   width: 100%;
-  max-width: 110px;
+  max-width: 168px;
   height: auto;
   margin: 0 auto;
   display: block;
@@ -631,15 +631,15 @@ body {
     max-width: 100%;
   }
   .long-read-panel {
-    padding: 1.1rem !important;
+    padding: 1.45rem 1.15rem 1.6rem !important;
   }
   .long-read-panel .journal-article__title--collage .jcol-tag {
     font-size: clamp(1.05rem, 6.5vw, 1.45rem);
     padding: 2px 8px 4px;
   }
-  .long-read-spread { gap: 0.7rem 0.45rem; }
+  .long-read-spread { gap: 1rem 0.75rem; }
   .long-read-card .jdeck-art,
-  .long-read-card svg { max-width: 96px; }
+  .long-read-card svg { max-width: 140px; }
 }
 
 

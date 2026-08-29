@@ -10,51 +10,93 @@
  */
 
 export const BODY_MEANINGS: Record<string, string> = {
-  Sun: "your core identity, ego and vitality — the theme you're here to shine at",
-  Moon: "your emotional inner world, instincts and what makes you feel safe",
-  Mercury: "how you think, talk and process information",
-  Venus: "how you love, what you're drawn to, and your sense of beauty and value",
-  Mars: "how you assert yourself, take action, and go after what you want",
-  Jupiter: "where you expand, take risks, and find luck and meaning",
-  Saturn: "where you meet structure and discipline, and earn hard-won mastery",
-  Uranus: "where you break convention and need freedom to do things your own way",
-  Neptune: "where you dream, blur boundaries, and reach for something transcendent",
-  Pluto: "where you transform, confront power, and rebuild from the root up",
-  Ascendant: "how you come across on first meeting — the mask you lead with",
-  Midheaven: "your public path — career, reputation, the mark you're building",
+  Sun: "how you shine — the part of you that feels most like you when you use it on purpose",
+  Moon: "what steadies you — the inner weather that tells you when you are actually well",
+  Mercury: "how you think and talk — the way your mind makes a path through the day",
+  Venus: "how you love and choose — what you are drawn to, and how you make a room feel like yours",
+  Mars: "how you move — the clean yes that gets you out of the chair and into the work",
+  Jupiter: "where you grow — the place luck, meaning, and a bigger life keep opening",
+  Saturn: "where you build — the skill you earn, keep, and are quietly proud of",
+  Uranus: "where you break free — the original move only you would make",
+  Neptune: "where you dream — imagination, faith, and the soft vision that keeps you kind",
+  Pluto: "where you transform — the honest rebuild that leaves you stronger than before",
+  Ascendant: "how you arrive — the first impression that is also a true door into you",
+  Midheaven: "your public path — the mark you are building in the world",
 };
 
-/** Short noun-phrase per body, for direct aspect sentences ("Mercury's
- * communication grinds against Jupiter's growth") instead of the abstract
- * "these forces" phrasing. */
+export const BODY_TITLES: Record<string, string> = {
+  Sun: "How you shine",
+  Moon: "What steadies you",
+  Mercury: "How you think",
+  Venus: "How you love",
+  Mars: "How you move",
+  Jupiter: "Where you grow",
+  Saturn: "Where you build",
+  Uranus: "Where you break free",
+  Neptune: "Where you dream",
+  Pluto: "Where you transform",
+  Ascendant: "How you arrive",
+  Midheaven: "Your public path",
+};
+
 export const BODY_SHORT: Record<string, string> = {
-  Sun: "identity",
-  Moon: "emotions",
-  Mercury: "communication",
-  Venus: "love & values",
+  Sun: "shine",
+  Moon: "inner weather",
+  Mercury: "mind",
+  Venus: "love",
   Mars: "drive",
   Jupiter: "growth",
-  Saturn: "discipline",
-  Uranus: "individuality",
-  Neptune: "imagination",
-  Pluto: "transformation",
-  Ascendant: "first impression",
+  Saturn: "craft",
+  Uranus: "freedom",
+  Neptune: "vision",
+  Pluto: "rebuild",
+  Ascendant: "arrival",
   Midheaven: "public path",
 };
 
 export const SIGN_TRAITS: Record<string, string> = {
-  Aries: "bold, direct, quick to act — thrives on challenge and momentum, impatient with hesitation",
-  Taurus: "steady, sensual, values comfort and consistency — slow to move, nearly impossible to move once decided",
-  Gemini: "curious, quick-witted, needs variety and conversation — adapts fast, gets bored faster",
-  Cancer: "protective, intuitive, deeply feeling — needs emotional safety before it opens up",
-  Leo: "warm, expressive, wants to be seen — generous and loyal once secure in its spotlight",
-  Virgo: "precise, discerning, improves everything it touches — can be hardest on itself",
-  Libra: "diplomatic, aesthetic, seeks balance and partnership — avoids conflict, sometimes at its own expense",
-  Scorpio: "intense, private, all-or-nothing — drawn to what's hidden, unafraid of what's heavy",
-  Sagittarius: "expansive, blunt, restless for meaning and movement — allergic to small talk and small plans",
-  Capricorn: "ambitious, disciplined, plays the long game — earns everything the hard way and doesn't forget it",
-  Aquarius: "independent, idea-driven, allergic to conformity — thinks in systems, futures and causes bigger than itself",
-  Pisces: "porous, imaginative, absorbs the mood of a room — needs a real outlet for its depth or it drifts",
+  Aries: "heat, a clean start, and the courage to go first",
+  Taurus: "steady ground, the body, and what is worth keeping",
+  Gemini: "a quick mind, conversation, and more than one true answer",
+  Cancer: "care, home, and the instinct that knows who belongs",
+  Leo: "warm light, generosity, and being seen without shrinking",
+  Virgo: "clean craft, useful help, and the details that make a thing work",
+  Libra: "fairness, beauty, and the gift of making two sides meet",
+  Scorpio: "honest depth, loyalty, and the strength to look all the way in",
+  Sagittarius: "wide sky, humor, and a life that keeps getting bigger",
+  Capricorn: "the long game, earned respect, and work that lasts",
+  Aquarius: "your own way, a future you can stand in, and people who get it",
+  Pisces: "soft vision, kindness, and a door into the unseen",
+};
+
+export const SIGN_SUMMARY: Record<string, string> = {
+  Aries: "heat and start",
+  Taurus: "steady ground",
+  Gemini: "quick mind",
+  Cancer: "care and home",
+  Leo: "warm light",
+  Virgo: "clean craft",
+  Libra: "fair balance",
+  Scorpio: "honest depth",
+  Sagittarius: "wide sky",
+  Capricorn: "long game",
+  Aquarius: "your own way",
+  Pisces: "soft vision",
+};
+
+export const SIGN_KEYWORDS: Record<string, string[]> = {
+  Aries: ["start", "heat", "yes"],
+  Taurus: ["keep", "body", "slow"],
+  Gemini: ["talk", "curious", "two"],
+  Cancer: ["care", "home", "feel"],
+  Leo: ["shine", "give", "heart"],
+  Virgo: ["craft", "help", "order"],
+  Libra: ["fair", "beauty", "two"],
+  Scorpio: ["depth", "loyal", "true"],
+  Sagittarius: ["wide", "meaning", "go"],
+  Capricorn: ["build", "time", "earn"],
+  Aquarius: ["original", "future", "us"],
+  Pisces: ["dream", "kind", "flow"],
 };
 
 interface HouseMeaning {
@@ -342,34 +384,34 @@ interface AspectMeaning {
 
 export const ASPECT_MEANINGS_FULL: Record<string, AspectMeaning> = {
   conjunction: {
-    nature: "fused together — these two forces act as one, for better or worse",
+    nature: "fused strength — these two work as one",
     feel:
-      "You likely don't experience these as two separate energies at all — they blend into a single instinct, so strong it can be hard to see objectively from the inside.",
+      "They move as a single usable gift. When you name it, you can put the whole thing to work instead of wondering why it feels so natural.",
   },
   sextile: {
-    nature: "an easy opportunity — these forces cooperate when you make the effort",
+    nature: "an open door — they cooperate when you walk through",
     feel:
-      "This one won't demand your attention, which is exactly the risk — it's a genuine gift that's easy to leave unused if you never actively reach for it.",
+      "This is easy help, sitting there on purpose. Reach for it once and both parts of you line up.",
   },
   square: {
-    nature: "friction that forces growth — tension between these forces you can't ignore",
+    nature: "live spark — friction that makes you skilled",
     feel:
-      "Expect real internal tension here, the kind that shows up as a recurring pattern or conflict — uncomfortable, but usually the exact place where your growth is happening whether you notice it or not.",
+      "These two keep you honest and in motion. The heat is not a problem to solve — it is the training that makes the gift reliable.",
   },
   trine: {
-    nature: "natural flow — these forces support each other with little effort",
+    nature: "natural flow — they already know how to help each other",
     feel:
-      "This is talent that comes easily, almost too easily — the upside is real ease, the risk is taking it for granted and never developing it further.",
+      "This one works while you sleep. Use it on purpose and it becomes a talent you can actually share.",
   },
   opposition: {
-    nature: "a pull in two directions — these forces need to find balance, not a winner",
+    nature: "a true conversation — two strengths that complete each other",
     feel:
-      "You'll likely feel this as a push-pull, often projected onto other people or situations before you recognize both sides live inside you — the goal isn't picking one, it's integrating both.",
+      "You get both sides. The work is not picking a winner — it is letting them take turns so the whole thing stays in balance.",
   },
   quincunx: {
-    nature: "an awkward adjustment — these forces don't speak the same language and need translating",
+    nature: "an inventive pairing — they do not match on paper, and that is the talent",
     feel:
-      "This aspect rarely announces itself clearly — it shows up as a nagging sense that two parts of you keep missing each other, requiring constant small adjustments rather than one clean resolution.",
+      "These two invent a third way. Small honest adjustments turn an odd pairing into a skill nobody else has.",
   },
 };
 
@@ -377,23 +419,198 @@ export const ASPECT_MEANINGS: Record<string, string> = Object.fromEntries(
   Object.entries(ASPECT_MEANINGS_FULL).map(([key, m]) => [key, m.nature]),
 );
 
-/** Direct connecting verb per aspect type, so the pair explanation reads as
- * "Your Mercury grinds against your Jupiter" instead of describing the
- * aspect abstractly first and the bodies second. */
-const ASPECT_VERBS: Record<string, string> = {
-  conjunction: "fuses directly with",
-  sextile: "opens an easy door for",
-  square: "grinds against",
-  trine: "flows easily into",
-  opposition: "pulls directly against",
-  quincunx: "keeps having to awkwardly adjust to",
+export const ASPECT_TITLES: Record<string, string> = {
+  conjunction: "Fused strength",
+  sextile: "Open door",
+  square: "Live spark",
+  trine: "Natural flow",
+  opposition: "True conversation",
+  quincunx: "Inventive pairing",
 };
+
+export const ASPECT_KEYWORDS: Record<string, string[]> = {
+  conjunction: ["one", "gift", "use"],
+  sextile: ["door", "easy", "reach"],
+  square: ["spark", "skill", "honest"],
+  trine: ["flow", "ease", "share"],
+  opposition: ["both", "balance", "turn"],
+  quincunx: ["invent", "adjust", "new"],
+};
+
+const ASPECT_VERBS: Record<string, string> = {
+  conjunction: "joins forces with",
+  sextile: "opens a door for",
+  square: "sharpens",
+  trine: "supports",
+  opposition: "balances",
+  quincunx: "invents a new way with",
+};
+
+/** Written body-in-sign lines — same voice as the house cusp table. */
+const PLACEMENT_IN_SIGN: Record<string, Record<string, string>> = {
+  Sun: {
+    Aries: "You shine by starting. Heat and a clean yes are how you remember who you are — when the room goes quiet, that same fire is the way back.",
+    Taurus: "You shine by staying. What you build slowly is the light other people can actually count on.",
+    Gemini: "You shine in conversation. Two true answers are allowed — curiosity is how you stay yourself.",
+    Cancer: "You shine by taking care. Home, feeling, and the people you keep are the stage, not a side note.",
+    Leo: "You shine when you let yourself be seen. Warmth you give away comes back as a life that fits.",
+    Virgo: "You shine in the useful details. Making a thing work — quietly, well — is the light.",
+    Libra: "You shine by making it fair. Beauty and a second chair at the table are how you lead.",
+    Scorpio: "You shine at depth. Honest loyalty is the light — you do not skim, and that is the gift.",
+    Sagittarius: "You shine when the map gets bigger. Humor and a farther horizon keep you true.",
+    Capricorn: "You shine in the long game. Work that lasts is how the world learns your name.",
+    Aquarius: "You shine by being original. A future you can stand in is the light — not a costume.",
+    Pisces: "You shine through kindness and vision. Soft seeing is not weak — it is how you find the door.",
+  },
+  Moon: {
+    Aries: "You settle when you can move. A fresh start calms you faster than sitting still ever will.",
+    Taurus: "You settle in the body. Food, rest, and something beautiful in reach are real medicine.",
+    Gemini: "You settle by talking it through. A live conversation is how the inner weather clears.",
+    Cancer: "You settle at home. Care given and received is the tide that brings you back to yourself.",
+    Leo: "You settle when you are warmly seen. Praise you can trust is not vanity — it is fuel.",
+    Virgo: "You settle when the small things work. Order is comfort; useful help is how you love yourself.",
+    Libra: "You settle in good company. Harmony in the room is how your body knows it is safe.",
+    Scorpio: "You settle in honesty. One true bond is worth more than a crowd, and you already know that.",
+    Sagittarius: "You settle when there is room to roam. Meaning and a window open keep the inner life kind.",
+    Capricorn: "You settle when the plan is solid. Earned security is the quiet that lets you feel.",
+    Aquarius: "You settle among your people. Belonging that does not ask you to shrink is home.",
+    Pisces: "You settle in softness. Music, water, sleep, a little faith — that is how the moon in you rests.",
+  },
+  Mercury: {
+    Aries: "You think in first lines. Say it straight — the clean sentence is already the good idea.",
+    Taurus: "You think in what lasts. Slow the sentence down and it becomes something people can use.",
+    Gemini: "You think in pairs. Two tabs open is not a flaw — it is how you find the connecting thread.",
+    Cancer: "You think in feeling. Memory and care are data; trust them when you speak.",
+    Leo: "You think out loud with heart. A story told warmly teaches more than a lecture ever will.",
+    Virgo: "You think in edits. Precision is kindness — the right word saves everyone time.",
+    Libra: "You think in both sides. Naming the fair middle is your native language.",
+    Scorpio: "You think underneath. The real question is the one under the question — you already hear it.",
+    Sagittarius: "You think in big pictures. A true sentence with humor in it can move a whole room.",
+    Capricorn: "You think in plans. Structure is how your ideas survive contact with the week.",
+    Aquarius: "You think in futures. The odd idea is often the useful one — keep it.",
+    Pisces: "You think in images. Metaphor and mood are intelligence — let them speak.",
+  },
+  Venus: {
+    Aries: "You love by going first. Direct warmth is attractive — the yes you offer is the gift.",
+    Taurus: "You love through the senses. Time, touch, and something well made are how devotion looks.",
+    Gemini: "You love in conversation. A live mind across the table is romance and friendship at once.",
+    Cancer: "You love by making a home. Care is the beauty — people feel it before they name it.",
+    Leo: "You love generously. Being adored and adoring back is not extra — it is the point.",
+    Virgo: "You love in the useful gesture. The thing you fix, cook, or notice is the love letter.",
+    Libra: "You love in balance. Beauty, fairness, and a second voice in the room keep love alive.",
+    Scorpio: "You love all the way. Loyalty with depth is the treasure — you do not do halfway.",
+    Sagittarius: "You love with a wide sky. Humor, travel, and a shared future keep the bond light and true.",
+    Capricorn: "You love for the long term. Commitment you can build on is the most romantic thing you know.",
+    Aquarius: "You love as an equal. Freedom inside the bond is how you stay.",
+    Pisces: "You love with the whole weather. Tenderness is not naive — it is how you choose.",
+  },
+  Mars: {
+    Aries: "You move by starting. Heat in the body is the green light — go while it is clean.",
+    Taurus: "You move when it is worth it. Slow power lasts longer than a sprint, and you already know the pace.",
+    Gemini: "You move through ideas. Two tactics, one afternoon — motion is mental first.",
+    Cancer: "You move to protect. Action on behalf of who you love is your sharpest courage.",
+    Leo: "You move where you can be proud. Heart-forward effort is how the win actually feels like yours.",
+    Virgo: "You move in precise steps. A clean system is fuel — the next right task is the fight worth having.",
+    Libra: "You move for fairness. Charm and a spine together — that is how you get the result.",
+    Scorpio: "You move with all of it. One true aim, held quietly, will outlast noise.",
+    Sagittarius: "You move toward the bigger map. Adventure is productive when it has a why.",
+    Capricorn: "You move on a schedule that respects the mountain. Persistence is your form of fire.",
+    Aquarius: "You move differently on purpose. The unconventional strike is often the kind one.",
+    Pisces: "You move with the tide. Inspired action beats forced action — wait for the true wave, then go.",
+  },
+  Jupiter: {
+    Aries: "You grow by leaping. A brave first step is luck wearing your face.",
+    Taurus: "You grow by keeping. Abundance that is real has weight — plant it.",
+    Gemini: "You grow by learning out loud. The next conversation is a bigger life.",
+    Cancer: "You grow through care. Family, chosen or blood, is a fortune you can actually live in.",
+    Leo: "You grow when you take the stage with warmth. Generosity multiplies.",
+    Virgo: "You grow in the craft. Mastery is luck you can repeat.",
+    Libra: "You grow with other people. A fair partnership is a wider world.",
+    Scorpio: "You grow at depth. Honest transformation is the windfall — not the surface win.",
+    Sagittarius: "You grow by going farther. Faith, humor, and a bigger why are native here.",
+    Capricorn: "You grow on a timeline you respect. Built luck lasts.",
+    Aquarius: "You grow with a future in mind. The community that fits you is the blessing.",
+    Pisces: "You grow through vision. Kindness and imagination open rooms money cannot.",
+  },
+  Saturn: {
+    Aries: "You build by starting again with more skill. Courage plus a plan is the structure.",
+    Taurus: "You build what you can keep. Slow work is the dignity — it holds.",
+    Gemini: "You build a mind you can trust. Practice the craft of saying it clearly.",
+    Cancer: "You build a home that stays. Boundaries are love with a backbone.",
+    Leo: "You build a reputation for warmth you can stand behind. Pride earned is allowed.",
+    Virgo: "You build systems that help. Discipline here looks like care, not punishment.",
+    Libra: "You build fair agreements. Partnerships with terms are how beauty survives the week.",
+    Scorpio: "You build through honest work on the hard thing. Depth becomes mastery.",
+    Sagittarius: "You build a philosophy you can live. Belief with a practice is the mountain.",
+    Capricorn: "You build the long game in your own sign — this is home field. Time is on your side.",
+    Aquarius: "You build an original structure. The future needs your particular rules.",
+    Pisces: "You build a gentle container. Form that protects the dream is the real discipline.",
+  },
+  Uranus: {
+    Aries: "You break free by going first. The new move is yours to invent — start it.",
+    Taurus: "You break free by changing what you keep. A better comfort is still a revolution.",
+    Gemini: "You break free in the idea. A surprising sentence can reroute the whole day.",
+    Cancer: "You break free in how you care. A new shape of home is allowed.",
+    Leo: "You break free on stage. Original heart is the lightning.",
+    Virgo: "You break free in the method. A smarter system is liberation, not nitpicking.",
+    Libra: "You break free in relationship. Equality that actually feels equal is the future.",
+    Scorpio: "You break free by telling the truth no one else will. That honesty is the upgrade.",
+    Sagittarius: "You break free by leaving the small map. A bigger why is the shock that heals.",
+    Capricorn: "You break free inside the institution. New rules, same backbone — that is the gift.",
+    Aquarius: "You break free in your own sign. The future you picture is already trying to arrive.",
+    Pisces: "You break free through a vision. Soft revolution still counts — it just looks like kindness.",
+  },
+  Neptune: {
+    Aries: "You dream in motion. Inspired action is prayer with shoes on.",
+    Taurus: "You dream in the body. Beauty you can touch is the spiritual practice.",
+    Gemini: "You dream in language. The right image, spoken, opens a door.",
+    Cancer: "You dream of home. A kind room is a temple — make it.",
+    Leo: "You dream in color and heart. Creating is how you stay in contact with the unseen.",
+    Virgo: "You dream in service. The small merciful task is the vision made real.",
+    Libra: "You dream of harmony. Beauty that includes someone else is the art.",
+    Scorpio: "You dream all the way down. Mysteries you face with love become medicine.",
+    Sagittarius: "You dream of a bigger faith. The road itself can be the answer.",
+    Capricorn: "You dream with a blueprint. Vision plus a schedule is how the fog becomes a building.",
+    Aquarius: "You dream of us. A kinder future is not abstract — it is the work.",
+    Pisces: "You dream in your own sign. Soft seeing is the gift — give it a simple daily form.",
+  },
+  Pluto: {
+    Aries: "You transform by starting over on purpose. The brave reset is how power returns.",
+    Taurus: "You transform what you own and keep. A truer value system is the rebirth.",
+    Gemini: "You transform the story. The sentence you stop repeating is the new life.",
+    Cancer: "You transform the family pattern. Care that is chosen, not inherited, is the power.",
+    Leo: "You transform in the spotlight. Honest heart, shown, changes the room.",
+    Virgo: "You transform the process. A cleaner way of working is a new self.",
+    Libra: "You transform the terms of together. Fairness with teeth is love that lasts.",
+    Scorpio: "You transform in your own sign. Depth is not a crisis — it is the native skill.",
+    Sagittarius: "You transform the meaning. A bigger why after a hard season is the gold.",
+    Capricorn: "You transform the structure. Power used cleanly is the rebuild.",
+    Aquarius: "You transform the future in public. The system can change because you did.",
+    Pisces: "You transform through surrender that is still a choice. Soft power ends the old story kindly.",
+  },
+};
+
+export function explainPlacementFull(body: string, sign: string): {
+  title: string;
+  summary: string;
+  detail: string;
+  keywords: string[];
+} {
+  return {
+    title: BODY_TITLES[body] ?? body,
+    summary: SIGN_SUMMARY[sign] ?? sign,
+    detail: PLACEMENT_IN_SIGN[body]?.[sign] ?? explainPlacement(body, sign),
+    keywords: SIGN_KEYWORDS[sign] ?? [],
+  };
+}
 
 /** One-line explanation for a Sun/Moon/etc-in-Sign placement. */
 export function explainPlacement(body: string, sign: string): string {
+  const written = PLACEMENT_IN_SIGN[body]?.[sign];
+  if (written) return written;
   const domain = BODY_MEANINGS[body] ?? "a part of who you are";
   const trait = SIGN_TRAITS[sign] ?? "";
-  return `${body} rules ${domain}. In ${sign}, that shows up as ${trait}.`;
+  return `${body} in ${sign} is ${domain} — ${trait}.`;
 }
 
 export function explainHouse(house: number): string {
@@ -410,18 +627,28 @@ export function explainAspect(aspectKey: string): string {
   return ASPECT_MEANINGS[aspectKey.toLowerCase()] ?? "";
 }
 
-/** Rich, pair-specific explanation of an aspect between two named bodies —
- * combines what each body governs with what the aspect type does to that
- * relationship, plus a second sentence on how it tends to actually feel. */
+export function explainAspectFull(bodyA: string, bodyB: string, aspectKey: string): {
+  title: string;
+  summary: string;
+  detail: string;
+  keywords: string[];
+} {
+  const key = aspectKey.toLowerCase();
+  return {
+    title: ASPECT_TITLES[key] ?? aspectKey,
+    summary: ASPECT_MEANINGS_FULL[key]?.nature ?? aspectKey,
+    detail: explainAspectPair(bodyA, bodyB, aspectKey),
+    keywords: ASPECT_KEYWORDS[key] ?? [],
+  };
+}
+
+/** Pair-specific explanation — uplifting, named, house-voice. */
 export function explainAspectPair(bodyA: string, bodyB: string, aspectKey: string): string {
   const key = aspectKey.toLowerCase();
   const meaning = ASPECT_MEANINGS_FULL[key];
   if (!meaning) return "";
-  const verb = ASPECT_VERBS[key] ?? "connects with";
-  const shortA = BODY_SHORT[bodyA];
-  const shortB = BODY_SHORT[bodyB];
-  const intro = shortA && shortB
-    ? `Your ${bodyA} (${shortA}) ${verb} your ${bodyB} (${shortB}).`
-    : `Your ${bodyA} ${verb} your ${bodyB}.`;
-  return `${intro} ${meaning.feel}`;
+  const verb = ASPECT_VERBS[key] ?? "works with";
+  const shortA = BODY_SHORT[bodyA] ?? bodyA.toLowerCase();
+  const shortB = BODY_SHORT[bodyB] ?? bodyB.toLowerCase();
+  return `Your ${bodyA} ${verb} your ${bodyB} — ${shortA} and ${shortB} in the same sentence. ${meaning.feel}`;
 }

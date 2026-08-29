@@ -1,8 +1,9 @@
 import { Link, useLocation } from "react-router-dom";
 import { PlanetIcon, SignIcon } from "../../components/journal/SkyGlyphs";
 import {
+  explainAspectFull,
   explainHouseFull,
-  explainPlacement,
+  explainPlacementFull,
   explainSignInHouse,
 } from "../../lib/astrologyMeanings";
 import { api, useQuery } from "../../lib/backend";
@@ -172,38 +173,112 @@ export function PlacementRow({
 }) {
   const { body, sign, house, retrograde, degree } = placement;
   const degInSign = Math.floor(((degree % 30) + 30) % 30);
+  const full = explainPlacementFull(body, sign);
+  const element = SIGN_ELEMENT[sign] ?? "air";
   return (
-    <div className={`chart-placement-row tn-place ${expanded ? "is-expanded" : ""}`}>
+    <div className={`tn-house tn-place tn-house--${element} ${expanded ? "is-expanded" : ""}`}>
       <button
         type="button"
-        className="chart-placement-row__head"
+        className="tn-house__head"
         onClick={onToggle}
         aria-expanded={expanded}
       >
-        <span className="tn-place__who">
-          <span className="tn-place__glyph">
-            <PlanetIcon body={body} size={18} />
-          </span>
-          <span className="tn-place__copy">
-            <span className="chart-placement__body">{body}</span>
-            <span className="tn-place__deg">{degInSign}° {sign}</span>
+        <span className="tn-house__num tn-place__mark" aria-hidden="true">
+          <PlanetIcon body={body} size={22} />
+        </span>
+        <span className="tn-house__copy">
+          <span className="label-lock">{full.title}</span>
+          <span className="tn-house__sign">
+            <SignIcon sign={sign} size={16} /> {body} · {degInSign}° {sign}
+            {full.summary ? ` · ${full.summary}` : ""}
           </span>
         </span>
-        <span className="chart-placement-row__head-right">
-          <span className={`lock-pill ${retrograde ? "rx" : ""}`}>
-            <SignIcon sign={sign} size={13} />
-            {house ? ` H${house}` : ""}
-            {retrograde ? " · Rx" : ""}
-          </span>
-          <span className="chart-placement-row__chevron" aria-hidden="true">
-            ▾
-          </span>
+        <span className="tn-house__bodies">
+          {house ? <span className={`lock-pill ${retrograde ? "rx" : "mute"}`}>H{house}{retrograde ? " Rx" : ""}</span> : null}
         </span>
+        <span className="chart-placement-row__chevron" aria-hidden="true">▾</span>
       </button>
       {expanded && (
-        <p className="chart-placement-row__explain">
-          {explainPlacement(body, sign)}
-        </p>
+        <div className="tn-house__open">
+          {house ? (
+            <p className="tn-house__residents">Lives in house {house}.</p>
+          ) : null}
+          <p>{full.detail}</p>
+          {full.keywords.length > 0 && (
+            <div className="chart-house-row__keywords">
+              {full.keywords.map(k => (
+                <span key={k} className="lock-pill mute">{k}</span>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+const ASPECT_GLYPH: Record<string, string> = {
+  conjunction: "☌",
+  opposition: "☍",
+  square: "□",
+  trine: "△",
+  sextile: "⚹",
+  quincunx: "⊼",
+};
+
+const ASPECT_TONE: Record<string, "fire" | "earth" | "air" | "water"> = {
+  conjunction: "earth",
+  sextile: "air",
+  square: "fire",
+  trine: "earth",
+  opposition: "water",
+  quincunx: "air",
+};
+
+export function AspectRow({
+  aspect,
+  expanded,
+  onToggle,
+}: {
+  aspect: NatalAspect;
+  expanded: boolean;
+  onToggle: () => void;
+}) {
+  const key = aspect.aspect.toLowerCase();
+  const full = explainAspectFull(aspect.bodyA, aspect.bodyB, aspect.aspect);
+  const tone = ASPECT_TONE[key] ?? "air";
+  return (
+    <div className={`tn-house tn-aspect tn-house--${tone} ${expanded ? "is-expanded" : ""}`}>
+      <button
+        type="button"
+        className="tn-house__head"
+        onClick={onToggle}
+        aria-expanded={expanded}
+      >
+        <span className="tn-house__num" aria-hidden="true">{ASPECT_GLYPH[key] ?? "·"}</span>
+        <span className="tn-house__copy">
+          <span className="label-lock">{full.title}</span>
+          <span className="tn-house__sign">
+            <PlanetIcon body={aspect.bodyA} size={15} /> {aspect.bodyA}
+            <span aria-hidden="true"> · </span>
+            <PlanetIcon body={aspect.bodyB} size={15} /> {aspect.bodyB}
+          </span>
+        </span>
+        <span className="lock-pill mute">{aspect.orb.toFixed(1)}°</span>
+        <span className="chart-placement-row__chevron" aria-hidden="true">▾</span>
+      </button>
+      {expanded && (
+        <div className="tn-house__open">
+          <p className="tn-house__residents">{full.summary}</p>
+          <p>{full.detail}</p>
+          {full.keywords.length > 0 && (
+            <div className="chart-house-row__keywords">
+              {full.keywords.map(k => (
+                <span key={k} className="lock-pill mute">{k}</span>
+              ))}
+            </div>
+          )}
+        </div>
       )}
     </div>
   );

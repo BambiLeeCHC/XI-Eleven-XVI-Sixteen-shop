@@ -7,6 +7,7 @@ import {
   NUMEROLOGY_ERROR_COPY,
   NumberRow,
   ProfileSection,
+  SectionHeading,
   TrueNorthHero,
   TrueNorthSignedOutTeaser,
   parseProfileSections,
@@ -74,6 +75,7 @@ export function NumbersPage() {
         <TrueNorthHero sunSign={sunSign} />
 
         <div className="tn-card tn-numbers-wrap">
+          <SectionHeading wordA="The" wordB="Numbers" ariaLabel="The Numbers" />
           {!numerologyUnlocked && (
             <>
               <p className="label-lock">Numerology — the layer underneath the chart</p>
