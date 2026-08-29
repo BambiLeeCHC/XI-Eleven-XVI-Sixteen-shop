@@ -11,7 +11,6 @@ import {
   BoldParagraphs,
   SectionHeading,
   TrueNorthHero,
-  TrueNorthSignedOutTeaser,
   useSunSign,
 } from "./chart/shared";
 
@@ -133,18 +132,11 @@ export default function DeepReadingPage() {
   const [question, setQuestion] = useState("");
   const [askingQuestion, setAskingQuestion] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [paywalled, setPaywalled] = useState(false);
 
   const isAdmin =
     adminFlag === true ||
     subscription?.isAdmin === true ||
     user?.role === "admin";
-  const entitled =
-    isAdmin ||
-    subscription?.entitled === true ||
-    subscription?.status === "active" ||
-    subscription?.status === "trialing" ||
-    (isAuthenticated && !paywalled);
 
   const todayByWindow = useMemo(() => {
     const map: Partial<Record<DailyWindow, SavedDeepReading>> = {};
@@ -193,6 +185,13 @@ export default function DeepReadingPage() {
     }
   };
 
+  const keepLocal = (spread: SpreadCard[], situation: string) => {
+    setLocalByWindow(prev => ({
+      ...prev,
+      [selectedWindow]: { spread, reading: fallbackReading(spread, situation) },
+    }));
+  };
+
   const drawTheLongRead = async () => {
     if (selectedState === "locked") return;
     if (hasReading && !isAdmin) return;
@@ -200,6 +199,13 @@ export default function DeepReadingPage() {
     setError(null);
     const drawn = drawDeepSpread();
     const situationText = situations[selectedWindow].trim();
+
+    if (!isAuthenticated) {
+      keepLocal(drawn, situationText);
+      setDrawing(false);
+      return;
+    }
+
     try {
       const result = await drawAction({
         spread: drawn,
@@ -207,34 +213,15 @@ export default function DeepReadingPage() {
         window: selectedWindow,
       });
       if (result?.success && result.reading) {
-        setPaywalled(false);
         setLocalByWindow(prev => ({
           ...prev,
           [selectedWindow]: { spread: drawn, reading: result.reading as string },
         }));
       } else {
-        const message = (result as { error?: string })?.error || "";
-        if (/subscription/i.test(message) || /sign in/i.test(message)) {
-          setPaywalled(true);
-          setError(message || "An active subscription is required for the Long Read.");
-        } else {
-          setLocalByWindow(prev => ({
-            ...prev,
-            [selectedWindow]: { spread: drawn, reading: fallbackReading(drawn, situationText) },
-          }));
-        }
+        keepLocal(drawn, situationText);
       }
-    } catch (e) {
-      const message = e instanceof Error ? e.message : "Something went wrong.";
-      if (/subscription/i.test(message) || /sign in/i.test(message) || /402/.test(message)) {
-        setPaywalled(true);
-        setError(message);
-      } else {
-        setLocalByWindow(prev => ({
-          ...prev,
-          [selectedWindow]: { spread: drawn, reading: fallbackReading(drawn, situationText) },
-        }));
-      }
+    } catch {
+      keepLocal(drawn, situationText);
     } finally {
       setDrawing(false);
     }
@@ -292,30 +279,6 @@ export default function DeepReadingPage() {
     );
   }
 
-  if (!isAuthenticated) {
-    return (
-      <div className="journal-page journal-page--truenorth">
-        <TrueNorthAtmosphere />
-        <div className="journal-stack long-read-stack" style={{ maxWidth: "42rem", width: "100%" }}>
-          <SEO title={pageTitle} />
-          <TrueNorthSignedOutTeaser
-            pageTitleTag={
-              <div className="long-read-lock-card" style={{ ...lockCardStyle, textAlign: "left", marginBottom: "1.5rem" }}>
-                <p className="label-lock" style={{ color: "#142010", marginBottom: "0.55rem" }}>
-                  The Long Read
-                </p>
-                <p className="serif-quiet text-xl" style={{ color: "#142010", margin: 0 }}>
-                  Seven cards, three times a day — morning, midday, evening — read against what's
-                  actually going on with you.
-                </p>
-              </div>
-            }
-          />
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="journal-page journal-page--truenorth">
       <TrueNorthAtmosphere />
@@ -333,98 +296,93 @@ export default function DeepReadingPage() {
             <p className="text-sm" style={{ color: "#8E1D2C", margin: 0 }}>{error}</p>
           </div>
         )}
-        {!entitled && (
-          <div className="long-read-lock-card" style={{ ...lockCardStyle, display: "flex", flexDirection: "column", gap: "1.1rem" }}>
-            <p className="label-lock" style={{ color: "#142010" }}>Unlock the Long Read</p>
-            <h2 className="clash" style={{ fontSize: "clamp(32px, 6vw, 48px)", color: "#0B0B0C", margin: 0 }}>Seven cards. Three windows.</h2>
-            <p className="serif-quiet text-xl" style={{ color: "#142010", margin: 0 }}>
-              Read directly against what's actually going on for you — not the daily five, a genuinely deeper read, saved to your account. 7 days free, then $7/week.
-            </p>
-            <SubscriptionTierPicker subscribingTier={subscribingTier} onStart={startTrial} />
-          </div>
+        {!isAuthenticated && (
+          <p className="serif-quiet" style={{ color: "#F4EFE6", margin: 0 }}>
+            Draw now. <Link to="/signin" style={{ textDecoration: "underline", color: "#D8F0C4" }}>Sign in</Link> to save the reading to your account.
+          </p>
         )}
-        {entitled && (
-          <div className="chart-feed">
-            <div className="lock-sub long-read-windows" role="tablist" aria-label="Daily Long Read windows">
-              {WINDOWS.map(w => {
-                const state = stateFor(w.id);
-                const isActiveWindow = w.id === active;
-                return (
-                  <button
-                    key={w.id}
-                    type="button"
-                    role="tab"
-                    aria-selected={selectedWindow === w.id}
-                    onClick={() => setSelectedWindow(w.id)}
-                    className={tabClass(w.id)}
-                  >
-                    {w.label}
-                    {isActiveWindow ? " · now" : ""}
-                    {state === "done" ? " · drawn" : state === "locked" ? " · later" : ""}
-                  </button>
-                );
-              })}
+        <div className="chart-feed">
+          <div className="lock-sub long-read-windows" role="tablist" aria-label="Daily Long Read windows">
+            {WINDOWS.map(w => {
+              const state = stateFor(w.id);
+              const isActiveWindow = w.id === active;
+              return (
+                <button
+                  key={w.id}
+                  type="button"
+                  role="tab"
+                  aria-selected={selectedWindow === w.id}
+                  onClick={() => setSelectedWindow(w.id)}
+                  className={tabClass(w.id)}
+                >
+                  {w.label}
+                  {isActiveWindow ? " · now" : ""}
+                  {state === "done" ? " · drawn" : state === "locked" ? " · later" : ""}
+                </button>
+              );
+            })}
+          </div>
+          <div className="long-read-lock-card long-read-panel" style={{ ...lockCardStyle, padding: "1.75rem", display: "flex", flexDirection: "column", gap: "0.95rem", position: "relative" }}>
+            <div className="long-read-panel__header">
+              <p className="label-lock" style={{ color: "#142010" }}>{selectedMeta.hours}</p>
+              <h2 className="clash" style={{ fontSize: "clamp(36px, 6vw, 56px)", color: "#0B0B0C", margin: "0.35rem 0 0" }}>{selectedMeta.label}</h2>
+              <p className="serif-quiet text-xl" style={{ marginTop: "0.45rem", color: "#142010" }}>{selectedMeta.blurb}</p>
             </div>
-            <div className="long-read-lock-card long-read-panel" style={{ ...lockCardStyle, padding: "1.75rem", display: "flex", flexDirection: "column", gap: "0.95rem", position: "relative" }}>
-              <div className="long-read-panel__header">
-                <p className="label-lock" style={{ color: "#142010" }}>{selectedMeta.hours}</p>
-                <h2 className="clash" style={{ fontSize: "clamp(36px, 6vw, 56px)", color: "#0B0B0C", margin: "0.35rem 0 0" }}>{selectedMeta.label}</h2>
-                <p className="serif-quiet text-xl" style={{ marginTop: "0.45rem", color: "#142010" }}>{selectedMeta.blurb}</p>
-              </div>
-              {selectedState === "locked" && (
-                <p className="serif-quiet" style={{ color: "#142010" }}>
-                  This window opens later today. You can still review Morning or Midday once you've drawn them.
-                </p>
-              )}
-              {selectedState === "open" && !hasReading && (
-                <>
-                  <label htmlFor="deep-situation" className="label-lock" style={{ color: "#142010" }}>
-                    Before you draw — what's actually going on right now?
-                  </label>
-                  <textarea
-                    id="deep-situation"
-                    value={situations[selectedWindow]}
-                    onChange={e => setSituations(prev => ({ ...prev, [selectedWindow]: e.target.value }))}
-                    rows={2}
-                    placeholder={'e.g. "trying to decide whether to leave my job"'}
-                    className="w-full rounded-md border px-3 py-2 text-sm"
-                    style={{ background: "rgba(255,255,255,.72)", color: "#0B0B0C" }}
-                  />
-                  <button type="button" onClick={drawTheLongRead} disabled={drawing} className="cta-pist" style={{ opacity: drawing ? 0.6 : 1, width: "100%", cursor: "pointer" }}>
-                    {drawing ? "Drawing…" : `Draw the ${selectedMeta.label} Long Read ✦`}
-                  </button>
-                </>
-              )}
-              {hasReading && (
-                <>
-                  <SectionBoundary fallbackLabel="Couldn't display your cards just now — the reading below is still yours.">
-                    <div className="long-read-spread">
-                      {displaySpread?.map(s => (
-                        <div key={s.slot} className="long-read-card">
-                          <p className="long-read-slot-label label-lock" style={{ color: "#142010" }}>{s.slotName}</p>
-                          <CardArt card={s.card} reversed={s.reversed} />
-                          <p className="long-read-card-name text-xs font-medium mt-1">
-                            {s.card.name}{s.reversed ? " (rev.)" : ""}
-                          </p>
-                        </div>
-                      ))}
-                    </div>
-                  </SectionBoundary>
-                  <SectionBoundary fallbackLabel="Couldn't display the reading text just now — it's saved to your account either way.">
-                    <div className="chart-profile-sections" style={{ position: "relative", zIndex: 2, isolation: "isolate" }}>
-                      <div className="chart-profile-section">
-                        <p className="label-lock" style={{ color: "#142010" }}>Your reading</p>
-                        <div className="chart-profile-section__body" style={{ marginTop: "0.85rem" }}>
-                          <BoldParagraphs text={displayReading || ""} />
-                        </div>
+            {selectedState === "locked" && (
+              <p className="serif-quiet" style={{ color: "#142010" }}>
+                This window opens later today. You can still review Morning or Midday once you've drawn them.
+              </p>
+            )}
+            {selectedState === "open" && !hasReading && (
+              <>
+                <label htmlFor="deep-situation" className="label-lock" style={{ color: "#142010" }}>
+                  Before you draw — what's actually going on right now?
+                </label>
+                <textarea
+                  id="deep-situation"
+                  value={situations[selectedWindow]}
+                  onChange={e => setSituations(prev => ({ ...prev, [selectedWindow]: e.target.value }))}
+                  rows={2}
+                  placeholder={'e.g. "trying to decide whether to leave my job"'}
+                  className="w-full rounded-md border px-3 py-2 text-sm"
+                  style={{ background: "rgba(255,255,255,.72)", color: "#0B0B0C" }}
+                />
+                <button type="button" onClick={drawTheLongRead} disabled={drawing} className="cta-pist" style={{ opacity: drawing ? 0.6 : 1, width: "100%", cursor: "pointer" }}>
+                  {drawing ? "Drawing…" : `Draw the ${selectedMeta.label} Long Read ✦`}
+                </button>
+              </>
+            )}
+            {hasReading && (
+              <>
+                <SectionBoundary fallbackLabel="Couldn't display your cards just now — the reading below is still yours.">
+                  <div className="long-read-spread">
+                    {displaySpread?.map(s => (
+                      <div key={s.slot} className="long-read-card">
+                        <p className="long-read-slot-label label-lock" style={{ color: "#142010" }}>{s.slotName}</p>
+                        <CardArt card={s.card} reversed={s.reversed} />
+                        <p className="long-read-card-name text-xs font-medium mt-1">
+                          {s.card.name}{s.reversed ? " (rev.)" : ""}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                </SectionBoundary>
+                <SectionBoundary fallbackLabel="Couldn't display the reading text just now — it's saved to your account either way.">
+                  <div className="chart-profile-sections" style={{ position: "relative", zIndex: 2, isolation: "isolate" }}>
+                    <div className="chart-profile-section">
+                      <p className="label-lock" style={{ color: "#142010" }}>Your reading</p>
+                      <div className="chart-profile-section__body" style={{ marginTop: "0.85rem" }}>
+                        <BoldParagraphs text={displayReading || ""} />
                       </div>
                     </div>
-                  </SectionBoundary>
-                  {isAdmin && selectedState === "done" && (
-                    <button type="button" onClick={drawTheLongRead} disabled={drawing} className="cta-ghost" style={{ alignSelf: "flex-start", opacity: drawing ? 0.6 : 0.9, cursor: "pointer" }}>
-                      {drawing ? "Drawing…" : "Admin · redraw this window"}
-                    </button>
-                  )}
+                  </div>
+                </SectionBoundary>
+                {isAdmin && selectedState === "done" && (
+                  <button type="button" onClick={drawTheLongRead} disabled={drawing} className="cta-ghost" style={{ alignSelf: "flex-start", opacity: drawing ? 0.6 : 0.9, cursor: "pointer" }}>
+                    {drawing ? "Drawing…" : "Admin · redraw this window"}
+                  </button>
+                )}
+                {isAuthenticated && (
                   <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem", marginTop: "0.35rem", paddingTop: "1rem", borderTop: "1px solid rgba(11,11,12,0.12)" }}>
                     <p className="label-lock" style={{ color: "#142010", margin: 0 }}>Ask a follow-up — $2.99</p>
                     <textarea value={question} onChange={e => setQuestion(e.target.value)} rows={2} placeholder="What do you want to know more about?" className="w-full rounded-md border px-3 py-2 text-sm" style={{ background: "rgba(255,255,255,.72)", color: "#0B0B0C" }} />
@@ -432,11 +390,11 @@ export default function DeepReadingPage() {
                       {askingQuestion ? "Starting…" : "Ask — $2.99"}
                     </button>
                   </div>
-                </>
-              )}
-            </div>
+                )}
+              </>
+            )}
           </div>
-        )}
+        </div>
         <p className="serif-quiet" style={{ textAlign: "center", marginTop: "0.5rem", color: "#F4EFE6" }}>
           Prefer the free five-card draw?{" "}
           <Link to="/journal" style={{ textDecoration: "underline", color: "#D8F0C4" }}>Open The Journal →</Link>
