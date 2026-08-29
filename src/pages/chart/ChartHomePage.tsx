@@ -104,13 +104,14 @@ export function ChartHomePage() {
             <div className="tn-card chart-feed-card" style={{ ["--i" as any]: 1 }}>
               <SectionHeading wordA="The" wordB="Houses" ariaLabel="The Houses" />
               <p className="chart-expand-hint">
-                Tap any house to open its full meaning, keywords and a reflective question.
+                Whole Sign houses — tap a room to see who lives there.
               </p>
-              <div className="chart-placements-list chart-houses-grid">
+              <div className="tn-houses">
                 {chart.houses.map((h) => (
                   <HouseRow
                     key={h.house}
                     houseCusp={h}
+                    occupants={chart.placements.filter((p) => p.house === h.house)}
                     expanded={expandedHouse === h.house}
                     onToggle={() => setExpandedHouse((cur) => (cur === h.house ? null : h.house))}
                   />

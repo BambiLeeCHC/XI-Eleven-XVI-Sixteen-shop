@@ -27,15 +27,28 @@ const SIGNS = [
   "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces",
 ];
 
-// Harmonious aspects read as warm/gold, tense ones as a soft rust, neutral
-// (conjunction) as ink — a quick-glance read before you click into detail.
+const SIGN_FILL: Record<string, string> = {
+  Aries: "rgba(244,205,216,0.55)",
+  Leo: "rgba(244,205,216,0.38)",
+  Sagittarius: "rgba(244,205,216,0.22)",
+  Taurus: "rgba(216,240,196,0.55)",
+  Virgo: "rgba(216,240,196,0.38)",
+  Capricorn: "rgba(216,240,196,0.22)",
+  Gemini: "rgba(205,228,245,0.55)",
+  Libra: "rgba(205,228,245,0.38)",
+  Aquarius: "rgba(205,228,245,0.22)",
+  Cancer: "rgba(228,212,244,0.55)",
+  Scorpio: "rgba(228,212,244,0.38)",
+  Pisces: "rgba(228,212,244,0.22)",
+};
+
 const ASPECT_COLOR: Record<string, string> = {
-  trine: "rgba(185,149,69,0.65)",
-  sextile: "rgba(185,149,69,0.45)",
-  conjunction: "rgba(60,50,40,0.4)",
-  square: "rgba(178,84,66,0.55)",
-  opposition: "rgba(178,84,66,0.7)",
-  quincunx: "rgba(120,120,120,0.4)",
+  trine: "rgba(20,32,16,0.45)",
+  sextile: "rgba(20,32,16,0.28)",
+  conjunction: "rgba(11,11,12,0.5)",
+  square: "rgba(142,29,44,0.45)",
+  opposition: "rgba(142,29,44,0.62)",
+  quincunx: "rgba(11,11,12,0.22)",
 };
 
 function polar(cx: number, cy: number, r: number, angleDeg: number) {
@@ -55,11 +68,20 @@ function screenAngle(degree: number, ascendantDegree: number) {
   return (180 + offset) % 360;
 }
 
-const SIZE = 320;
+const SIZE = 360;
 const CENTER = SIZE / 2;
-const SIGN_RING_R = 148;
-const HOUSE_LINE_R = 130;
-const PLANET_RING_R = 104;
+const SIGN_RING_R = 168;
+const HOUSE_LINE_R = 146;
+const PLANET_RING_R = 116;
+
+function wedgePath(cx: number, cy: number, r: number, a0: number, a1: number) {
+  const p0 = polar(cx, cy, r, a0);
+  const p1 = polar(cx, cy, r, a1);
+  let delta = (a0 - a1 + 360) % 360;
+  if (delta > 180) delta = 360 - delta;
+  const large = delta > 180 ? 1 : 0;
+  return `M ${cx} ${cy} L ${p0.x} ${p0.y} A ${r} ${r} 0 ${large} 0 ${p1.x} ${p1.y} Z`;
+}
 
 export const NatalChartWheel = memo(function NatalChartWheel({
   placements,
@@ -97,41 +119,54 @@ export const NatalChartWheel = memo(function NatalChartWheel({
   const byBody = Object.fromEntries(positioned.map((p) => [p.body, p]));
 
   return (
-    <svg viewBox={`0 0 ${SIZE} ${SIZE}`} width="100%" style={{ maxWidth: 360, display: "block", margin: "0 auto" }} role="img" aria-label="Natal chart wheel">
-      {/* Sign ring */}
-      <circle cx={CENTER} cy={CENTER} r={SIGN_RING_R} fill="none" stroke="rgba(29,47,79,0.15)" strokeWidth={1} />
-      <circle cx={CENTER} cy={CENTER} r={HOUSE_LINE_R} fill="none" stroke="rgba(29,47,79,0.1)" strokeWidth={1} />
+    <svg
+      className="tn-wheel"
+      viewBox={`0 0 ${SIZE} ${SIZE}`}
+      width="100%"
+      role="img"
+      aria-label="Natal chart wheel"
+    >
+      <circle cx={CENTER} cy={CENTER} r={SIGN_RING_R + 6} fill="#F4EFE6" />
 
       {SIGNS.map((sign, i) => {
-        // Fixed 30°-wide bands starting from Aries 0°, rotated the same way.
         const startAngle = screenAngle(i * 30, ascendantDegree);
+        const endAngle = screenAngle((i + 1) * 30, ascendantDegree);
         const midAngle = screenAngle(i * 30 + 15, ascendantDegree);
-        const p1 = polar(CENTER, CENTER, SIGN_RING_R, startAngle);
-        const label = polar(CENTER, CENTER, SIGN_RING_R + 14, midAngle);
+        const label = polar(CENTER, CENTER, SIGN_RING_R - 14, midAngle);
         return (
-          <g key={sign} color="rgba(29,47,79,0.6)">
-            <line x1={CENTER} y1={CENTER} x2={p1.x} y2={p1.y} stroke="rgba(29,47,79,0.08)" strokeWidth={1} />
-            <SignIconG sign={sign} x={label.x} y={label.y} size={13} />
+          <g key={sign} color="#0B0B0C">
+            <path d={wedgePath(CENTER, CENTER, SIGN_RING_R, startAngle, endAngle)} fill={SIGN_FILL[sign]} />
+            <SignIconG sign={sign} x={label.x} y={label.y} size={15} />
           </g>
         );
       })}
 
-      {/* House cusp lines */}
+      <circle cx={CENTER} cy={CENTER} r={HOUSE_LINE_R - 8} fill="#F4EFE6" />
+      <circle cx={CENTER} cy={CENTER} r={SIGN_RING_R} fill="none" stroke="#0B0B0C" strokeWidth={1.4} />
+      <circle cx={CENTER} cy={CENTER} r={HOUSE_LINE_R} fill="none" stroke="rgba(11,11,12,0.18)" strokeWidth={1} />
+
       {houses.map((h) => {
         const angle = screenAngle(h.degree, ascendantDegree);
         const p = polar(CENTER, CENTER, HOUSE_LINE_R, angle);
-        const numPos = polar(CENTER, CENTER, HOUSE_LINE_R - 16, angle + 8);
+        const numPos = polar(CENTER, CENTER, HOUSE_LINE_R - 18, angle + 10);
         return (
           <g key={h.house}>
-            <line x1={CENTER} y1={CENTER} x2={p.x} y2={p.y} stroke="rgba(29,47,79,0.18)" strokeWidth={h.house === 1 || h.house === 10 ? 1.5 : 0.75} />
-            <text x={numPos.x} y={numPos.y} fontSize={8} fill="rgba(29,47,79,0.4)" textAnchor="middle">
+            <line
+              x1={CENTER}
+              y1={CENTER}
+              x2={p.x}
+              y2={p.y}
+              stroke="#0B0B0C"
+              strokeWidth={h.house === 1 || h.house === 10 ? 1.6 : 0.7}
+              opacity={h.house === 1 || h.house === 10 ? 0.85 : 0.28}
+            />
+            <text x={numPos.x} y={numPos.y} fontSize={9} fontWeight={700} fill="#0B0B0C" textAnchor="middle" opacity={0.55}>
               {h.house}
             </text>
           </g>
         );
       })}
 
-      {/* Aspect lines between planets */}
       {aspects.map((a, i) => {
         const from = byBody[a.bodyA];
         const to = byBody[a.bodyB];
@@ -143,24 +178,22 @@ export const NatalChartWheel = memo(function NatalChartWheel({
           <line
             key={i}
             x1={p1.x} y1={p1.y} x2={p2.x} y2={p2.y}
-            stroke={ASPECT_COLOR[a.aspect] ?? "rgba(120,120,120,0.3)"}
-            strokeWidth={dimmed ? 0.5 : 1}
-            opacity={dimmed ? 0.25 : 1}
+            stroke={ASPECT_COLOR[a.aspect] ?? "rgba(11,11,12,0.25)"}
+            strokeWidth={dimmed ? 0.6 : 1.2}
+            opacity={dimmed ? 0.22 : 1}
           />
         );
       })}
 
-      {/* Ascendant / Midheaven marker */}
       {(() => {
-        const p = polar(CENTER, CENTER, SIGN_RING_R + 26, 180);
+        const p = polar(CENTER, CENTER, SIGN_RING_R + 18, 180);
         return (
-          <text x={p.x} y={p.y} fontSize={9} fontWeight={700} fill="rgba(185,149,69,0.9)" textAnchor="middle">
+          <text x={p.x} y={p.y} fontSize={10} fontWeight={800} letterSpacing="0.16em" fill="#0B0B0C" textAnchor="middle">
             ASC
           </text>
         );
       })()}
 
-      {/* Planets */}
       {positioned.map((p) => {
         const pos = polar(CENTER, CENTER, p.r, p.angle);
         const active = selectedBody === p.body || hovered === p.body;
@@ -172,12 +205,19 @@ export const NatalChartWheel = memo(function NatalChartWheel({
             onMouseEnter={() => setHovered(p.body)}
             onMouseLeave={() => setHovered(null)}
           >
-            <circle cx={pos.x} cy={pos.y} r={active ? 12 : 10} fill={active ? "#1d2f4f" : "#fff"} stroke="rgba(29,47,79,0.5)" strokeWidth={1} />
-            <g color={active ? "#f3e9d2" : "#1d2f4f"}>
-              <PlanetIconG body={p.body} x={pos.x} y={pos.y} size={13} />
+            <circle
+              cx={pos.x}
+              cy={pos.y}
+              r={active ? 13 : 11}
+              fill={active ? "#D8F0C4" : "#0B0B0C"}
+              stroke="#0B0B0C"
+              strokeWidth={1.2}
+            />
+            <g color={active ? "#142010" : "#F4EFE6"}>
+              <PlanetIconG body={p.body} x={pos.x} y={pos.y} size={14} />
             </g>
             {p.retrograde && (
-              <text x={pos.x + 10} y={pos.y - 10} fontSize={8} fill="rgba(178,84,66,0.8)">℞</text>
+              <text x={pos.x + 11} y={pos.y - 11} fontSize={8} fill="#8E1D2C" fontWeight={700}>℞</text>
             )}
           </g>
         );

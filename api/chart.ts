@@ -127,7 +127,7 @@ async function resolveUserChart(userId: string): Promise<ChartResolution> {
   }
 
   const chart = computeNatalChart(profile.birth_date, profile.birth_time, { lat, lng });
-  const sourceKey = `${profile.birth_date}|${profile.birth_time ?? ""}|${lat}|${lng}`;
+  const sourceKey = `${profile.birth_date}|${profile.birth_time ?? ""}|${lat}|${lng}|${chart.houseSystem}`;
   return { ok: true, chart, name: profile.name ?? null, sourceKey };
 }
 

@@ -57,7 +57,7 @@ export function ChartSkyPanel({
           selectedBody={selectedBody}
         />
         <p className="tn-sky__hint">
-          Tap a planet. Gold lines are easy aspects, rust lines are tense ones.
+          Tap a planet. Easy aspects read quiet; tense ones read rust.
         </p>
         <div className="tn-sky__angles">
           <div>

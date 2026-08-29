@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
-import { SignIcon } from "../../components/journal/SkyGlyphs";
+import { PlanetIcon, SignIcon } from "../../components/journal/SkyGlyphs";
 import {
   explainHouseFull,
   explainPlacement,
@@ -110,6 +110,21 @@ export const ctaButtonStyle: Record<string, string | number> = {
   cursor: "pointer",
 };
 
+export const SIGN_ELEMENT: Record<string, "fire" | "earth" | "air" | "water"> = {
+  Aries: "fire",
+  Leo: "fire",
+  Sagittarius: "fire",
+  Taurus: "earth",
+  Virgo: "earth",
+  Capricorn: "earth",
+  Gemini: "air",
+  Libra: "air",
+  Aquarius: "air",
+  Cancer: "water",
+  Scorpio: "water",
+  Pisces: "water",
+};
+
 export const SIGN_GLYPH: Record<string, string> = {
   Aries: "♈",
   Taurus: "♉",
@@ -157,14 +172,19 @@ export function PlacementRow({
 }) {
   const { body, sign, house, retrograde } = placement;
   return (
-    <div className={`chart-placement-row ${expanded ? "is-expanded" : ""}`}>
+    <div className={`chart-placement-row tn-place ${expanded ? "is-expanded" : ""}`}>
       <button
         type="button"
         className="chart-placement-row__head"
         onClick={onToggle}
         aria-expanded={expanded}
       >
-        <span className="chart-placement__body">{body}</span>
+        <span className="tn-place__who">
+          <span className="tn-place__glyph">
+            <PlanetIcon body={body} size={18} />
+          </span>
+          <span className="chart-placement__body">{body}</span>
+        </span>
         <span className="chart-placement-row__head-right">
           <span className={`lock-pill ${retrograde ? "rx" : ""}`}>
             <SignIcon sign={sign} size={13} /> {sign}
@@ -189,51 +209,55 @@ export function HouseRow({
   houseCusp,
   expanded,
   onToggle,
+  occupants = [],
 }: {
   houseCusp: NatalHouseCusp;
   expanded: boolean;
   onToggle: () => void;
+  occupants?: NatalPlacement[];
 }) {
   const full = explainHouseFull(houseCusp.house);
+  const element = SIGN_ELEMENT[houseCusp.sign] ?? "air";
   return (
-    <div className={`chart-placement-row ${expanded ? "is-expanded" : ""}`}>
+    <div className={`tn-house tn-house--${element} ${expanded ? "is-expanded" : ""}`}>
       <button
         type="button"
-        className="chart-placement-row__head"
+        className="tn-house__head"
         onClick={onToggle}
         aria-expanded={expanded}
       >
-        <span className="chart-placement__body">
-          House {houseCusp.house}
-          {full && (
-            <span className="chart-house-row__title"> — {full.title}</span>
-          )}
+        <span className="tn-house__num">{String(houseCusp.house).padStart(2, "0")}</span>
+        <span className="tn-house__copy">
+          <span className="label-lock">{full?.title ?? `House ${houseCusp.house}`}</span>
+          <span className="tn-house__sign">
+            <SignIcon sign={houseCusp.sign} size={16} /> {houseCusp.sign}
+          </span>
         </span>
-        <span className="chart-placement-row__head-right">
-          <span className="lock-pill">
-            <SignIcon sign={houseCusp.sign} size={13} /> {houseCusp.sign}
-          </span>
-          <span className="chart-placement-row__chevron" aria-hidden="true">
-            ▾
-          </span>
+        <span className="tn-house__bodies">
+          {occupants.map(p => (
+            <span key={p.body} className="tn-house__body" title={p.body}>
+              <PlanetIcon body={p.body} size={15} />
+            </span>
+          ))}
         </span>
       </button>
       {expanded && full && (
-        <div className="chart-placement-row__explain chart-house-row__explain">
+        <div className="tn-house__open">
+          {occupants.length > 0 && (
+            <p className="tn-house__residents">
+              {occupants.map(p => p.body).join(" · ")} {occupants.length === 1 ? "lives" : "live"} here.
+            </p>
+          )}
           <p>{full.detail}</p>
           <div className="chart-house-row__keywords">
             {full.keywords.map(k => (
-              <span
-                key={k}
-                className="lock-pill mute"
-              >
+              <span key={k} className="lock-pill mute">
                 {k}
               </span>
             ))}
           </div>
           <p className="chart-house-row__sign-heading">
-            <SignIcon sign={houseCusp.sign} size={13} /> {houseCusp.sign} on
-            this cusp
+            <SignIcon sign={houseCusp.sign} size={13} /> {houseCusp.sign} on this cusp
           </p>
           <p className="chart-house-row__sign-explain">
             {explainSignInHouse(houseCusp.sign, houseCusp.house)}

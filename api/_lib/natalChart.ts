@@ -160,7 +160,7 @@ export function computeNatalChart(
 
   const horoscope = new Horoscope({
     origin,
-    houseSystem: "placidus",
+    houseSystem: "whole-sign",
     zodiac: "tropical",
     aspectPoints: ["bodies", "angles"],
     aspectWithPoints: ["bodies", "angles"],
@@ -179,10 +179,11 @@ export function computeNatalChart(
     };
   });
 
-  const houses: NatalHouseCusp[] = (horoscope._houses ?? []).map((h: any) => ({
+  const rawHouses = horoscope.Houses ?? horoscope._houses ?? [];
+  const houses: NatalHouseCusp[] = (rawHouses as any[]).map((h: any) => ({
     house: h.id,
     sign: h.Sign?.label ?? "",
-    degree: Math.round(h.ChartPosition.StartPosition.Ecliptic.DecimalDegrees * 100) / 100,
+    degree: Math.round((h.ChartPosition?.StartPosition?.Ecliptic?.DecimalDegrees ?? 0) * 100) / 100,
   }));
 
   const bodyKeySet = new Set(BODIES);
@@ -204,7 +205,7 @@ export function computeNatalChart(
     placements,
     houses,
     aspects,
-    houseSystem: "Placidus",
+    houseSystem: "Whole Sign",
     zodiac: "Tropical",
     approximateTime,
   };
