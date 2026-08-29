@@ -16,6 +16,8 @@ const ref = (name: string): FunctionRef => name as FunctionRef;
 export const api = {
   auth: {
     currentUser: ref("auth.currentUser"),
+    // Alias kept so any leftover `api.auth.me` call sites resolve to the same handler.
+    me: ref("auth.currentUser"),
   },
   users: {
     isAdmin: ref("users.isAdmin"),
