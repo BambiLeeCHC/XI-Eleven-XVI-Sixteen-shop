@@ -165,9 +165,7 @@ export function PlacementRow({
       >
         <span className="chart-placement__body">{body}</span>
         <span className="chart-placement-row__head-right">
-          <span
-            className={`jcol-tag jcol-tag--sm jcol-${retrograde ? "kraft" : "ink"} jcol-type`}
-          >
+          <span className={`lock-pill ${retrograde ? "rx" : ""}`}>
             <SignIcon sign={sign} size={13} /> {sign}
             {house ? ` · H${house}` : ""}
             {retrograde ? " · Rx" : ""}
@@ -211,7 +209,7 @@ export function HouseRow({
           )}
         </span>
         <span className="chart-placement-row__head-right">
-          <span className="jcol-tag jcol-tag--sm jcol-lilac jcol-type">
+          <span className="lock-pill">
             <SignIcon sign={houseCusp.sign} size={13} /> {houseCusp.sign}
           </span>
           <span className="chart-placement-row__chevron" aria-hidden="true">
@@ -226,7 +224,7 @@ export function HouseRow({
             {full.keywords.map(k => (
               <span
                 key={k}
-                className="jcol-tag jcol-tag--sm jcol-kraft jcol-type"
+                className="lock-pill mute"
               >
                 {k}
               </span>
@@ -265,33 +263,40 @@ export function BoldParagraphs({ text }: { text: string }) {
   );
 }
 
-export const PROFILE_SECTION_STYLE: Record<
-  string,
-  { tone: string; rotate: string; face: string }
-> = {
-  "Who You Are": { tone: "jcol-gold", rotate: "-1.5deg", face: "jcol-display" },
-  "The Texture": { tone: "jcol-ink", rotate: "1deg", face: "jcol-grotesk" },
-  "The Highest Use of Your Chart": {
-    tone: "jcol-lilac",
-    rotate: "-1deg",
-    face: "jcol-display",
-  },
-  "Life Path": { tone: "jcol-gold", rotate: "-1.5deg", face: "jcol-display" },
-  Expression: { tone: "jcol-ink", rotate: "1deg", face: "jcol-grotesk" },
-  "Soul Urge": { tone: "jcol-blush", rotate: "-1deg", face: "jcol-display" },
-  Personality: { tone: "jcol-lilac", rotate: "1.5deg", face: "jcol-grotesk" },
-  Birthday: { tone: "jcol-kraft", rotate: "-1deg", face: "jcol-display" },
-  "Personal Year": { tone: "jcol-gold", rotate: "1deg", face: "jcol-grotesk" },
-  "The Throughline": {
-    tone: "jcol-ink",
-    rotate: "-1.5deg",
-    face: "jcol-display",
-  },
-};
+export function ProfileSection({
+  title,
+  body,
+}: {
+  title: string;
+  body: string;
+}) {
+  return (
+    <div className="chart-profile-section">
+      <p className="label-lock chart-profile-section__title">{title}</p>
+      <div className="chart-profile-section__body">
+        <BoldParagraphs text={body} />
+      </div>
+    </div>
+  );
+}
 
-/** Splits the profile narrative on "## Section Title" markers into
- * {title, body} sections so each can carry the same collage-tag visual
- * treatment as the page header, rather than rendering as one text block. */
+/** IMPACT section title — kicker + Clash, same voice as the shop. */
+export function SectionHeading({
+  wordA,
+  wordB,
+  ariaLabel,
+}: {
+  wordA: string;
+  wordB: string;
+  ariaLabel: string;
+}) {
+  return (
+    <h2 className="chart-section-heading" aria-label={ariaLabel}>
+      <span className="label-lock chart-section-heading__kicker">{wordA}</span>
+      <span className="clash chart-section-heading__title">{wordB}</span>
+    </h2>
+  );
+}
 export function parseProfileSections(
   narrative: string,
 ): { title: string; body: string }[] {
@@ -328,7 +333,7 @@ export function NumberRow({
         <span className="chart-placement__body">
           {NUMEROLOGY_LABELS[numKey] ?? numKey}
         </span>
-        <span className="jcol-tag jcol-tag--sm jcol-gold jcol-type">
+        <span className="lock-pill num">
           {value}
         </span>
       </div>
@@ -338,65 +343,6 @@ export function NumberRow({
         </p>
       )}
     </div>
-  );
-}
-
-export function ProfileSection({
-  title,
-  body,
-}: {
-  title: string;
-  body: string;
-}) {
-  const style = PROFILE_SECTION_STYLE[title] ?? {
-    tone: "jcol-kraft",
-    rotate: "0deg",
-    face: "jcol-display",
-  };
-  return (
-    <div className="chart-profile-section">
-      <span
-        className={`jcol-tag jcol-tag--md ${style.tone} ${style.face} chart-profile-section__title`}
-        style={{ transform: `rotate(${style.rotate})` }}
-      >
-        {title}
-      </span>
-      <div className="chart-profile-section__body">
-        <BoldParagraphs text={body} />
-      </div>
-    </div>
-  );
-}
-
-/** Same two-tag collage heading used in the page hero — applied to every
- * section card so every True North page reads as one voice. */
-export function SectionHeading({
-  wordA,
-  wordB,
-  ariaLabel,
-}: {
-  wordA: string;
-  wordB: string;
-  ariaLabel: string;
-}) {
-  return (
-    <h2
-      className="journal-article__title--collage chart-section-heading"
-      aria-label={ariaLabel}
-    >
-      <span
-        className="jcol-tag jcol-gold jcol-display"
-        style={{ transform: "rotate(-2deg)" }}
-      >
-        {wordA}
-      </span>
-      <span
-        className="jcol-tag jcol-ink jcol-grotesk"
-        style={{ transform: "rotate(1.5deg)" }}
-      >
-        {wordB}
-      </span>
-    </h2>
   );
 }
 

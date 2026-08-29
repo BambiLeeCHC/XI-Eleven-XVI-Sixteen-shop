@@ -11,10 +11,6 @@ import { usePostBySlug, usePublishedPosts } from "../lib/journalData";
 
 type Dock = "almanac" | "draw" | "code" | null;
 
-const POST_TITLE_PAPERS = ["ink", "kraft", "gold", "newsprint", "blush", "lilac"] as const;
-const POST_TITLE_FACES = ["display", "grotesk", "slab"] as const;
-const POST_TITLE_ROT = [-2, 1.5, -1.5, 2, -2.5, 1];
-
 export function JournalPostPage() {
   const { slug = "" } = useParams();
   const post = usePostBySlug(slug) as any;
@@ -68,29 +64,19 @@ export function JournalPostPage() {
           <DockTab label="Almanac" glyph="◍" accent="#5c9bcd" active={dock === "almanac"} onClick={() => toggle("almanac")} />
         </div>
 
-        <article className="journal-article journal-surface">
-          <span className="jcol-patch jcol-patch--a" aria-hidden="true" />
-          <span className="jcol-tape jcol-tape--tl" aria-hidden="true" />
+        <article className="journal-article lock-card">
           <Link to="/journal" className="journal-article__back">← The Journal</Link>
-          <p className="jcol-slug journal-article__slug">
-            <span>XI · XVI</span>
-            <i />
-            <span className="jcol-tag jcol-tag--sm jcol-ink jcol-type">{post.category}</span>
-            <i />
-            <span>{date}</span>
+          <p className="label-lock journal-article__slug">
+            XI · XVI · {post.category} · {date}
           </p>
-          <h1 className="journal-article__title journal-article__title--collage" aria-label={post.title}>
-            {post.title.split(" ").map((w: string, i: number) => (
-              <span
-                key={i}
-                className={`jcol-tag jcol-${POST_TITLE_PAPERS[i % POST_TITLE_PAPERS.length]} jcol-${POST_TITLE_FACES[i % POST_TITLE_FACES.length]}`}
-                style={{ transform: `rotate(${POST_TITLE_ROT[i % POST_TITLE_ROT.length]}deg)` }}
-              >
-                {w}
-              </span>
-            ))}
+          <h1
+            className="clash journal-article__title"
+            aria-label={post.title}
+            style={{ fontSize: "clamp(36px, 8vw, 72px)", color: "#0B0B0C" }}
+          >
+            {post.title}
           </h1>
-          <p className="journal-article__meta">
+          <p className="serif-quiet journal-article__meta">
             {post.author} · {post.readMinutes} min read
           </p>
 
@@ -125,7 +111,7 @@ export function JournalPostPage() {
 
           {others && others.filter((o) => o.slug !== post.slug).length > 0 && (
             <section className="journal-article__next">
-              <h3>More from the Journal</h3>
+              <h3 className="label-lock">More from the Journal</h3>
               <div className="journal-article__next-list">
                 {others
                   .filter((o) => o.slug !== post.slug)

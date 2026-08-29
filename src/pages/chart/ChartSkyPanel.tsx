@@ -63,13 +63,13 @@ export function ChartSkyPanel({
       <div style={{ display: "flex", justifyContent: "space-around", marginBottom: "1.25rem", textAlign: "center" }}>
         <div>
           <p className="text-[10px] uppercase tracking-wide text-muted-foreground mb-1">Ascendant</p>
-          <span className="jcol-tag jcol-tag--sm jcol-lilac jcol-type">
+          <span className="lock-pill">
             <SignIcon sign={chart.ascendant} size={13} /> {chart.ascendant}
           </span>
         </div>
         <div>
           <p className="text-[10px] uppercase tracking-wide text-muted-foreground mb-1">Midheaven</p>
-          <span className="jcol-tag jcol-tag--sm jcol-blush jcol-type">
+          <span className="lock-pill blush">
             <SignIcon sign={chart.midheaven} size={13} /> {chart.midheaven}
           </span>
         </div>

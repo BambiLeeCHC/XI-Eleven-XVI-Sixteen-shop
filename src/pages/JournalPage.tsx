@@ -23,28 +23,17 @@ function fmtDate(ts?: number) {
   });
 }
 
-const POST_PAPERS = ["ink", "kraft", "gold", "lilac", "blush"] as const;
-
 function PostCard({
   post,
   featured = false,
-  index = 0,
 }: {
   post: Post;
   featured?: boolean;
-  index?: number;
 }) {
-  const paper = POST_PAPERS[index % POST_PAPERS.length];
   return (
     <article
       className={`journal-post ${featured ? "journal-post--featured" : ""}`}
     >
-      {featured && (
-        <>
-          <span className="jcol-patch jcol-patch--a" aria-hidden="true" />
-          <span className="jcol-tape jcol-tape--tl" aria-hidden="true" />
-        </>
-      )}
       <Link to={`/journal/${post.slug}`} className="journal-post__link">
         {post.coverImage && (
           <div className="journal-post__cover">
@@ -53,18 +42,14 @@ function PostCard({
         )}
         <div className="journal-post__body">
           <div className="journal-post__meta">
-            <span
-              className={`journal-post__cat jcol-tag jcol-tag--sm jcol-${paper} jcol-type`}
-            >
-              {post.category}
-            </span>
+            <span className="label-lock journal-post__cat">{post.category}</span>
             <span className="journal-post__dot">·</span>
             <span>{fmtDate(post.publishedAt ?? post._creationTime)}</span>
             <span className="journal-post__dot">·</span>
             <span>{post.readMinutes} min</span>
           </div>
-          <h2 className="journal-post__title">{post.title}</h2>
-          <p className="journal-post__excerpt">{post.excerpt}</p>
+          <h2 className="journal-post__title clash">{post.title}</h2>
+          <p className="journal-post__excerpt serif-quiet">{post.excerpt}</p>
           <span className="journal-post__more">Read the piece →</span>
         </div>
       </Link>
@@ -221,10 +206,10 @@ export function JournalPage() {
                 </div>
               ) : (
                 <>
-                  {lead && <PostCard post={lead} featured index={0} />}
+                  {lead && <PostCard post={lead} featured />}
                   <div className="journal-grid">
-                    {rest.map((p, i) => (
-                      <PostCard key={p._id} post={p} index={i + 1} />
+                    {rest.map(p => (
+                      <PostCard key={p._id} post={p} />
                     ))}
                   </div>
                 </>

@@ -54,8 +54,8 @@ export function NumbersPage() {
           <TrueNorthSignedOutTeaser
             pageTitleTag={
               <div className="journal-surface" style={{ padding: "1.25rem", textAlign: "left", marginBottom: "1.5rem" }}>
-                <p className="text-sm font-semibold mb-2">Numerology</p>
-                <p className="text-sm text-muted-foreground">
+                <p className="label-lock" style={{ color: "#142010" }}>Numerology</p>
+                <p className="serif-quiet mt-2" style={{ color: "#142010" }}>
                   Your name and birth date reduce to a set of numbers that don't change — your Life Path,
                   your Expression number, your Soul Urge.
                 </p>
@@ -77,8 +77,8 @@ export function NumbersPage() {
         <div className="journal-surface" style={{ padding: "1.75rem", display: "flex", flexDirection: "column", gap: "0.9rem" }}>
           {!numerologyUnlocked && (
             <>
-              <p className="text-sm font-semibold">Numerology — the layer underneath the chart</p>
-              <p className="text-sm text-muted-foreground">
+              <p className="label-lock" style={{ color: "#142010" }}>Numerology — the layer underneath the chart</p>
+              <p className="serif-quiet" style={{ color: "#142010" }}>
                 Your name and birth date reduce to a set of numbers that stay constant your whole
                 life — your Life Path, Expression, Soul Urge, Personality and this year's Personal
                 Year number. Where the chart shows what the sky was doing, numerology shows what you

@@ -113,66 +113,20 @@ async function fetchReading(
   return fallbackReading(spread);
 }
 
-const COLLAGE_PAPERS = ["ink", "newsprint", "kraft", "gold", "blush", "lilac", "cream"] as const;
-const COLLAGE_FACES = ["grotesk", "display", "type"] as const;
-const COLLAGE_ROT = [-4, 3, -2, 4, -3, 2, -4.5, 3.5];
-
-function ReadingCollageHead({ spreadName }: { spreadName: string }) {
-  const [firstWord, ...restWords] = spreadName.split(" ");
-  const letters = firstWord.split("");
+function ReadingHead({ spreadName }: { spreadName: string }) {
   const dayNo = String(new Date().getDate()).padStart(2, "0");
 
   return (
-    <div className="jdeck__collage-head">
-      <span className="jcol-patch jcol-patch--a" aria-hidden="true" />
-      <span className="jcol-patch jcol-patch--b" aria-hidden="true" />
-      <span className="jcol-tape jcol-tape--tl" aria-hidden="true" />
-      <span className="jcol-tape jcol-tape--br" aria-hidden="true" />
-
-      <p className="jcol-slug">
-        <span>XI · XVI</span>
-        <i />
-        <span>Reading Of The Day</span>
-        <i />
-        <span>No. {dayNo}</span>
+    <div className="jdeck__lock-head">
+      <p className="label-lock" style={{ color: "#142010" }}>
+        XI · XVI · Reading of the day · No. {dayNo}
       </p>
-
-      <h3 className="jdeck__collage-title" aria-label={spreadName}>
-        {letters.map((ch, i) => (
-          <span
-            key={i}
-            className={`jcol-cut jcol-cut--lg jcol-${COLLAGE_PAPERS[i % COLLAGE_PAPERS.length]} jcol-${COLLAGE_FACES[i % COLLAGE_FACES.length]}`}
-            style={{ transform: `rotate(${COLLAGE_ROT[i % COLLAGE_ROT.length]}deg)` }}
-            aria-hidden="true"
-          >
-            {ch}
-          </span>
-        ))}
+      <h3
+        className="clash mt-3"
+        style={{ fontSize: "clamp(32px, 6vw, 56px)", color: "#0B0B0C" }}
+      >
+        {spreadName}
       </h3>
-
-      {restWords.length > 0 && (
-        <p className="jdeck__collage-sub" aria-hidden="true">
-          {restWords.map((w, i) => (
-            <span
-              key={i}
-              className={`jcol-tag jcol-tag--md jcol-${COLLAGE_PAPERS[(i + 2) % COLLAGE_PAPERS.length]} jcol-${COLLAGE_FACES[(i + 1) % COLLAGE_FACES.length]}`}
-              style={{ transform: `rotate(${COLLAGE_ROT[(i + 3) % COLLAGE_ROT.length]}deg)` }}
-            >
-              {w}
-            </span>
-          ))}
-        </p>
-      )}
-
-      <svg className="jcol-pen-rule" viewBox="0 0 400 24" preserveAspectRatio="none" aria-hidden="true">
-        <path
-          d="M6 15 C60 6, 108 20, 164 12 C220 4, 268 19, 326 10 C356 6, 378 12, 394 9"
-          fill="none"
-          stroke="rgba(196,141,255,.55)"
-          strokeWidth="2.6"
-          strokeLinecap="round"
-        />
-      </svg>
     </div>
   );
 }
@@ -334,8 +288,8 @@ export function DrawThree() {
 
   return (
     <div className="jdeck">
-      <p className="jdeck__framework">{spreadType.name}</p>
-      <p className="jdeck__intro">
+      <p className="jdeck__framework label-lock">{spreadType.name}</p>
+      <p className="jdeck__intro serif-quiet">
         {spreadType.intro} Drawn for you alone, for{" "}
         {new Date().toLocaleDateString([], { month: "long", day: "numeric" })} —
         yours until midnight.
@@ -354,14 +308,14 @@ export function DrawThree() {
       </div>
 
       {!allOpen && (
-        <button type="button" className="jdeck__all" onClick={turnAll}>
+        <button type="button" className="cta-pist jdeck__all" onClick={turnAll}>
           Turn all five ✦
         </button>
       )}
 
       {allOpen && (
         <div className="jdeck__letter">
-          <ReadingCollageHead spreadName={spreadType.name} />
+          <ReadingHead spreadName={spreadType.name} />
           {readingLoading && !reading && (
             <p className="jdeck__letter-loading">Reading the spread…</p>
           )}
@@ -381,15 +335,15 @@ export function DrawThree() {
                   </>
                 );
               })()}
-              <p className="jcol-sign">Yours, until midnight.</p>
+              <p className="serif-quiet jdeck__signoff">Yours, until midnight.</p>
 
               <div className="jdeck__long-read-tease">
-                <p className="jdeck__long-read-tease-label">One free draw a day. Want more?</p>
-                <p className="jdeck__long-read-tease-copy">
+                <p className="label-lock jdeck__long-read-tease-label">One free draw a day. Want more?</p>
+                <p className="serif-quiet jdeck__long-read-tease-copy">
                   The Long Read goes seven cards deep, read against what's actually going on with
                   you — plus your full natal chart and numerology on the True North page.
                 </p>
-                <Link to="/chart/long-read" className="jdeck__long-read-tease-cta">
+                <Link to="/chart/long-read" className="cta-pist jdeck__long-read-tease-cta">
                   Open the Long Read in True North ✦
                 </Link>
               </div>

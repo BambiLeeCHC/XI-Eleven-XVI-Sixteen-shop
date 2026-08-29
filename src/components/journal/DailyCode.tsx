@@ -28,11 +28,11 @@ export function DailyCode({ compact = false }: { compact?: boolean }) {
   return (
     <div className="journal-code">
       <div className="journal-code__head">
-        <span className="journal-code__serial">{code.code}</span>
-        <span className="journal-code__theme">{code.theme}</span>
+        <span className="label-lock journal-code__serial">{code.code}</span>
+        <span className="label-lock journal-code__theme">{code.theme}</span>
       </div>
-      <blockquote className="journal-code__quote">{code.quote}</blockquote>
-      <p className="journal-code__attr">— XI · XVI</p>
+      <blockquote className="journal-code__quote serif-quiet">{code.quote}</blockquote>
+      <p className="serif-quiet journal-code__attr">— XI · XVI</p>
       <div className="journal-code__practice">
         <span className="journal-draw__ritual-label">Do this today</span>
         <p>{code.practice}</p>

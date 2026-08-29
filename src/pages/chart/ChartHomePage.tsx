@@ -65,8 +65,8 @@ export function ChartHomePage() {
           <TrueNorthSignedOutTeaser
             pageTitleTag={
               <div className="journal-surface" style={{ padding: "1.25rem", textAlign: "left", marginBottom: "1.5rem" }}>
-                <p className="text-sm font-semibold mb-2">Then, if you want to go deeper — Numerology</p>
-                <p className="text-sm text-muted-foreground">
+                <p className="label-lock" style={{ color: "#142010" }}>Then, if you want to go deeper</p>
+                <p className="serif-quiet mt-2" style={{ color: "#142010" }}>
                   Your name and birth date reduce to a set of numbers that don't change — your Life Path,
                   your Expression number, your Soul Urge.
                 </p>
@@ -120,11 +120,7 @@ export function ChartHomePage() {
             </div>
 
             <div className="journal-surface chart-profile-card chart-feed-card chart-feed-card--wide" style={{ padding: "1.75rem", position: "relative", ["--i" as any]: 4 }}>
-              <span className="jcol-patch jcol-patch--b" aria-hidden="true" />
-              <h2 className="journal-article__title--collage chart-profile-card__heading" aria-label="Your Personality Profile">
-                <span className="jcol-tag jcol-gold jcol-display" style={{ transform: "rotate(-2deg)" }}>Your</span>
-                <span className="jcol-tag jcol-ink jcol-grotesk" style={{ transform: "rotate(1.5deg)" }}>Profile</span>
-              </h2>
+              <SectionHeading wordA="Your" wordB="Profile" ariaLabel="Your Personality Profile" />
               {profileResult === undefined && (
                 <p className="text-sm text-muted-foreground">Writing your profile…</p>
               )}

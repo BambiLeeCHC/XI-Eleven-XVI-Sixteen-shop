@@ -5,9 +5,8 @@ import { seededRng } from "../../lib/sky";
    TRUE NORTH ATMOSPHERE — the destination's own distinct mood.
 
    Where the Journal reads as a bright living sky, True North reads as
-   walking into a fortune-teller's room: dark jewel tones, candlelight,
-   drifting incense smoke, small hopeful glints of gold in the dark. Same
-   brand grammar (collage titles, gold/ink/lilac tags) — its own realm.
+   the shop's dark field — pistachio, lilac, cream lock cards, Clash
+   headings. Same IMPACT grammar as the rest of XI · XVI. Its own realm.
    Deterministic (seeded), fully behind content, stands still for anyone
    who asked their system to reduce motion.
    ═══════════════════════════════════════════════════════════════════════ */

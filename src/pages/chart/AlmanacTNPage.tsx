@@ -35,8 +35,8 @@ export function AlmanacTNPage() {
           <TrueNorthSignedOutTeaser
             pageTitleTag={
               <div className="journal-surface" style={{ padding: "1.25rem", textAlign: "left", marginBottom: "1.5rem" }}>
-                <p className="text-sm font-semibold mb-2">The Almanac</p>
-                <p className="text-sm text-muted-foreground">
+                <p className="label-lock" style={{ color: "#142010" }}>The Almanac</p>
+                <p className="serif-quiet mt-2" style={{ color: "#142010" }}>
                   The sky's day-to-day moods, laid out like an old-world almanac.
                 </p>
               </div>

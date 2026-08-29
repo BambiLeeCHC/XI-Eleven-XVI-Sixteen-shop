@@ -63,13 +63,13 @@ export function DockPanel({
         <header className="journal-dock-panel__head">
           <div>
             {eyebrow && (
-              <p className="text-[9px] tracking-[0.34em] uppercase" style={{ color: "rgba(21,36,61,.38)" }}>
+              <p className="label-lock" style={{ color: "#142010" }}>
                 {eyebrow}
               </p>
             )}
             <h3
-              className="text-[15px] font-semibold tracking-[0.06em] mt-0.5"
-              style={{ color: "rgba(17,30,52,.9)", fontFamily: '"Playfair Display", Georgia, serif' }}
+              className="clash mt-2"
+              style={{ fontSize: "28px", color: "#0B0B0C" }}
             >
               {title}
             </h3>
