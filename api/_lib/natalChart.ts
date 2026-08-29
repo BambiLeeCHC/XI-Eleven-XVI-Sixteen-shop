@@ -160,7 +160,7 @@ export function computeNatalChart(
 
   const horoscope = new Horoscope({
     origin,
-    houseSystem: "whole-sign",
+    houseSystem: "placidus",
     zodiac: "tropical",
     aspectPoints: ["bodies", "angles"],
     aspectWithPoints: ["bodies", "angles"],
@@ -205,7 +205,7 @@ export function computeNatalChart(
     placements,
     houses,
     aspects,
-    houseSystem: "Whole Sign",
+    houseSystem: "Placidus",
     zodiac: "Tropical",
     approximateTime,
   };

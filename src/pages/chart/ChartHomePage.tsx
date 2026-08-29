@@ -104,7 +104,7 @@ export function ChartHomePage() {
             <div className="tn-card chart-feed-card" style={{ ["--i" as any]: 1 }}>
               <SectionHeading wordA="The" wordB="Houses" ariaLabel="The Houses" />
               <p className="chart-expand-hint">
-                Whole Sign houses — tap a room to see who lives there.
+                Placidus houses — tap a room to see who lives there.
               </p>
               <div className="tn-houses">
                 {chart.houses.map((h) => (
