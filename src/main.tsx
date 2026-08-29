@@ -5,6 +5,7 @@ import { HelmetProvider } from "react-helmet-async";
 import { BackendProvider } from "./lib/backend";
 import App from "./App";
 import "./index.css";
+import "./tn-lock.css";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
