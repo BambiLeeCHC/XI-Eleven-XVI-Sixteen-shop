@@ -84,11 +84,20 @@ const lockCardStyle: CSSProperties = {
 };
 
 export default function DeepReadingPage() {
-  const { isLoading: authLoading } = useAuthStatus();
-  const user = useQuery(api.auth.currentUser);
+  const { isLoading: authLoading, isAuthenticated } = useAuthStatus();
+  const user = useQuery(
+    api.auth.currentUser,
+    authLoading || !isAuthenticated ? "skip" : {},
+  );
   const sunSign = useSunSign(user);
-  const subscription = useQuery(api.subscription.status);
-  const deepReadings = useQuery(api.deepReadings.mine) as SavedDeepReading[] | undefined;
+  const subscription = useQuery(
+    api.subscription.status,
+    authLoading || !isAuthenticated ? "skip" : {},
+  );
+  const deepReadings = useQuery(
+    api.deepReadings.mine,
+    authLoading || !isAuthenticated ? "skip" : {},
+  ) as SavedDeepReading[] | undefined;
   const startTrialAction = useAction(api.subscription.startTrial);
   const drawAction = useAction(api.deepReadings.draw);
   const questionCheckoutAction = useAction(api.readingQuestions.checkout);
@@ -231,7 +240,7 @@ export default function DeepReadingPage() {
     return `chip ${selected ? "on" : ""} ${state === "locked" ? "opacity-50" : ""}`;
   };
 
-  if (authLoading || user === undefined) {
+  if (authLoading) {
     return (
       <div className="journal-page journal-page--truenorth">
         <TrueNorthAtmosphere />
@@ -246,7 +255,7 @@ export default function DeepReadingPage() {
     );
   }
 
-  if (!user) {
+  if (!isAuthenticated) {
     return (
       <div className="journal-page journal-page--truenorth">
         <TrueNorthAtmosphere />
