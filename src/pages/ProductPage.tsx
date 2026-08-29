@@ -19,7 +19,7 @@ import {
   snapHex,
   styleKeyFromName,
 } from "../lib/brand";
-import { hiResProductImage } from "../lib/productImage";
+import { hiResProductImage, productGallery, type GalleryShot } from "../lib/productImage";
 
 /** Extract just the size label from a variant name like "D-SLIP DRESS [BLACK] / XS" → "XS" */
 function cleanSizeLabel(size: string): string {
@@ -32,11 +32,11 @@ function cleanSizeLabel(size: string): string {
 
 /* ─── 360° Product Viewer ────────────────────────────────────────── */
 function Product360Viewer({
-  images,
+  shots,
   rotationImages,
   name,
 }: {
-  images: string[];
+  shots: GalleryShot[];
   rotationImages?: string[];
   name: string;
 }) {
@@ -55,9 +55,10 @@ function Product360Viewer({
   // gallery images must never be inferred to be a 360° view.
   const angleImages = rotationImages?.length === 8 ? rotationImages : [];
   const has360 = angleImages.length === 8;
+  const currentShot = shots[currentIndex] ?? shots[0];
   const displayImage = is360Mode
     ? angleImages[currentIndex % angleImages.length]
-    : images[currentIndex];
+    : currentShot?.src;
 
   // Keep rotation frames off the network until the shopper explicitly opens
   // 360° mode, then warm the remaining frames for smooth dragging.
@@ -162,8 +163,10 @@ function Product360Viewer({
         {displayImage ? (
           <img
             src={hiResProductImage(displayImage, 1800)}
+            srcSet={`${hiResProductImage(displayImage, 900)} 900w, ${hiResProductImage(displayImage, 1800)} 1800w`}
+            sizes="(min-width: 880px) 50vw, 100vw"
             alt={is360Mode ? `${name}, angle ${currentIndex + 1} of 8` : name}
-            className="pdp-gallery__shot"
+            className={`pdp-gallery__shot ${!is360Mode && currentShot?.kind === "studio" ? "is-studio" : ""}`}
             draggable={false}
             decoding="async"
             fetchPriority="high"
@@ -172,14 +175,17 @@ function Product360Viewer({
           <div className="pdp-gallery__empty">✦</div>
         )}
         <span className="product-stage__grain" aria-hidden="true" />
+        {!is360Mode && currentShot?.label ? (
+          <span className="pdp-gallery__caption">{currentShot.label}</span>
+        ) : null}
 
-        {!is360Mode && images.length > 1 && (
+        {!is360Mode && shots.length > 1 && (
           <>
             <button
               type="button"
               className="pdp-gallery__nav pdp-gallery__nav--prev"
               aria-label="Previous photo"
-              onClick={() => setCurrentIndex((i) => (i - 1 + images.length) % images.length)}
+              onClick={() => setCurrentIndex((i) => (i - 1 + shots.length) % shots.length)}
             >
               ‹
             </button>
@@ -187,7 +193,7 @@ function Product360Viewer({
               type="button"
               className="pdp-gallery__nav pdp-gallery__nav--next"
               aria-label="Next photo"
-              onClick={() => setCurrentIndex((i) => (i + 1) % images.length)}
+              onClick={() => setCurrentIndex((i) => (i + 1) % shots.length)}
             >
               ›
             </button>
@@ -241,17 +247,17 @@ function Product360Viewer({
         )}
       </div>
 
-      {!is360Mode && (images.length > 1 || has360) && (
+      {!is360Mode && (shots.length > 1 || has360) && (
         <div className="pdp-gallery__thumbs">
-          {images.map((img, i) => (
+          {shots.map((shot, i) => (
             <button
               type="button"
-              key={i}
+              key={`${shot.src}-${i}`}
               onClick={() => setCurrentIndex(i)}
-              className={`pdp-gallery__thumb ${i === currentIndex ? "is-on" : ""}`}
-              aria-label={`Photo ${i + 1}`}
+              className={`pdp-gallery__thumb ${i === currentIndex ? "is-on" : ""} ${shot.kind === "studio" ? "is-studio" : ""}`}
+              aria-label={shot.label}
             >
-              <img src={hiResProductImage(img, 400)} alt="" />
+              <img src={hiResProductImage(shot.src, 400)} alt="" />
             </button>
           ))}
           {has360 && (
@@ -377,7 +383,7 @@ export function ProductPage() {
       <SEO
         title={productSeo.title}
         description={productSeo.description}
-        image={product.images?.[0]}
+        image={productGallery(product.name, product.images)[0]?.src ?? product.images?.[0]}
         url={`/product/${product._id}`}
         type="product"
         jsonLd={[productJsonLd, breadcrumbLd]}
@@ -411,7 +417,7 @@ export function ProductPage() {
               </div>
             </div>
             <Product360Viewer
-              images={product.images || []}
+              shots={productGallery(product.name, product.images)}
               rotationImages={
                 product.rotationImages?.length === 8
                   ? product.rotationImages

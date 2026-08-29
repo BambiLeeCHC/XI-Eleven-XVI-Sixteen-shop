@@ -6,7 +6,7 @@ import {
   groupProductsByStyle,
   styleKeyFromName,
 } from "../lib/brand";
-import { hiResProductImage } from "../lib/productImage";
+import { heroShot, hiResProductImage } from "../lib/productImage";
 
 interface Product {
   _id: string;
@@ -87,14 +87,17 @@ function Section({
               className="aspect-[3/4] overflow-hidden mb-3 product-stage transition-transform group-hover:scale-[1.02]"
               style={{ border: "2px solid var(--cream)", background: "var(--cream)" }}
             >
-              {product.images[0] && (
+              {(() => {
+                const shot = heroShot(product.name, product.images);
+                return shot ? (
                 <img
-                  src={hiResProductImage(product.images[0], 800)}
+                  src={hiResProductImage(shot.src, 800)}
                   alt={product.name}
-                  className="w-full h-full object-contain"
+                  className={`w-full h-full object-contain ${shot.kind === "studio" ? "is-studio" : ""}`}
                   loading="lazy"
                 />
-              )}
+                ) : null;
+              })()}
             </div>
             <p className="clash text-[22px] normal-case">
               {styleKeyFromName(product.name)}

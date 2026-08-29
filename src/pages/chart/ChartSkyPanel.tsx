@@ -4,6 +4,15 @@ import { PlanetIcon, SignIcon } from "../../components/journal/SkyGlyphs";
 import { explainAspectPair } from "../../lib/astrologyMeanings";
 import { PlacementRow, SectionHeading, type NatalChart } from "./shared";
 
+const ASPECT_GLYPH: Record<string, string> = {
+  conjunction: "☌",
+  opposition: "☍",
+  square: "□",
+  trine: "△",
+  sextile: "⚹",
+  quincunx: "⊼",
+};
+
 export function ChartSkyPanel({
   chart,
   selectedBody,
@@ -98,25 +107,35 @@ export function ChartSkyPanel({
           <div className="tn-index-pane">
             <p className="chart-expand-hint">The tighter the orb, the stronger it lands.</p>
             <div className="tn-aspects">
-              {chart.aspects.slice(0, 8).map((a, i) => (
-                <div key={i} className="chart-aspect-row">
-                  <div className="chart-aspect-row__head">
-                    <span className="tn-aspect__who">
-                      <span className="tn-place__glyph">
-                        <PlanetIcon body={a.bodyA} size={16} />
+              {chart.aspects.map((a, i) => {
+                const key = a.aspect.toLowerCase();
+                const strength = Math.max(8, Math.min(100, Math.round((1 - a.orb / 8) * 100)));
+                return (
+                  <div key={i} className={`chart-aspect-row tn-aspect tn-aspect--${key}`}>
+                    <div className="chart-aspect-row__head">
+                      <span className="tn-aspect__who">
+                        <span className="tn-place__glyph">
+                          <PlanetIcon body={a.bodyA} size={16} />
+                        </span>
+                        <span className="tn-aspect__glyph" title={a.aspect} aria-hidden="true">
+                          {ASPECT_GLYPH[key] ?? "·"}
+                        </span>
+                        <span className="tn-place__glyph">
+                          <PlanetIcon body={a.bodyB} size={16} />
+                        </span>
                       </span>
-                      <span className="chart-aspect-row__label">
-                        {a.bodyA} <span className="chart-aspect-row__type">{a.aspect}</span> {a.bodyB}
-                      </span>
-                      <span className="tn-place__glyph">
-                        <PlanetIcon body={a.bodyB} size={16} />
-                      </span>
-                    </span>
-                    <span className="chart-aspect-row__orb">{a.orb.toFixed(1)}°</span>
+                      <span className="chart-aspect-row__orb">{a.orb.toFixed(1)}°</span>
+                    </div>
+                    <p className="chart-aspect-row__label">
+                      {a.bodyA} <span className="chart-aspect-row__type">{a.aspect}</span> {a.bodyB}
+                    </p>
+                    <div className="tn-aspect__orb-track" aria-hidden="true">
+                      <span style={{ width: `${strength}%` }} />
+                    </div>
+                    <p className="chart-aspect-row__explain">{explainAspectPair(a.bodyA, a.bodyB, a.aspect)}</p>
                   </div>
-                  <p className="chart-aspect-row__explain">{explainAspectPair(a.bodyA, a.bodyB, a.aspect)}</p>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         ) : (

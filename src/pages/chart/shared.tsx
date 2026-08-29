@@ -170,7 +170,8 @@ export function PlacementRow({
   expanded: boolean;
   onToggle: () => void;
 }) {
-  const { body, sign, house, retrograde } = placement;
+  const { body, sign, house, retrograde, degree } = placement;
+  const degInSign = Math.floor(((degree % 30) + 30) % 30);
   return (
     <div className={`chart-placement-row tn-place ${expanded ? "is-expanded" : ""}`}>
       <button
@@ -183,12 +184,15 @@ export function PlacementRow({
           <span className="tn-place__glyph">
             <PlanetIcon body={body} size={18} />
           </span>
-          <span className="chart-placement__body">{body}</span>
+          <span className="tn-place__copy">
+            <span className="chart-placement__body">{body}</span>
+            <span className="tn-place__deg">{degInSign}° {sign}</span>
+          </span>
         </span>
         <span className="chart-placement-row__head-right">
           <span className={`lock-pill ${retrograde ? "rx" : ""}`}>
-            <SignIcon sign={sign} size={13} /> {sign}
-            {house ? ` · H${house}` : ""}
+            <SignIcon sign={sign} size={13} />
+            {house ? ` H${house}` : ""}
             {retrograde ? " · Rx" : ""}
           </span>
           <span className="chart-placement-row__chevron" aria-hidden="true">

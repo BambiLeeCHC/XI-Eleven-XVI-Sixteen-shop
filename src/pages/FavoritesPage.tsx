@@ -2,6 +2,7 @@ import { useQuery, useMutation } from "../lib/backend";
 import { useAuthStatus } from "../lib/backend";
 import { Link, useNavigate } from "react-router-dom";
 import { api } from "../lib/backend";
+import { heroShot, hiResProductImage } from "../lib/productImage";
 
 
 export default function FavoritesPage() {
@@ -91,13 +92,13 @@ export default function FavoritesPage() {
 
               {/* Product image */}
               <div
-                className="aspect-[3/4] overflow-hidden"
+                className="aspect-[3/4] overflow-hidden product-stage"
                 onClick={() => navigate(`/product/${fav.productId}`)}
               >
                 <img
-                  src={fav.product.images?.[0]}
+                  src={hiResProductImage(heroShot(fav.product.name, fav.product.images)?.src ?? "", 800)}
                   alt={fav.product.name}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  className={`w-full h-full object-contain ${heroShot(fav.product.name, fav.product.images)?.kind === "studio" ? "is-studio" : ""} group-hover:scale-105 transition-transform duration-500`}
                 />
               </div>
 

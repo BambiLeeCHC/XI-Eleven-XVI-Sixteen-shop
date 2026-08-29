@@ -9,7 +9,7 @@ import {
   groupProductsByStyle,
   snapHex,
 } from "../lib/brand";
-import { hiResProductImage } from "../lib/productImage";
+import { heroShot, hiResProductImage } from "../lib/productImage";
 
 type HighlightProduct = {
   _id: string;
@@ -194,14 +194,17 @@ export function ProductHighlight({
           className="flex items-center justify-center p-6 product-stage"
           style={{ background: "var(--cream)" }}
         >
-          {selected.images?.[0] ? (
+          {(() => {
+            const shot = heroShot(selected.name, selected.images);
+            return shot ? (
             <img
-              src={hiResProductImage(selected.images[0], 1600)}
+              src={hiResProductImage(shot.src, 1600)}
               alt={displayProductName(selected.name)}
-              className="product-stage__shot"
+              className={`product-stage__shot ${shot.kind === "studio" ? "is-studio" : ""}`}
               decoding="async"
             />
-          ) : null}
+            ) : null;
+          })()}
           <span className="product-stage__grain" aria-hidden="true" />
         </div>
 

@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { useQuery } from "../lib/backend";
 import { useNavigate } from "react-router-dom";
 import { api } from "../lib/backend";
+import { heroShot, hiResProductImage } from "../lib/productImage";
 
 interface SearchOverlayProps {
   isOpen: boolean;
@@ -134,11 +135,11 @@ export function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
                   onClick={() => handleSelect(product._id)}
                   className="w-full flex items-center gap-4 p-3 rounded-lg transition-all hover:bg-white/[0.03] group text-left"
                 >
-                  <div className="w-14 h-14 rounded-lg overflow-hidden shrink-0 bg-black/30">
+                  <div className="w-14 h-14 overflow-hidden shrink-0 product-stage">
                     <img
-                      src={product.images?.[0]}
+                      src={hiResProductImage(heroShot(product.name, product.images)?.src ?? "", 280)}
                       alt={product.name}
-                      className="w-full h-full object-cover"
+                      className={`w-full h-full object-contain ${heroShot(product.name, product.images)?.kind === "studio" ? "is-studio" : ""}`}
                     />
                   </div>
                   <div className="flex-1 min-w-0">

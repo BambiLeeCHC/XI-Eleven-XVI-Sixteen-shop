@@ -2,6 +2,7 @@ import { useRef, useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useQuery } from "../lib/backend";
 import { api } from "../lib/backend";
+import { heroShot, hiResProductImage } from "../lib/productImage";
 
 interface CategoryDef {
   label: string;
@@ -30,7 +31,9 @@ function CategoryCard({ cat }: { cat: CategoryDef }) {
     category: cat.filter.category,
   });
 
-  const img = products?.[0]?.images?.[0];
+  const shot = products?.[0]
+    ? heroShot(products[0].name, products[0].images)
+    : null;
   const shopUrl = cat.filter.gender
     ? `/shop?gender=${cat.filter.gender}`
     : `/shop?category=${cat.filter.category}`;
@@ -42,34 +45,29 @@ function CategoryCard({ cat }: { cat: CategoryDef }) {
     >
       <Link to={shopUrl} className="block group">
         <div
-          className="rounded-2xl overflow-hidden transition-all duration-300 group-hover:scale-[1.02] group-hover:shadow-lg"
+          className="overflow-hidden transition-all duration-300 group-hover:scale-[1.02]"
           style={{
-            background: "rgba(18,14,22,0.95)",
-            border: "1px solid rgba(200,160,255,0.08)",
-            boxShadow: "0 2px 16px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.03)",
+            background: "var(--cream)",
+            border: "2px solid #0B0B0C",
+            boxShadow: "4px 4px 0 var(--pist)",
           }}
         >
-          <div className="relative" style={{ height: "220px", overflow: "hidden", background: "#0a0810" }}>
-            {img ? (
+          <div className="relative product-stage" style={{ height: "220px", overflow: "hidden" }}>
+            {shot ? (
               <img
-                src={img}
+                src={hiResProductImage(shot.src, 720)}
                 alt={cat.label}
-                className="w-full h-full object-cover object-center transition-transform duration-500 group-hover:scale-105"
-                style={{ opacity: 0.9 }}
+                className={`w-full h-full object-contain ${shot.kind === "studio" ? "is-studio" : ""}`}
                 loading="lazy"
               />
             ) : (
               <div
                 className="w-full h-full flex items-center justify-center"
-                style={{ background: "rgba(255,255,255,0.03)" }}
+                style={{ background: "var(--cream)" }}
               >
                 <span style={{ color: "rgba(21,36,61,0.18)", fontSize: "12px" }}>Loading...</span>
               </div>
             )}
-            <div
-              className="absolute bottom-0 left-0 right-0 h-16 pointer-events-none"
-              style={{ background: "linear-gradient(transparent, rgba(18,14,22,0.8))" }}
-            />
           </div>
 
           <div className="px-3 py-3 flex items-center justify-between">
