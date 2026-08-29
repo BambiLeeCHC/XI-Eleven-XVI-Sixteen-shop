@@ -34,6 +34,8 @@ Vercel is pinned in `vercel.json`:
 - output: `dist`
 - framework: `vite`
 
+Production custom domain is `xixvi.shop` on the `xixvi-shop` Vercel project. After an Instant Rollback, new git deploys stay staged until that deployment is Promoted.
+
 Do not set `CONVEX_DEPLOY_KEY`, `CONVEX_DEPLOYMENT`, or `VITE_CONVEX_URL` anywhere.
 
 ## Layout
