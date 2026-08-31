@@ -1,14 +1,15 @@
 import { Link } from "react-router-dom";
 import { ProcessSteps } from "../components/ImpactHero";
 import { SEO } from "../components/SEO";
+import { PAGE_SEO } from "../data/seoMeta";
 import { CREST_URL } from "../lib/brand";
 
 export function AboutPage() {
   return (
     <>
       <SEO
-        title="About — XI Eleven XVI Sixteen"
-        description="Discover the vision behind XI Eleven XVI Sixteen — luxury fashion made exclusively for you, rooted in numerology, sustainability, and uncompromising quality."
+        title={PAGE_SEO.about.title}
+        description={PAGE_SEO.about.description}
         url="/about"
       />
 

@@ -13,7 +13,7 @@ import {
   parseProfileSections,
   useSunSign,
 } from "./shared";
-import type { NumerologyResult } from "./shared";
+import { PAGE_SEO } from "../../data/seoMeta";
 
 /** True North — Numerology. One-time unlock; no longer bundled into a weekly subscription. */
 export function NumbersPage() {
@@ -43,14 +43,15 @@ export function NumbersPage() {
     }
   };
 
-  const pageTitle = "True North — Numerology — XI · XVI";
+  const pageTitle = PAGE_SEO.numbers.title;
+  const pageDescription = PAGE_SEO.numbers.description;
 
   if (!user) {
     return (
       <div className="journal-page journal-page--truenorth">
         <TrueNorthAtmosphere />
         <div className="journal-stack tn-shell">
-          <SEO title={pageTitle} />
+          <SEO title={pageTitle} description={pageDescription} url="/chart/numbers" />
           <TrueNorthSignedOutTeaser
             pageTitleTag={
               <div className="tn-card tn-invite-card">
@@ -71,7 +72,7 @@ export function NumbersPage() {
     <div className="journal-page journal-page--truenorth">
       <TrueNorthAtmosphere />
       <div className="journal-stack tn-shell">
-        <SEO title={pageTitle} />
+        <SEO title={pageTitle} description={pageDescription} url="/chart/numbers" />
         <TrueNorthHero sunSign={sunSign} />
 
         <div className="tn-card tn-numbers-wrap">

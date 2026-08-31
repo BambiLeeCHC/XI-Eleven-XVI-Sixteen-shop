@@ -119,7 +119,7 @@ export function ImpactHero({
 
 export function PistachioTicker() {
   const items = [
-    "True North · 3 draws a day · 7-day free trial",
+    "True North · free natal chart · xixvi.shop",
     "Journal · editorial from XI · XVI",
     "The Draw · Almanac · Daily Code",
     "Shop D-Slip",
@@ -199,7 +199,7 @@ export function JournalTrueNorthRooms() {
         style={{ background: "#0E0C12", color: "#F7F0E6" }}
       >
         <p className="label-lock" style={{ color: "var(--lilac)" }}>
-          Daily tarot · 3 draws
+          Free natal chart · Long Read
         </p>
         <h2
           className="clash mt-3"
@@ -208,7 +208,7 @@ export function JournalTrueNorthRooms() {
           True North
         </h2>
         <p className="serif-quiet text-[22px] mt-3 max-w-md">
-          Three draws a day. Morning, midday, night.
+          Your natal chart, free. Then three Long Reads a day if you want them.
         </p>
         <div className="relative h-[280px] mt-7 mb-9">
           <div className="tarot-card c1">
@@ -228,20 +228,26 @@ export function JournalTrueNorthRooms() {
           </div>
         </div>
         <Link
-          to="/chart/long-read"
+          to="/chart"
           className="inline-block px-6 py-4 text-[13px] tracking-[0.16em] uppercase font-extrabold"
           style={{ background: "var(--lilac)", color: "#1A1020" }}
         >
-          Start free trial ✦
+          See your chart — free
         </Link>
         <p
           className="serif-quiet mt-3 text-[17px] max-w-md"
           style={{ color: "#D9D0C4" }}
         >
-          7-day free trial, then $7/week. Cancel anytime. Three draws a day,
-          every day. Natal chart unlocks after birth date and location.
-          Numerology is $19.99, once.
+          Free natal chart from XI Eleven XVI Sixteen the moment you register.
+          Long Read is a 7-day trial, then $7/week. Numerology is $19.99, once.
         </p>
+        <Link
+          to="/chart/long-read"
+          className="inline-block mt-4 text-[12px] tracking-[0.16em] uppercase font-extrabold"
+          style={{ color: "var(--pist)", textDecoration: "underline" }}
+        >
+          Start the Long Read trial →
+        </Link>
       </article>
     </section>
   );

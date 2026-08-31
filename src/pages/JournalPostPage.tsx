@@ -44,6 +44,7 @@ export function JournalPostPage() {
         description={post.excerpt}
         url={`/journal/${post.slug}`}
         image={post.coverImage}
+        type="article"
         jsonLd={{
           "@context": "https://schema.org",
           "@type": "BlogPosting",

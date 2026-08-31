@@ -7,6 +7,7 @@ import { DrawThree } from "../components/journal/DrawThree";
 import { JournalSky } from "../components/journal/JournalSky";
 import { ShareRow } from "../components/journal/ShareRow";
 import { SEO } from "../components/SEO";
+import { PAGE_SEO } from "../data/seoMeta";
 import { type JournalPost, usePublishedPosts } from "../lib/journalData";
 import { dateNumber, moonPhase, spreadOfTheDay } from "../lib/ritual";
 
@@ -91,8 +92,8 @@ export function JournalPage() {
       <JournalSky />
 
       <SEO
-        title="The Journal — Almanac, Daily Code & The Draw"
-        description="The XI · XVI Journal: the brand manifesto, the 11:16 Almanac calendar, a daily code on sustainability and self-empowerment, and a three-card draw from the XI·XVI house deck."
+        title={PAGE_SEO.journal.title}
+        description={PAGE_SEO.journal.description}
         url="/journal"
       />
 

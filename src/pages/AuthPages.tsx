@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { LocationAutocomplete } from "../components/LocationAutocomplete";
+import { SEO } from "../components/SEO";
 import { useAuthActions, useAuthStatus } from "../lib/backend";
 
 /* ── shared shell (matches the light showroom theme used everywhere else) ── */
@@ -11,18 +12,26 @@ function AuthShell({
   subtitle,
   children,
   footer,
+  seoUrl = "/login",
 }: {
   eyebrow: string;
   title: string;
   subtitle?: React.ReactNode;
   children: React.ReactNode;
   footer?: React.ReactNode;
+  seoUrl?: string;
 }) {
   return (
     <div
       className="min-h-[70vh] px-6 py-16"
       style={{ background: "var(--cream)", color: "#0B0B0C" }}
     >
+      <SEO
+        title={title}
+        description="Sign in to your XI Eleven XVI Sixteen account at xixvi.shop."
+        url={seoUrl}
+        noindex
+      />
       <div className="w-full max-w-[980px] mx-auto">
         <p className="label-lock" style={{ color: "#0B0B0C" }}>
           {eyebrow}
@@ -395,7 +404,7 @@ export function SignupPage() {
 
   if (checkEmail) {
     return (
-      <AuthShell eyebrow="Check your inbox" title="Confirm your email">
+      <AuthShell eyebrow="Check your inbox" title="Confirm your email" seoUrl="/signup">
         <p className="text-[13px] text-slate-600 text-center leading-relaxed">
           We sent a confirmation link to <strong>{email}</strong>. Open it to
           finish setting up your account.
@@ -414,6 +423,7 @@ export function SignupPage() {
     <AuthShell
       eyebrow="Join the inner circle"
       title="Create account"
+      seoUrl="/signup"
       subtitle="Every field on the live signup. Natal chart unlocks once birth date and location are in. Birth time is optional."
       footer={
         <>

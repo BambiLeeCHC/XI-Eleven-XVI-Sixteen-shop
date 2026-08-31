@@ -2,6 +2,7 @@ import { SEO } from "../../components/SEO";
 import { TrueNorthAtmosphere } from "../../components/journal/TrueNorthAtmosphere";
 import { AlmanacCalendar } from "../../components/journal/Almanac";
 import { api, useAuthStatus, useQuery } from "../../lib/backend";
+import { PAGE_SEO } from "../../data/seoMeta";
 import { SectionHeading, TrueNorthHero, TrueNorthSignedOutTeaser, useSunSign } from "./shared";
 
 export function AlmanacTNPage() {
@@ -11,14 +12,15 @@ export function AlmanacTNPage() {
     authLoading || !isAuthenticated ? "skip" : {},
   );
   const sunSign = useSunSign(user);
-  const pageTitle = "True North — The Almanac — XI · XVI";
+  const pageTitle = PAGE_SEO.almanac.title;
+  const pageDescription = PAGE_SEO.almanac.description;
 
   if (authLoading) {
     return (
       <div className="journal-page journal-page--truenorth">
         <TrueNorthAtmosphere />
         <div className="journal-stack tn-shell">
-          <SEO title={pageTitle} />
+          <SEO title={pageTitle} description={pageDescription} url="/chart/almanac" />
           <TrueNorthHero sunSign={sunSign} />
           <p className="serif-quiet tn-opening">Opening the Almanac…</p>
         </div>
@@ -31,7 +33,7 @@ export function AlmanacTNPage() {
       <div className="journal-page journal-page--truenorth">
         <TrueNorthAtmosphere />
         <div className="journal-stack tn-shell">
-          <SEO title={pageTitle} />
+          <SEO title={pageTitle} description={pageDescription} url="/chart/almanac" />
           <TrueNorthSignedOutTeaser
             pageTitleTag={
               <div className="tn-card tn-invite-card">
@@ -51,7 +53,7 @@ export function AlmanacTNPage() {
     <div className="journal-page journal-page--truenorth">
       <TrueNorthAtmosphere />
       <div className="journal-stack tn-shell">
-        <SEO title={pageTitle} />
+        <SEO title={pageTitle} description={pageDescription} url="/chart/almanac" />
         <TrueNorthHero sunSign={sunSign} />
         <div className="tn-card tn-almanac">
           <SectionHeading wordA="The" wordB="Almanac" ariaLabel="The Almanac" />

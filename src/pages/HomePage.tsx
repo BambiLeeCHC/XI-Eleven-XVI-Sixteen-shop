@@ -6,7 +6,7 @@ import {
   ProcessSteps,
 } from "../components/ImpactHero";
 import { ProductHighlight } from "../components/ProductHighlight";
-import { buildOrganizationJsonLd, SEO } from "../components/SEO";
+import { buildOrganizationJsonLd, buildWebSiteJsonLd, SEO } from "../components/SEO";
 import { mergeLandingContent } from "../data/landingContent";
 import { PAGE_SEO } from "../data/seoMeta";
 import { api, useMutation, useQuery } from "../lib/backend";
@@ -23,7 +23,7 @@ export function HomePage() {
       <SEO
         description={PAGE_SEO.home.description}
         url="/"
-        jsonLd={buildOrganizationJsonLd()}
+        jsonLd={[buildOrganizationJsonLd(), buildWebSiteJsonLd()]}
       />
       <ImpactHero
         dslipHref={dslip ? `/product/${dslip._id}` : "/shop"}

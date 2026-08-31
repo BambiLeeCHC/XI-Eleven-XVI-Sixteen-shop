@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { SEO } from "../../components/SEO";
+import { buildBreadcrumbJsonLd, buildTrueNorthJsonLd, SEO } from "../../components/SEO";
+import { PAGE_SEO } from "../../data/seoMeta";
 import { TrueNorthAtmosphere } from "../../components/journal/TrueNorthAtmosphere";
 import { api, invalidateQueries, useAuthStatus, useQuery } from "../../lib/backend";
 import { ChartSkyPanel } from "./ChartSkyPanel";
@@ -42,14 +43,21 @@ export function ChartHomePage() {
   const chartError = chartResult && !chartResult.success ? chartResult.message ?? "Couldn't generate your chart." : null;
   const sunSign = chart?.placements?.find((p) => p.body === "Sun")?.sign;
 
-  const pageTitle = "True North — Your Natal Chart — XI · XVI";
+  const seo = PAGE_SEO.chart;
+  const chartJsonLd = [
+    buildTrueNorthJsonLd(),
+    buildBreadcrumbJsonLd([
+      { name: "Home", url: "/" },
+      { name: "True North", url: "/chart" },
+    ]),
+  ];
 
   if (authLoading) {
     return (
       <div className="journal-page journal-page--truenorth">
         <TrueNorthAtmosphere />
         <div className="journal-stack tn-shell">
-          <SEO title={pageTitle} />
+          <SEO title={seo.title} description={seo.description} url="/chart" jsonLd={chartJsonLd} />
           <TrueNorthHero />
           <p className="serif-quiet tn-opening">
             Opening your chart…
@@ -64,7 +72,7 @@ export function ChartHomePage() {
       <div className="journal-page journal-page--truenorth">
         <TrueNorthAtmosphere />
         <div className="journal-stack tn-shell">
-          <SEO title={pageTitle} />
+          <SEO title={seo.title} description={seo.description} url="/chart" jsonLd={chartJsonLd} />
           <TrueNorthSignedOutTeaser
             pageTitleTag={
               <div className="tn-card tn-invite-card">
@@ -84,7 +92,7 @@ export function ChartHomePage() {
     <div className="journal-page journal-page--truenorth">
       <TrueNorthAtmosphere />
       <div className="journal-stack tn-shell">
-        <SEO title={pageTitle} />
+        <SEO title={seo.title} description={seo.description} url="/chart" jsonLd={chartJsonLd} />
         <TrueNorthHero sunSign={sunSign} />
 
         {loading && (

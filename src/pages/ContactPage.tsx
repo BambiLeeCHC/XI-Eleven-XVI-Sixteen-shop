@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { SEO } from "../components/SEO";
+import { PAGE_SEO } from "../data/seoMeta";
 
 /* ─── CSS Keyframes ──────────────────────────────────────────────── */
 const styleId = "contact-page-animations";
@@ -58,8 +59,8 @@ export function ContactPage() {
   return (
     <>
       <SEO
-        title="Contact Us — XI XVI"
-        description="Get in touch with XI Eleven XVI Sixteen. We'd love to hear from you."
+        title={PAGE_SEO.contact.title}
+        description={PAGE_SEO.contact.description}
         url="/contact"
       />
 

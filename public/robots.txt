@@ -4,5 +4,10 @@ Disallow: /profile
 Disallow: /orders
 Disallow: /checkout
 Disallow: /cart
+Disallow: /admin
+Disallow: /login
+Disallow: /signup
+Disallow: /welcome
+Disallow: /favorites
 
 Sitemap: https://xixvi.shop/sitemap.xml

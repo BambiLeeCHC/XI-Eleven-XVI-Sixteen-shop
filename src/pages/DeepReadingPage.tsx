@@ -7,6 +7,7 @@ import { SectionBoundary } from "../components/journal/SectionBoundary";
 import { SubscriptionTierPicker, type SubscriptionTier } from "../components/SubscriptionTierPicker";
 import { api, useAction, useAuthStatus, useQuery } from "../lib/backend";
 import { DEEP_SPREAD, drawDeepSpread, type SpreadCard } from "../lib/ritual";
+import { PAGE_SEO } from "../data/seoMeta";
 import {
   BoldParagraphs,
   SectionHeading,
@@ -268,7 +269,9 @@ export default function DeepReadingPage() {
     setError(null);
   }, [selectedWindow]);
 
-  const pageTitle = "True North — The Long Read — XI · XVI";
+  const pageTitle = PAGE_SEO.longRead.title;
+  const pageDescription = PAGE_SEO.longRead.description;
+  const pageUrl = "/chart/long-read";
 
   const tabClass = (id: DailyWindow) => {
     const state = stateFor(id);
@@ -282,7 +285,7 @@ export default function DeepReadingPage() {
       <div className="journal-page journal-page--truenorth">
         <TrueNorthAtmosphere />
         <div className="journal-stack long-read-stack tn-shell">
-          <SEO title={pageTitle} />
+          <SEO title={pageTitle} description={pageDescription} url={pageUrl} />
           <TrueNorthHero sunSign={sunSign} />
           <p className="serif-quiet tn-opening">
             Opening your Long Read…
@@ -297,7 +300,7 @@ export default function DeepReadingPage() {
       <div className="journal-page journal-page--truenorth">
         <TrueNorthAtmosphere />
         <div className="journal-stack long-read-stack tn-shell">
-          <SEO title={pageTitle} />
+          <SEO title={pageTitle} description={pageDescription} url={pageUrl} />
           <TrueNorthSignedOutTeaser
             pageTitleTag={
               <div className="tn-card tn-invite-card">
@@ -318,7 +321,7 @@ export default function DeepReadingPage() {
     <div className="journal-page journal-page--truenorth">
       <TrueNorthAtmosphere />
       <div className="journal-stack long-read-stack tn-shell">
-        <SEO title={pageTitle} />
+        <SEO title={pageTitle} description={pageDescription} url={pageUrl} />
         <TrueNorthHero sunSign={sunSign} />
         <SectionHeading wordA="The" wordB="Long Read" ariaLabel="The Long Read" />
         <div className="tn-card tn-lede-card">

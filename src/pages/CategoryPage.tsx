@@ -19,7 +19,9 @@ export function CategoryPage({ gender }: { gender: Gender }) {
   const path = gender === "women" ? "/women" : "/men";
   const title = gender === "women" ? "Women" : "Men";
   const accent = gender === "women" ? "var(--pist)" : "var(--powder)";
-  const lede = gender === "women" ? "Looks for her." : "Looks for him.";
+  const lede = gender === "women"
+    ? "D-Slip, B-Lift, L-Flow — made on demand by XI Eleven XVI Sixteen."
+    : "J-Glitch, S-Glitch, T-Icon — made on demand by XI Eleven XVI Sixteen.";
 
   const groups = useMemo(
     () =>

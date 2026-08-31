@@ -95,7 +95,7 @@ export function WelcomePage() {
     return (
       <div className="journal-page">
         <JournalSky />
-        <SEO title="Welcome — XI · XVI" />
+        <SEO title="Welcome" url="/welcome" noindex />
         <div className="journal-stack" style={{ maxWidth: "32rem" }}>
           <div className="journal-surface journal-hero" style={{ textAlign: "center" }}>
             <p className="text-sm text-muted-foreground mb-4">
@@ -122,7 +122,7 @@ export function WelcomePage() {
   return (
     <div className="journal-page">
       <JournalSky />
-      <SEO title="Welcome — XI · XVI" />
+      <SEO title="Welcome" url="/welcome" noindex />
       <div className="journal-stack" style={{ maxWidth: "42rem" }}>
         <div className="journal-surface journal-hero" style={{ textAlign: "center", position: "relative" }}>
           <span className="jcol-patch jcol-patch--a" aria-hidden="true" />

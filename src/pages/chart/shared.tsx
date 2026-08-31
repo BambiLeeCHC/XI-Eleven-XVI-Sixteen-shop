@@ -538,14 +538,14 @@ export function TrueNorthSignedOutTeaser({
           </h1>
           <p className="serif-quiet tn-hero__lede">
             The exact sky the second you were born — decoded, in full, the moment
-            you register. What's underneath it is waiting too.
+            you register at xixvi.shop. Free. No card on file.
           </p>
           <TrueNorthSkyline />
         </div>
       </div>
       <div className="tn-invite">{pageTitleTag}</div>
       <Link to="/signup" className="cta-pist tn-hero__cta">
-        Create account
+        See your chart — free
       </Link>
       <ul className="tn-destinations">
         {TRUE_NORTH_PAGES.map(p => (
@@ -556,6 +556,16 @@ export function TrueNorthSignedOutTeaser({
           </li>
         ))}
       </ul>
+      <div className="tn-card tn-invite-card">
+        <p className="label-lock">XI Eleven XVI Sixteen · True North</p>
+        <p className="serif-quiet tn-invite-card__copy">
+          True North is the house observatory at xixvi.shop. Create an account and
+          get a free natal chart — every placement, house, and a profile written
+          for you. The Journal daily draw and the 11:16 Almanac stay free. The Long
+          Read is seven cards, three windows a day, written against what's actually
+          going on: seven-day trial, then $7/week. Numerology is $19.99, once.
+        </p>
+      </div>
       <TrueNorthNav />
     </header>
   );
