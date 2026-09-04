@@ -153,49 +153,40 @@ export function WelcomePage() {
 
         {!loading && (
           <div className="journal-surface" style={{ padding: "1.75rem", display: "flex", flexDirection: "column", gap: "1rem" }}>
-            <p className="text-sm font-semibold">What's here</p>
+            <p className="text-sm font-semibold">What you just got — and what we sell</p>
             <div style={{ display: "flex", flexDirection: "column", gap: "0.6rem" }}>
               <div className="welcome-line">
-                <span className="jcol-tag jcol-tag--sm jcol-ink jcol-type">Free</span>
+                <span className="jcol-tag jcol-tag--sm jcol-ink jcol-type">With account</span>
                 <span className="text-sm text-muted-foreground">
-                  Your natal chart, in full — every placement, house and sign. Already calculated, no
-                  trial, no card on file.
+                  Your natal chart, in full — every placement, house and sign. Already calculated.
                 </span>
               </div>
               <div className="welcome-line">
-                <span className="jcol-tag jcol-tag--sm jcol-gold jcol-type">Free daily</span>
+                <span className="jcol-tag jcol-tag--sm jcol-gold jcol-type">Daily</span>
                 <span className="text-sm text-muted-foreground">
-                  The Journal's daily card draw — a new five-card spread every day, read fresh for you.
+                  The Journal's five-card draw — one spread a day, on the house.
                 </span>
               </div>
               <div className="welcome-line">
-                <span className="jcol-tag jcol-tag--sm jcol-kraft jcol-type">Paywalled</span>
+                <span className="jcol-tag jcol-tag--sm jcol-kraft jcol-type">$7/week</span>
                 <span className="text-sm text-muted-foreground">
-                  The Long Read (seven-card deep reading) and Numerology — 7 days free, then $7/week,
-                  or $12/week with numerology unlocked too. Follow-up questions on any reading are
-                  $2.99 each.
+                  The Long Read — seven cards, three windows a day, written against what's
+                  actually going on. Seven days to try it, then it bills. Cancel anytime.
+                </span>
+              </div>
+              <div className="welcome-line">
+                <span className="jcol-tag jcol-tag--sm jcol-ink jcol-type">$19.99</span>
+                <span className="text-sm text-muted-foreground">
+                  Numerology, once. Follow-up questions on a reading are $2.99 each.
                 </span>
               </div>
             </div>
 
-            <Link to="/chart" style={{ textDecoration: "none" }}>
-              <button
-                style={{
-                  width: "100%",
-                  padding: "0.9rem",
-                  borderRadius: "12px",
-                  textAlign: "center",
-                  background: "linear-gradient(160deg, #1d2f4f, #101c33)",
-                  color: "#f3e9d2",
-                  border: "1px solid rgba(214,178,96,.6)",
-                  fontSize: "0.75rem",
-                  letterSpacing: "0.15em",
-                  textTransform: "uppercase",
-                  fontWeight: 600,
-                }}
-              >
-                See your full chart →
-              </button>
+            <Link to="/chart/long-read" className="cta-pist" style={{ textAlign: "center" }}>
+              Get the Long Read — $7/week
+            </Link>
+            <Link to="/chart" className="cta-ghost" style={{ textAlign: "center", color: "#0B0B0C", borderColor: "#0B0B0C" }}>
+              Open your natal chart
             </Link>
           </div>
         )}

@@ -147,7 +147,7 @@ export const TRUE_NORTH_PAGES = [
   { path: "/chart", label: "Chart", glyph: "✦", blurb: "The sky the second you were born." },
   { path: "/chart/numbers", label: "Numbers", glyph: "◆", blurb: "The constants underneath the chart." },
   { path: "/chart/almanac", label: "Almanac", glyph: "☾", blurb: "The day's mood, in one page." },
-  { path: "/chart/long-read", label: "Long Read", glyph: "♠", blurb: "Seven cards. Three windows a day." },
+  { path: "/chart/long-read", label: "Long Read", glyph: "♠", blurb: "Seven cards. Three windows. $7/week." },
 ] as const;
 
 /** Fetches just the natal chart, for the sun-sign line in the hero — every
@@ -499,7 +499,7 @@ export function TrueNorthHero({ sunSign }: { sunSign?: string }) {
     <header className="tn-hero">
       <div className="tn-hero__mast">
         <div className="tn-hero__copy">
-          <span className="kicker-lock">Your own private cosmology</span>
+          <span className="kicker-lock">The Long Read is $7/week</span>
           <h1 className="clash tn-hero__title" aria-label="True North">
             True North
           </h1>
@@ -532,21 +532,26 @@ export function TrueNorthSignedOutTeaser({
     <header className="tn-hero">
       <div className="tn-hero__mast">
         <div className="tn-hero__copy">
-          <span className="kicker-lock">Your own private cosmology</span>
+          <span className="kicker-lock">$7 / week</span>
           <h1 className="clash tn-hero__title" aria-label="True North">
             True North
           </h1>
           <p className="serif-quiet tn-hero__lede">
-            The exact sky the second you were born — decoded, in full, the moment
-            you register at xixvi.shop. Free. No card on file.
+            The Long Read. Seven cards, three times a day, written against what
+            you type. $7 a week. The natal chart comes with the account.
           </p>
           <TrueNorthSkyline />
         </div>
       </div>
       <div className="tn-invite">{pageTitleTag}</div>
-      <Link to="/signup" className="cta-pist tn-hero__cta">
-        See your chart — free
-      </Link>
+      <div className="tn-hero__ctas">
+        <Link to="/signup" className="cta-pist tn-hero__cta">
+          Get the Long Read — $7/week
+        </Link>
+        <Link to="/login" className="cta-ghost">
+          Log in
+        </Link>
+      </div>
       <ul className="tn-destinations">
         {TRUE_NORTH_PAGES.map(p => (
           <li key={p.path} className="tn-destination">
@@ -557,13 +562,12 @@ export function TrueNorthSignedOutTeaser({
         ))}
       </ul>
       <div className="tn-card tn-invite-card">
-        <p className="label-lock">XI Eleven XVI Sixteen · True North</p>
+        <p className="label-lock">What you buy</p>
         <p className="serif-quiet tn-invite-card__copy">
-          True North is the house observatory at xixvi.shop. Create an account and
-          get a free natal chart — every placement, house, and a profile written
-          for you. The Journal daily draw and the 11:16 Almanac stay free. The Long
-          Read is seven cards, three windows a day, written against what's actually
-          going on: seven-day trial, then $7/week. Numerology is $19.99, once.
+          The Long Read is the membership — seven cards, three windows a day,
+          written against what's actually going on. Seven days to try it,
+          then $7/week. Cancel anytime. Natal chart, Journal draw, and Almanac
+          come with the account. Numerology is $19.99, once.
         </p>
       </div>
       <TrueNorthNav />

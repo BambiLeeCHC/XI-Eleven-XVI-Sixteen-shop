@@ -12,7 +12,7 @@ export const PAGE_SEO = {
   home: {
     title: "",
     description:
-      "Shop XI Eleven XVI Sixteen (XI · XVI) at xixvi.shop — made-on-demand luxury streetwear. Slip dresses, jerseys, glitch shorts, leggings. Free natal chart in True North.",
+      "Shop XI Eleven XVI Sixteen (XI · XVI) at xixvi.shop — made-on-demand luxury streetwear. The Long Read, $7/week. Natal chart with an account.",
   },
   shopAll: {
     title: "Shop All",
@@ -45,14 +45,14 @@ export const PAGE_SEO = {
       "The XI Eleven XVI Sixteen Journal at xixvi.shop — 11:16 Almanac, daily code, and a free house-deck draw. Editorial from the brand.",
   },
   chart: {
-    title: "True North — Free Natal Chart",
+    title: "True North — Long Read $7/week",
     description:
-      "Free natal chart from XI Eleven XVI Sixteen at xixvi.shop. Placements, houses, written profile. Long Read tarot: 7-day trial, then $7/week.",
+      "The Long Read from XI Eleven XVI Sixteen: seven-card tarot, three times a day, $7/week. Natal chart with an account. xixvi.shop.",
   },
   longRead: {
-    title: "The Long Read — Daily Tarot",
+    title: "The Long Read — $7/week",
     description:
-      "The Long Read on xixvi.shop: seven cards, three times a day, read against what's actually going on. XI Eleven XVI Sixteen. 7 days free, then $7/week.",
+      "Buy the Long Read on xixvi.shop: seven cards, three times a day, written against what's going on. XI Eleven XVI Sixteen. $7/week after 7 days free.",
   },
   almanac: {
     title: "The Almanac — 11:16",

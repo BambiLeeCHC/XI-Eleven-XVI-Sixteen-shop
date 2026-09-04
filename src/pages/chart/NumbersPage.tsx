@@ -55,10 +55,10 @@ export function NumbersPage() {
           <TrueNorthSignedOutTeaser
             pageTitleTag={
               <div className="tn-card tn-invite-card">
-                <p className="label-lock">Numerology</p>
+                <p className="label-lock">Numerology — $19.99</p>
                 <p className="serif-quiet tn-invite-card__copy">
-                  Your name and birth date reduce to a set of numbers that don't change — your Life Path,
-                  your Expression number, your Soul Urge.
+                  Life Path, Expression, Soul Urge — the numbers that don't move. Once.
+                  The Long Read is $7/week.
                 </p>
               </div>
             }

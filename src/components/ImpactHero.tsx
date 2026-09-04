@@ -119,7 +119,7 @@ export function ImpactHero({
 
 export function PistachioTicker() {
   const items = [
-    "True North · free natal chart · xixvi.shop",
+    "True North · Long Read $7/week · xixvi.shop",
     "Journal · editorial from XI · XVI",
     "The Draw · Almanac · Daily Code",
     "Shop D-Slip",
@@ -198,8 +198,8 @@ export function JournalTrueNorthRooms() {
         className="relative overflow-hidden p-10 md:p-14"
         style={{ background: "#0E0C12", color: "#F7F0E6" }}
       >
-        <p className="label-lock" style={{ color: "var(--lilac)" }}>
-          Free natal chart · Long Read
+        <p className="label-lock" style={{ color: "var(--pist)" }}>
+          The Long Read · $7/week
         </p>
         <h2
           className="clash mt-3"
@@ -208,7 +208,14 @@ export function JournalTrueNorthRooms() {
           True North
         </h2>
         <p className="serif-quiet text-[22px] mt-3 max-w-md">
-          Your natal chart, free. Then three Long Reads a day if you want them.
+          Seven cards, three times a day, written against what's actually going on.
+          This is what we sell.
+        </p>
+        <p
+          className="clash mt-4"
+          style={{ fontSize: "clamp(28px, 4vw, 44px)", color: "var(--pist)", letterSpacing: "-0.03em" }}
+        >
+          $7<span style={{ fontSize: "0.38em", letterSpacing: "0.16em", marginLeft: "0.4em", fontWeight: 800 }}> / WEEK</span>
         </p>
         <div className="relative h-[280px] mt-7 mb-9">
           <div className="tarot-card c1">
@@ -227,27 +234,20 @@ export function JournalTrueNorthRooms() {
             <span className="serif-quiet">third pull</span>
           </div>
         </div>
-        <Link
-          to="/chart"
-          className="inline-block px-6 py-4 text-[13px] tracking-[0.16em] uppercase font-extrabold"
-          style={{ background: "var(--lilac)", color: "#1A1020" }}
-        >
-          See your chart — free
-        </Link>
+        <div className="flex flex-wrap gap-3 items-center">
+          <Link to="/chart/long-read" className="cta-pist">
+            Get the Long Read — $7/week
+          </Link>
+          <Link to="/chart" className="cta-ghost">
+            Natal chart with account
+          </Link>
+        </div>
         <p
-          className="serif-quiet mt-3 text-[17px] max-w-md"
+          className="serif-quiet mt-4 text-[17px] max-w-md"
           style={{ color: "#D9D0C4" }}
         >
-          Free natal chart from XI Eleven XVI Sixteen the moment you register.
-          Long Read is a 7-day trial, then $7/week. Numerology is $19.99, once.
+          Seven days to try it. Then $7 every week. Cancel anytime.
         </p>
-        <Link
-          to="/chart/long-read"
-          className="inline-block mt-4 text-[12px] tracking-[0.16em] uppercase font-extrabold"
-          style={{ color: "var(--pist)", textDecoration: "underline" }}
-        >
-          Start the Long Read trial →
-        </Link>
       </article>
     </section>
   );

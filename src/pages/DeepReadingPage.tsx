@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { SEO } from "../components/SEO";
+import { SEO, buildLongReadOfferJsonLd } from "../components/SEO";
 import { TrueNorthAtmosphere } from "../components/journal/TrueNorthAtmosphere";
 import { CardArt } from "../components/journal/CardArt";
 import { SectionBoundary } from "../components/journal/SectionBoundary";
@@ -272,6 +272,7 @@ export default function DeepReadingPage() {
   const pageTitle = PAGE_SEO.longRead.title;
   const pageDescription = PAGE_SEO.longRead.description;
   const pageUrl = "/chart/long-read";
+  const longReadJsonLd = [buildLongReadOfferJsonLd()];
 
   const tabClass = (id: DailyWindow) => {
     const state = stateFor(id);
@@ -285,7 +286,7 @@ export default function DeepReadingPage() {
       <div className="journal-page journal-page--truenorth">
         <TrueNorthAtmosphere />
         <div className="journal-stack long-read-stack tn-shell">
-          <SEO title={pageTitle} description={pageDescription} url={pageUrl} />
+          <SEO title={pageTitle} description={pageDescription} url={pageUrl} jsonLd={longReadJsonLd} />
           <TrueNorthHero sunSign={sunSign} />
           <p className="serif-quiet tn-opening">
             Opening your Long Read…
@@ -300,14 +301,14 @@ export default function DeepReadingPage() {
       <div className="journal-page journal-page--truenorth">
         <TrueNorthAtmosphere />
         <div className="journal-stack long-read-stack tn-shell">
-          <SEO title={pageTitle} description={pageDescription} url={pageUrl} />
+          <SEO title={pageTitle} description={pageDescription} url={pageUrl} jsonLd={longReadJsonLd} />
           <TrueNorthSignedOutTeaser
             pageTitleTag={
               <div className="tn-card tn-invite-card">
-                <p className="label-lock">The Long Read</p>
+                <p className="label-lock">The Long Read · $7/week</p>
                 <p className="serif-quiet tn-invite-card__copy">
-                  Seven cards, three times a day — morning, midday, evening — read against what's
-                  actually going on with you. 7-day free trial, then $7/week.
+                  Seven cards, three times a day — morning, midday, evening — written against
+                  what's actually going on. Create an account, then buy it. $7/week.
                 </p>
               </div>
             }
@@ -321,7 +322,7 @@ export default function DeepReadingPage() {
     <div className="journal-page journal-page--truenorth">
       <TrueNorthAtmosphere />
       <div className="journal-stack long-read-stack tn-shell">
-        <SEO title={pageTitle} description={pageDescription} url={pageUrl} />
+        <SEO title={pageTitle} description={pageDescription} url={pageUrl} jsonLd={longReadJsonLd} />
         <TrueNorthHero sunSign={sunSign} />
         <SectionHeading wordA="The" wordB="Long Read" ariaLabel="The Long Read" />
         <div className="tn-card tn-lede-card">
@@ -336,10 +337,11 @@ export default function DeepReadingPage() {
         )}
         {!entitled && (
           <div className="tn-card tn-paywall">
-            <p className="label-lock">Unlock the Long Read</p>
-            <h2 className="clash tn-paywall__title">Seven cards. Three windows.</h2>
+            <p className="label-lock">$7 / week</p>
+            <h2 className="clash tn-paywall__title">This is the Long Read.</h2>
             <p className="serif-quiet tn-lede">
-              Read directly against what's actually going on for you — not the daily five, a genuinely deeper read, saved to your account. 7 days free, then $7/week.
+              Seven cards. Three windows a day. Written against the situation you name —
+              not the daily five. Buy it.
             </p>
             <SubscriptionTierPicker subscribingTier={subscribingTier} onStart={startTrial} />
           </div>

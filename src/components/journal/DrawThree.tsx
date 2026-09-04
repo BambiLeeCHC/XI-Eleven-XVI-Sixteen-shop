@@ -338,13 +338,13 @@ export function DrawThree() {
               <p className="serif-quiet jdeck__signoff">Yours, until midnight.</p>
 
               <div className="jdeck__long-read-tease">
-                <p className="label-lock jdeck__long-read-tease-label">One free draw a day. Want more?</p>
+                <p className="label-lock jdeck__long-read-tease-label">The Long Read is $7/week</p>
                 <p className="serif-quiet jdeck__long-read-tease-copy">
-                  The Long Read goes seven cards deep, read against what's actually going on with
-                  you — plus your full natal chart and numerology on the True North page.
+                  You just had the free daily five. The Long Read is seven cards, three times a
+                  day, written against what's actually going on. That's the product.
                 </p>
                 <Link to="/chart/long-read" className="cta-pist jdeck__long-read-tease-cta">
-                  Open the Long Read in True North ✦
+                  Get the Long Read — $7/week
                 </Link>
               </div>
             </>

@@ -5,7 +5,7 @@ const BRAND = "XI Eleven XVI Sixteen";
 const BRAND_SHORT = "XI · XVI";
 const DEFAULT_TITLE = "XI Eleven XVI Sixteen — Made-on-Demand Streetwear";
 const DEFAULT_DESCRIPTION =
-  "Shop XI Eleven XVI Sixteen (XI · XVI) at xixvi.shop — made-on-demand luxury streetwear. Slip dresses, performance jerseys, glitch shorts, leggings and sports bras. Free natal chart in True North. Free shipping.";
+  "Shop XI Eleven XVI Sixteen (XI · XVI) at xixvi.shop — made-on-demand luxury streetwear. The Long Read, $7/week. Natal chart with an account. Free shipping.";
 const DEFAULT_IMAGE = `${SITE_URL}/og-default.png`;
 const INSTAGRAM = "https://www.instagram.com/xielevenxvisixteen/";
 const LOGO =
@@ -149,7 +149,7 @@ export function buildOrganizationJsonLd() {
     email: "support@xixvi.shop",
     sameAs: [INSTAGRAM],
     description:
-      "Made-on-demand luxury streetwear and True North — a free natal chart, daily Journal draw, and Long Read tarot. XI Eleven XVI Sixteen L.L.C., Florida.",
+      "Made-on-demand luxury streetwear and True North. The Long Read is $7/week. Natal chart with an account. XI Eleven XVI Sixteen L.L.C., Florida.",
     address: {
       "@type": "PostalAddress",
       addressRegion: "FL",
@@ -187,7 +187,7 @@ export function buildTrueNorthJsonLd() {
         name: "What is True North on xixvi.shop?",
         acceptedAnswer: {
           "@type": "Answer",
-          text: "True North is the private observatory of XI Eleven XVI Sixteen. Register for a free natal chart — placements, houses, and a written profile — plus the Journal daily draw and the 11:16 Almanac.",
+          text: "True North is the house observatory of XI Eleven XVI Sixteen. The Long Read is the membership: seven-card tarot, three times a day, $7 per week. A natal chart comes with the account.",
         },
       },
       {
@@ -203,7 +203,15 @@ export function buildTrueNorthJsonLd() {
         name: "What is the Long Read?",
         acceptedAnswer: {
           "@type": "Answer",
-          text: "The Long Read is a seven-card tarot draw, three times a day, written against what is actually going on for you. Seven-day free trial, then $7 per week. Cancel anytime.",
+          text: "The Long Read is the paid membership of True North. Seven cards, three times a day, written against what is actually going on. $7 per week after a seven-day trial. Cancel anytime.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "How much is the Long Read?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "The Long Read is $7 per week after a seven-day trial. Cancel anytime. Numerology is $19.99 once. Follow-up questions are $2.99.",
         },
       },
       {
@@ -215,6 +223,31 @@ export function buildTrueNorthJsonLd() {
         },
       },
     ],
+  };
+}
+
+export function buildLongReadOfferJsonLd() {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: "The Long Read",
+    description:
+      "Seven-card tarot, three times a day, written against what's actually going on. XI Eleven XVI Sixteen True North.",
+    brand: { "@type": "Brand", name: BRAND },
+    url: `${SITE_URL}/chart/long-read`,
+    offers: {
+      "@type": "Offer",
+      url: `${SITE_URL}/chart/long-read`,
+      priceCurrency: "USD",
+      price: "7.00",
+      availability: "https://schema.org/InStock",
+      priceSpecification: {
+        "@type": "UnitPriceSpecification",
+        price: "7.00",
+        priceCurrency: "USD",
+        unitText: "WEEK",
+      },
+    },
   };
 }
 

@@ -490,6 +490,17 @@
 .tn-hero__cta {
   align-self: flex-start;
 }
+.tn-hero__ctas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  align-self: flex-start;
+}
+.tn-hero__ctas .cta-ghost {
+  color: var(--cream);
+  border-color: var(--cream);
+}
 .tn-opening {
   color: var(--cream);
   font-size: clamp(18px, 2.2vw, 24px);
