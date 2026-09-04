@@ -62,7 +62,7 @@ export function StoreFooter() {
           className="serif-quiet text-[14px]"
           style={{ color: "rgba(247,240,230,0.55)" }}
         >
-          © 2026 XI Eleven XVI Sixteen
+          © 2026 XI Eleven XVI Sixteen L.L.C.
         </span>
       </div>
     </footer>
