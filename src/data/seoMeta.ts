@@ -32,7 +32,7 @@ export const PAGE_SEO = {
   about: {
     title: "About",
     description:
-      "XI Eleven XVI Sixteen is a house of clothing from Florida. Made on demand. 11 and 16 in the name — True North is those numbers, opened.",
+      "XI Eleven XVI Sixteen is a house of clothing. 11 + 16 = 9 — nothing left over. Made on demand. True North is the same numbers, opened.",
   },
   contact: {
     title: "Contact",
