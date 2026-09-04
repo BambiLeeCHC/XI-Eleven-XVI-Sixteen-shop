@@ -99,15 +99,15 @@ export function ShopPage() {
       />
       <PistachioTicker />
 
-      <section
-        id="women"
-        className="grid md:grid-cols-[240px_1fr] min-h-[92vh]"
-      >
+      <section id="women" className="style-index">
         <aside
-          className="p-7"
+          className="style-index__rail"
           style={{ background: "#111", borderRight: "4px solid var(--pist)" }}
         >
-          <p className="label-lock mb-5" style={{ color: "var(--pist)" }}>
+          <p
+            className="label-lock style-index__label"
+            style={{ color: "var(--pist)" }}
+          >
             Style index
           </p>
           {products === undefined ? (
@@ -127,44 +127,34 @@ export function ShopPage() {
                     setSkuId(group.items[0]?._id ?? null);
                     setSize("");
                   }}
-                  className="flex items-center w-full text-left py-3 uppercase tracking-[0.16em] text-[12px]"
+                  className={`style-index__item ${on ? "is-on" : ""}`}
                   style={{
                     color: on ? "var(--cream)" : "#8a8a8a",
                     background: on ? "rgba(216,240,196,0.08)" : "transparent",
-                    margin: on ? "0 -18px" : 0,
-                    paddingLeft: on ? 18 : 0,
-                    paddingRight: on ? 18 : 0,
                   }}
                 >
                   <span
-                    className="inline-block mr-2.5 rounded-full"
-                    style={{
-                      width: on ? 10 : 8,
-                      height: on ? 10 : 8,
-                      background: on ? "var(--pist)" : "#444",
-                    }}
+                    className="style-index__dot"
+                    style={{ background: on ? "var(--pist)" : "#444" }}
                   />
-                  <span
-                    className="clash mr-2"
-                    style={{ fontSize: 22, textTransform: "none" }}
-                  >
-                    {group.key}
+                  <span className="clash style-index__name">{group.key}</span>
+                  <span className="style-index__price">
+                    {price ? formatPrice(price) : "—"}
                   </span>
-                  {price ? formatPrice(price) : "—"}
                 </button>
               );
             })
           )}
           <p
-            className="serif-quiet mt-10 text-[15px]"
+            className="serif-quiet style-index__count"
             style={{ color: "var(--pist)" }}
           >
             {groups.length} styles
           </p>
         </aside>
 
-        <div className="flex flex-col min-h-[92vh]" style={{ background: "var(--cream)" }}>
-          <div className="relative flex flex-1 items-center justify-center p-6 product-stage">
+        <div className="style-index__frame" style={{ background: "var(--cream)" }}>
+          <div className="style-index__stage product-stage">
             {sku?.images?.[0] ? (
               <img
                 src={hiResProductImage(sku.images[0], 1800)}
@@ -200,9 +190,8 @@ export function ShopPage() {
 
           {sku ? (
             <div
-              className="relative grid gap-4 items-end m-5"
+              className="style-index__controls relative"
               style={{
-                gridTemplateColumns: "1.2fr auto auto",
                 background: "#0B0B0C",
                 border: "3px solid var(--cream)",
                 padding: "16px 18px",

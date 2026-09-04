@@ -136,17 +136,17 @@ export function ProductHighlight({
 
   return (
     <section
-      className="grid md:grid-cols-[240px_1fr] min-h-[72vh]"
+      className="style-index style-index--short"
       style={{ background: "var(--cream)", color: "#0B0B0C" }}
     >
       <aside
-        className="p-7"
+        className="style-index__rail"
         style={{
           background: "var(--cream)",
           borderRight: "4px solid var(--pist)",
         }}
       >
-        <p className="label-lock mb-5" style={{ color: "#6b6358" }}>
+        <p className="label-lock style-index__label" style={{ color: "#6b6358" }}>
           Style index
         </p>
         {groups.map(group => {
@@ -160,38 +160,28 @@ export function ProductHighlight({
                 setActiveKey(group.key);
                 setSelectedId(group.items[0]?._id ?? null);
               }}
-              className="flex items-center w-full text-left py-3 uppercase tracking-[0.16em] text-[12px]"
+              className={`style-index__item ${on ? "is-on" : ""}`}
               style={{
                 color: on ? "#0B0B0C" : "#6b6358",
                 background: on ? "rgba(216,240,196,0.55)" : "transparent",
-                margin: on ? "0 -18px" : 0,
-                paddingLeft: on ? 18 : 0,
-                paddingRight: on ? 18 : 0,
               }}
             >
               <span
-                className="inline-block mr-2.5 rounded-full"
-                style={{
-                  width: on ? 10 : 8,
-                  height: on ? 10 : 8,
-                  background: on ? "#0B0B0C" : "#c9bfb3",
-                }}
+                className="style-index__dot"
+                style={{ background: on ? "#0B0B0C" : "#c9bfb3" }}
               />
-              <span
-                className="clash mr-2"
-                style={{ fontSize: 22, textTransform: "none" }}
-              >
-                {group.key}
+              <span className="clash style-index__name">{group.key}</span>
+              <span className="style-index__price">
+                {price ? formatPrice(price) : "—"}
               </span>
-              {price ? formatPrice(price) : "—"}
             </button>
           );
         })}
       </aside>
 
-      <div className="grid md:grid-cols-[minmax(0,1fr)_minmax(280px,1fr)] min-h-[72vh] items-stretch">
+      <div className="style-index__frame">
         <div
-          className="flex items-center justify-center p-6 product-stage"
+          className="style-index__stage product-stage"
           style={{ background: "var(--cream)" }}
         >
           {selected.images?.[0] ? (
@@ -206,7 +196,7 @@ export function ProductHighlight({
         </div>
 
         <div
-          className="relative grid gap-5 md:grid-cols-[1.2fr_auto] items-end"
+          className="style-index__sheet relative grid gap-5 md:grid-cols-[1.2fr_auto] items-end"
           style={{
             background: "var(--cream)",
             color: "#0B0B0C",
