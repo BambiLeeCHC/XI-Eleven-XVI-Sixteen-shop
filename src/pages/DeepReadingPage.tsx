@@ -10,6 +10,7 @@ import { DEEP_SPREAD, drawDeepSpread, type SpreadCard } from "../lib/ritual";
 import { PAGE_SEO } from "../data/seoMeta";
 import {
   BoldParagraphs,
+  HouseDressing,
   SectionHeading,
   TrueNorthHero,
   TrueNorthSignedOutTeaser,
@@ -305,10 +306,10 @@ export default function DeepReadingPage() {
           <TrueNorthSignedOutTeaser
             pageTitleTag={
               <div className="tn-card tn-invite-card">
-                <p className="label-lock">The Long Read · $7/week</p>
+                <p className="label-lock">The house reading · $7/week</p>
                 <p className="serif-quiet tn-invite-card__copy">
-                  Seven cards, three times a day — morning, midday, evening — written against
-                  what's actually going on. Create an account, then buy it. $7/week.
+                  Seven cards, three times a day, written against what's actually going on.
+                  Same house as the clothes. Create an account, then $7/week.
                 </p>
               </div>
             }
@@ -338,10 +339,11 @@ export default function DeepReadingPage() {
         {!entitled && (
           <div className="tn-card tn-paywall">
             <p className="label-lock">$7 / week</p>
-            <h2 className="clash tn-paywall__title">This is the Long Read.</h2>
+            <h2 className="clash tn-paywall__title">The house reading.</h2>
             <p className="serif-quiet tn-lede">
               Seven cards. Three windows a day. Written against the situation you name —
-              not the daily five. Buy it.
+              not the daily five. $7 a week. Same ethic as a piece that isn't cut
+              until you order it.
             </p>
             <SubscriptionTierPicker subscribingTier={subscribingTier} onStart={startTrial} />
           </div>
@@ -441,9 +443,12 @@ export default function DeepReadingPage() {
             </div>
           </div>
         )}
+        <HouseDressing />
         <p className="serif-quiet" style={{ textAlign: "center", marginTop: "0.5rem", color: "#F4EFE6" }}>
           Prefer the free five-card draw?{" "}
           <Link to="/journal" style={{ textDecoration: "underline", color: "#D8F0C4" }}>Open The Journal →</Link>
+          {" · "}
+          <Link to="/shop" style={{ textDecoration: "underline", color: "#D8F0C4" }}>Shop the house →</Link>
         </p>
       </div>
     </div>

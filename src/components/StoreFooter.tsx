@@ -14,7 +14,8 @@ export function StoreFooter() {
             className="serif-quiet text-[16px]"
             style={{ color: "rgba(247,240,230,0.75)" }}
           >
-            Made on demand.
+            Made on demand. A house of clothing — True North is the same
+            numbers, opened.
           </p>
           <p
             className="text-[11px] mt-4"

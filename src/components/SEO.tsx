@@ -5,7 +5,7 @@ const BRAND = "XI Eleven XVI Sixteen";
 const BRAND_SHORT = "XI · XVI";
 const DEFAULT_TITLE = "XI Eleven XVI Sixteen — Made-on-Demand Streetwear";
 const DEFAULT_DESCRIPTION =
-  "Shop XI Eleven XVI Sixteen (XI · XVI) at xixvi.shop — made-on-demand luxury streetwear. The Long Read, $7/week. Natal chart with an account. Free shipping.";
+  "Shop XI Eleven XVI Sixteen (XI · XVI) at xixvi.shop — a house of clothing, made on demand. True North is the same numbers, opened. Long Read $7/week. Free shipping.";
 const DEFAULT_IMAGE = `${SITE_URL}/og-default.png`;
 const INSTAGRAM = "https://www.instagram.com/xielevenxvisixteen/";
 const LOGO =
@@ -149,7 +149,7 @@ export function buildOrganizationJsonLd() {
     email: "support@xixvi.shop",
     sameAs: [INSTAGRAM],
     description:
-      "Made-on-demand luxury streetwear and True North. The Long Read is $7/week. Natal chart with an account. XI Eleven XVI Sixteen L.L.C., Florida.",
+      "A house of clothing, made on demand. True North is the same numbers, opened — natal chart, Almanac, Long Read $7/week. XI Eleven XVI Sixteen L.L.C., Florida.",
     address: {
       "@type": "PostalAddress",
       addressRegion: "FL",
@@ -187,7 +187,7 @@ export function buildTrueNorthJsonLd() {
         name: "What is True North on xixvi.shop?",
         acceptedAnswer: {
           "@type": "Answer",
-          text: "True North is the house observatory of XI Eleven XVI Sixteen. The Long Read is the membership: seven-card tarot, three times a day, $7 per week. A natal chart comes with the account.",
+          text: "XI Eleven XVI Sixteen is a house of clothing. True North is the same numbers, opened — natal chart, Almanac, and the Long Read ($7 per week). A piece is made when you order it; a reading is written when you say what's going on.",
         },
       },
       {

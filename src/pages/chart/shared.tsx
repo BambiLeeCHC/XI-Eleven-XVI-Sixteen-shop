@@ -7,6 +7,7 @@ import {
   explainSignInHouse,
 } from "../../lib/astrologyMeanings";
 import { api, useQuery } from "../../lib/backend";
+import { HOUSE_HINGE, HOUSE_LINE } from "../../lib/brand";
 import { NUMEROLOGY_CALC_EXPLAIN } from "../../lib/numerology";
 import { moonPhase } from "../../lib/ritual";
 
@@ -499,7 +500,7 @@ export function TrueNorthHero({ sunSign }: { sunSign?: string }) {
     <header className="tn-hero">
       <div className="tn-hero__mast">
         <div className="tn-hero__copy">
-          <span className="kicker-lock">The Long Read is $7/week</span>
+          <span className="kicker-lock">The house reading</span>
           <h1 className="clash tn-hero__title" aria-label="True North">
             True North
           </h1>
@@ -532,13 +533,14 @@ export function TrueNorthSignedOutTeaser({
     <header className="tn-hero">
       <div className="tn-hero__mast">
         <div className="tn-hero__copy">
-          <span className="kicker-lock">$7 / week</span>
+          <span className="kicker-lock">The house reading · $7/week</span>
           <h1 className="clash tn-hero__title" aria-label="True North">
             True North
           </h1>
           <p className="serif-quiet tn-hero__lede">
-            The Long Read. Seven cards, three times a day, written against what
-            you type. $7 a week. The natal chart comes with the account.
+            {HOUSE_LINE} The Long Read is seven cards, three times a day,
+            written against what you type. $7 a week. The natal chart comes
+            with the account.
           </p>
           <TrueNorthSkyline />
         </div>
@@ -548,8 +550,8 @@ export function TrueNorthSignedOutTeaser({
         <Link to="/signup" className="cta-pist tn-hero__cta">
           Get the Long Read — $7/week
         </Link>
-        <Link to="/login" className="cta-ghost">
-          Log in
+        <Link to="/shop" className="cta-ghost">
+          Shop the house
         </Link>
       </div>
       <ul className="tn-destinations">
@@ -562,15 +564,30 @@ export function TrueNorthSignedOutTeaser({
         ))}
       </ul>
       <div className="tn-card tn-invite-card">
-        <p className="label-lock">What you buy</p>
+        <p className="label-lock">One house</p>
         <p className="serif-quiet tn-invite-card__copy">
-          The Long Read is the membership — seven cards, three windows a day,
-          written against what's actually going on. Seven days to try it,
-          then $7/week. Cancel anytime. Natal chart, Journal draw, and Almanac
-          come with the account. Numerology is $19.99, once.
+          {HOUSE_HINGE} Log in if you already have an account.
         </p>
+        <Link to="/login" className="tn-inline" style={{ display: "inline-block", marginTop: "0.75rem" }}>
+          Log in →
+        </Link>
       </div>
       <TrueNorthNav />
     </header>
+  );
+}
+
+/** Sends True North back into a garment — same ethic, other room. */
+export function HouseDressing() {
+  return (
+    <div className="tn-card tn-invite-card">
+      <p className="label-lock">The house on a body</p>
+      <p className="serif-quiet tn-invite-card__copy">
+        {HOUSE_LINE} The clothes are made for one person. Same as this room.
+      </p>
+      <Link to="/shop" className="cta-pist" style={{ marginTop: "1rem", textAlign: "center" }}>
+        Shop the house
+      </Link>
+    </div>
   );
 }

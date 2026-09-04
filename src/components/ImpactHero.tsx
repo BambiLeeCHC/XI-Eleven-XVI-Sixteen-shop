@@ -119,11 +119,11 @@ export function ImpactHero({
 
 export function PistachioTicker() {
   const items = [
-    "True North · Long Read $7/week · xixvi.shop",
-    "Journal · editorial from XI · XVI",
-    "The Draw · Almanac · Daily Code",
-    "Shop D-Slip",
-    "Made on demand",
+    "A house of clothing · True North is the same numbers, opened",
+    "True North · the house reading · $7/week",
+    "Journal · 11:16 · the cut, the week",
+    "Shop D-Slip · made on demand",
+    "Nothing exists until it's yours",
   ];
   const doubled = [...items, ...items];
   return (
@@ -181,7 +181,7 @@ export function JournalTrueNorthRooms() {
             Journal
           </h2>
           <p className="serif-quiet text-[26px] mt-6 max-w-md leading-snug">
-            Stories from XI · XVI. The cut, the campaign, the week.
+            The house thinking out loud. 11:16, the cut, the campaign, the week.
           </p>
         </div>
         <div>
@@ -199,7 +199,7 @@ export function JournalTrueNorthRooms() {
         style={{ background: "#0E0C12", color: "#F7F0E6" }}
       >
         <p className="label-lock" style={{ color: "var(--pist)" }}>
-          The Long Read · $7/week
+          The house reading · $7/week
         </p>
         <h2
           className="clash mt-3"
@@ -208,8 +208,8 @@ export function JournalTrueNorthRooms() {
           True North
         </h2>
         <p className="serif-quiet text-[22px] mt-3 max-w-md">
-          Seven cards, three times a day, written against what's actually going on.
-          This is what we sell.
+          Same numbers as the name. Seven cards, three times a day, written
+          against what's actually going on. $7 a week.
         </p>
         <p
           className="clash mt-4"
@@ -238,15 +238,16 @@ export function JournalTrueNorthRooms() {
           <Link to="/chart/long-read" className="cta-pist">
             Get the Long Read — $7/week
           </Link>
-          <Link to="/chart" className="cta-ghost">
-            Natal chart with account
+          <Link to="/shop" className="cta-ghost">
+            Shop the house
           </Link>
         </div>
         <p
           className="serif-quiet mt-4 text-[17px] max-w-md"
           style={{ color: "#D9D0C4" }}
         >
-          Seven days to try it. Then $7 every week. Cancel anytime.
+          A piece is made when you order it. A reading is written when you say
+          what's going on. Seven days to try the Long Read, then $7/week.
         </p>
       </article>
     </section>

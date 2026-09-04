@@ -12,7 +12,7 @@ export const PAGE_SEO = {
   home: {
     title: "",
     description:
-      "Shop XI Eleven XVI Sixteen (XI · XVI) at xixvi.shop — made-on-demand luxury streetwear. The Long Read, $7/week. Natal chart with an account.",
+      "Shop XI Eleven XVI Sixteen at xixvi.shop — a house of clothing, made on demand. True North is the same numbers, opened. Long Read $7/week.",
   },
   shopAll: {
     title: "Shop All",
@@ -32,7 +32,7 @@ export const PAGE_SEO = {
   about: {
     title: "About",
     description:
-      "XI Eleven XVI Sixteen is made-on-demand luxury streetwear from Florida. No overstock. Numerology in the cut — True North, the Journal, 11:16.",
+      "XI Eleven XVI Sixteen is a house of clothing from Florida. Made on demand. 11 and 16 in the name — True North is those numbers, opened.",
   },
   contact: {
     title: "Contact",
@@ -45,14 +45,14 @@ export const PAGE_SEO = {
       "The XI Eleven XVI Sixteen Journal at xixvi.shop — 11:16 Almanac, daily code, and a free house-deck draw. Editorial from the brand.",
   },
   chart: {
-    title: "True North — Long Read $7/week",
+    title: "True North — the house reading",
     description:
-      "The Long Read from XI Eleven XVI Sixteen: seven-card tarot, three times a day, $7/week. Natal chart with an account. xixvi.shop.",
+      "True North is the same numbers as XI Eleven XVI Sixteen, opened. Natal chart with an account. Long Read $7/week. xixvi.shop.",
   },
   longRead: {
     title: "The Long Read — $7/week",
     description:
-      "Buy the Long Read on xixvi.shop: seven cards, three times a day, written against what's going on. XI Eleven XVI Sixteen. $7/week after 7 days free.",
+      "The house reading of XI Eleven XVI Sixteen: seven cards, three times a day, written against what's going on. $7/week. xixvi.shop.",
   },
   almanac: {
     title: "The Almanac — 11:16",

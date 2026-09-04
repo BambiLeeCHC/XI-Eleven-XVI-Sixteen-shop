@@ -338,10 +338,10 @@ export function DrawThree() {
               <p className="serif-quiet jdeck__signoff">Yours, until midnight.</p>
 
               <div className="jdeck__long-read-tease">
-                <p className="label-lock jdeck__long-read-tease-label">The Long Read is $7/week</p>
+                <p className="label-lock jdeck__long-read-tease-label">The house reading is $7/week</p>
                 <p className="serif-quiet jdeck__long-read-tease-copy">
                   You just had the free daily five. The Long Read is seven cards, three times a
-                  day, written against what's actually going on. That's the product.
+                  day, written against what's actually going on — same house as the clothes.
                 </p>
                 <Link to="/chart/long-read" className="cta-pist jdeck__long-read-tease-cta">
                   Get the Long Read — $7/week

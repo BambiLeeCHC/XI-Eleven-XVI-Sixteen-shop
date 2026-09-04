@@ -425,7 +425,16 @@ export function ProductPage() {
 
           <div className="px-8 py-8 flex flex-col">
             <p className="clash text-6xl">{styleKeyFromName(product.name)}</p>
-            <p className="serif-quiet text-xl mt-2">Made on demand.</p>
+            <p className="serif-quiet text-xl mt-2">Made on demand. Made for one person.</p>
+            <p className="label-lock mt-3" style={{ color: "var(--pist)" }}>
+              11:16
+            </p>
+            <p className="serif-quiet text-[15px] mt-1" style={{ color: "rgba(247,240,230,0.72)" }}>
+              Same numbers as the name.{" "}
+              <Link to="/chart" style={{ textDecoration: "underline", color: "var(--pist)" }}>
+                True North is that cipher, opened.
+              </Link>
+            </p>
             <p
               className="clash mt-4"
               style={{

@@ -15,6 +15,7 @@ import {
   SectionHeading,
   TrueNorthHero,
   TrueNorthSignedOutTeaser,
+  HouseDressing,
   parseProfileSections,
 } from "./shared";
 import type { NatalChartResult, NatalProfileResult } from "./shared";
@@ -88,8 +89,8 @@ export function ChartHomePage() {
               <div className="tn-card tn-invite-card">
                 <p className="label-lock">Natal chart with account</p>
                 <p className="serif-quiet tn-invite-card__copy">
-                  Every placement, house, and a profile written for you — included when you register.
-                  The Long Read is the membership: $7/week.
+                  The spec you showed up with — every placement, house, and a profile written for you.
+                  The Long Read is the house reading: $7/week.
                 </p>
               </div>
             }
@@ -216,8 +217,8 @@ export function ChartHomePage() {
                 <p className="label-lock">$7 / week</p>
                 <h2 className="clash tn-paywall__title">The Long Read.</h2>
                 <p className="serif-quiet tn-lede">
-                  Seven cards, three windows a day, written against what's actually going on.
-                  The chart is included. This is what we sell.
+                  The house reading — seven cards, three windows a day, written against
+                  what's actually going on. $7 a week.
                 </p>
                 <Link to="/chart/long-read" className="cta-pist" style={{ textAlign: "center" }}>
                   Get the Long Read — $7/week
@@ -225,6 +226,8 @@ export function ChartHomePage() {
                 <p className="tn-sky__note">Seven days to try it. Then $7/week. Cancel anytime.</p>
               </div>
             )}
+
+            <HouseDressing />
           </div>
         )}
       </div>

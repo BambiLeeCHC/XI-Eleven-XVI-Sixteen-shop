@@ -153,7 +153,7 @@ export function WelcomePage() {
 
         {!loading && (
           <div className="journal-surface" style={{ padding: "1.75rem", display: "flex", flexDirection: "column", gap: "1rem" }}>
-            <p className="text-sm font-semibold">What you just got — and what we sell</p>
+            <p className="text-sm font-semibold">The house — and this room</p>
             <div style={{ display: "flex", flexDirection: "column", gap: "0.6rem" }}>
               <div className="welcome-line">
                 <span className="jcol-tag jcol-tag--sm jcol-ink jcol-type">With account</span>
@@ -187,6 +187,9 @@ export function WelcomePage() {
             </Link>
             <Link to="/chart" className="cta-ghost" style={{ textAlign: "center", color: "#0B0B0C", borderColor: "#0B0B0C" }}>
               Open your natal chart
+            </Link>
+            <Link to="/shop" className="tn-inline" style={{ textAlign: "center" }}>
+              Shop the house →
             </Link>
           </div>
         )}

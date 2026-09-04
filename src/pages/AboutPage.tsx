@@ -35,9 +35,9 @@ export function AboutPage() {
           className="serif-quiet mx-auto mt-7 max-w-[640px] text-[18px] leading-relaxed"
           style={{ color: "rgba(247,240,230,0.82)" }}
         >
-          XI Eleven XVI Sixteen is built on a radical idea: every piece should
-          be made exclusively for you. No mass production. No overstock. No
-          waste. Just intentional design, made on demand.
+          XI Eleven XVI Sixteen is a house of clothing. Every piece is made
+          exclusively for you — no mass production, no overstock, no waste.
+          The name is 11 and 16. True North is those numbers, opened.
         </p>
       </section>
 
@@ -210,6 +210,35 @@ export function AboutPage() {
         </div>
       </section>
 
+      <section className="px-10 py-20">
+        <p className="label-lock text-center" style={{ color: "var(--pist)" }}>
+          True North
+        </p>
+        <h2
+          className="clash text-center mt-4"
+          style={{ fontSize: "clamp(42px, 7vw, 84px)" }}
+        >
+          The same numbers, opened.
+        </h2>
+        <p
+          className="serif-quiet text-2xl text-center max-w-2xl mx-auto mt-5"
+          style={{ color: "rgba(247,240,230,0.8)" }}
+        >
+          The clothes are the house. True North is the private room — natal
+          chart, Almanac, Long Read. Nothing in that room exists until it's
+          yours, same as a piece that isn't cut until you order it. The Long
+          Read is the house reading: seven cards, three windows a day, $7/week.
+        </p>
+        <div className="flex flex-wrap gap-3 justify-center mt-8">
+          <Link to="/chart" className="cta-pist">
+            Open True North
+          </Link>
+          <Link to="/chart/long-read" className="cta-ghost">
+            The Long Read — $7/week
+          </Link>
+        </div>
+      </section>
+
       <section
         className="px-10 py-20"
         style={{ background: "var(--cream)", color: "#0B0B0C" }}
@@ -236,8 +265,8 @@ export function AboutPage() {
               "var(--blush)",
             ],
             [
-              "Spiritual Grounding",
-              "From our numerological foundation to our design philosophy, we believe fashion can be a vehicle for self-expression, transformation, and personal power.",
+              "The house",
+              "11 and 16 aren't decoration. They're why a piece is made for one person, and why True North reads you the same way — chart, Almanac, Long Read. Cosmology we actually live in, not a second brand.",
               "var(--lilac)",
             ],
           ].map(([t, b, bg]) => (
@@ -269,12 +298,17 @@ export function AboutPage() {
           Experience the collection
         </h2>
         <p className="serif-quiet text-2xl mt-5 max-w-md mx-auto">
-          Every piece is made exclusively for you — a modern take on couture
-          that's kinder to the planet.
+          Every piece is made exclusively for you. True North is the same idea,
+          opened.
         </p>
-        <Link to="/shop" className="cta-pist mt-8">
-          Shop now
-        </Link>
+        <div className="flex flex-wrap gap-3 justify-center mt-8">
+          <Link to="/shop" className="cta-pist">
+            Shop the house
+          </Link>
+          <Link to="/chart" className="cta-ghost">
+            Open True North
+          </Link>
+        </div>
       </section>
     </>
   );
