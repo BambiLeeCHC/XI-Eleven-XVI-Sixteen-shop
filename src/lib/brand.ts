@@ -122,8 +122,8 @@ export const CAMPAIGN_KICKER = "Unbothered in XI Eleven XVI Sixteen";
 export const HERO_TITLE = "The world is ending,";
 export const HERO_SUB = "we love that for them...";
 
-/** One house. Clothes are the floor. True North is the private room. */
+/** One house. Clothes are the floor. True North is the paid reading room. */
 export const HOUSE_LINE =
-  "XI Eleven XVI Sixteen is a house of clothing. True North is the same numbers, opened.";
+  "XI Eleven XVI Sixteen is a clothing house. True North is written tarot — a separate $7/week membership.";
 export const HOUSE_HINGE =
-  "Nothing here exists until it's yours. A piece is made when you order it. A reading is written when you say what's going on.";
+  "A garment is made when you order it. A Long Read is written when you say what is going on, and only if you subscribe.";
