@@ -8,6 +8,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { SECOND_POST, THIRD_POST, WELCOME_POST } from "../data/journalSeed";
+import { FIT_GUIDE_POSTS } from "../data/fitGuides";
 import { api, useBackend } from "../lib/backend";
 
 export interface JournalPost {
@@ -44,14 +45,22 @@ function toPost(
   } as JournalPost;
 }
 
-/** Seeded launch entries, newest first. */
+/** Seeded launch entries, newest first. Fit guides sit in front of manifesto copy. */
 export const STATIC_POSTS: JournalPost[] = [
+  ...FIT_GUIDE_POSTS,
   toPost(THIRD_POST, 0, SUBLIMATION_DAY),
   toPost(WELCOME_POST, 0),
   toPost(SECOND_POST, 60),
 ];
 
 type Source = "database" | "static";
+
+function mergeBySlug(db: JournalPost[], fallback: JournalPost[]): JournalPost[] {
+  const seen = new Set(db.map((p) => p.slug));
+  return [...db, ...fallback.filter((p) => !seen.has(p.slug))].sort(
+    (a, b) => (b.publishedAt ?? b._creationTime) - (a.publishedAt ?? a._creationTime),
+  );
+}
 
 /** Published posts, from the database when reachable, else the bundled entries. */
 export function usePublishedPosts(limit?: number): {
@@ -71,7 +80,8 @@ export function usePublishedPosts(limit?: number): {
         })) as JournalPost[];
         if (!live) return;
         if (rows && rows.length > 0) {
-          setPosts(rows);
+          const merged = mergeBySlug(rows, STATIC_POSTS);
+          setPosts(limit ? merged.slice(0, limit) : merged);
           setSource("database");
           return;
         }
