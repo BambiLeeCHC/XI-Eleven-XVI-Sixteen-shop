@@ -73,10 +73,6 @@ export function WelcomePage() {
   const user = useQuery(api.auth.currentUser);
   const [settling, setSettling] = useState(true);
 
-  // Right after clicking the confirmation link, Supabase needs a brief
-  // moment to exchange the URL token for a session before `currentUser`
-  // resolves. Give it a couple seconds before falling back to a sign-in
-  // prompt, instead of flashing "please sign in" first.
   useEffect(() => {
     const t = setTimeout(() => setSettling(false), 2500);
     return () => clearTimeout(t);
@@ -153,25 +149,19 @@ export function WelcomePage() {
 
         {!loading && (
           <div className="journal-surface" style={{ padding: "1.75rem", display: "flex", flexDirection: "column", gap: "1rem" }}>
-            <p className="text-sm font-semibold">The house — and this room</p>
+            <p className="text-sm font-semibold">What you just unlocked</p>
             <div style={{ display: "flex", flexDirection: "column", gap: "0.6rem" }}>
               <div className="welcome-line">
-                <span className="jcol-tag jcol-tag--sm jcol-ink jcol-type">With account</span>
+                <span className="jcol-tag jcol-tag--sm jcol-ink jcol-type">Free with account</span>
                 <span className="text-sm text-muted-foreground">
-                  Your natal chart, in full — every placement, house and sign. Already calculated.
-                </span>
-              </div>
-              <div className="welcome-line">
-                <span className="jcol-tag jcol-tag--sm jcol-gold jcol-type">Daily</span>
-                <span className="text-sm text-muted-foreground">
-                  The Journal's five-card draw — one spread a day, on the house.
+                  Your natal chart — every placement, house, and sign.
                 </span>
               </div>
               <div className="welcome-line">
                 <span className="jcol-tag jcol-tag--sm jcol-kraft jcol-type">$7/week</span>
                 <span className="text-sm text-muted-foreground">
-                  The Long Read — seven cards, three windows a day, written against what's
-                  actually going on. Seven days to try it, then it bills. Cancel anytime.
+                  The Long Read — three written tarot readings a day, based on
+                  what you tell us. Seven-day trial, then $7 a week. Cancel anytime.
                 </span>
               </div>
               <div className="welcome-line">
@@ -183,13 +173,13 @@ export function WelcomePage() {
             </div>
 
             <Link to="/chart/long-read" className="cta-pist" style={{ textAlign: "center" }}>
-              Get the Long Read — $7/week
+              Start written tarot — $7/week
             </Link>
             <Link to="/chart" className="cta-ghost" style={{ textAlign: "center", color: "#0B0B0C", borderColor: "#0B0B0C" }}>
               Open your natal chart
             </Link>
             <Link to="/shop" className="tn-inline" style={{ textAlign: "center" }}>
-              Shop the house →
+              Shop clothing →
             </Link>
           </div>
         )}
