@@ -1,88 +1,83 @@
 /**
  * SEO meta titles & descriptions for xixvi.shop.
  * Titles are appended with " | XI Eleven XVI Sixteen" unless they already name the brand.
- *
- * Guidelines:
- *   • Title: ≤60 chars (before suffix)
- *   • Description: 120–155 chars
- *   • Always spell XI Eleven XVI Sixteen once in the description.
  */
 
 export const PAGE_SEO = {
   home: {
     title: "",
     description:
-      "Shop XI Eleven XVI Sixteen at xixvi.shop — a house of clothing, made on demand. True North is the same numbers, opened. Long Read $7/week.",
+      "XI Eleven XVI Sixteen clothing, made when you order it. Dresses, bras, leggings, jerseys, shorts. Written tarot is a separate $7/week product.",
   },
   shopAll: {
     title: "Shop All",
     description:
-      "Browse XI Eleven XVI Sixteen at xixvi.shop — D-Slip, B-Lift, L-Flow, J-Glitch, S-Glitch, T-Icon. Made on demand. Free shipping.",
+      "Browse XI Eleven XVI Sixteen — D-Slip, B-Lift, L-Flow, J-Glitch, S-Glitch. Made on demand. Free shipping from xixvi.shop.",
   },
   shopWomen: {
     title: "Women's Collection",
     description:
-      "Women's XI Eleven XVI Sixteen — silk-feel D-Slip dresses, B-Lift sports bras, L-Flow leggings. Made on demand at xixvi.shop. Sizes XS–2XL.",
+      "Women's XI Eleven XVI Sixteen — D-Slip dresses, B-Lift sports bras, L-Flow leggings. Made on demand. Sizes XS–2XL.",
   },
   shopMen: {
     title: "Men's Collection",
     description:
-      "Men's XI Eleven XVI Sixteen — J-Glitch jerseys and S-Glitch shorts with UPF50+. Made on demand at xixvi.shop. Sizes 2XS–6XL.",
+      "Men's XI Eleven XVI Sixteen — J-Glitch jerseys and S-Glitch shorts. Made on demand at xixvi.shop. Sizes 2XS–6XL.",
   },
   about: {
     title: "About",
     description:
-      "XI Eleven XVI Sixteen is a house of clothing. 11 + 16 = 9 — nothing left over. Made on demand. True North is the same numbers, opened.",
+      "XI Eleven XVI Sixteen makes clothing to order. The Journal is writing. True North is a $7/week written tarot membership.",
   },
   contact: {
     title: "Contact",
     description:
-      "Contact XI Eleven XVI Sixteen at support@xixvi.shop — orders, fit, True North, and the Journal.",
+      "Contact XI Eleven XVI Sixteen at support@xixvi.shop — orders, fit, and the Long Read.",
   },
   journal: {
     title: "The Journal",
     description:
-      "The XI Eleven XVI Sixteen Journal at xixvi.shop — 11:16 Almanac, daily code, and a free house-deck draw. Editorial from the brand.",
+      "The XI Eleven XVI Sixteen Journal — fit guides and how the house cuts clothing. Readings live in True North, not here.",
   },
   chart: {
-    title: "True North — the house reading",
+    title: "True North",
     description:
-      "True North is the same numbers as XI Eleven XVI Sixteen, opened. Natal chart with an account. Long Read $7/week. xixvi.shop.",
+      "True North is the reading room of XI Eleven XVI Sixteen. Free natal chart with an account. Long Read: written tarot, $7/week.",
   },
   longRead: {
     title: "The Long Read — $7/week",
     description:
-      "The house reading of XI Eleven XVI Sixteen: seven cards, three times a day, written against what's going on. $7/week. xixvi.shop.",
+      "Three written tarot readings a day, based on what you tell us. $7 a week after a seven-day trial. Cancel anytime.",
   },
   almanac: {
     title: "The Almanac — 11:16",
     description:
-      "The XI Eleven XVI Sixteen Almanac — the day's moon, day number, and the 11:16 hour. True North on xixvi.shop.",
+      "The XI Eleven XVI Sixteen Almanac lives inside True North — moon, day number, and the 11:16 hour.",
   },
   numbers: {
     title: "Numerology",
     description:
-      "Life Path, Expression, Soul Urge — numerology underneath your natal chart. XI Eleven XVI Sixteen True North on xixvi.shop. $19.99 once.",
+      "Life Path, Expression, Soul Urge under your natal chart. XI Eleven XVI Sixteen True North. $19.99 once.",
   },
   cart: {
     title: "Your Cart",
     description:
-      "Your XI Eleven XVI Sixteen cart at xixvi.shop. Made-on-demand streetwear. Free shipping.",
+      "Your XI Eleven XVI Sixteen cart. Made-on-demand clothing. Free shipping.",
   },
   checkout: {
     title: "Checkout",
     description:
-      "Secure checkout for XI Eleven XVI Sixteen — Stripe. Free shipping from xixvi.shop.",
+      "Secure checkout for XI Eleven XVI Sixteen. Stripe. Free shipping from xixvi.shop.",
   },
   sizeGuide: {
     title: "Size Guide",
     description:
-      "XI Eleven XVI Sixteen size charts — D-Slip, jerseys, shorts, leggings, sports bras. Find your fit at xixvi.shop.",
+      "XI Eleven XVI Sixteen size charts — dresses, jerseys, shorts, leggings, sports bras.",
   },
   privacy: {
     title: "Privacy Policy",
     description:
-      "XI Eleven XVI Sixteen privacy policy — how xixvi.shop collects, uses, and protects your information.",
+      "XI Eleven XVI Sixteen privacy policy — how xixvi.shop collects and protects your information.",
   },
   terms: {
     title: "Terms of Service",
@@ -92,12 +87,12 @@ export const PAGE_SEO = {
   shippingPolicy: {
     title: "Shipping Policy",
     description:
-      "XI Eleven XVI Sixteen shipping — made on demand, delivery windows, and international orders from xixvi.shop.",
+      "XI Eleven XVI Sixteen shipping — made on demand, delivery windows, international orders.",
   },
   returns: {
     title: "Returns & Exchanges",
     description:
-      "XI Eleven XVI Sixteen returns — hassle-free exchanges within 30 days. xixvi.shop.",
+      "XI Eleven XVI Sixteen returns — exchanges within 30 days.",
   },
 } as const;
 
@@ -109,7 +104,7 @@ export function getProductSEO(product: {
 }) {
   const priceStr = `$${(product.price / 100).toFixed(0)}`;
   const shortDesc = product.description.split(".").slice(0, 2).join(".") + ".";
-  const branded = `${shortDesc} XI Eleven XVI Sixteen. Made on demand at xixvi.shop.`;
+  const branded = `${shortDesc} XI Eleven XVI Sixteen. Made on demand.`;
   const metaDesc =
     branded.length <= 160
       ? branded
