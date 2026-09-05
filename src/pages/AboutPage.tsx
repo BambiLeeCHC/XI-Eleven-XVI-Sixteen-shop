@@ -14,150 +14,115 @@ export function AboutPage() {
       />
 
       <section className="text-center relative overflow-hidden px-10 py-[72px]">
-        <span className="kicker-lock">A house of clothing</span>
+        <span className="kicker-lock">XI Eleven XVI Sixteen</span>
         <h1
           className="clash mt-6"
-          style={{ fontSize: "clamp(48px, 10vw, 108px)" }}
+          style={{ fontSize: "clamp(40px, 8vw, 92px)" }}
         >
-          Nothing left over.
+          A clothing house.
         </h1>
         <p
           className="serif-quiet mx-auto mt-7 max-w-[640px] text-[20px] leading-relaxed"
           style={{ color: "rgba(247,240,230,0.82)" }}
         >
-          XI Eleven XVI Sixteen. Eleven plus sixteen is nine — completion.
-          We don't cut a piece until you order it. We don't write a
-          reading until you say what's going on. The name is the model.
+          We cut a garment when you order it. That is the shop. The Journal
+          is writing about those garments. True North is a separate product:
+          written tarot, seven dollars a week.
         </p>
         <Link to="/shop" className="cta-pist mt-8">
-          Shop the house
+          Shop clothing
         </Link>
       </section>
 
-      <section className="relative overflow-hidden px-10 py-[88px]">
-        <div
-          className="absolute inset-0 flex items-center justify-center pointer-events-none clash"
-          style={{
-            fontSize: "clamp(120px, 22vw, 280px)",
-            color: "rgba(247,240,230,0.04)",
-          }}
-        >
-          11 · 16
-        </div>
-        <p className="label-lock text-center" style={{ color: "var(--lilac)" }}>
-          The name is how we make
+      <section className="px-10 py-[72px]">
+        <p className="label-lock text-center" style={{ color: "var(--pist)" }}>
+          What we sell
         </p>
-        <h2 className="clash text-center text-7xl mt-4">XI · XVI</h2>
-        <p
-          className="serif-quiet text-2xl text-center max-w-xl mx-auto mt-5"
-          style={{ color: "rgba(247,240,230,0.8)" }}
-        >
-          Not a motto we printed after the fact. 11, 16, and 9 are why a
-          D-Slip doesn't exist until it's yours — and why True North
-          waits for you to speak.
-        </p>
-        <div className="grid md:grid-cols-2 gap-4 max-w-[980px] mx-auto mt-10">
-          <div
-            className="p-9"
-            style={{
-              border: "2px solid var(--lilac)",
-              background: "rgba(228,212,244,0.08)",
-            }}
-          >
-            <p className="clash text-8xl" style={{ color: "var(--lilac)" }}>
-              11
+        <h2 className="clash text-center text-5xl mt-4">Three products.</h2>
+        <div className="grid md:grid-cols-3 gap-4 max-w-[1100px] mx-auto mt-10">
+          <div className="p-8" style={{ border: "2px solid rgba(247,240,230,0.18)" }}>
+            <p className="label-lock" style={{ color: "var(--lilac)" }}>
+              01 · Clothing
             </p>
-            <p className="label-lock mt-3" style={{ color: "var(--lilac)" }}>
-              The signal — you choose
+            <h3 className="clash text-4xl mt-3">The shop</h3>
+            <p className="serif-quiet mt-4 text-lg" style={{ color: "rgba(247,240,230,0.8)" }}>
+              Dresses, sports bras, leggings, jerseys, and shorts. You pick
+              color and size. We make that piece. Nothing sits in a warehouse
+              waiting for a sale.
             </p>
-            <p
-              className="mt-4 leading-relaxed"
-              style={{ color: "rgba(247,240,230,0.75)" }}
-            >
-              Eleven is the moment of knowing before the proof. We don't
-              guess the season and overcut. You say yes. Then we make it. That
-              is the signal: one person, one piece, no speculative pile.
-            </p>
+            <Link to="/shop" className="cta-ghost mt-6 inline-flex">
+              Shop the collection
+            </Link>
           </div>
-          <div
-            className="p-9"
-            style={{
-              border: "2px solid var(--blush)",
-              background: "rgba(244,205,216,0.08)",
-            }}
-          >
-            <p className="clash text-8xl" style={{ color: "var(--blush)" }}>
-              16
+          <div className="p-8" style={{ border: "2px solid rgba(247,240,230,0.18)" }}>
+            <p className="label-lock" style={{ color: "var(--lilac)" }}>
+              02 · Journal
             </p>
-            <p className="label-lock mt-3" style={{ color: "var(--blush)" }}>
-              The tower — the old model falls
+            <h3 className="clash text-4xl mt-3">The writing</h3>
+            <p className="serif-quiet mt-4 text-lg" style={{ color: "rgba(247,240,230,0.8)" }}>
+              Fit guides, fabric notes, and how the house works. Essays you
+              can read for free. No card draw. No almanac. Those live in
+              True North.
             </p>
-            <p
-              className="mt-4 leading-relaxed"
-              style={{ color: "rgba(247,240,230,0.75)" }}
-            >
-              Sixteen is the necessary collapse. Fashion guesses, dumps,
-              discounts, buries. 92 million tons a year, on purpose. 1 + 6 = 7:
-              the seeker after the fall. We don't run that warehouse. Your
-              order is the only run.
-            </p>
+            <Link to="/journal" className="cta-ghost mt-6 inline-flex">
+              Read the Journal
+            </Link>
           </div>
-        </div>
-        <div
-          className="max-w-[980px] mx-auto mt-4 p-9"
-          style={{
-            border: "2px solid var(--pist)",
-            background: "rgba(216,240,196,0.06)",
-          }}
-        >
-          <p className="clash text-5xl" style={{ color: "var(--pist)" }}>
-            9
-          </p>
-          <p className="label-lock mt-3" style={{ color: "var(--pist)" }}>
-            11 + 16 = 27 → 2 + 7 = 9 — nothing left over
-          </p>
-          <p className="serif-quiet text-xl mt-4 max-w-3xl">
-            Nine is completion. Zero unsold inventory is not a sustainability
-            badge we bolted on. It is the number in the name, kept. A cycle that
-            closes clean — in the cut, and in True North, where a Long Read
-            isn't written until you name what's going on.
-          </p>
+          <div className="p-8" style={{ border: "2px solid rgba(247,240,230,0.18)" }}>
+            <p className="label-lock" style={{ color: "var(--lilac)" }}>
+              03 · True North
+            </p>
+            <h3 className="clash text-4xl mt-3">Written tarot</h3>
+            <p className="serif-quiet mt-4 text-lg" style={{ color: "rgba(247,240,230,0.8)" }}>
+              You describe what is going on. We write you three tarot
+              readings a day from that. Seven-day trial, then $7 a week.
+              Cancel anytime.
+            </p>
+            <Link to="/chart/long-read" className="cta-ghost mt-6 inline-flex">
+              Start written tarot
+            </Link>
+          </div>
         </div>
       </section>
 
-      <ProcessSteps
-        titles={["The signal", "The cut", "The close"]}
-        copy={[
-          "11 — You choose the piece. Color, size, the one that sits on you. Nothing starts before that yes.",
-          "16 — Your order is the only run. No shelf, no overrun, no markdown graveyard. The old model doesn't get a vote.",
-          "9 — It arrives made for one person. The cycle closes with nothing left over. That's the house.",
-        ]}
-      />
+      <section className="relative overflow-hidden px-10 py-[72px]">
+        <p className="label-lock text-center" style={{ color: "var(--lilac)" }}>
+          How a piece is made
+        </p>
+        <h2 className="clash text-center text-6xl mt-4">Select. Produce. Receive.</h2>
+        <p
+          className="serif-quiet text-xl text-center max-w-xl mx-auto mt-5"
+          style={{ color: "rgba(247,240,230,0.8)" }}
+        >
+          You pick the color and size. We cut and finish that order. You
+          get one garment that did not exist the morning before you
+          bought it.
+        </p>
+        <div className="max-w-[980px] mx-auto mt-10">
+          <ProcessSteps />
+        </div>
+      </section>
 
       <section
-        className="text-center px-10 py-20"
-        style={{ background: "var(--cream)", color: "#0B0B0C" }}
+        className="px-10 py-20 text-center"
+        style={{ background: "#F7F0E6", color: "#0B0B0C" }}
       >
         <p className="label-lock" style={{ color: "#0B0B0C" }}>
-          What nine looks like
+          Why made-on-demand
         </p>
-        <h2
-          className="clash mt-4"
-          style={{ fontSize: "clamp(42px, 7vw, 84px)" }}
-        >
-          Zero, on purpose.
+        <h2 className="clash mt-4" style={{ fontSize: "clamp(36px, 6vw, 72px)" }}>
+          No leftover stock.
         </h2>
-        <p className="serif-quiet text-2xl mt-6 max-w-2xl mx-auto">
-          The industry produces 92 million tons of textile waste a year because
-          it makes clothes that nobody asked for. We wait. Luxury here is
-          precision — a piece that already has an owner.
+        <p className="serif-quiet text-xl max-w-2xl mx-auto mt-5">
+          Most brands guess how many units will sell, then dump what
+          does not. We do not print a run. One order becomes one piece.
         </p>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-[960px] mx-auto mt-10">
           {[
             ["0", "Unsold inventory"],
             ["0", "Speculative waste"],
-            ["11 · 16", "The name, kept"],
-            ["1", "Person per piece"],
+            ["1", "Order, one piece"],
+            ["2–5", "Days to make"],
           ].map(([n, l]) => (
             <div
               key={l}
@@ -172,7 +137,7 @@ export function AboutPage() {
           ))}
         </div>
         <Link to="/shop" className="cta-pist mt-10">
-          Shop the house
+          Shop clothing
         </Link>
       </section>
 
@@ -182,50 +147,42 @@ export function AboutPage() {
         </p>
         <h2
           className="clash text-center mt-4"
-          style={{ fontSize: "clamp(42px, 7vw, 84px)" }}
+          style={{ fontSize: "clamp(36px, 6vw, 72px)" }}
         >
-          The same nine, opened.
+          Written tarot. Paid separately.
         </h2>
         <p
-          className="serif-quiet text-2xl text-center max-w-2xl mx-auto mt-5"
+          className="serif-quiet text-xl text-center max-w-2xl mx-auto mt-5"
           style={{ color: "rgba(247,240,230,0.8)" }}
         >
-          Chart, Almanac, Long Read — the private room of the house. A natal
-          chart is the spec you arrived with. The Long Read is $7/week, written
-          against what you type. Same ethic as the cut: nothing generic, nothing
-          early.
+          Create an account and we calculate your natal chart. That chart
+          is free. The Long Read is the paid product: three written
+          readings each day for $7 a week after a seven-day trial.
         </p>
         <div className="flex flex-wrap gap-3 justify-center mt-8">
-          <Link to="/shop" className="cta-pist">
-            Shop the house
+          <Link to="/chart/long-read" className="cta-pist">
+            Start written tarot — $7/week
           </Link>
           <Link to="/chart" className="cta-ghost">
-            Open True North
+            See your natal chart
           </Link>
         </div>
       </section>
 
-      <section className="text-center px-10 py-[88px]">
+      <section className="text-center px-10 py-[72px]">
         <img
           src={CREST_URL}
-          alt="XI · XVI crest"
+          alt="XI Eleven XVI Sixteen crest"
           className="h-16 w-auto mx-auto mb-6"
         />
-        <p className="label-lock" style={{ color: "var(--pist)" }}>
-          11:16
-        </p>
-        <h2
-          className="clash mt-4"
-          style={{ fontSize: "clamp(42px, 7vw, 84px)" }}
-        >
-          Wear the number.
+        <h2 className="clash" style={{ fontSize: "clamp(36px, 6vw, 72px)" }}>
+          Wear the work.
         </h2>
-        <p className="serif-quiet text-2xl mt-5 max-w-md mx-auto">
-          Made on demand. Made for one person. The cosmology is in the
-          garment — not a separate thought.
+        <p className="serif-quiet text-xl mt-5 max-w-md mx-auto">
+          Clothing first. Writing second. Readings only when you subscribe.
         </p>
         <Link to="/shop" className="cta-pist mt-8">
-          Shop the house
+          Shop clothing
         </Link>
       </section>
     </>
