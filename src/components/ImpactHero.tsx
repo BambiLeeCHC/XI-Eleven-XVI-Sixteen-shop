@@ -119,11 +119,11 @@ export function ImpactHero({
 
 export function PistachioTicker() {
   const items = [
-    "A house of clothing · True North is the same numbers, opened",
-    "True North · the house reading · $7/week",
-    "Journal · 11:16 · the cut, the week",
+    "Clothing · made when you order it",
+    "Journal · writing on fit and fabric",
+    "True North · written tarot · $7/week",
     "Shop D-Slip · made on demand",
-    "Nothing exists until it's yours",
+    "One order. One piece. No leftover stock.",
   ];
   const doubled = [...items, ...items];
   return (
@@ -181,7 +181,7 @@ export function JournalTrueNorthRooms() {
             Journal
           </h2>
           <p className="serif-quiet text-[26px] mt-6 max-w-md leading-snug">
-            The house thinking out loud. 11:16, the cut, the campaign, the week.
+            Fit guides and how the house cuts a garment. Writing only — the card draw lives in True North.
           </p>
         </div>
         <div>
@@ -199,7 +199,7 @@ export function JournalTrueNorthRooms() {
         style={{ background: "#0E0C12", color: "#F7F0E6" }}
       >
         <p className="label-lock" style={{ color: "var(--pist)" }}>
-          The house reading · $7/week
+          Written tarot · $7/week
         </p>
         <h2
           className="clash mt-3"
@@ -208,8 +208,8 @@ export function JournalTrueNorthRooms() {
           True North
         </h2>
         <p className="serif-quiet text-[22px] mt-3 max-w-md">
-          Same numbers as the name. Seven cards, three times a day, written
-          against what's actually going on. $7 a week.
+          You describe what is going on. We write three tarot readings a day
+          from that. Seven-day trial, then $7 a week. Cancel anytime.
         </p>
         <p
           className="clash mt-4"
@@ -236,18 +236,18 @@ export function JournalTrueNorthRooms() {
         </div>
         <div className="flex flex-wrap gap-3 items-center">
           <Link to="/chart/long-read" className="cta-pist">
-            Get the Long Read — $7/week
+            Start written tarot — $7/week
           </Link>
           <Link to="/shop" className="cta-ghost">
-            Shop the house
+            Shop clothing
           </Link>
         </div>
         <p
           className="serif-quiet mt-4 text-[17px] max-w-md"
           style={{ color: "#D9D0C4" }}
         >
-          A piece is made when you order it. A reading is written when you say
-          what's going on. Seven days to try the Long Read, then $7/week.
+          Clothing is the shop. The Long Read is the membership. They are
+          not the same product.
         </p>
       </article>
     </section>
