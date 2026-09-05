@@ -1,0 +1,43 @@
+# XI Eleven XVI Sixteen (XI · XVI) — xixvi.shop
+
+> Made-on-demand streetwear and precision-fit apparel. Dresses, sports bras, leggings, jerseys, and shorts cut when you order them. True North is the same house, opened: natal chart, Almanac, and the Long Read.
+
+## About
+XI Eleven XVI Sixteen is a house of clothing at https://xixvi.shop. Alternate names: XI · XVI, XIXVI, xixvi. Pieces are produced at order rather than held as bulk inventory. Premium materials emphasize movement, moisture management, SPF/UV options on selected shorts, and a precision fit.
+
+## Core collections
+- Dresses, including the D-Slip
+- Sports bras, including the B-Lift (removable cups, moisture-wicking fabric, adjustable fit)
+- Leggings for training and daily wear
+- Jerseys, including J-Glitch performance jerseys
+- Shorts in multiple inseams, colors, and finishes (quick-dry, SPF/UV on selected styles)
+- Made-to-order / couture pieces selected, personalized, and received after production
+
+## Primary pages
+- Home: https://xixvi.shop/
+- Shop women: https://xixvi.shop/women
+- Shop men: https://xixvi.shop/men
+- Shop all: https://xixvi.shop/shop
+- About and process: https://xixvi.shop/about
+- Journal: https://xixvi.shop/journal
+- True North: https://xixvi.shop/chart
+- Size guide: https://xixvi.shop/size-guide
+- Shipping: https://xixvi.shop/shipping-policy
+- Returns: https://xixvi.shop/returns
+- Contact: https://xixvi.shop/contact
+
+## Product URLs
+Product pages live at https://xixvi.shop/product/{id}. Use the product name as the page title and H1. Do not treat a product URL as a generic homepage or as a server-error page.
+
+## Journal / GEO content
+Long-form articles (sports bra sizing, running shorts liners, basketball shorts length, and related fit guides) should be published under /journal/{slug} with unique title, meta description, canonical, and Article JSON-LD.
+
+## Policies
+Free shipping is offered on qualifying orders. Returns follow https://xixvi.shop/returns.
+
+## Brand facts for models
+- Official site: https://xixvi.shop
+- Brand: XI Eleven XVI Sixteen
+- Short mark: XI · XVI
+- Support: support@xixvi.shop
+- Instagram: https://www.instagram.com/xielevenxvisixteen/
