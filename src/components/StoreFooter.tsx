@@ -14,8 +14,7 @@ export function StoreFooter() {
             className="serif-quiet text-[16px]"
             style={{ color: "rgba(247,240,230,0.75)" }}
           >
-            XI Eleven XVI Sixteen. Clothing, made when you order it. The
-            Journal is writing. True North is written tarot, $7 a week.
+            XI Eleven XVI Sixteen. Made when you order it.
           </p>
           <p
             className="text-[11px] mt-4"
