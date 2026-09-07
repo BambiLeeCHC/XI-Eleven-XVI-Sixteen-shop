@@ -60,7 +60,7 @@ export function AboutPage() {
             </p>
             <h3 className="clash text-4xl mt-3">The writing</h3>
             <p className="serif-quiet mt-4 text-lg" style={{ color: "rgba(247,240,230,0.8)" }}>
-              Fit guides, fabric notes, and how the house works. Essays you
+              Fit guides, fabric notes, and brand updates. Essays you
               can read for free. No card draw. No almanac. Those live in
               True North.
             </p>
@@ -89,7 +89,7 @@ export function AboutPage() {
         <p className="label-lock text-center" style={{ color: "var(--lilac)" }}>
           How a piece is made
         </p>
-        <h2 className="clash text-center text-6xl mt-4">Select. Produce. Receive.</h2>
+        <h2 className="clash text-center text-6xl mt-4">Shop. Crafted for you. Receive.</h2>
         <p
           className="serif-quiet text-xl text-center max-w-xl mx-auto mt-5"
           style={{ color: "rgba(247,240,230,0.8)" }}

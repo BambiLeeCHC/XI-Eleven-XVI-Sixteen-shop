@@ -196,7 +196,7 @@ export function ProductHighlight({
         </div>
 
         <div
-          className="style-index__sheet relative grid gap-5 md:grid-cols-[1.2fr_auto] items-end"
+          className="style-index__sheet style-index__sheet--strip relative"
           style={{
             background: "var(--cream)",
             color: "#0B0B0C",
@@ -204,7 +204,7 @@ export function ProductHighlight({
             padding: "18px 20px",
           }}
         >
-          <div>
+          <div className="style-index__sheet-copy">
             <p className="label-lock mb-2" style={{ color: "#6b6358" }}>
               {copy.eyebrow}
             </p>
@@ -251,7 +251,7 @@ export function ProductHighlight({
               </div>
             ) : null}
           </div>
-          <div className="flex flex-col items-start md:items-end gap-3">
+          <div className="style-index__sheet-cta">
             <p
               className="clash"
               style={{ fontSize: 42, letterSpacing: "-0.06em" }}

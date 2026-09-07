@@ -70,7 +70,7 @@ export function ImpactHero({
                 Shop D-Slip · {priceLabel}
               </Link>
               {colorCount > 0 ? (
-                <Link to={dslipHref} className="cta-ghost">
+                <Link to={dslipHref} className="cta-cream">
                   {colorCountLabel(colorCount)}
                 </Link>
               ) : null}
@@ -83,7 +83,7 @@ export function ImpactHero({
                         key={item._id}
                         to={`/product/${item._id}`}
                         aria-label={color}
-                        className="snap"
+                        className="snap snap--hero"
                         style={{ background: snapHex(color) }}
                       />
                     );
@@ -91,13 +91,9 @@ export function ImpactHero({
                 </div>
               ) : null}
             </div>
-            <div className="flex flex-wrap gap-3.5 mt-4">
+            <div className="flex flex-wrap gap-3 mt-4">
               {TRUST_ITEMS.map(item => (
-                <span
-                  key={item}
-                  className="text-[10px] tracking-[0.2em] uppercase font-bold px-2.5 py-1.5"
-                  style={{ border: "1px solid rgba(247,240,230,0.35)" }}
-                >
+                <span key={item} className="trust-chip">
                   {item}
                 </span>
               ))}
@@ -119,11 +115,10 @@ export function ImpactHero({
 
 export function PistachioTicker() {
   const items = [
-    "Clothing · made when you order it",
-    "Journal · the cut, the fabric, the week",
-    "True North · three written readings a day",
-    "Shop D-Slip · made on demand",
-    "One order. One piece. No leftover stock.",
+    "Explore the Journal for brand updates",
+    "True North subscription tarot · $7/week",
+    "Shop D-Slip",
+    "Made on demand",
   ];
   const doubled = [...items, ...items];
   return (
@@ -140,11 +135,11 @@ export function PistachioTicker() {
 }
 
 export function ProcessSteps({
-  titles = ["Select", "Produce", "Receive"],
+  titles = ["Shop", "Crafted for you", "Receive"],
   copy = [
-    "Style, then color, then size.",
-    "Made on demand. Two to five business days.",
-    "Free shipping. Easy returns.",
+    "Find your piece.",
+    "Made when you order — just for you.",
+    "It arrives ready for you. Free shipping. Easy returns.",
   ],
 }: {
   titles?: string[];
@@ -165,59 +160,34 @@ export function ProcessSteps({
 
 export function JournalTrueNorthRooms() {
   return (
-    <section className="grid md:grid-cols-2 min-h-[520px]">
-      <article
-        className="flex flex-col justify-between p-10 md:p-14"
-        style={{ background: "#F7F0E6", color: "#0B0B0C" }}
-      >
+    <section className="landing-rooms">
+      <article className="landing-room landing-room--journal">
         <div>
-          <p className="label-lock" style={{ color: "#6b6358" }}>
-            Editorial
-          </p>
-          <h2
-            className="clash mt-3"
-            style={{ fontSize: "clamp(48px, 6vw, 84px)" }}
-          >
-            Journal
-          </h2>
-          <p className="serif-quiet text-[26px] mt-6 max-w-md leading-snug">
-            The cut, the fabric, the week. How the house makes a piece.
+          <p className="label-lock landing-room__label">Editorial</p>
+          <h2 className="clash landing-room__title">Journal</h2>
+          <p className="serif-quiet landing-room__body">
+            Brand updates, drops, and what's next — open the Journal.
           </p>
         </div>
         <div>
-          <Link
-            to="/journal"
-            className="inline-block mt-8 px-6 py-4 text-[12px] tracking-[0.18em] uppercase font-extrabold"
-            style={{ background: "#0B0B0C", color: "#F7F0E6" }}
-          >
-            Read the Journal
+          <Link to="/journal" className="landing-room__cta landing-room__cta--ink">
+            Explore the Journal
           </Link>
         </div>
       </article>
-      <article
-        className="relative overflow-hidden p-10 md:p-14"
-        style={{ background: "#0E0C12", color: "#F7F0E6" }}
-      >
-        <p className="label-lock" style={{ color: "var(--pist)" }}>
-          The Long Read · $7/week
+      <article className="landing-room landing-room--truenorth">
+        <p className="label-lock landing-room__label landing-room__label--pist">
+          Subscription tarot
         </p>
-        <h2
-          className="clash mt-3"
-          style={{ fontSize: "clamp(42px, 5.5vw, 76px)" }}
-        >
-          True North
-        </h2>
-        <p className="serif-quiet text-[22px] mt-3 max-w-md">
-          Three written readings a day — morning, midday, night — pulled
-          against the week you are actually in.
+        <h2 className="clash landing-room__title landing-room__title--tn">True North</h2>
+        <p className="serif-quiet landing-room__body landing-room__body--tn">
+          A branded tarot experience for the week you are in.
         </p>
-        <p
-          className="clash mt-4"
-          style={{ fontSize: "clamp(28px, 4vw, 44px)", color: "var(--pist)", letterSpacing: "-0.03em" }}
-        >
-          $7<span style={{ fontSize: "0.38em", letterSpacing: "0.16em", marginLeft: "0.4em", fontWeight: 800 }}> / WEEK</span>
+        <p className="clash landing-room__price">
+          $7
+          <span className="landing-room__price-unit"> / WEEK</span>
         </p>
-        <div className="relative h-[280px] mt-7 mb-9">
+        <div className="landing-room__spread" aria-hidden="true">
           <div className="tarot-card c1">
             <span className="serif-quiet">I · Morning</span>
             <span className="clash text-[22px]">Draw 01</span>
@@ -234,16 +204,16 @@ export function JournalTrueNorthRooms() {
             <span className="serif-quiet">third pull</span>
           </div>
         </div>
-        <div className="flex flex-wrap gap-3 items-center">
+        <div className="landing-room__actions">
           <Link to="/chart/long-read" className="cta-pist">
-            Start the Long Read — $7/week
+            Start free — 7 days
+          </Link>
+          <Link to="/chart/long-read" className="landing-room__cancel">
+            Cancel
           </Link>
         </div>
-        <p
-          className="serif-quiet mt-4 text-[17px] max-w-md"
-          style={{ color: "#D9D0C4" }}
-        >
-          Seven days to try it. Then $7 a week. Cancel whenever.
+        <p className="serif-quiet landing-room__trial">
+          7-day free trial. Then $7/week. Cancel whenever.
         </p>
       </article>
     </section>
