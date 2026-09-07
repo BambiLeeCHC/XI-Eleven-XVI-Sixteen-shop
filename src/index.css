@@ -172,6 +172,35 @@ body {
   font-weight: 800;
   display: inline-block;
 }
+.cta-cream {
+  background: var(--cream);
+  color: #0B0B0C;
+  border: 0;
+  padding: 16px 22px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-size: 12px;
+  font-weight: 800;
+  display: inline-block;
+}
+.trust-chip {
+  background: var(--cream);
+  color: #0B0B0C;
+  border: 0;
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-weight: 800;
+  padding: 8px 12px;
+  line-height: 1.2;
+}
+.snap--hero {
+  width: 30px;
+  height: 30px;
+  border: 3px solid #fff;
+  box-shadow: 0 0 0 1px rgba(11, 11, 12, 0.55);
+  flex-shrink: 0;
+}
 
 .kicker-lock {
   display: inline-block;
@@ -458,6 +487,170 @@ body {
 .tarot-card.c1 { left: 8%; top: 24px; transform: rotate(-12deg); background: linear-gradient(180deg, #2A2438, #141018); color: var(--lilac); }
 .tarot-card.c2 { left: 34%; top: 0; transform: rotate(1deg); background: linear-gradient(180deg, #F7F0E6, #E8D9C4); color: #0B0B0C; z-index: 3; width: 168px; height: 276px; }
 .tarot-card.c3 { left: 62%; top: 28px; transform: rotate(11deg); background: linear-gradient(180deg, #1A2830, #0B0B0C); color: var(--powder); }
+
+/* Landing Journal + True North rooms — graphic separation from style-index/steps */
+.landing-rooms {
+  display: grid;
+  grid-template-columns: 1fr;
+  border-top: 6px solid var(--pist);
+  border-bottom: 6px solid var(--lilac);
+}
+@media (min-width: 768px) {
+  .landing-rooms { grid-template-columns: 1fr 1fr; }
+}
+.landing-room {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 42px 36px 48px;
+  min-height: 560px;
+  overflow: hidden;
+}
+.landing-room--journal {
+  background: #FFF8EE;
+  color: #0B0B0C;
+  border-right: 4px solid #0B0B0C;
+  box-shadow: inset 0 0 0 3px var(--blush);
+}
+.landing-room--truenorth {
+  background: radial-gradient(120% 90% at 70% 20%, #1a1424 0%, #0E0C12 55%, #07060a 100%);
+  color: #F7F0E6;
+  box-shadow: inset 0 0 0 3px var(--pist);
+}
+.landing-room__label {
+  letter-spacing: 0.22em;
+  font-size: 12px;
+  font-weight: 800;
+  color: #6b6358;
+}
+.landing-room__label--pist { color: var(--pist); }
+.landing-room__title {
+  margin-top: 10px;
+  font-size: clamp(56px, 8vw, 96px);
+  letter-spacing: -0.04em;
+  line-height: 0.9;
+}
+.landing-room__title--tn {
+  font-size: clamp(48px, 7vw, 88px);
+  text-shadow: 0 0 28px rgba(216, 240, 196, 0.22);
+}
+.landing-room__body {
+  margin-top: 22px;
+  max-width: 26rem;
+  font-size: clamp(22px, 2.4vw, 28px);
+  line-height: 1.3;
+}
+.landing-room__body--tn {
+  color: #E8DFD2;
+  font-size: clamp(20px, 2.2vw, 24px);
+}
+.landing-room__price {
+  margin-top: 18px;
+  font-size: clamp(56px, 8vw, 92px);
+  letter-spacing: -0.04em;
+  line-height: 0.9;
+  color: var(--pist);
+  text-shadow: 0 0 36px rgba(216, 240, 196, 0.35);
+}
+.landing-room__price-unit {
+  font-size: 0.28em;
+  letter-spacing: 0.18em;
+  margin-left: 0.35em;
+  font-weight: 800;
+  vertical-align: middle;
+}
+.landing-room__spread {
+  position: relative;
+  height: 320px;
+  margin: 28px 0 20px;
+}
+.landing-room--truenorth .tarot-card {
+  width: 168px;
+  height: 276px;
+  border: 2px solid rgba(247, 240, 230, 0.45);
+  box-shadow:
+    0 28px 50px rgba(0, 0, 0, 0.55),
+    0 0 32px rgba(216, 240, 196, 0.18);
+  transition: transform 0.45s ease, box-shadow 0.45s ease;
+}
+.landing-room--truenorth .tarot-card.c1 {
+  left: 4%;
+  top: 36px;
+  transform: rotate(-14deg) scale(1.02);
+  z-index: 1;
+}
+.landing-room--truenorth .tarot-card.c2 {
+  left: 30%;
+  top: -6px;
+  transform: rotate(2deg) scale(1.12);
+  z-index: 4;
+  width: 186px;
+  height: 304px;
+  box-shadow:
+    0 34px 60px rgba(0, 0, 0, 0.6),
+    0 0 40px rgba(247, 240, 230, 0.28);
+}
+.landing-room--truenorth .tarot-card.c3 {
+  left: 58%;
+  top: 40px;
+  transform: rotate(13deg) scale(1.04);
+  z-index: 2;
+}
+.landing-room--truenorth .tarot-card:hover {
+  transform: translateY(-8px) scale(1.08);
+  box-shadow:
+    0 36px 64px rgba(0, 0, 0, 0.65),
+    0 0 48px rgba(216, 240, 196, 0.35);
+}
+.landing-room__cta {
+  display: inline-block;
+  margin-top: 28px;
+  padding: 18px 26px;
+  font-size: 12px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-weight: 800;
+}
+.landing-room__cta--ink {
+  background: #0B0B0C;
+  color: #F7F0E6;
+  box-shadow: 6px 6px 0 var(--blush);
+}
+.landing-room__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  align-items: center;
+  margin-top: 8px;
+}
+.landing-room__cancel {
+  display: inline-block;
+  padding: 14px 18px;
+  border: 2px solid rgba(247, 240, 230, 0.55);
+  color: #F7F0E6;
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  font-weight: 800;
+  background: transparent;
+}
+.landing-room__cancel:hover {
+  border-color: var(--pist);
+  color: var(--pist);
+}
+.landing-room__trial {
+  margin-top: 18px;
+  max-width: 28rem;
+  font-size: clamp(18px, 2vw, 22px);
+  color: #E4D9C8;
+}
+@media (max-width: 767px) {
+  .landing-room--journal { border-right: 0; border-bottom: 4px solid #0B0B0C; }
+  .landing-room__spread { height: 280px; }
+  .landing-room--truenorth .tarot-card { width: 132px; height: 220px; }
+  .landing-room--truenorth .tarot-card.c2 { width: 148px; height: 244px; }
+}
 
 /* Guest header sits on field, not the live sky bar */
 .store-sky-nav,
