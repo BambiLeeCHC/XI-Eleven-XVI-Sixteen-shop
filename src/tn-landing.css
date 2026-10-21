@@ -1,73 +1,121 @@
-/* True North signed-out landing — full glassmorphism
-   Scoped to .tn-hero--landing so authenticated chart views stay IMPACT. */
+/* True North signed-out landing — cosmic glassmorphism
+   Matches the approved premium aesthetic: luminous glass, starfield depth,
+   soft multi-layer glows. Scoped to .tn-hero--landing only. */
 
 .tn-hero--landing {
-  gap: 1.85rem;
+  gap: 1.75rem;
+  position: relative;
 }
 
-/* Primary + closing invite panels */
+/* Title stays cream / luminous on black */
+.tn-hero--landing .tn-hero__title {
+  text-shadow: 0 0 40px rgba(247, 240, 230, 0.15);
+}
+
+.tn-hero--landing .tn-hero__lede {
+  color: rgba(247, 240, 230, 0.88);
+}
+
+/* Glass panels — dark frosted glass with luminous edge */
 .tn-hero--landing .tn-card,
 .tn-hero--landing .tn-invite-card {
-  background: rgba(244, 239, 230, 0.12);
+  background: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.07) 0%,
+    rgba(255, 255, 255, 0.03) 50%,
+    rgba(228, 212, 244, 0.06) 100%
+  );
   color: var(--cream);
-  border: 1px solid rgba(247, 240, 230, 0.22);
-  border-radius: 18px;
+  border: 1px solid rgba(247, 240, 230, 0.18);
+  border-radius: 20px;
   box-shadow:
-    0 0 0 1px rgba(255, 255, 255, 0.04) inset,
-    0 12px 40px rgba(0, 0, 0, 0.35),
-    0 0 60px rgba(228, 212, 244, 0.08);
-  backdrop-filter: blur(18px) saturate(1.25);
-  -webkit-backdrop-filter: blur(18px) saturate(1.25);
-  padding: 1.65rem 1.55rem 1.8rem;
+    0 0 0 1px rgba(255, 255, 255, 0.05) inset,
+    0 0 1px rgba(247, 240, 230, 0.35),
+    0 0 40px rgba(228, 212, 244, 0.12),
+    0 16px 48px rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(22px) saturate(1.35);
+  -webkit-backdrop-filter: blur(22px) saturate(1.35);
+  padding: 1.7rem 1.6rem 1.85rem;
 }
 
 .tn-hero--landing .tn-invite-card .label-lock,
 .tn-hero--landing .tn-card .label-lock {
-  color: var(--pist);
+  color: rgba(216, 240, 196, 0.9);
+  letter-spacing: 0.2em;
 }
 
 .tn-hero--landing .tn-invite-card__copy {
   max-width: 42rem;
-  color: rgba(247, 240, 230, 0.92);
+  color: rgba(247, 240, 230, 0.9);
 }
 
 .tn-hero--landing .tn-inline {
   color: var(--cream);
 }
 
-/* Feature grid — glass cards */
+/* Nested solid cream card (pageTitleTag) → also glass */
+.tn-hero--landing .tn-invite-card .tn-card,
+.tn-hero--landing .tn-invite-card .tn-invite-card {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(247, 240, 230, 0.14);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.04) inset;
+  margin-top: 1rem;
+}
+
+.tn-hero--landing .tn-invite-card .tn-card .label-lock,
+.tn-hero--landing .tn-invite-card .tn-invite-card .label-lock,
+.tn-hero--landing .tn-invite-card .tn-card .tn-invite-card__copy,
+.tn-hero--landing .tn-invite-card .tn-invite-card .tn-invite-card__copy {
+  color: rgba(247, 240, 230, 0.88);
+}
+
+/* Feature grid — dark glass tiles */
 .tn-hero--landing .tn-destinations {
-  margin-top: 0.15rem;
+  margin-top: 0.2rem;
   gap: 12px;
 }
 
 .tn-hero--landing .tn-destination {
   min-height: 100%;
-  background: rgba(244, 239, 230, 0.1);
+  background: linear-gradient(
+    160deg,
+    rgba(255, 255, 255, 0.06) 0%,
+    rgba(255, 255, 255, 0.02) 100%
+  );
   color: var(--cream);
-  border: 1px solid rgba(247, 240, 230, 0.2);
+  border: 1px solid rgba(247, 240, 230, 0.16);
   border-radius: 16px;
   box-shadow:
-    0 0 0 1px rgba(255, 255, 255, 0.03) inset,
-    0 8px 28px rgba(0, 0, 0, 0.28),
-    0 0 40px rgba(216, 240, 196, 0.05);
-  backdrop-filter: blur(16px) saturate(1.2);
-  -webkit-backdrop-filter: blur(16px) saturate(1.2);
-  padding: 1.15rem 1.1rem 1.25rem;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+    0 0 0 1px rgba(255, 255, 255, 0.04) inset,
+    0 8px 32px rgba(0, 0, 0, 0.35),
+    0 0 24px rgba(228, 212, 244, 0.06);
+  backdrop-filter: blur(18px) saturate(1.25);
+  -webkit-backdrop-filter: blur(18px) saturate(1.25);
+  padding: 1.2rem 1.15rem 1.3rem;
+  transition:
+    border-color 0.25s ease,
+    box-shadow 0.25s ease,
+    transform 0.25s ease,
+    background 0.25s ease;
 }
 
 .tn-hero--landing .tn-destination:hover {
   border-color: rgba(216, 240, 196, 0.35);
+  background: linear-gradient(
+    160deg,
+    rgba(255, 255, 255, 0.09) 0%,
+    rgba(216, 240, 196, 0.05) 100%
+  );
   box-shadow:
-    0 0 0 1px rgba(255, 255, 255, 0.06) inset,
-    0 12px 36px rgba(0, 0, 0, 0.35),
-    0 0 48px rgba(216, 240, 196, 0.1);
-  transform: translateY(-2px);
+    0 0 0 1px rgba(255, 255, 255, 0.07) inset,
+    0 12px 40px rgba(0, 0, 0, 0.4),
+    0 0 36px rgba(216, 240, 196, 0.12);
+  transform: translateY(-3px);
 }
 
 .tn-hero--landing .tn-destination__glyph {
-  color: var(--pist);
+  color: rgba(216, 240, 196, 0.95);
+  filter: drop-shadow(0 0 6px rgba(216, 240, 196, 0.35));
 }
 
 .tn-hero--landing .tn-destination .label-lock {
@@ -77,24 +125,37 @@
 .tn-hero--landing .tn-destination__blurb {
   font-size: 14.5px;
   line-height: 1.45;
-  color: rgba(247, 240, 230, 0.82);
+  color: rgba(247, 240, 230, 0.78);
 }
 
-/* Soft luminous edge on primary panel */
-.tn-hero--landing .tn-invite-card:first-of-type {
+/* Stronger luminous edge on the primary invite panel */
+.tn-hero--landing > .tn-invite-card:first-of-type {
   box-shadow:
-    0 0 0 1px rgba(255, 255, 255, 0.06) inset,
-    0 16px 48px rgba(0, 0, 0, 0.4),
-    0 0 80px rgba(228, 212, 244, 0.12),
-    0 0 1px rgba(216, 240, 196, 0.25);
+    0 0 0 1px rgba(255, 255, 255, 0.08) inset,
+    0 0 2px rgba(247, 240, 230, 0.4),
+    0 0 60px rgba(228, 212, 244, 0.18),
+    0 20px 56px rgba(0, 0, 0, 0.5);
 }
 
-/* Fallback when backdrop-filter is unsupported */
+/* CTAs sit cleanly on the cosmic field */
+.tn-hero--landing .tn-hero__ctas .cta-ghost {
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-color: rgba(247, 240, 230, 0.35);
+}
+
+.tn-hero--landing .tn-hero__ctas .cta-ghost:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: var(--cream);
+}
+
+/* Fallback when backdrop-filter unsupported */
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
   .tn-hero--landing .tn-card,
   .tn-hero--landing .tn-invite-card,
   .tn-hero--landing .tn-destination {
-    background: rgba(30, 28, 32, 0.92);
+    background: rgba(22, 20, 26, 0.94);
   }
 }
 
@@ -105,15 +166,14 @@
   }
 
   .tn-hero--landing .tn-invite-card {
-    padding: 1.9rem 2rem 2.05rem;
+    padding: 1.95rem 2.1rem 2.1rem;
   }
 
   .tn-hero--landing .tn-destination {
-    padding: 1.3rem 1.2rem 1.4rem;
+    padding: 1.35rem 1.25rem 1.45rem;
   }
 }
 
-/* Respect reduced motion */
 @media (prefers-reduced-motion: reduce) {
   .tn-hero--landing .tn-destination {
     transition: none;
