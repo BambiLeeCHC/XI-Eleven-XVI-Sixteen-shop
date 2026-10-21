@@ -7,6 +7,7 @@ import App from "./App";
 import "./index.css";
 import "./tn-lock.css";
 import "./tn-landing.css";
+import "./tn-landing-atmo.css";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>

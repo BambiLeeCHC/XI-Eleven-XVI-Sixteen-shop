@@ -1,0 +1,24 @@
+/* Stronger cosmic atmosphere when the signed-out landing is present.
+   Complements TrueNorthAtmosphere without changing authenticated views. */
+
+.journal-page--truenorth:has(.tn-hero--landing) .tn-atmo__wash {
+  background:
+    radial-gradient(55% 40% at 12% 8%, rgba(228, 212, 244, 0.22), transparent 55%),
+    radial-gradient(50% 38% at 88% 12%, rgba(216, 240, 196, 0.14), transparent 58%),
+    radial-gradient(70% 45% at 50% 100%, rgba(120, 100, 160, 0.12), transparent 60%),
+    linear-gradient(180deg, #050508 0%, #0c0b10 45%, #08070c 100%);
+}
+
+.journal-page--truenorth:has(.tn-hero--landing) .tn-atmo__mote {
+  box-shadow: 0 0 4px 1px rgba(247, 240, 230, 0.45);
+}
+
+.journal-page--truenorth:has(.tn-hero--landing) .tn-atmo__candle {
+  background: radial-gradient(
+    circle,
+    rgba(228, 212, 244, 0.28) 0%,
+    rgba(216, 240, 196, 0.1) 42%,
+    transparent 70%
+  );
+  filter: blur(14px);
+}
