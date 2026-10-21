@@ -6,6 +6,7 @@ import { BackendProvider } from "./lib/backend";
 import App from "./App";
 import "./index.css";
 import "./tn-lock.css";
+import "./tn-landing.css";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
