@@ -11,13 +11,6 @@ import { HOUSE_HINGE, HOUSE_LINE } from "../../lib/brand";
 import { NUMEROLOGY_CALC_EXPLAIN } from "../../lib/numerology";
 import { moonPhase } from "../../lib/ritual";
 
-/* ═══════════════════════════════════════════════════════════════════════
-   TRUE NORTH — shared types, copy, styling and small components used
-   across the four True North pages (Chart, Numbers, Almanac, Long Read).
-   Each destination now lives on its own route instead of one long scroll,
-   but they share one hero/nav shell and the same visual vocabulary.
-   ═══════════════════════════════════════════════════════════════════════ */
-
 export interface NatalPlacement {
   body: string;
   sign: string;
@@ -73,19 +66,14 @@ export interface NumerologyResult {
 
 export const NUMEROLOGY_ERROR_COPY: Record<string, string> = {
   no_key: "Numerology is temporarily unavailable — our team has been notified.",
-  upstream_error:
-    "Our reading service is briefly at capacity — please try again in a minute.",
-  empty:
-    "Couldn't write your numerology narrative just now — try again shortly.",
+  upstream_error: "Our reading service is briefly at capacity — please try again in a minute.",
+  empty: "Couldn't write your numerology narrative just now — try again shortly.",
 };
 
 export const PROFILE_ERROR_COPY: Record<string, string> = {
-  no_key:
-    "Your personality profile is temporarily unavailable — our team has been notified.",
-  upstream_error:
-    "Our reading service is briefly at capacity — please try again in a minute.",
-  empty:
-    "Couldn't write your personality profile just now — try again shortly.",
+  no_key: "Your personality profile is temporarily unavailable — our team has been notified.",
+  upstream_error: "Our reading service is briefly at capacity — please try again in a minute.",
+  empty: "Couldn't write your personality profile just now — try again shortly.",
 };
 
 export const NUMEROLOGY_LABELS: Record<string, string> = {
@@ -113,37 +101,17 @@ export const ctaButtonStyle: Record<string, string | number> = {
 };
 
 export const SIGN_ELEMENT: Record<string, "fire" | "earth" | "air" | "water"> = {
-  Aries: "fire",
-  Leo: "fire",
-  Sagittarius: "fire",
-  Taurus: "earth",
-  Virgo: "earth",
-  Capricorn: "earth",
-  Gemini: "air",
-  Libra: "air",
-  Aquarius: "air",
-  Cancer: "water",
-  Scorpio: "water",
-  Pisces: "water",
+  Aries: "fire", Leo: "fire", Sagittarius: "fire",
+  Taurus: "earth", Virgo: "earth", Capricorn: "earth",
+  Gemini: "air", Libra: "air", Aquarius: "air",
+  Cancer: "water", Scorpio: "water", Pisces: "water",
 };
 
 export const SIGN_GLYPH: Record<string, string> = {
-  Aries: "♈",
-  Taurus: "♉",
-  Gemini: "♊",
-  Cancer: "♋",
-  Leo: "♌",
-  Virgo: "♍",
-  Libra: "♎",
-  Scorpio: "♏",
-  Sagittarius: "♐",
-  Capricorn: "♑",
-  Aquarius: "♒",
-  Pisces: "♓",
+  Aries: "♈", Taurus: "♉", Gemini: "♊", Cancer: "♋", Leo: "♌", Virgo: "♍",
+  Libra: "♎", Scorpio: "♏", Sagittarius: "♐", Capricorn: "♑", Aquarius: "♒", Pisces: "♓",
 };
 
-/** The four True North destinations — now separate routes instead of
- * anchors in one long scroll. */
 export const TRUE_NORTH_PAGES = [
   { path: "/chart", label: "Chart", glyph: "✦", blurb: "The sky the second you were born." },
   { path: "/chart/numbers", label: "Numbers", glyph: "◆", blurb: "The constants underneath the chart." },
@@ -151,143 +119,60 @@ export const TRUE_NORTH_PAGES = [
   { path: "/chart/long-read", label: "Long Read", glyph: "♠", blurb: "Seven cards. Three windows. $7/week." },
 ] as const;
 
-/** Site-feature cards for the signed-out True North landing. */
 export const TRUE_NORTH_FEATURES = [
-  {
-    title: "Clarity over confusion",
-    body: "We simplify complex charts without losing depth.",
-    glyph: "✦",
-  },
-  {
-    title: "Empowerment, not prediction",
-    body: "You are the author. We simply illuminate the map.",
-    glyph: "◆",
-  },
-  {
-    title: "Beauty in every detail",
-    body: "Astrology as art. Crafted with care, designed to resonate.",
-    glyph: "☾",
-  },
-  {
-    title: "Privacy by design",
-    body: "Your data is sacred. Always confidential. Never shared.",
-    glyph: "♠",
-  },
+  { title: "Clarity over confusion", body: "We simplify complex charts without losing depth.", glyph: "✦" },
+  { title: "Empowerment, not prediction", body: "You are the author. We simply illuminate the map.", glyph: "◆" },
+  { title: "Beauty in every detail", body: "Astrology as art. Crafted with care, designed to resonate.", glyph: "☾" },
+  { title: "Privacy by design", body: "Your data is sacred. Always confidential. Never shared.", glyph: "♠" },
 ] as const;
 
-/** Fetches just the natal chart, for the sun-sign line in the hero — every
- * True North page shows it for continuity even though only the Chart page
- * shows the rest of the chart. */
 export function useSunSign(user: unknown): string | undefined {
-  const chartResult = useQuery<NatalChartResult>(
-    api.natalChart.get,
-    user ? {} : "skip",
-  );
+  const chartResult = useQuery<NatalChartResult>(api.natalChart.get, user ? {} : "skip");
   const chart = chartResult?.success ? (chartResult.chart ?? null) : null;
   return chart?.placements?.find(p => p.body === "Sun")?.sign;
 }
 
-export function PlacementRow({
-  placement,
-  expanded,
-  onToggle,
-}: {
-  placement: NatalPlacement;
-  expanded: boolean;
-  onToggle: () => void;
-}) {
+export function PlacementRow({ placement, expanded, onToggle }: { placement: NatalPlacement; expanded: boolean; onToggle: () => void }) {
   const { body, sign, house, retrograde, degree } = placement;
   const degInSign = Math.floor(((degree % 30) + 30) % 30);
   const full = explainPlacementFull(body, sign);
   const element = SIGN_ELEMENT[sign] ?? "air";
   return (
     <div className={`tn-house tn-place tn-house--${element} ${expanded ? "is-expanded" : ""}`}>
-      <button
-        type="button"
-        className="tn-house__head"
-        onClick={onToggle}
-        aria-expanded={expanded}
-      >
-        <span className="tn-house__num tn-place__mark" aria-hidden="true">
-          <PlanetIcon body={body} size={22} />
-        </span>
+      <button type="button" className="tn-house__head" onClick={onToggle} aria-expanded={expanded}>
+        <span className="tn-house__num tn-place__mark" aria-hidden="true"><PlanetIcon body={body} size={22} /></span>
         <span className="tn-house__copy">
           <span className="label-lock">{full.title}</span>
-          <span className="tn-house__sign">
-            <SignIcon sign={sign} size={16} /> {body} · {degInSign}° {sign}
-            {full.summary ? ` · ${full.summary}` : ""}
-          </span>
+          <span className="tn-house__sign"><SignIcon sign={sign} size={16} /> {body} · {degInSign}° {sign}{full.summary ? ` · ${full.summary}` : ""}</span>
         </span>
-        <span className="tn-house__bodies">
-          {house ? <span className={`lock-pill ${retrograde ? "rx" : "mute"}`}>H{house}{retrograde ? " Rx" : ""}</span> : null}
-        </span>
+        <span className="tn-house__bodies">{house ? <span className={`lock-pill ${retrograde ? "rx" : "mute"}`}>H{house}{retrograde ? " Rx" : ""}</span> : null}</span>
         <span className="chart-placement-row__chevron" aria-hidden="true">▾</span>
       </button>
       {expanded && (
         <div className="tn-house__open">
-          {house ? (
-            <p className="tn-house__residents">Lives in house {house}.</p>
-          ) : null}
+          {house ? <p className="tn-house__residents">Lives in house {house}.</p> : null}
           <p>{full.detail}</p>
-          {full.keywords.length > 0 && (
-            <div className="chart-house-row__keywords">
-              {full.keywords.map(k => (
-                <span key={k} className="lock-pill mute">{k}</span>
-              ))}
-            </div>
-          )}
+          {full.keywords.length > 0 && <div className="chart-house-row__keywords">{full.keywords.map(k => <span key={k} className="lock-pill mute">{k}</span>)}</div>}
         </div>
       )}
     </div>
   );
 }
 
-const ASPECT_GLYPH: Record<string, string> = {
-  conjunction: "☌",
-  opposition: "☍",
-  square: "□",
-  trine: "△",
-  sextile: "⚹",
-  quincunx: "⊼",
-};
+const ASPECT_GLYPH: Record<string, string> = { conjunction: "☌", opposition: "☍", square: "□", trine: "△", sextile: "⚹", quincunx: "⊼" };
+const ASPECT_TONE: Record<string, "fire" | "earth" | "air" | "water"> = { conjunction: "earth", sextile: "air", square: "fire", trine: "earth", opposition: "water", quincunx: "air" };
 
-const ASPECT_TONE: Record<string, "fire" | "earth" | "air" | "water"> = {
-  conjunction: "earth",
-  sextile: "air",
-  square: "fire",
-  trine: "earth",
-  opposition: "water",
-  quincunx: "air",
-};
-
-export function AspectRow({
-  aspect,
-  expanded,
-  onToggle,
-}: {
-  aspect: NatalAspect;
-  expanded: boolean;
-  onToggle: () => void;
-}) {
+export function AspectRow({ aspect, expanded, onToggle }: { aspect: NatalAspect; expanded: boolean; onToggle: () => void }) {
   const key = aspect.aspect.toLowerCase();
   const full = explainAspectFull(aspect.bodyA, aspect.bodyB, aspect.aspect);
   const tone = ASPECT_TONE[key] ?? "air";
   return (
     <div className={`tn-house tn-aspect tn-house--${tone} ${expanded ? "is-expanded" : ""}`}>
-      <button
-        type="button"
-        className="tn-house__head"
-        onClick={onToggle}
-        aria-expanded={expanded}
-      >
+      <button type="button" className="tn-house__head" onClick={onToggle} aria-expanded={expanded}>
         <span className="tn-house__num" aria-hidden="true">{ASPECT_GLYPH[key] ?? "·"}</span>
         <span className="tn-house__copy">
           <span className="label-lock">{full.title}</span>
-          <span className="tn-house__sign">
-            <PlanetIcon body={aspect.bodyA} size={15} /> {aspect.bodyA}
-            <span aria-hidden="true"> · </span>
-            <PlanetIcon body={aspect.bodyB} size={15} /> {aspect.bodyB}
-          </span>
+          <span className="tn-house__sign"><PlanetIcon body={aspect.bodyA} size={15} /> {aspect.bodyA}<span aria-hidden="true"> · </span><PlanetIcon body={aspect.bodyB} size={15} /> {aspect.bodyB}</span>
         </span>
         <span className="lock-pill mute">{aspect.orb.toFixed(1)}°</span>
         <span className="chart-placement-row__chevron" aria-hidden="true">▾</span>
@@ -296,78 +181,34 @@ export function AspectRow({
         <div className="tn-house__open">
           <p className="tn-house__residents">{full.summary}</p>
           <p>{full.detail}</p>
-          {full.keywords.length > 0 && (
-            <div className="chart-house-row__keywords">
-              {full.keywords.map(k => (
-                <span key={k} className="lock-pill mute">{k}</span>
-              ))}
-            </div>
-          )}
+          {full.keywords.length > 0 && <div className="chart-house-row__keywords">{full.keywords.map(k => <span key={k} className="lock-pill mute">{k}</span>)}</div>}
         </div>
       )}
     </div>
   );
 }
 
-export function HouseRow({
-  houseCusp,
-  expanded,
-  onToggle,
-  occupants = [],
-}: {
-  houseCusp: NatalHouseCusp;
-  expanded: boolean;
-  onToggle: () => void;
-  occupants?: NatalPlacement[];
-}) {
+export function HouseRow({ houseCusp, expanded, onToggle, occupants = [] }: { houseCusp: NatalHouseCusp; expanded: boolean; onToggle: () => void; occupants?: NatalPlacement[] }) {
   const full = explainHouseFull(houseCusp.house);
   const element = SIGN_ELEMENT[houseCusp.sign] ?? "air";
   return (
     <div className={`tn-house tn-house--${element} ${expanded ? "is-expanded" : ""}`}>
-      <button
-        type="button"
-        className="tn-house__head"
-        onClick={onToggle}
-        aria-expanded={expanded}
-      >
+      <button type="button" className="tn-house__head" onClick={onToggle} aria-expanded={expanded}>
         <span className="tn-house__num">{String(houseCusp.house).padStart(2, "0")}</span>
         <span className="tn-house__copy">
           <span className="label-lock">{full?.title ?? `House ${houseCusp.house}`}</span>
-          <span className="tn-house__sign">
-            <SignIcon sign={houseCusp.sign} size={16} /> {houseCusp.sign}
-            {full?.summary ? ` · ${full.summary}` : ""}
-          </span>
+          <span className="tn-house__sign"><SignIcon sign={houseCusp.sign} size={16} /> {houseCusp.sign}{full?.summary ? ` · ${full.summary}` : ""}</span>
         </span>
-        <span className="tn-house__bodies">
-          {occupants.map(p => (
-            <span key={p.body} className="tn-house__body" title={p.body}>
-              <PlanetIcon body={p.body} size={15} />
-            </span>
-          ))}
-        </span>
+        <span className="tn-house__bodies">{occupants.map(p => <span key={p.body} className="tn-house__body" title={p.body}><PlanetIcon body={p.body} size={15} /></span>)}</span>
         <span className="chart-placement-row__chevron" aria-hidden="true">▾</span>
       </button>
       {expanded && full && (
         <div className="tn-house__open">
-          {occupants.length > 0 && (
-            <p className="tn-house__residents">
-              {occupants.map(p => p.body).join(" · ")} {occupants.length === 1 ? "lives" : "live"} here.
-            </p>
-          )}
+          {occupants.length > 0 && <p className="tn-house__residents">{occupants.map(p => p.body).join(" · ")} {occupants.length === 1 ? "lives" : "live"} here.</p>}
           <p>{full.detail}</p>
-          <div className="chart-house-row__keywords">
-            {full.keywords.map(k => (
-              <span key={k} className="lock-pill mute">
-                {k}
-              </span>
-            ))}
-          </div>
-          <p className="chart-house-row__sign-heading">
-            <SignIcon sign={houseCusp.sign} size={13} /> {houseCusp.sign} on this cusp
-          </p>
-          <p className="chart-house-row__sign-explain">
-            {explainSignInHouse(houseCusp.sign, houseCusp.house)}
-          </p>
+          <div className="chart-house-row__keywords">{full.keywords.map(k => <span key={k} className="lock-pill mute">{k}</span>)}</div>
+          <p className="chart-house-row__sign-heading"><SignIcon sign={houseCusp.sign} size={13} /> {houseCusp.sign} on this cusp</p>
+          <p className="chart-house-row__sign-explain">{explainSignInHouse(houseCusp.sign, houseCusp.house)}</p>
           {full.question ? <p className="chart-house-row__question">{full.question}</p> : null}
         </div>
       )}
@@ -375,122 +216,42 @@ export function HouseRow({
   );
 }
 
-/** Minimal, safe render of sparing **bold** markup, paragraph by paragraph. */
 export function BoldParagraphs({ text }: { text: string }) {
   const paragraphs = text.trim().split(/\n{2,}/);
-  return (
-    <>
-      {paragraphs.map((p, i) => {
-        const parts = p.split(/\*\*(.+?)\*\*/g);
-        return (
-          <p key={i} className="chart-profile-section__p">
-            {parts.map((part, j) =>
-              j % 2 === 1 ? <strong key={j}>{part}</strong> : part,
-            )}
-          </p>
-        );
-      })}
-    </>
-  );
+  return (<>{paragraphs.map((p, i) => { const parts = p.split(/\*\*(.+?)\*\*/g); return <p key={i} className="chart-profile-section__p">{parts.map((part, j) => j % 2 === 1 ? <strong key={j}>{part}</strong> : part)}</p>; })}</>);
 }
 
-export function ProfileSection({
-  title,
-  body,
-}: {
-  title: string;
-  body: string;
-}) {
-  return (
-    <div className="chart-profile-section">
-      <p className="label-lock chart-profile-section__title">{title}</p>
-      <div className="chart-profile-section__body">
-        <BoldParagraphs text={body} />
-      </div>
-    </div>
-  );
+export function ProfileSection({ title, body }: { title: string; body: string }) {
+  return (<div className="chart-profile-section"><p className="label-lock chart-profile-section__title">{title}</p><div className="chart-profile-section__body"><BoldParagraphs text={body} /></div></div>);
 }
 
-/** IMPACT section title — kicker + Clash, same voice as the shop. */
-export function SectionHeading({
-  wordA,
-  wordB,
-  ariaLabel,
-}: {
-  wordA: string;
-  wordB: string;
-  ariaLabel: string;
-}) {
-  return (
-    <h2 className="chart-section-heading" aria-label={ariaLabel}>
-      <span className="label-lock chart-section-heading__kicker">{wordA}</span>
-      <span className="clash chart-section-heading__title">{wordB}</span>
-    </h2>
-  );
+export function SectionHeading({ wordA, wordB, ariaLabel }: { wordA: string; wordB: string; ariaLabel: string }) {
+  return (<h2 className="chart-section-heading" aria-label={ariaLabel}><span className="label-lock chart-section-heading__kicker">{wordA}</span><span className="clash chart-section-heading__title">{wordB}</span></h2>);
 }
-export function parseProfileSections(
-  narrative: string,
-): { title: string; body: string }[] {
+
+export function parseProfileSections(narrative: string): { title: string; body: string }[] {
   const matches = [...narrative.matchAll(/^##\s+(.+)$/gm)];
-  if (matches.length === 0)
-    return [{ title: "Your Personality Profile", body: narrative }];
+  if (matches.length === 0) return [{ title: "Your Personality Profile", body: narrative }];
   const sections: { title: string; body: string }[] = [];
   for (let i = 0; i < matches.length; i++) {
     const start = (matches[i].index ?? 0) + matches[i][0].length;
-    const end =
-      i + 1 < matches.length
-        ? (matches[i + 1].index ?? narrative.length)
-        : narrative.length;
-    sections.push({
-      title: matches[i][1].trim(),
-      body: narrative.slice(start, end).trim(),
-    });
+    const end = i + 1 < matches.length ? (matches[i + 1].index ?? narrative.length) : narrative.length;
+    sections.push({ title: matches[i][1].trim(), body: narrative.slice(start, end).trim() });
   }
   return sections;
 }
 
-/** Numerology number card — Clash display figure, then the math in quiet type. */
-export function NumberRow({
-  numKey,
-  value,
-}: {
-  numKey: string;
-  value: number;
-}) {
-  return (
-    <div className="tn-number">
-      <span className="label-lock tn-number__label">
-        {NUMEROLOGY_LABELS[numKey] ?? numKey}
-      </span>
-      <span className="clash tn-number__value">{value}</span>
-      {NUMEROLOGY_CALC_EXPLAIN[numKey] && (
-        <p className="tn-number__calc">{NUMEROLOGY_CALC_EXPLAIN[numKey]}</p>
-      )}
-    </div>
-  );
+export function NumberRow({ numKey, value }: { numKey: string; value: number }) {
+  return (<div className="tn-number"><span className="label-lock tn-number__label">{NUMEROLOGY_LABELS[numKey] ?? numKey}</span><span className="clash tn-number__value">{value}</span>{NUMEROLOGY_CALC_EXPLAIN[numKey] && <p className="tn-number__calc">{NUMEROLOGY_CALC_EXPLAIN[numKey]}</p>}</div>);
 }
 
-/** Real page-to-page nav — four destinations, one observatory. */
 export function TrueNorthNav() {
   const location = useLocation();
   return (
     <nav className="tn-rail" aria-label="True North sections">
       {TRUE_NORTH_PAGES.map(p => {
-        const active =
-          p.path === "/chart"
-            ? location.pathname === "/chart"
-            : location.pathname.startsWith(p.path);
-        return (
-          <Link
-            key={p.path}
-            to={p.path}
-            aria-current={active ? "true" : undefined}
-            className={`tn-rail__item ${active ? "is-active" : ""}`}
-          >
-            <span className="tn-rail__glyph" aria-hidden="true">{p.glyph}</span>
-            <span className="tn-rail__label">{p.label}</span>
-          </Link>
-        );
+        const active = p.path === "/chart" ? location.pathname === "/chart" : location.pathname.startsWith(p.path);
+        return (<Link key={p.path} to={p.path} aria-current={active ? "true" : undefined} className={`tn-rail__item ${active ? "is-active" : ""}`}><span className="tn-rail__glyph" aria-hidden="true">{p.glyph}</span><span className="tn-rail__label">{p.label}</span></Link>);
       })}
     </nav>
   );
@@ -499,148 +260,102 @@ export function TrueNorthNav() {
 function TrueNorthSkyline({ sunSign }: { sunSign?: string }) {
   const moon = moonPhase();
   const hour = new Date().toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
-  return (
-    <p className="tn-skyline">
-      <span>{hour}</span>
-      <span aria-hidden="true">·</span>
-      <span>
-        {moon.glyph} {moon.name}
-      </span>
-      {sunSign && (
-        <>
-          <span aria-hidden="true">·</span>
-          <span>
-            {SIGN_GLYPH[sunSign] ?? ""} {sunSign} sun
-          </span>
-        </>
-      )}
-    </p>
-  );
+  return (<p className="tn-skyline"><span>{hour}</span><span aria-hidden="true">·</span><span>{moon.glyph} {moon.name}</span>{sunSign && (<><span aria-hidden="true">·</span><span>{SIGN_GLYPH[sunSign] ?? ""} {sunSign} sun</span></>)}</p>);
 }
 
-/** Shared observatory header — identical across Chart, Numbers, Almanac, Long Read. */
 export function TrueNorthHero({ sunSign }: { sunSign?: string }) {
   return (
     <header className="tn-hero">
       <div className="tn-hero__mast">
         <div className="tn-hero__copy">
           <span className="kicker-lock">The house reading</span>
-          <h1 className="clash tn-hero__title" aria-label="True North">
-            True North
-          </h1>
-          <p className="serif-quiet tn-hero__lede">
-            {sunSign
-              ? `The exact sky the second you were born — ${sunSign} sun, decoded in full.`
-              : "The exact sky the second you were born, decoded in full."}
-          </p>
+          <h1 className="clash tn-hero__title" aria-label="True North">True North</h1>
+          <p className="serif-quiet tn-hero__lede">{sunSign ? `The exact sky the second you were born — ${sunSign} sun, decoded in full.` : "The exact sky the second you were born, decoded in full."}</p>
           <TrueNorthSkyline sunSign={sunSign} />
         </div>
-        {sunSign && (
-          <div className="tn-hero__orb" aria-hidden="true">
-            <span className="tn-hero__orb-glyph">{SIGN_GLYPH[sunSign]}</span>
-            <span className="tn-hero__orb-sign">{sunSign}</span>
-          </div>
-        )}
+        {sunSign && (<div className="tn-hero__orb" aria-hidden="true"><span className="tn-hero__orb-glyph">{SIGN_GLYPH[sunSign]}</span><span className="tn-hero__orb-sign">{sunSign}</span></div>)}
       </div>
       <TrueNorthNav />
     </header>
   );
 }
 
-/** Signed-out marketing teaser — refined premium structure. */
-export function TrueNorthSignedOutTeaser({
-  pageTitleTag,
-}: {
-  pageTitleTag: React.ReactNode;
-}) {
+const ZODIAC_RING = ["♈", "♉", "♊", "♋", "♌", "♍", "♎", "♏", "♐", "♑", "♒", "♓"] as const;
+const ZODIAC_LABELS = ["ARI", "TAU", "GEM", "CAN", "LEO", "VIR", "LIB", "SCO", "SAG", "CAP", "AQU", "PIS"] as const;
+
+function LandingZodiacWheel() {
   return (
-    <header className="tn-hero tn-hero--landing">
-      <div className="tn-hero__mast">
-        <div className="tn-hero__copy">
-          <span className="kicker-lock">Guided by stars. Grounded in you.</span>
-          <h1 className="clash tn-hero__title" aria-label="True North">
-            True North
-          </h1>
-          <p className="serif-quiet tn-hero__lede">
-            Your natal chart is a map, not a sentence. At True North, we help you
-            read it with clarity, depth, and grace.
-          </p>
-          <TrueNorthSkyline />
+    <div className="tn-glass-wheel" aria-hidden="true">
+      <div className="tn-glass-wheel__frame">
+        <div className="tn-glass-wheel__meta">
+          <span className="tn-glass-wheel__meta-label">Natal chart</span>
+          <span className="tn-glass-wheel__meta-sub">Sample · precision snapshot</span>
+        </div>
+        <div className="tn-glass-wheel__compass">✦</div>
+        <div className="tn-glass-wheel__ring">
+          {ZODIAC_RING.map((g, idx) => {
+            const angle = (idx / 12) * 360 - 90;
+            const rad = (angle * Math.PI) / 180;
+            const r = 42;
+            const x = 50 + r * Math.cos(rad);
+            const y = 50 + r * Math.sin(rad);
+            return (<span key={ZODIAC_LABELS[idx]} className="tn-glass-wheel__sign" style={{ left: `${x}%`, top: `${y}%` }}>{g}</span>);
+          })}
+          <div className="tn-glass-wheel__core"><span className="tn-glass-wheel__star">✦</span></div>
+          <div className="tn-glass-wheel__orbit" />
+          <div className="tn-glass-wheel__orbit tn-glass-wheel__orbit--inner" />
         </div>
       </div>
+    </div>
+  );
+}
 
-      {/* Primary invitation panel */}
-      <div className="tn-card tn-invite-card">
-        <p className="label-lock">Your natal chart</p>
-        <p className="serif-quiet tn-invite-card__copy" style={{ fontSize: "clamp(22px, 3vw, 28px)", marginTop: "0.5rem", marginBottom: "0.35rem" }}>
-          Born with intention.
-        </p>
-        <p className="serif-quiet tn-invite-card__copy">
-          A precise snapshot of the sky at your first breath. Your chart reveals
-          the energies, patterns, and potentials you came here to work with.
-          At True North, we translate astrology into self-awareness—never into
-          limitation.
-        </p>
-        {pageTitleTag}
+export function TrueNorthSignedOutTeaser({ pageTitleTag }: { pageTitleTag: React.ReactNode }) {
+  return (
+    <header className="tn-hero tn-hero--landing tn-hero--cosmic">
+      <div className="tn-cosmic">
+        <div className="tn-cosmic__copy">
+          <h1 className="tn-cosmic__title" aria-label="True North">True<br />North</h1>
+          <span className="tn-cosmic__pill">Astrology · Alignment · Purpose</span>
+          <p className="tn-cosmic__lede">Your chart is not a prediction, it's a compass. Discover the wisdom written in your stars.</p>
+          <div className="tn-cosmic__dots" aria-hidden="true"><span /><span /><span /><span /><span /></div>
+        </div>
+        <LandingZodiacWheel />
       </div>
 
-      <div className="tn-hero__ctas">
-        <Link to="/signup" className="cta-pist tn-hero__cta">
-          Begin your reading
-        </Link>
-        <Link to="/shop" className="cta-ghost">
-          How it works
-        </Link>
+      <div className="tn-cosmic__ctas">
+        <Link to="/signup" className="tn-cosmic__cta tn-cosmic__cta--primary">Explore your chart <span aria-hidden="true">✦</span></Link>
+        <Link to="/login" className="tn-cosmic__cta tn-cosmic__cta--ghost">View sample chart <span aria-hidden="true">→</span></Link>
       </div>
 
-      {/* Why True North — site features (reuses destination card treatment) */}
-      <p className="label-lock" style={{ color: "var(--pist)", margin: "0.25rem 0 0" }}>
-        Why True North
-      </p>
-      <ul className="tn-destinations">
+      <ul className="tn-cosmic__features">
         {TRUE_NORTH_FEATURES.map(f => (
-          <li key={f.title} className="tn-destination">
-            <span className="tn-destination__glyph" aria-hidden="true">{f.glyph}</span>
-            <span className="label-lock">{f.title}</span>
-            <span className="serif-quiet tn-destination__blurb">{f.body}</span>
+          <li key={f.title} className="tn-cosmic__feature">
+            <span className="tn-cosmic__feature-glyph" aria-hidden="true">{f.glyph}</span>
+            <span className="tn-cosmic__feature-title">{f.title}</span>
+            <span className="tn-cosmic__feature-body">{f.body}</span>
           </li>
         ))}
       </ul>
 
-      {/* One House closing */}
-      <div className="tn-card tn-invite-card">
-        <p className="label-lock">One house</p>
-        <p className="serif-quiet tn-invite-card__copy" style={{ fontSize: "clamp(20px, 2.6vw, 26px)", marginTop: "0.45rem" }}>
-          One House. Infinite potential.
-        </p>
-        <p className="serif-quiet tn-invite-card__copy">
-          {HOUSE_HINGE} Log in if you already have an account.
-        </p>
-        <Link
-          to="/login"
-          className="tn-inline"
-          style={{ display: "inline-block", marginTop: "0.85rem" }}
-        >
-          Log in →
-        </Link>
+      <div className="tn-cosmic__bar">
+        <span>Align with your stars. Live your True North.</span>
+        <span className="tn-cosmic__bar-mid">True North</span>
+        <span>Available exclusively at xixvi.shop</span>
       </div>
 
+      <div className="tn-cosmic__hidden-slot" hidden>{pageTitleTag}</div>
       <TrueNorthNav />
     </header>
   );
 }
 
-/** Sends True North back into a garment — same ethic, other room. */
 export function HouseDressing() {
   return (
     <div className="tn-card tn-invite-card">
       <p className="label-lock">The house on a body</p>
-      <p className="serif-quiet tn-invite-card__copy">
-        {HOUSE_LINE} The clothes are made for one person. Same as this room.
-      </p>
-      <Link to="/shop" className="cta-pist" style={{ marginTop: "1rem", textAlign: "center" }}>
-        Shop the house
-      </Link>
+      <p className="serif-quiet tn-invite-card__copy">{HOUSE_LINE} The clothes are made for one person. Same as this room.</p>
+      <Link to="/shop" className="cta-pist" style={{ marginTop: "1rem", textAlign: "center" }}>Shop the house</Link>
     </div>
   );
 }

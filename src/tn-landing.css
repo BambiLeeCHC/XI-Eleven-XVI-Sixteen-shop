@@ -1,185 +1,367 @@
-/* True North signed-out landing — cosmic glassmorphism
-   Matches the approved premium aesthetic: luminous glass, starfield depth,
-   soft multi-layer glows. Scoped to .tn-hero--landing only. */
+/* True North cosmic landing — match approved glass + starfield mockup */
 
-.tn-hero--landing {
+.tn-hero--cosmic {
+  gap: 1.5rem;
+  padding-top: 1.25rem;
+}
+
+.tn-cosmic {
+  display: grid;
+  grid-template-columns: 1fr;
   gap: 1.75rem;
-  position: relative;
+  align-items: center;
 }
 
-/* Title stays cream / luminous on black */
-.tn-hero--landing .tn-hero__title {
-  text-shadow: 0 0 40px rgba(247, 240, 230, 0.15);
+.tn-cosmic__title {
+  margin: 0;
+  font-family: "Fraunces", "Cormorant Garamond", Georgia, serif;
+  font-weight: 500;
+  font-size: clamp(56px, 12vw, 112px);
+  line-height: 0.88;
+  letter-spacing: -0.03em;
+  color: #f7f0e6;
+  text-shadow: 0 0 48px rgba(247, 240, 230, 0.18);
 }
 
-.tn-hero--landing .tn-hero__lede {
+.tn-cosmic__pill {
+  display: inline-flex;
+  margin-top: 1.1rem;
+  padding: 0.4rem 0.9rem;
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgba(196, 168, 220, 0.85), rgba(168, 148, 210, 0.75));
+  color: #1a1020;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.tn-cosmic__lede {
+  margin: 1rem 0 0;
+  max-width: 28rem;
+  font-family: "Fraunces", "Cormorant Garamond", Georgia, serif;
+  font-style: italic;
+  font-size: clamp(17px, 2.2vw, 22px);
+  line-height: 1.45;
   color: rgba(247, 240, 230, 0.88);
 }
 
-/* Glass panels — dark frosted glass with luminous edge */
-.tn-hero--landing .tn-card,
-.tn-hero--landing .tn-invite-card {
+.tn-cosmic__dots {
+  display: flex;
+  gap: 0.55rem;
+  margin-top: 1.25rem;
+  align-items: center;
+}
+
+.tn-cosmic__dots span {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(247, 240, 230, 0.45);
+  background: transparent;
+}
+
+.tn-cosmic__dots span:nth-child(3) {
+  background: rgba(247, 240, 230, 0.55);
+  border-color: transparent;
+}
+
+/* Luminous glass natal chart panel */
+.tn-glass-wheel {
+  position: relative;
+  width: 100%;
+  max-width: 420px;
+  margin-inline: auto;
+}
+
+.tn-glass-wheel__frame {
+  position: relative;
+  aspect-ratio: 1.15 / 1;
+  border-radius: 22px;
   background: linear-gradient(
     145deg,
-    rgba(255, 255, 255, 0.07) 0%,
-    rgba(255, 255, 255, 0.03) 50%,
-    rgba(228, 212, 244, 0.06) 100%
+    rgba(255, 255, 255, 0.1) 0%,
+    rgba(255, 255, 255, 0.03) 45%,
+    rgba(180, 160, 210, 0.08) 100%
   );
-  color: var(--cream);
-  border: 1px solid rgba(247, 240, 230, 0.18);
-  border-radius: 20px;
+  border: 1px solid rgba(247, 240, 230, 0.28);
   box-shadow:
-    0 0 0 1px rgba(255, 255, 255, 0.05) inset,
-    0 0 1px rgba(247, 240, 230, 0.35),
-    0 0 40px rgba(228, 212, 244, 0.12),
-    0 16px 48px rgba(0, 0, 0, 0.45);
-  backdrop-filter: blur(22px) saturate(1.35);
-  -webkit-backdrop-filter: blur(22px) saturate(1.35);
-  padding: 1.7rem 1.6rem 1.85rem;
+    0 0 0 1px rgba(255, 255, 255, 0.06) inset,
+    0 0 2px rgba(247, 240, 230, 0.5),
+    0 0 60px rgba(200, 180, 230, 0.2),
+    0 24px 64px rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(24px) saturate(1.4);
+  -webkit-backdrop-filter: blur(24px) saturate(1.4);
+  overflow: hidden;
 }
 
-.tn-hero--landing .tn-invite-card .label-lock,
-.tn-hero--landing .tn-card .label-lock {
-  color: rgba(216, 240, 196, 0.9);
+.tn-glass-wheel__meta {
+  position: absolute;
+  top: 1rem;
+  left: 1.1rem;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.tn-glass-wheel__meta-label {
+  font-size: 10px;
   letter-spacing: 0.2em;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: rgba(247, 240, 230, 0.75);
 }
 
-.tn-hero--landing .tn-invite-card__copy {
-  max-width: 42rem;
-  color: rgba(247, 240, 230, 0.9);
+.tn-glass-wheel__meta-sub {
+  font-size: 11px;
+  color: rgba(247, 240, 230, 0.5);
 }
 
-.tn-hero--landing .tn-inline {
-  color: var(--cream);
+.tn-glass-wheel__compass {
+  position: absolute;
+  top: 1rem;
+  right: 1.1rem;
+  z-index: 2;
+  color: rgba(247, 240, 230, 0.55);
+  font-size: 14px;
 }
 
-/* Nested solid cream card (pageTitleTag) → also glass */
-.tn-hero--landing .tn-invite-card .tn-card,
-.tn-hero--landing .tn-invite-card .tn-invite-card {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(247, 240, 230, 0.14);
-  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.04) inset;
-  margin-top: 1rem;
+.tn-glass-wheel__ring {
+  position: absolute;
+  inset: 12%;
 }
 
-.tn-hero--landing .tn-invite-card .tn-card .label-lock,
-.tn-hero--landing .tn-invite-card .tn-invite-card .label-lock,
-.tn-hero--landing .tn-invite-card .tn-card .tn-invite-card__copy,
-.tn-hero--landing .tn-invite-card .tn-invite-card .tn-invite-card__copy {
-  color: rgba(247, 240, 230, 0.88);
+.tn-glass-wheel__orbit {
+  position: absolute;
+  inset: 8%;
+  border-radius: 50%;
+  border: 1px solid rgba(247, 240, 230, 0.18);
+  box-shadow: 0 0 20px rgba(200, 180, 230, 0.08) inset;
 }
 
-/* Feature grid — dark glass tiles */
-.tn-hero--landing .tn-destinations {
-  margin-top: 0.2rem;
+.tn-glass-wheel__orbit--inner {
+  inset: 22%;
+  border-color: rgba(247, 240, 230, 0.12);
+}
+
+.tn-glass-wheel__sign {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  font-size: clamp(12px, 2.2vw, 16px);
+  color: rgba(247, 240, 230, 0.72);
+  text-shadow: 0 0 8px rgba(247, 240, 230, 0.25);
+  line-height: 1;
+}
+
+.tn-glass-wheel__core {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 22%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: radial-gradient(circle, rgba(247, 240, 230, 0.2) 0%, transparent 70%);
+  box-shadow: 0 0 30px rgba(247, 240, 230, 0.25);
+}
+
+.tn-glass-wheel__star {
+  font-size: clamp(18px, 3vw, 28px);
+  color: #f7f0e6;
+  filter: drop-shadow(0 0 10px rgba(247, 240, 230, 0.6));
+}
+
+/* CTAs */
+.tn-cosmic__ctas {
+  display: flex;
+  flex-wrap: wrap;
   gap: 12px;
+  justify-content: center;
 }
 
-.tn-hero--landing .tn-destination {
-  min-height: 100%;
+.tn-cosmic__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.85rem 1.35rem;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-decoration: none;
+  transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.tn-cosmic__cta--primary {
+  background: #c8dfb0;
+  color: #142010;
+  border: 1px solid transparent;
+  box-shadow: 0 0 24px rgba(200, 223, 176, 0.25);
+}
+
+.tn-cosmic__cta--primary:hover {
+  background: #d4e8bc;
+  box-shadow: 0 0 32px rgba(200, 223, 176, 0.4);
+}
+
+.tn-cosmic__cta--ghost {
+  background: rgba(255, 255, 255, 0.04);
+  color: #f7f0e6;
+  border: 1px solid rgba(247, 240, 230, 0.35);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.tn-cosmic__cta--ghost:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(247, 240, 230, 0.55);
+}
+
+/* Feature glass tiles */
+.tn-cosmic__features {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin: 0.35rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tn-cosmic__feature {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  padding: 1.15rem 1.1rem 1.25rem;
+  border-radius: 16px;
   background: linear-gradient(
     160deg,
-    rgba(255, 255, 255, 0.06) 0%,
+    rgba(255, 255, 255, 0.07) 0%,
     rgba(255, 255, 255, 0.02) 100%
   );
-  color: var(--cream);
   border: 1px solid rgba(247, 240, 230, 0.16);
-  border-radius: 16px;
   box-shadow:
     0 0 0 1px rgba(255, 255, 255, 0.04) inset,
-    0 8px 32px rgba(0, 0, 0, 0.35),
-    0 0 24px rgba(228, 212, 244, 0.06);
+    0 10px 32px rgba(0, 0, 0, 0.35);
   backdrop-filter: blur(18px) saturate(1.25);
   -webkit-backdrop-filter: blur(18px) saturate(1.25);
-  padding: 1.2rem 1.15rem 1.3rem;
-  transition:
-    border-color 0.25s ease,
-    box-shadow 0.25s ease,
-    transform 0.25s ease,
-    background 0.25s ease;
+  color: #f7f0e6;
+  transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.tn-hero--landing .tn-destination:hover {
-  border-color: rgba(216, 240, 196, 0.35);
-  background: linear-gradient(
-    160deg,
-    rgba(255, 255, 255, 0.09) 0%,
-    rgba(216, 240, 196, 0.05) 100%
-  );
+.tn-cosmic__feature:hover {
+  border-color: rgba(200, 223, 176, 0.35);
+  transform: translateY(-2px);
   box-shadow:
-    0 0 0 1px rgba(255, 255, 255, 0.07) inset,
-    0 12px 40px rgba(0, 0, 0, 0.4),
-    0 0 36px rgba(216, 240, 196, 0.12);
-  transform: translateY(-3px);
+    0 0 0 1px rgba(255, 255, 255, 0.06) inset,
+    0 14px 40px rgba(0, 0, 0, 0.4),
+    0 0 28px rgba(200, 223, 176, 0.1);
 }
 
-.tn-hero--landing .tn-destination__glyph {
-  color: rgba(216, 240, 196, 0.95);
-  filter: drop-shadow(0 0 6px rgba(216, 240, 196, 0.35));
+.tn-cosmic__feature-glyph {
+  color: rgba(200, 223, 176, 0.95);
+  font-size: 15px;
+  filter: drop-shadow(0 0 6px rgba(200, 223, 176, 0.35));
 }
 
-.tn-hero--landing .tn-destination .label-lock {
-  color: var(--cream);
+.tn-cosmic__feature-title {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #f7f0e6;
 }
 
-.tn-hero--landing .tn-destination__blurb {
-  font-size: 14.5px;
-  line-height: 1.45;
-  color: rgba(247, 240, 230, 0.78);
+.tn-cosmic__feature-body {
+  font-family: "Fraunces", "Cormorant Garamond", Georgia, serif;
+  font-style: italic;
+  font-size: 14px;
+  line-height: 1.4;
+  color: rgba(247, 240, 230, 0.75);
 }
 
-/* Stronger luminous edge on the primary invite panel */
-.tn-hero--landing > .tn-invite-card:first-of-type {
-  box-shadow:
-    0 0 0 1px rgba(255, 255, 255, 0.08) inset,
-    0 0 2px rgba(247, 240, 230, 0.4),
-    0 0 60px rgba(228, 212, 244, 0.18),
-    0 20px 56px rgba(0, 0, 0, 0.5);
+/* Bottom bar */
+.tn-cosmic__bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.65rem 1rem;
+  padding: 0.85rem 1.15rem;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(247, 240, 230, 0.14);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(247, 240, 230, 0.7);
 }
 
-/* CTAs sit cleanly on the cosmic field */
-.tn-hero--landing .tn-hero__ctas .cta-ghost {
+.tn-cosmic__bar-mid {
+  color: #f7f0e6;
+  letter-spacing: 0.22em;
+}
+
+/* Soften the destination rail under cosmic landing */
+.tn-hero--cosmic .tn-rail {
+  margin-top: 0.35rem;
+}
+
+.tn-hero--cosmic .tn-rail__item {
   background: rgba(255, 255, 255, 0.04);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border-color: rgba(247, 240, 230, 0.35);
+  border-color: rgba(247, 240, 230, 0.22);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 
-.tn-hero--landing .tn-hero__ctas .cta-ghost:hover {
-  background: rgba(255, 255, 255, 0.1);
-  border-color: var(--cream);
+.tn-hero--cosmic .tn-rail__item.is-active {
+  background: rgba(200, 223, 176, 0.9);
+  border-color: transparent;
+  box-shadow: 0 0 20px rgba(200, 223, 176, 0.25);
 }
 
-/* Fallback when backdrop-filter unsupported */
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-  .tn-hero--landing .tn-card,
-  .tn-hero--landing .tn-invite-card,
-  .tn-hero--landing .tn-destination {
-    background: rgba(22, 20, 26, 0.94);
+  .tn-glass-wheel__frame,
+  .tn-cosmic__feature,
+  .tn-cosmic__bar {
+    background: rgba(18, 16, 22, 0.94);
   }
 }
 
-@media (min-width: 768px) {
-  .tn-hero--landing .tn-destinations {
+@media (min-width: 900px) {
+  .tn-cosmic {
+    grid-template-columns: minmax(0, 1fr) minmax(320px, 440px);
+    gap: 2.5rem;
+    align-items: center;
+  }
+
+  .tn-glass-wheel {
+    margin-inline: 0 0;
+    margin-left: auto;
+    max-width: 440px;
+  }
+
+  .tn-cosmic__ctas {
+    justify-content: flex-start;
+  }
+
+  .tn-cosmic__features {
     grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 14px;
-  }
-
-  .tn-hero--landing .tn-invite-card {
-    padding: 1.95rem 2.1rem 2.1rem;
-  }
-
-  .tn-hero--landing .tn-destination {
-    padding: 1.35rem 1.25rem 1.45rem;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .tn-hero--landing .tn-destination {
+  .tn-cosmic__feature {
     transition: none;
   }
-
-  .tn-hero--landing .tn-destination:hover {
+  .tn-cosmic__feature:hover {
     transform: none;
   }
 }
