@@ -151,6 +151,30 @@ export const TRUE_NORTH_PAGES = [
   { path: "/chart/long-read", label: "Long Read", glyph: "♠", blurb: "Seven cards. Three windows. $7/week." },
 ] as const;
 
+/** Site-feature cards for the signed-out True North landing. */
+export const TRUE_NORTH_FEATURES = [
+  {
+    title: "Clarity over confusion",
+    body: "We simplify complex charts without losing depth.",
+    glyph: "✦",
+  },
+  {
+    title: "Empowerment, not prediction",
+    body: "You are the author. We simply illuminate the map.",
+    glyph: "◆",
+  },
+  {
+    title: "Beauty in every detail",
+    body: "Astrology as art. Crafted with care, designed to resonate.",
+    glyph: "☾",
+  },
+  {
+    title: "Privacy by design",
+    body: "Your data is sacred. Always confidential. Never shared.",
+    glyph: "♠",
+  },
+] as const;
+
 /** Fetches just the natal chart, for the sun-sign line in the hero — every
  * True North page shows it for continuity even though only the Chart page
  * shows the rest of the chart. */
@@ -523,55 +547,78 @@ export function TrueNorthHero({ sunSign }: { sunSign?: string }) {
   );
 }
 
-/** Signed-out marketing teaser, shared by every True North page. */
+/** Signed-out marketing teaser — refined premium structure. */
 export function TrueNorthSignedOutTeaser({
   pageTitleTag,
 }: {
   pageTitleTag: React.ReactNode;
 }) {
   return (
-    <header className="tn-hero">
+    <header className="tn-hero tn-hero--landing">
       <div className="tn-hero__mast">
         <div className="tn-hero__copy">
-          <span className="kicker-lock">The house reading · $7/week</span>
+          <span className="kicker-lock">Guided by stars. Grounded in you.</span>
           <h1 className="clash tn-hero__title" aria-label="True North">
             True North
           </h1>
           <p className="serif-quiet tn-hero__lede">
-            {HOUSE_LINE} The Long Read is seven cards, three times a day,
-            written against what you type. $7 a week. The natal chart comes
-            with the account.
+            Your natal chart is a map, not a sentence. At True North, we help you
+            read it with clarity, depth, and grace.
           </p>
           <TrueNorthSkyline />
         </div>
       </div>
-      <div className="tn-invite">{pageTitleTag}</div>
+
+      {/* Primary invitation panel */}
+      <div className="tn-card tn-invite-card tn-invite-card--primary">
+        <p className="label-lock">Your natal chart</p>
+        <h2 className="clash tn-invite-card__headline">Born with intention.</h2>
+        <p className="serif-quiet tn-invite-card__copy">
+          A precise snapshot of the sky at your first breath. Your chart reveals
+          the energies, patterns, and potentials you came here to work with.
+          At True North, we translate astrology into self-awareness—never into
+          limitation.
+        </p>
+        {pageTitleTag}
+      </div>
+
       <div className="tn-hero__ctas">
         <Link to="/signup" className="cta-pist tn-hero__cta">
-          Get the Long Read — $7/week
+          Begin your reading
         </Link>
         <Link to="/shop" className="cta-ghost">
-          Shop the house
+          How it works
         </Link>
       </div>
-      <ul className="tn-destinations">
-        {TRUE_NORTH_PAGES.map(p => (
-          <li key={p.path} className="tn-destination">
-            <span className="tn-destination__glyph" aria-hidden="true">{p.glyph}</span>
-            <span className="label-lock">{p.label}</span>
-            <span className="serif-quiet tn-destination__blurb">{p.blurb}</span>
+
+      {/* Why True North — site features */}
+      <p className="label-lock tn-features-label">Why True North</p>
+      <ul className="tn-features">
+        {TRUE_NORTH_FEATURES.map(f => (
+          <li key={f.title} className="tn-feature">
+            <span className="tn-feature__glyph" aria-hidden="true">{f.glyph}</span>
+            <span className="label-lock">{f.title}</span>
+            <span className="serif-quiet tn-feature__body">{f.body}</span>
           </li>
         ))}
       </ul>
-      <div className="tn-card tn-invite-card">
+
+      {/* One House closing */}
+      <div className="tn-card tn-invite-card tn-invite-card--house">
         <p className="label-lock">One house</p>
+        <h2 className="clash tn-invite-card__headline">One House. Infinite potential.</h2>
         <p className="serif-quiet tn-invite-card__copy">
           {HOUSE_HINGE} Log in if you already have an account.
         </p>
-        <Link to="/login" className="tn-inline" style={{ display: "inline-block", marginTop: "0.75rem" }}>
+        <Link
+          to="/login"
+          className="tn-inline"
+          style={{ display: "inline-block", marginTop: "0.85rem" }}
+        >
           Log in →
         </Link>
       </div>
+
       <TrueNorthNav />
     </header>
   );
