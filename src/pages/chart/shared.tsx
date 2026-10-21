@@ -570,9 +570,11 @@ export function TrueNorthSignedOutTeaser({
       </div>
 
       {/* Primary invitation panel */}
-      <div className="tn-card tn-invite-card tn-invite-card--primary">
+      <div className="tn-card tn-invite-card">
         <p className="label-lock">Your natal chart</p>
-        <h2 className="clash tn-invite-card__headline">Born with intention.</h2>
+        <p className="serif-quiet tn-invite-card__copy" style={{ fontSize: "clamp(22px, 3vw, 28px)", marginTop: "0.5rem", marginBottom: "0.35rem" }}>
+          Born with intention.
+        </p>
         <p className="serif-quiet tn-invite-card__copy">
           A precise snapshot of the sky at your first breath. Your chart reveals
           the energies, patterns, and potentials you came here to work with.
@@ -591,22 +593,26 @@ export function TrueNorthSignedOutTeaser({
         </Link>
       </div>
 
-      {/* Why True North — site features */}
-      <p className="label-lock tn-features-label">Why True North</p>
-      <ul className="tn-features">
+      {/* Why True North — site features (reuses destination card treatment) */}
+      <p className="label-lock" style={{ color: "var(--pist)", margin: "0.25rem 0 0" }}>
+        Why True North
+      </p>
+      <ul className="tn-destinations">
         {TRUE_NORTH_FEATURES.map(f => (
-          <li key={f.title} className="tn-feature">
-            <span className="tn-feature__glyph" aria-hidden="true">{f.glyph}</span>
+          <li key={f.title} className="tn-destination">
+            <span className="tn-destination__glyph" aria-hidden="true">{f.glyph}</span>
             <span className="label-lock">{f.title}</span>
-            <span className="serif-quiet tn-feature__body">{f.body}</span>
+            <span className="serif-quiet tn-destination__blurb">{f.body}</span>
           </li>
         ))}
       </ul>
 
       {/* One House closing */}
-      <div className="tn-card tn-invite-card tn-invite-card--house">
+      <div className="tn-card tn-invite-card">
         <p className="label-lock">One house</p>
-        <h2 className="clash tn-invite-card__headline">One House. Infinite potential.</h2>
+        <p className="serif-quiet tn-invite-card__copy" style={{ fontSize: "clamp(20px, 2.6vw, 26px)", marginTop: "0.45rem" }}>
+          One House. Infinite potential.
+        </p>
         <p className="serif-quiet tn-invite-card__copy">
           {HOUSE_HINGE} Log in if you already have an account.
         </p>
