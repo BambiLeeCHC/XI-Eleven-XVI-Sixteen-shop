@@ -12,6 +12,7 @@ import {
   CheckoutPage,
   LoginPage,
   SignupPage,
+  ResetPasswordPage,
   ProfilePage,
   OrdersPage,
   PrivacyPage,
@@ -50,6 +51,7 @@ function App() {
             <Route path="/checkout" element={<CheckoutPage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/signup" element={<SignupPage />} />
+            <Route path="/reset-password" element={<ResetPasswordPage />} />
             <Route path="/privacy" element={<PrivacyPage />} />
             <Route path="/terms" element={<TermsPage />} />
             <Route path="/shipping-policy" element={<ShippingPolicyPage />} />
