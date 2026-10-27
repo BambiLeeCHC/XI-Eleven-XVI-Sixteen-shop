@@ -1,5 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
 import { PlanetIcon, SignIcon } from "../../components/journal/SkyGlyphs";
+import { TrueNorthSignIcon } from "../../components/journal/TrueNorthGlyphs";
 import {
   explainAspectFull,
   explainHouseFull,
@@ -260,7 +261,7 @@ export function TrueNorthNav() {
 function TrueNorthSkyline({ sunSign }: { sunSign?: string }) {
   const moon = moonPhase();
   const hour = new Date().toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
-  return (<p className="tn-skyline"><span>{hour}</span><span aria-hidden="true">·</span><span>{moon.glyph} {moon.name}</span>{sunSign && (<><span aria-hidden="true">·</span><span>{SIGN_GLYPH[sunSign] ?? ""} {sunSign} sun</span></>)}</p>);
+  return (<p className="tn-skyline"><span>{hour}</span><span aria-hidden="true">·</span><span>{moon.glyph} {moon.name}</span>{sunSign && (<><span aria-hidden="true">·</span><span className="tn-skyline__sign"><TrueNorthSignIcon sign={sunSign} size={14} /> {sunSign} sun</span></>)}</p>);
 }
 
 export function TrueNorthHero({ sunSign }: { sunSign?: string }) {
@@ -273,7 +274,14 @@ export function TrueNorthHero({ sunSign }: { sunSign?: string }) {
           <p className="serif-quiet tn-hero__lede">{sunSign ? `The exact sky the second you were born — ${sunSign} sun, decoded in full.` : "The exact sky the second you were born, decoded in full."}</p>
           <TrueNorthSkyline sunSign={sunSign} />
         </div>
-        {sunSign && (<div className="tn-hero__orb" aria-hidden="true"><span className="tn-hero__orb-glyph">{SIGN_GLYPH[sunSign]}</span><span className="tn-hero__orb-sign">{sunSign}</span></div>)}
+        {sunSign && (
+          <div className="tn-hero__orb" aria-hidden="true">
+            <span className="tn-hero__orb-glyph">
+              <TrueNorthSignIcon sign={sunSign} size={36} />
+            </span>
+            <span className="tn-hero__orb-sign">{sunSign}</span>
+          </div>
+        )}
       </div>
       <TrueNorthNav />
     </header>
