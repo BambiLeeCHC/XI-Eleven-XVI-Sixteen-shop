@@ -120,10 +120,10 @@ export const TRUE_NORTH_PAGES = [
 ] as const;
 
 export const TRUE_NORTH_FEATURES = [
-  { title: "Clarity over confusion", body: "We simplify complex charts without losing depth.", glyph: "✦" },
-  { title: "Empowerment, not prediction", body: "You are the author. We simply illuminate the map.", glyph: "◆" },
-  { title: "Beauty in every detail", body: "Astrology as art. Crafted with care, designed to resonate.", glyph: "☾" },
-  { title: "Privacy by design", body: "Your data is sacred. Always confidential. Never shared.", glyph: "♠" },
+  { title: "Clarity", body: "Complex charts, simplified without losing the point.", glyph: "✦" },
+  { title: "Security", body: "Birth data stays with you. Never sold. Never shared.", glyph: "◆" },
+  { title: "Craft", body: "Astrology treated as art, written to be read.", glyph: "☾" },
+  { title: "Privacy", body: "Your chart is a private room. The door stays closed.", glyph: "♠" },
 ] as const;
 
 export function useSunSign(user: unknown): string | undefined {
