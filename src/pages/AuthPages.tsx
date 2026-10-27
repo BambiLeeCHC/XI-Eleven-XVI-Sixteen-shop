@@ -71,7 +71,8 @@ function ErrorText({ children }: { children: React.ReactNode }) {
  * Sign-In Page
  *
  * Flow: email + password → if email is unverified, prompt for OTP → verified & signed in
- * OAuth (Google / Apple / Facebook) removed for now.
+ * Forgot password: sends a recovery link that lands on /reset-password where the user
+ * sets a new password. An optional code path remains for projects using OTP templates.
  */
 export function LoginPage() {
   const { signIn } = useAuthActions();
@@ -86,9 +87,9 @@ export function LoginPage() {
   const [needsVerification, setNeedsVerification] = useState(false);
   const [code, setCode] = useState("");
 
-  const [forgotStep, setForgotStep] = useState<null | "request" | "verify">(
-    null,
-  );
+  const [forgotStep, setForgotStep] = useState<
+    null | "request" | "sent" | "verify"
+  >(null);
   const [resetEmail, setResetEmail] = useState("");
   const [resetCode, setResetCode] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -146,8 +147,10 @@ export function LoginPage() {
     setLoading(true);
     try {
       await signIn("password", { flow: "reset", email: resetEmail });
-      setResetMessage("Check your email for a reset code.");
-      setForgotStep("verify");
+      setResetMessage(
+        "We sent a reset link to your email. Open it to choose a new password.",
+      );
+      setForgotStep("sent");
     } catch (err: any) {
       setError(err?.message || "Couldn't send reset email.");
     } finally {
@@ -201,7 +204,7 @@ export function LoginPage() {
             className={primaryButtonClass}
             style={primaryButtonStyle}
           >
-            {loading ? "Sending…" : "Send reset code"}
+            {loading ? "Sending…" : "Send reset link"}
           </button>
           <button
             type="button"
@@ -218,17 +221,67 @@ export function LoginPage() {
     );
   }
 
+  if (forgotStep === "sent") {
+    return (
+      <AuthShell eyebrow="Account recovery" title="Check your email">
+        <div className="space-y-4 text-center">
+          <p className="text-[13px] text-slate-600 leading-relaxed">
+            {resetMessage ||
+              "We sent a reset link to your email. Open it to choose a new password."}
+          </p>
+          <p className="text-[12px] text-slate-500 leading-relaxed">
+            The link opens a secure page where you set a new password. It expires
+            after a short time — request another if needed.
+          </p>
+          <button
+            type="button"
+            onClick={() => {
+              setForgotStep("request");
+              setError("");
+              setResetMessage("");
+            }}
+            className={primaryButtonClass}
+            style={primaryButtonStyle}
+          >
+            Resend link
+          </button>
+          <button
+            type="button"
+            onClick={() => setForgotStep("verify")}
+            className="w-full text-[11px] text-slate-500"
+          >
+            Have a recovery code instead?
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              setForgotStep(null);
+              setError("");
+            }}
+            className="w-full text-[11px] text-slate-500"
+          >
+            ← Back to sign in
+          </button>
+        </div>
+      </AuthShell>
+    );
+  }
+
   if (forgotStep === "verify") {
     return (
       <AuthShell eyebrow="Account recovery" title="New Password">
         <form onSubmit={handleForgotVerify} className="space-y-4">
+          <p className="text-[12px] text-slate-500 text-center">
+            If your email included a recovery code (instead of a link), enter it
+            here with your new password.
+          </p>
           <div>
             <label className={labelClass}>CODE</label>
             <input
               type="text"
               value={resetCode}
               onChange={e => setResetCode(e.target.value)}
-              placeholder="6-digit code"
+              placeholder="Recovery code"
               className={inputClass}
               required
             />
@@ -242,6 +295,7 @@ export function LoginPage() {
               placeholder="••••••••"
               className={inputClass}
               required
+              minLength={8}
             />
           </div>
           {error && <ErrorText>{error}</ErrorText>}
@@ -252,6 +306,13 @@ export function LoginPage() {
             style={primaryButtonStyle}
           >
             {loading ? "Saving…" : "Update password"}
+          </button>
+          <button
+            type="button"
+            onClick={() => setForgotStep("sent")}
+            className="w-full text-[11px] text-slate-500"
+          >
+            ← Back
           </button>
         </form>
       </AuthShell>
