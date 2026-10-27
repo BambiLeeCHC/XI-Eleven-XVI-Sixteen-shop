@@ -8,9 +8,17 @@ There is no Convex backend. Do not run `npx convex deploy`, `bunx convex dev`, o
 
 ## True North
 
-True North is the community and insight layer of the platform. Product concept, aesthetic direction, and reimagined zodiac symbol system are documented in:
+True North is the community and insight layer of the platform (profiles, daily/tandem readings, career/love/money focus, natal chart and long-read surfaces under `/chart`).
+
+Product concept, aesthetic direction, reimagined zodiac system, and integration notes:
 
 **[docs/true-north-concept.md](docs/true-north-concept.md)**
+
+Modern geometric zodiac marks for True North contexts live in:
+
+`src/components/journal/TrueNorthGlyphs.tsx`
+
+(Existing illustrated glyphs remain in `SkyGlyphs.tsx` for continuity.)
 
 ## Stack
 
