@@ -5,6 +5,7 @@ export { ProductPage } from "./ProductPage";
 export { CartPage } from "./CartPage";
 export { CheckoutPage } from "./CheckoutPage";
 export { LoginPage, SignupPage } from "./AuthPages";
+export { ResetPasswordPage } from "./ResetPasswordPage";
 export { ProfilePage } from "./ProfilePage";
 export { OrdersPage } from "./OrdersPage";
 export { PrivacyPage, TermsPage, ShippingPolicyPage, ReturnsPage } from "./LegalPages";
