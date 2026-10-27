@@ -6,6 +6,12 @@ There is no Convex backend. Do not run `npx convex deploy`, `bunx convex dev`, o
 
 > The route directory convex doesn't exist
 
+## True North
+
+True North is the community and insight layer of the platform. Product concept, aesthetic direction, and reimagined zodiac symbol system are documented in:
+
+**[docs/true-north-concept.md](docs/true-north-concept.md)**
+
 ## Stack
 
 - Vite + React 19 + Tailwind v4 + shadcn/ui
@@ -45,4 +51,5 @@ api/          Vercel serverless (service role)
 src/          SPA
 supabase/     SQL / RLS
 public/       static assets
+docs/         Product and brand documentation
 ```
