@@ -102,7 +102,7 @@ export function SignIn() {
           <div className="text-center mb-6">
             <h2 className="font-semibold text-lg">Reset Password</h2>
             <p className="text-sm text-muted-foreground">
-              Enter your email to receive a reset code
+              Enter your email to receive a reset link
             </p>
           </div>
           <form
@@ -117,7 +117,7 @@ export function SignIn() {
                 await signIn("password", formData);
                 setStep({ type: "reset-code", email });
               } catch {
-                setError("Could not send reset code. Please try again.");
+                setError("Could not send reset email. Please try again.");
               } finally {
                 setLoading(false);
               }
@@ -145,7 +145,7 @@ export function SignIn() {
             )}
             <Button type="submit" className="w-full h-11" disabled={loading}>
               {loading && <Loader2 className="size-4 animate-spin" />}
-              {loading ? "Sending..." : "Send Reset Code"}
+              {loading ? "Sending..." : "Send Reset Link"}
             </Button>
             <Button
               type="button"
@@ -172,7 +172,7 @@ export function SignIn() {
             </div>
             <h2 className="font-semibold text-lg">Check your email</h2>
             <p className="text-sm text-muted-foreground">
-              We sent a code to {step.email}
+              We sent a reset link to {step.email}. Open it to set a new password.
             </p>
           </div>
           <form
@@ -185,8 +185,11 @@ export function SignIn() {
             }}
             className="space-y-4"
           >
+            <p className="text-xs text-muted-foreground text-center">
+              Prefer a recovery code? Enter it below, then continue.
+            </p>
             <div className="space-y-2">
-              <Label htmlFor="code">Reset Code</Label>
+              <Label htmlFor="code">Recovery Code (optional path)</Label>
               <Input
                 id="code"
                 name="code"
@@ -194,7 +197,6 @@ export function SignIn() {
                 placeholder="Enter code"
                 autoComplete="one-time-code"
                 className="h-11 text-center tracking-[0.5em] font-mono"
-                required
               />
             </div>
             {error && (
@@ -203,7 +205,7 @@ export function SignIn() {
               </p>
             )}
             <Button type="submit" className="w-full h-11">
-              Continue
+              Continue with code
             </Button>
             <Button
               type="button"
@@ -211,7 +213,16 @@ export function SignIn() {
               className="w-full"
               onClick={() => setStep({ type: "forgot", email: step.email })}
             >
-              Resend code
+              Resend link
+            </Button>
+            <Button
+              type="button"
+              variant="ghost"
+              className="w-full"
+              onClick={() => setStep("signIn")}
+            >
+              <ArrowLeft className="size-4" />
+              Back to sign in
             </Button>
           </form>
         </CardContent>
@@ -247,13 +258,13 @@ export function SignIn() {
           className="space-y-4"
         >
           <div className="space-y-2">
-            <Label htmlFor="newPassword">New Password</Label>
+            <Label htmlFor="password">New Password</Label>
             <Input
-              id="newPassword"
-              name="newPassword"
+              id="password"
+              name="password"
               type="password"
               placeholder="••••••••"
-              minLength={6}
+              minLength={8}
               autoComplete="new-password"
               className="h-11"
               required
