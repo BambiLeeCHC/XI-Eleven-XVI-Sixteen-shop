@@ -149,6 +149,15 @@ export const handlers: Record<string, Handler> = {
       numerology_unlocked_at: string | null;
       role: string | null;
     } | null;
+
+    const since = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
+    const { count: readingsThisWeek } = await supabase
+      .from("deep_readings")
+      .select("id", { count: "exact", head: true })
+      .eq("user_id", userId)
+      .gte("created_at", since);
+    const freeLimit = 3;
+    const freeRemaining = Math.max(0, freeLimit - (readingsThisWeek ?? 0));
     const isAdmin = profile?.role === "admin";
     const numerologyUnlocked = isAdmin || !!profile?.numerology_unlocked_at;
     if (isAdmin) {
@@ -160,17 +169,23 @@ export const handlers: Record<string, Handler> = {
         currentPeriodEnd: row?.current_period_end ?? null,
         numerologyUnlocked: true,
         isAdmin: true,
+        freeLimit,
+        freeRemaining,
+        readingsThisWeek: readingsThisWeek ?? 0,
       };
     }
-    if (!row) return { entitled: false, status: "none", tier: null, numerologyUnlocked, isAdmin: false };
+    if (!row) return { entitled: false, status: "none", tier: null, numerologyUnlocked: true, isAdmin: false, freeLimit, freeRemaining, readingsThisWeek: readingsThisWeek ?? 0 };
     return {
       entitled: row.status === "trialing" || row.status === "active",
       status: row.status,
       tier: row.tier,
       trialEnd: row.trial_end,
       currentPeriodEnd: row.current_period_end,
-      numerologyUnlocked,
+      numerologyUnlocked: true,
       isAdmin: false,
+      freeLimit,
+      freeRemaining,
+      readingsThisWeek: readingsThisWeek ?? 0,
     };
   },
 
