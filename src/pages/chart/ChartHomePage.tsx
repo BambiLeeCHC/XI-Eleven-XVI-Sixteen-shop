@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import { buildBreadcrumbJsonLd, buildTrueNorthJsonLd, SEO } from "../../components/SEO";
 import { PAGE_SEO } from "../../data/seoMeta";
 import { TrueNorthAtmosphere } from "../../components/journal/TrueNorthAtmosphere";
@@ -20,7 +20,7 @@ import {
 } from "./shared";
 import type { NatalChartResult, NatalProfileResult } from "./shared";
 
-export function ChartHomePage() {
+export function ChartHomePage({ embedded = false }: { embedded?: boolean } = {}) {
   const [selectedBody, setSelectedBody] = useState<string | null>(null);
   const [expandedHouse, setExpandedHouse] = useState<number | null>(null);
   const [expandedAspect, setExpandedAspect] = useState<number | null>(null);
@@ -43,16 +43,6 @@ export function ChartHomePage() {
   const chart = chartResult?.success ? chartResult.chart ?? null : null;
   const chartError = chartResult && !chartResult.success ? chartResult.message ?? "Couldn't generate your chart." : null;
   const sunSign = chart?.placements?.find((p) => p.body === "Sun")?.sign;
-  const subscription = useQuery(
-    api.subscription.status,
-    authLoading || !isAuthenticated ? "skip" : {},
-  );
-  const showLongReadOffer =
-    Boolean(subscription) &&
-    subscription?.entitled !== true &&
-    subscription?.status !== "active" &&
-    subscription?.status !== "trialing" &&
-    subscription?.isAdmin !== true;
 
   const seo = PAGE_SEO.chart;
   const chartJsonLd = [
@@ -89,8 +79,7 @@ export function ChartHomePage() {
               <div className="tn-card tn-invite-card">
                 <p className="label-lock">Natal chart with account</p>
                 <p className="serif-quiet tn-invite-card__copy">
-                  The spec you showed up with — every placement, house, and a profile written for you.
-                  The Long Read is the house reading: $7/week.
+                  The spec you showed up with — every placement, house, and the numbers underneath. They live on your profile. Readings are separate.
                 </p>
               </div>
             }
@@ -100,12 +89,12 @@ export function ChartHomePage() {
     );
   }
 
+  if (!embedded) {
+    return <Navigate to="/profile#chart" replace />;
+  }
+
   return (
-    <div className="journal-page journal-page--truenorth">
-      <TrueNorthAtmosphere />
-      <div className="journal-stack tn-shell">
-        <SEO title={seo.title} description={seo.description} url="/chart" jsonLd={chartJsonLd} />
-        <TrueNorthHero sunSign={sunSign} />
+    <div id="chart" className="journal-stack tn-shell">
 
         {loading && (
           <div className="tn-card">
@@ -212,25 +201,9 @@ export function ChartHomePage() {
               )}
             </div>
 
-            {showLongReadOffer && (
-              <div className="tn-card tn-paywall chart-feed-card" style={{ ["--i" as any]: 5 }}>
-                <p className="label-lock">$7 / week</p>
-                <h2 className="clash tn-paywall__title">The Long Read.</h2>
-                <p className="serif-quiet tn-lede">
-                  The house reading — seven cards, three windows a day, written against
-                  what's actually going on. $7 a week.
-                </p>
-                <Link to="/chart/long-read" className="cta-pist" style={{ textAlign: "center" }}>
-                  Get the Long Read — $7/week
-                </Link>
-                <p className="tn-sky__note">Seven days to try it. Then $7/week. Cancel anytime.</p>
-              </div>
-            )}
-
             <HouseDressing />
           </div>
         )}
-      </div>
     </div>
   );
 }

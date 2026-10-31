@@ -207,34 +207,12 @@ async function handleNumerology(req: ApiRequest, res: ApiResponse) {
   if (!user) throw new HttpError(401, "Please sign in first");
 
   const admin = supabaseAdmin();
-  const [{ data: sub }, { data: profile }] = await Promise.all([
-    admin
-      .from("subscriptions")
-      .select("status, tier")
-      .eq("user_id", user.id)
-      .maybeSingle(),
-    admin
-      .from("profiles")
-      .select("name, birth_date, numerology_unlocked_at, role")
-      .eq("id", user.id)
-      .maybeSingle(),
-  ]);
+  const { data: profile } = await admin
+    .from("profiles")
+    .select("name, birth_date")
+    .eq("id", user.id)
+    .maybeSingle();
 
-  const isAdmin = profile?.role === "admin";
-  const unlockedBySubscription =
-    !!sub &&
-    ["trialing", "active"].includes(sub.status) &&
-    sub.tier === "long_read_plus_numerology";
-  const unlockedOneTime = !!profile?.numerology_unlocked_at;
-  // Admins bypass numerology paywall entirely.
-  const unlocked = isAdmin || unlockedBySubscription || unlockedOneTime;
-
-  if (!unlocked) {
-    throw new HttpError(
-      402,
-      "Numerology is a one-time $19.99 unlock, or included with the Long Read + Numerology tier ($12/week, 7-day free trial).",
-    );
-  }
   if (!profile?.birth_date) {
     throw new HttpError(400, "Add your birth date in your account first.");
   }

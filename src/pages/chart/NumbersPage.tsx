@@ -1,8 +1,8 @@
-import { useState } from "react";
 import { SEO } from "../../components/SEO";
+import { Navigate } from "react-router-dom";
 import { TrueNorthAtmosphere } from "../../components/journal/TrueNorthAtmosphere";
 import { SectionBoundary } from "../../components/journal/SectionBoundary";
-import { api, useAction, useQuery } from "../../lib/backend";
+import { api, useQuery } from "../../lib/backend";
 import {
   NUMEROLOGY_ERROR_COPY,
   NumberRow,
@@ -15,33 +15,11 @@ import {
 } from "./shared";
 import { PAGE_SEO } from "../../data/seoMeta";
 
-/** True North — Numerology. One-time unlock; no longer bundled into a weekly subscription. */
-export function NumbersPage() {
+/** True North — Numerology. Included with every profile. */
+export function NumbersPage({ embedded = false }: { embedded?: boolean } = {}) {
   const user = useQuery(api.auth.currentUser);
   const sunSign = useSunSign(user);
-  const subscription = useQuery(api.subscription.status, user ? {} : "skip");
-  // Admin / one-time unlock / legacy plus-tier subscribers still see numerology.
-  const numerologyUnlocked =
-    subscription?.numerologyUnlocked === true ||
-    (subscription?.entitled === true && subscription?.tier === "long_read_plus_numerology");
-  const numerologyResult = useQuery<NumerologyResult>(api.numerology.get, numerologyUnlocked ? {} : "skip");
-  const numerologyCheckoutAction = useAction(api.numerology.checkout);
-  const [unlocking, setUnlocking] = useState(false);
-
-  const unlockNumerology = async () => {
-    setUnlocking(true);
-    try {
-      const result = await numerologyCheckoutAction({
-        successUrl: `${window.location.origin}/chart/numbers`,
-        cancelUrl: `${window.location.origin}/chart/numbers`,
-      });
-      if (result?.url) window.location.href = result.url;
-    } catch {
-      // surfaced implicitly by the button staying enabled
-    } finally {
-      setUnlocking(false);
-    }
-  };
+  const numerologyResult = useQuery<NumerologyResult>(api.numerology.get, user ? {} : "skip");
 
   const pageTitle = PAGE_SEO.numbers.title;
   const pageDescription = PAGE_SEO.numbers.description;
@@ -55,10 +33,9 @@ export function NumbersPage() {
           <TrueNorthSignedOutTeaser
             pageTitleTag={
               <div className="tn-card tn-invite-card">
-                <p className="label-lock">Numerology — $19.99</p>
+                <p className="label-lock">Numerology</p>
                 <p className="serif-quiet tn-invite-card__copy">
-                  Life Path, Expression, Soul Urge — the numbers that don't move. Once.
-                  The Long Read is $7/week.
+                  Life Path, Expression, Soul Urge — the numbers that don't move. They live on your profile, with your chart.
                 </p>
               </div>
             }
@@ -68,43 +45,18 @@ export function NumbersPage() {
     );
   }
 
-  return (
-    <div className="journal-page journal-page--truenorth">
-      <TrueNorthAtmosphere />
-      <div className="journal-stack tn-shell">
-        <SEO title={pageTitle} description={pageDescription} url="/chart/numbers" />
-        <TrueNorthHero sunSign={sunSign} />
+  if (user && !embedded) {
+    return <Navigate to="/profile#numbers" replace />;
+  }
 
-        <div className="tn-card tn-numbers-wrap">
+  const numbersBody = (
+        <div className="tn-card tn-numbers-wrap" id="numbers">
           <SectionHeading wordA="The" wordB="Numbers" ariaLabel="The Numbers" />
-          {!numerologyUnlocked && (
-            <>
-              <p className="label-lock">Numerology — the layer underneath the chart</p>
-              <h2 className="clash tn-paywall__title">The numbers that don't move</h2>
-              <p className="serif-quiet tn-lede">
-                Your name and birth date reduce to a set of numbers that stay constant your whole
-                life — your Life Path, Expression, Soul Urge, Personality and this year's Personal
-                Year number. Where the chart shows what the sky was doing, numerology shows what you
-                were built to do with it.
-              </p>
-              <button
-                type="button"
-                onClick={unlockNumerology}
-                disabled={unlocking}
-                className="cta-pist tn-draw"
-                style={{ opacity: unlocking ? 0.6 : 1 }}
-              >
-                {unlocking ? "Opening checkout…" : "Unlock numerology — $19.99, once"}
-              </button>
-              <p className="tn-sky__note">One payment, yours for good.</p>
-            </>
-          )}
-
-          {numerologyUnlocked && numerologyResult === undefined && (
+          {numerologyResult === undefined && (
             <p className="tn-sky__note">Calculating your numbers…</p>
           )}
 
-          {numerologyUnlocked && numerologyResult && !numerologyResult.success && (
+          {numerologyResult && !numerologyResult.success && (
             <>
               {numerologyResult.numbers && (
                 <div className="chart-numbers-grid tn-numbers">
@@ -120,7 +72,7 @@ export function NumbersPage() {
             </>
           )}
 
-          {numerologyUnlocked && numerologyResult?.success && (
+          {numerologyResult?.success && (
             <SectionBoundary fallbackLabel="Couldn't display your numbers just now — try refreshing.">
               <div className="chart-numbers-grid tn-numbers">
                 {Object.entries(numerologyResult.numbers ?? {}).map(([key, value]) => (
@@ -137,6 +89,17 @@ export function NumbersPage() {
             </SectionBoundary>
           )}
         </div>
+  );
+
+  if (embedded) return numbersBody;
+
+  return (
+    <div className="journal-page journal-page--truenorth">
+      <TrueNorthAtmosphere />
+      <div className="journal-stack tn-shell">
+        <SEO title={pageTitle} description={pageDescription} url="/chart/numbers" />
+        <TrueNorthHero sunSign={sunSign} />
+        {numbersBody}
       </div>
     </div>
   );

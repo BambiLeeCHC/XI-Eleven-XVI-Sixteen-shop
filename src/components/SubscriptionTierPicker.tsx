@@ -1,7 +1,7 @@
 export type SubscriptionTier = "long_read";
 
 /**
- * Single subscription offer for The Long Read — $7/week after a 7-day free trial.
+ * Single subscription offer for The Long Read — $3.99/week. Three readings a week are free.
  * Numerology is sold separately as a one-time unlock (see NumbersPage), not bundled
  * into a higher weekly tier.
  */
@@ -36,10 +36,10 @@ export function SubscriptionTierPicker({
         disabled={subscribingTier !== null}
         style={{ ...ctaStyle, opacity: subscribingTier !== null ? 0.6 : 1 }}
       >
-        {subscribingTier === "long_read" ? "Starting…" : "Get the Long Read — $7/week"}
+        {subscribingTier === "long_read" ? "Starting…" : "Continue readings — $3.99/week"}
       </button>
       <p className="text-[11px] text-muted-foreground text-center">
-        Seven days free. Then $7/week. Cancel anytime.
+        Three readings a week are included. Then $3.99/week. Cancel anytime.
       </p>
     </div>
   );

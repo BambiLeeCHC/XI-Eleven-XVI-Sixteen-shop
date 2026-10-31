@@ -41,8 +41,8 @@ const NUMEROLOGY_UNLOCK_PRICE_CENTS = 1999;
 
 const SUBSCRIPTION_TIERS = {
   long_read: {
-    priceCents: 700,
-    productName: "The Long Read — weekly",
+    priceCents: 399,
+    productName: "True North readings — weekly",
   },
 } as const;
 
@@ -160,8 +160,7 @@ async function handleSubscribeCheckout(req: ApiRequest, res: ApiResponse) {
     client_reference_id: user.id,
     "metadata[user_id]": user.id,
     "metadata[tier]": resolvedTier,
-    "subscription_data[trial_period_days]": "7",
-    "subscription_data[metadata][user_id]": user.id,
+        "subscription_data[metadata][user_id]": user.id,
     "subscription_data[metadata][tier]": resolvedTier,
     "line_items[0][price_data][currency]": "usd",
     "line_items[0][price_data][product_data][name]": productName,
