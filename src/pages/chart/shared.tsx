@@ -117,6 +117,7 @@ export const TRUE_NORTH_PAGES = [
   { path: "/chart", label: "Chart", glyph: "✦", blurb: "The sky the second you were born." },
   { path: "/chart/numbers", label: "Numbers", glyph: "◆", blurb: "The constants underneath the chart." },
   { path: "/chart/almanac", label: "Almanac", glyph: "☾", blurb: "The day's mood, in one page." },
+  { path: "/chart/circle", label: "Circle", glyph: "◎", blurb: "Daily notes, shared. Tandem when you want company." },
   { path: "/chart/long-read", label: "Long Read", glyph: "♠", blurb: "Seven cards. Three windows. $7/week." },
 ] as const;
 
