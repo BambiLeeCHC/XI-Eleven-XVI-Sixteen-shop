@@ -138,12 +138,14 @@ export default function DeepReadingPage() {
     adminFlag === true ||
     subscription?.isAdmin === true ||
     user?.role === "admin";
+  const freeRemaining = typeof subscription?.freeRemaining === "number" ? subscription.freeRemaining : 3;
+  const subscribed =
+    subscription?.entitled === true ||
+    subscription?.status === "active" ||
+    subscription?.status === "trialing";
   const entitled =
     !blockedByApi &&
-    (isAdmin ||
-      subscription?.entitled === true ||
-      subscription?.status === "active" ||
-      subscription?.status === "trialing");
+    (isAdmin || subscribed || freeRemaining > 0);
   const entitlementLoading = isAuthenticated && !isAdmin && subscription === undefined;
 
   const todayByWindow = useMemo(() => {
@@ -306,10 +308,9 @@ export default function DeepReadingPage() {
           <TrueNorthSignedOutTeaser
             pageTitleTag={
               <div className="tn-card tn-invite-card">
-                <p className="label-lock">The house reading · $7/week</p>
+                <p className="label-lock">Readings · 3 free each week</p>
                 <p className="serif-quiet tn-invite-card__copy">
-                  Seven cards, three times a day, written against what's actually going on.
-                  Same house as the clothes. Create an account, then $7/week.
+                  Readings live apart from your chart. Three a week are included. Unlimited is $3.99 a week.
                 </p>
               </div>
             }
@@ -328,7 +329,7 @@ export default function DeepReadingPage() {
         <SectionHeading wordA="The" wordB="Long Read" ariaLabel="The Long Read" />
         <div className="tn-card tn-lede-card">
           <p className="serif-quiet tn-lede">
-            {DEEP_SPREAD.intro} Three independent draws a day — Morning, Midday, Evening.
+            Three readings a week are included with your profile. Unlimited is $3.99 a week.
           </p>
         </div>
         {error && (
@@ -336,14 +337,18 @@ export default function DeepReadingPage() {
             <p className="tn-alert">{error}</p>
           </div>
         )}
+        {subscribed && (
+          <p className="tn-sky__note">Unlimited readings. $3.99 a week.</p>
+        )}
+        {!subscribed && entitled && (
+          <p className="tn-sky__note">{freeRemaining} of 3 free readings left this week.</p>
+        )}
         {!entitled && (
           <div className="tn-card tn-paywall">
-            <p className="label-lock">$7 / week</p>
-            <h2 className="clash tn-paywall__title">The house reading.</h2>
+            <p className="label-lock">$3.99 / week</p>
+            <h2 className="clash tn-paywall__title">Unlimited readings.</h2>
             <p className="serif-quiet tn-lede">
-              Seven cards. Three windows a day. Written against the situation you name —
-              not the daily five. $7 a week. Same ethic as a piece that isn't cut
-              until you order it.
+              Your three free readings for this week are used. $3.99 a week keeps the room open — as many readings as you want.
             </p>
             <SubscriptionTierPicker subscribingTier={subscribingTier} onStart={startTrial} />
           </div>
