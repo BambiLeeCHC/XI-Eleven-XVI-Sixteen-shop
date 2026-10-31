@@ -131,8 +131,19 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
         .select("status")
         .eq("user_id", user.id)
         .maybeSingle();
-      if (!sub || !["trialing", "active"].includes(sub.status)) {
-        throw new HttpError(402, "An active subscription is required for the Long Read");
+      const subscribed = !!sub && ["trialing", "active"].includes(sub.status);
+      if (!subscribed) {
+        const since = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
+        const { count, error: weekError } = await admin
+          .from("deep_readings")
+          .select("id", { count: "exact", head: true })
+          .eq("user_id", user.id)
+          .gte("created_at", since);
+        if (weekError) {
+          console.error("weekly reading quota check failed:", weekError.message);
+        } else if ((count ?? 0) >= 3) {
+          throw new HttpError(402, "You've used your 3 free readings this week. Readings are $3.99 a week after that.");
+        }
       }
     }
 
@@ -153,24 +164,6 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
       );
     }
 
-    if (!isAdmin) {
-      const { start, end } = utcDayBounds();
-      const { count, error: countError } = await admin
-        .from("deep_readings")
-        .select("id", { count: "exact", head: true })
-        .eq("user_id", user.id)
-        .eq("window", windowId)
-        .gte("created_at", start)
-        .lte("created_at", end);
-      if (countError) {
-        console.error("window quota check failed (is window column migrated?):", countError.message);
-      } else if ((count ?? 0) >= 1) {
-        throw new HttpError(
-          429,
-          `You have already drawn the ${windowId} Long Read today. The next window opens later, or tomorrow.`,
-        );
-      }
-    }
 
     const situationText = situation?.trim() || "not specified";
 
