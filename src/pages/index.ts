@@ -20,5 +20,6 @@ export { default as DeepReadingPage } from "./DeepReadingPage";
 export { ChartHomePage } from "./chart/ChartHomePage";
 export { NumbersPage } from "./chart/NumbersPage";
 export { AlmanacTNPage } from "./chart/AlmanacTNPage";
+export { CirclePage } from "./chart/CirclePage";
 export { LongReadPromoPage } from "./chart/LongReadPromoPage";
 export { WelcomePage } from "./WelcomePage";

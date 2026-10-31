@@ -1,7 +1,7 @@
 # True North
 
 **Product Concept, Brand Direction & Integration**  
-*Version 0.2*
+*Version 0.3*
 
 ## 1. Overview & Positioning
 
@@ -85,6 +85,7 @@ Traditional glyphs are treated as a starting point only. They are redesigned as 
 - `/chart` (ChartHomePage)
 - `/chart/almanac` (AlmanacTNPage)
 - `/chart/long-read` (DeepReadingPage)
+- `/chart/circle` (Circle — profiles, daily share, tandem)
 - `/chart/numbers`
 - Journal and long-read flows
 - `TrueNorthAtmosphere` for the distinct True North mood
@@ -114,6 +115,7 @@ Traditional glyphs are treated as a starting point only. They are redesigned as 
 
 - **0.1** — Initial product and brand direction; conceptual reimagining of the twelve signs.
 - **0.2** — Expanded feature description, aesthetic system, integration mapping to existing codebase, and introduction of the parallel modern glyph component.
+- **0.3** — Circle is live at `/chart/circle`: profiles, shareable daily readings, tandem pairings, and career / love / money focus. Readings stay in the browser for now.
 
 ---
 
