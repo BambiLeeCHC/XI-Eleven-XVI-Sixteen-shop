@@ -4,6 +4,7 @@ import { SEO } from "../../components/SEO";
 import { TrueNorthAtmosphere } from "../../components/journal/TrueNorthAtmosphere";
 import { TrueNorthSignIcon } from "../../components/journal/TrueNorthGlyphs";
 import { api, useAuthStatus, useQuery } from "../../lib/backend";
+import { supabase } from "../../lib/supabase";
 import { TrueNorthHero, TrueNorthSignedOutTeaser, useSunSign } from "./shared";
 
 type Focus = "general" | "career" | "love" | "money";
@@ -17,7 +18,15 @@ type Reading = {
   at: number;
 };
 
-const STORAGE_KEY = "xi-tn-circle-v1";
+type Row = {
+  id: string;
+  display_name: string;
+  sign: string;
+  focus: Focus;
+  body: string;
+  created_at: string;
+};
+
 const SIGNS = [
   "Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo",
   "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces",
@@ -35,42 +44,20 @@ const FILTERS: { id: Focus | "all"; label: string }[] = [
   ...FOCUS,
 ];
 
-const STARTER: Reading[] = [
-  {
-    id: "seed-mira",
-    name: "Mira",
-    sign: "Libra",
-    focus: "love",
-    text: "Today is for the conversation you have been rehearsing. Say the clear version, then stop.",
-    at: Date.UTC(2026, 9, 28, 14, 0),
-  },
-  {
-    id: "seed-julian",
-    name: "Julian",
-    sign: "Capricorn",
-    focus: "career",
-    text: "One unfinished piece of work is louder than the whole list. Finish that, then look up.",
-    at: Date.UTC(2026, 9, 28, 15, 10),
-  },
-  {
-    id: "seed-ada",
-    name: "Ada",
-    sign: "Aquarius",
-    focus: "money",
-    text: "A number you have been avoiding is smaller than the story around it. Look at it once, plainly.",
-    at: Date.UTC(2026, 9, 29, 11, 20),
-  },
-];
+function fromRow(row: Row): Reading {
+  return {
+    id: row.id,
+    name: row.display_name,
+    sign: row.sign,
+    focus: row.focus,
+    text: row.body,
+    at: new Date(row.created_at).getTime(),
+  };
+}
 
-function loadReadings(): Reading[] {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return STARTER;
-    const parsed = JSON.parse(raw) as Reading[];
-    return Array.isArray(parsed) && parsed.length ? parsed : STARTER;
-  } catch {
-    return STARTER;
-  }
+function mergeReading(list: Reading[], next: Reading): Reading[] {
+  if (list.some(item => item.id === next.id)) return list;
+  return [next, ...list].sort((a, b) => b.at - a.at).slice(0, 80);
 }
 
 export function CirclePage() {
@@ -78,25 +65,63 @@ export function CirclePage() {
   const user = useQuery(api.auth.currentUser, authLoading || !isAuthenticated ? "skip" : {});
   const sunSign = useSunSign(user);
   const [focus, setFocus] = useState<Focus | "all">("all");
-  const [readings, setReadings] = useState<Reading[]>(STARTER);
+  const [readings, setReadings] = useState<Reading[]>([]);
   const [draft, setDraft] = useState("");
   const [mineFocus, setMineFocus] = useState<Focus>("general");
   const [pair, setPair] = useState<string[]>([]);
+  const [live, setLive] = useState<"connecting" | "live" | "offline">("connecting");
+  const [notice, setNotice] = useState("");
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    setReadings(loadReadings());
+    let stop = false;
+
+    const pull = async () => {
+      const { data, error } = await supabase
+        .from("circle_readings")
+        .select("id, display_name, sign, focus, body, created_at")
+        .order("created_at", { ascending: false })
+        .limit(80);
+      if (stop) return;
+      if (error) {
+        setLive("offline");
+        setNotice("The shared room is not reachable yet. Readings will appear here once the circle table is live.");
+        return;
+      }
+      setLive("live");
+      setNotice("");
+      setReadings((data as Row[]).map(fromRow));
+    };
+
+    void pull();
+    const poll = window.setInterval(() => { void pull(); }, 8000);
+
+    const channel = supabase
+      .channel("true-north-circle")
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "circle_readings" },
+        payload => {
+          const row = payload.new as Row;
+          if (!row?.id) return;
+          setLive("live");
+          setReadings(list => mergeReading(list, fromRow(row)));
+        },
+      )
+      .subscribe(status => {
+        if (stop) return;
+        if (status === "SUBSCRIBED") setLive(current => (current === "offline" ? current : "live"));
+      });
+
+    return () => {
+      stop = true;
+      window.clearInterval(poll);
+      void supabase.removeChannel(channel);
+    };
   }, []);
 
-  useEffect(() => {
-    if (typeof localStorage === "undefined") return;
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(readings));
-  }, [readings]);
-
   const visible = useMemo(
-    () => readings
-      .filter(r => focus === "all" || r.focus === focus)
-      .slice()
-      .sort((a, b) => b.at - a.at),
+    () => readings.filter(r => focus === "all" || r.focus === focus),
     [readings, focus],
   );
 
@@ -108,18 +133,35 @@ export function CirclePage() {
     || (user?.email ? String(user.email).split("@")[0] : "You");
   const sign = sunSign && SIGNS.includes(sunSign) ? sunSign : "Virgo";
 
-  const share = () => {
+  const share = async () => {
     const text = draft.trim();
-    if (!text || !isAuthenticated) return;
-    const next: Reading = {
-      id: `me-${Date.now()}`,
-      name: displayName,
-      sign,
-      focus: mineFocus,
-      text,
-      at: Date.now(),
-    };
-    setReadings(list => [next, ...list]);
+    if (!text || !isAuthenticated || saving) return;
+    setSaving(true);
+    setNotice("");
+    const { data: sessionData } = await supabase.auth.getSession();
+    const authorId = sessionData.session?.user.id;
+    if (!authorId) {
+      setNotice("Sign in again, then share.");
+      setSaving(false);
+      return;
+    }
+    const { data, error } = await supabase
+      .from("circle_readings")
+      .insert({
+        author_id: authorId,
+        display_name: displayName.slice(0, 40),
+        sign,
+        focus: mineFocus,
+        body: text.slice(0, 280),
+      })
+      .select("id, display_name, sign, focus, body, created_at")
+      .single();
+    setSaving(false);
+    if (error || !data) {
+      setNotice(error?.message || "Could not share that note.");
+      return;
+    }
+    setReadings(list => mergeReading(list, fromRow(data as Row)));
     setDraft("");
   };
 
@@ -131,13 +173,15 @@ export function CirclePage() {
     });
   };
 
+  const liveLabel = live === "live" ? "Live" : live === "offline" ? "Offline" : "Connecting";
+
   return (
     <div className="journal-page journal-page--truenorth">
       <TrueNorthAtmosphere />
       <div className="journal-stack tn-shell">
         <SEO
           title="Circle — True North"
-          description="Share a daily orientation. Read with someone you trust. Career, love, and money — without the oracle voice."
+          description="A shared room. Daily orientations sync live. Read two at once. Career, love, and money — without the oracle voice."
           url="/chart/circle"
         />
         {isAuthenticated ? <TrueNorthHero sunSign={sunSign} /> : (
@@ -146,7 +190,7 @@ export function CirclePage() {
               <div className="tn-card tn-invite-card">
                 <p className="label-lock">The circle</p>
                 <p className="serif-quiet tn-invite-card__copy">
-                  A room for daily orientation — yours, and the people you read beside.
+                  A shared room. What you write here is visible to everyone in it, as it is written.
                 </p>
               </div>
             }
@@ -154,12 +198,12 @@ export function CirclePage() {
         )}
 
         <section className="tn-card tn-invite-card">
-          <p className="label-lock">Circle</p>
+          <p className="label-lock">Circle · {liveLabel}</p>
           <h2 className="clash" style={{ fontSize: "clamp(32px, 5vw, 52px)", margin: "0.35rem 0 0.4rem" }}>
             Higher self, in company.
           </h2>
           <p className="serif-quiet tn-invite-card__copy">
-            Profiles, a daily note you can share, and tandem readings for a friend, a partner, or family.
+            One room. Profiles, a daily note, and tandem readings for a friend, a partner, or family.
             Career, love, and money are lenses — not fortunes.
           </p>
           <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 16 }}>
@@ -175,6 +219,7 @@ export function CirclePage() {
               </button>
             ))}
           </div>
+          {notice && <p className="serif-quiet" style={{ marginTop: 12 }}>{notice}</p>}
         </section>
 
         <section className="tn-card tn-invite-card">
@@ -217,13 +262,13 @@ export function CirclePage() {
                   fontFamily: "inherit",
                 }}
               />
-              <button type="button" className="cta-pist" style={{ marginTop: 12 }} onClick={share} disabled={!draft.trim()}>
-                Share today's reading
+              <button type="button" className="cta-pist" style={{ marginTop: 12 }} onClick={() => { void share(); }} disabled={!draft.trim() || saving || live === "offline"}>
+                {saving ? "Sharing…" : "Share with the circle"}
               </button>
             </>
           ) : (
             <p className="serif-quiet tn-invite-card__copy">
-              <Link to="/login" className="tn-inline">Sign in</Link> to publish your own note. You can still read the circle.
+              <Link to="/login" className="tn-inline">Sign in</Link> to publish. Anyone can read what is already in the room.
             </p>
           )}
         </section>
@@ -240,10 +285,11 @@ export function CirclePage() {
                 </article>
               ))}
             </div>
-            <p className="serif-quiet" style={{ marginTop: 8 }}>
-              Two orientations, held next to each other. Neither one is the answer for the other.
-            </p>
           </section>
+        )}
+
+        {visible.length === 0 && live === "live" && (
+          <p className="serif-quiet tn-opening">The circle is quiet. The first note sets the room.</p>
         )}
 
         <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "grid", gap: 12 }}>
