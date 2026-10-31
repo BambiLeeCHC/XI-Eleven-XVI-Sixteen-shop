@@ -31,6 +31,7 @@ import {
   ChartHomePage,
   NumbersPage,
   AlmanacTNPage,
+  CirclePage,
   WelcomePage,
 } from "./pages";
 
@@ -67,6 +68,7 @@ function App() {
             <Route path="/chart" element={<ChartHomePage />} />
             <Route path="/chart/numbers" element={<NumbersPage />} />
             <Route path="/chart/almanac" element={<AlmanacTNPage />} />
+            <Route path="/chart/circle" element={<CirclePage />} />
             <Route path="/chart/long-read" element={<DeepReadingPage />} />
             <Route path="/welcome" element={<WelcomePage />} />
 
