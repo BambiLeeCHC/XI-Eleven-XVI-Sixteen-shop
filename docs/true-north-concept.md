@@ -1,7 +1,7 @@
 # True North
 
 **Product Concept, Brand Direction & Integration**  
-*Version 0.3*
+*Version 0.4*
 
 ## 1. Overview & Positioning
 
@@ -115,8 +115,9 @@ Traditional glyphs are treated as a starting point only. They are redesigned as 
 
 - **0.1** — Initial product and brand direction; conceptual reimagining of the twelve signs.
 - **0.2** — Expanded feature description, aesthetic system, integration mapping to existing codebase, and introduction of the parallel modern glyph component.
-- **0.3** — Circle is live at `/chart/circle`: profiles, shareable daily readings, tandem pairings, and career / love / money focus. Readings stay in the browser for now.
+- **0.3** — Circle is live at `/chart/circle`: profiles, shareable daily readings, tandem pairings, and career / love / money focus. Synced live through `public.circle_readings`.
 
 ---
 
 *This document is the living source of truth for True North product and brand direction within xixvi.shop.*
+- **0.4** — Realtime sync via `circle_readings` and channel `true-north-circle`.
