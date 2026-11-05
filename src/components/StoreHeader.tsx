@@ -39,95 +39,50 @@ export function StoreHeader() {
 
   return (
     <>
-      <header className="guest-header relative z-30">
-        <div className="flex items-start justify-between gap-4 px-[22px] py-[18px]">
-          <Link to="/" className="seal shrink-0">
+      <header className="site-bar">
+        <div className="site-bar__inner">
+          <Link to="/" className="seal site-seal">
             <img
               src={CREST_URL}
               alt="xixvi.shop"
-              className="h-12 sm:h-16 w-auto"
+              className="h-11 sm:h-14 w-auto"
             />
-            <span className="shop-mark hidden sm:inline">xixvi.shop</span>
+            <span className="shop-mark">xixvi.shop</span>
           </Link>
 
-          <div className="flex flex-wrap gap-2 justify-end max-w-[720px]">
-            <Link
-              to="/women"
-              className={`chip pist ${womenOn ? "on" : ""}`}
-              style={{ ["--r" as string]: "-2deg" }}
-            >
-              Women
-            </Link>
-            <Link
-              to="/men"
-              className={`chip powder ${menOn ? "on" : ""}`}
-              style={{ ["--r" as string]: "1.5deg" }}
-            >
-              Men
-            </Link>
-            <Link
-              to="/about"
-              className={`chip ${aboutOn ? "on" : ""}`}
-              style={{ ["--r" as string]: "-1deg" }}
-            >
-              About
-            </Link>
-            <Link
-              to="/journal"
-              className={`chip blush ${journalOn ? "on" : ""}`}
-              style={{ ["--r" as string]: "2deg" }}
-            >
-              Journal
-            </Link>
-            <Link
-              to="/chart"
-              className={`chip lilac ${tnOn ? "on" : ""}`}
-              style={{ ["--r" as string]: "-0.5deg" }}
-            >
-              True North
-            </Link>
-            <button
-              type="button"
-              className="chip"
-              aria-label="Search"
-              onClick={() => setSearchOpen(true)}
-            >
-              <Search size={14} />
+          <nav className="site-nav" aria-label="Primary">
+            <Link to="/women" className={womenOn ? "is-on" : undefined}>Women</Link>
+            <Link to="/men" className={menOn ? "is-on" : undefined}>Men</Link>
+            <Link to="/about" className={aboutOn ? "is-on" : undefined}>About</Link>
+            <Link to="/journal" className={journalOn ? "is-on" : undefined}>Journal</Link>
+            <Link to="/chart" className={tnOn ? "is-on" : undefined}>True North</Link>
+          </nav>
+
+          <div className="site-tools">
+            <button type="button" className="site-icon" aria-label="Search" onClick={() => setSearchOpen(true)}>
+              <Search size={16} />
             </button>
-            <Link to="/favorites" className="chip" aria-label="Favorites">
-              <Heart size={14} />
+            <Link to="/favorites" className="site-icon site-icon--desk" aria-label="Favorites">
+              <Heart size={16} />
               {favCount > 0 ? <span>{padCount(favCount)}</span> : null}
             </Link>
             {isAuthenticated ? (
-              <Link
-                to="/profile"
-                className="chip"
-                style={{ ["--r" as string]: "1deg" }}
-              >
-                Account
-              </Link>
+              <Link to="/profile" className="site-icon site-icon--desk">Account</Link>
             ) : (
-              <Link
-                to="/login"
-                className="chip"
-                style={{ ["--r" as string]: "1deg" }}
-              >
-                Sign in
-              </Link>
+              <Link to="/login" className="site-icon site-icon--desk">Sign in</Link>
             )}
             {isAdmin ? (
-              <Link to="/admin" className="chip" aria-label="Admin">
-                Admin
-              </Link>
+              <Link to="/admin" className="site-icon site-icon--desk">Admin</Link>
             ) : null}
-            <Link to="/cart" className="hangtag">
+            <Link to="/cart" className="site-cart" aria-label={`Cart, ${cartCount} items`}>
               Cart {padCount(cartCount)}
             </Link>
             <button
               type="button"
-              className="chip md:hidden"
-              aria-label="More menu"
-              onClick={() => setMobileOpen(!mobileOpen)}
+              className="site-icon site-menu"
+              aria-label="Open menu"
+              aria-expanded={mobileOpen}
+              onClick={() => setMobileOpen(true)}
             >
               Menu
             </button>
@@ -145,25 +100,19 @@ export function StoreHeader() {
             aria-label="Close menu"
             onClick={() => setMobileOpen(false)}
           />
-          <div
-            className="absolute top-0 right-0 w-[280px] h-full flex flex-col overflow-hidden"
-            style={{ background: "#0B0B0C", borderLeft: "2px solid #D8F0C4" }}
-          >
-            <div
-              className="flex items-center justify-between px-6 h-[72px]"
-              style={{ borderBottom: "1px solid rgba(247,240,230,0.12)" }}
-            >
+          <div className="site-drawer">
+            <div className="site-drawer__head">
               <span className="label-lock">Menu</span>
               <button
                 type="button"
                 onClick={() => setMobileOpen(false)}
-                className="chip"
+                className="site-icon"
                 aria-label="Close menu"
               >
                 Close
               </button>
             </div>
-            <nav className="flex-1 overflow-y-auto px-6 py-8 space-y-3">
+            <nav className="site-drawer__nav" aria-label="Menu">
               <MobileNavLink to="/women" label="Women" />
               <MobileNavLink to="/men" label="Men" />
               <MobileNavLink to="/shop" label="Shop all" />
@@ -214,12 +163,11 @@ function MobileNavLink({
   return (
     <Link
       to={to}
-      className="flex items-center justify-between py-2 text-[12px] tracking-[0.18em] uppercase"
-      style={{ color: "#F7F0E6" }}
+      className="site-drawer__link"
     >
       <span>{label}</span>
       {badge ? (
-        <span className="chip on">{String(badge).padStart(2, "0")}</span>
+        <span className="site-count">{String(badge).padStart(2, "0")}</span>
       ) : null}
     </Link>
   );

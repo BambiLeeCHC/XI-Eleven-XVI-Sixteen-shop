@@ -22,10 +22,7 @@ function AuthShell({
   seoUrl?: string;
 }) {
   return (
-    <div
-      className="min-h-[70vh] px-6 py-16"
-      style={{ background: "var(--cream)", color: "#0B0B0C" }}
-    >
+    <div className="min-h-[70vh] px-4 sm:px-6 py-12 sm:py-16">
       <SEO
         title={title}
         description="Sign in to your XI Eleven XVI Sixteen account at xixvi.shop."
@@ -33,16 +30,15 @@ function AuthShell({
         noindex
       />
       <div className="w-full max-w-[980px] mx-auto">
-        <p className="label-lock" style={{ color: "#0B0B0C" }}>
+        <p className="label-lock" style={{ color: "var(--pist)" }}>
           {eyebrow}
         </p>
-        <h1 className="clash text-6xl md:text-8xl mt-3">{title}</h1>
+        <h1 className="clash text-5xl sm:text-7xl md:text-8xl mt-3">{title}</h1>
         {subtitle && (
           <p className="serif-quiet text-2xl mt-4 max-w-2xl">{subtitle}</p>
         )}
         <div
-          className="mt-7 p-9"
-          style={{ border: "2px solid #0B0B0C", background: "#F7F0E6" }}
+          className="site-panel mt-7"
         >
           {children}
         </div>
@@ -58,10 +54,10 @@ const labelClass = "label-lock block mb-2";
 
 const primaryButtonClass = "cta-pist-block";
 
-const primaryButtonStyle = { boxShadow: "6px 6px 0 #0B0B0C", color: "#142010" };
+const primaryButtonStyle = { color: "#142010" };
 
 const linkClass = "underline font-semibold";
-const linkStyle = { color: "#0B0B0C" };
+const linkStyle = { color: "var(--pist)" };
 
 function ErrorText({ children }: { children: React.ReactNode }) {
   return <p className="text-[12px] text-red-500 text-center">{children}</p>;

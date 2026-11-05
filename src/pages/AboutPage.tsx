@@ -27,14 +27,14 @@ export function AboutPage() {
         >
           We cut a garment when you order it. That is the shop. The Journal
           is writing about those garments. True North is a separate product:
-          written tarot, seven dollars a week.
+          written tarot, open with your account.
         </p>
         <Link to="/shop" className="cta-pist mt-8">
           Shop clothing
         </Link>
       </section>
 
-      <section className="px-10 py-[72px]">
+      <section className="px-4 sm:px-10 py-16">
         <p className="label-lock text-center" style={{ color: "var(--pist)" }}>
           What we sell
         </p>
@@ -102,11 +102,8 @@ export function AboutPage() {
         </div>
       </section>
 
-      <section
-        className="px-10 py-20 text-center"
-        style={{ background: "#F7F0E6", color: "#0B0B0C" }}
-      >
-        <p className="label-lock" style={{ color: "#0B0B0C" }}>
+      <section className="px-4 sm:px-10 py-16 text-center">
+        <p className="label-lock" style={{ color: "var(--pist)" }}>
           Why made-on-demand
         </p>
         <h2 className="clash mt-4" style={{ fontSize: "clamp(36px, 6vw, 72px)" }}>
@@ -125,11 +122,10 @@ export function AboutPage() {
           ].map(([n, l]) => (
             <div
               key={l}
-              className="py-6 px-3"
-              style={{ border: "2px solid #0B0B0C" }}
+              className="site-panel py-6 px-3"
             >
               <p className="clash text-[40px] sm:text-[52px] leading-none">{n}</p>
-              <p className="label-lock mt-2" style={{ color: "#0B0B0C" }}>
+              <p className="label-lock mt-2" style={{ color: "var(--pist)" }}>
                 {l}
               </p>
             </div>
@@ -140,7 +136,7 @@ export function AboutPage() {
         </Link>
       </section>
 
-      <section className="px-10 py-20">
+      <section className="px-4 sm:px-10 py-16">
         <p className="label-lock text-center" style={{ color: "var(--pist)" }}>
           True North
         </p>

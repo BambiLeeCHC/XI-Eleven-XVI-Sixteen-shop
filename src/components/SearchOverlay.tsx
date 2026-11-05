@@ -84,7 +84,7 @@ export function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
             placeholder="Search products..."
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            className="flex-1 bg-transparent text-white text-sm tracking-wide outline-none placeholder-white/25"
+            className="flex-1 bg-transparent text-white text-base tracking-wide outline-none placeholder-white/25"
           />
           <button
             onClick={onClose}

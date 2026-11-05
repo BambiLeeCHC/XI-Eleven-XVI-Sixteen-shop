@@ -92,13 +92,10 @@ export function ResetPasswordPage() {
   const inputClass = "fld-lock light";
   const labelClass = "label-lock block mb-2";
   const primaryButtonClass = "cta-pist-block";
-  const primaryButtonStyle = { boxShadow: "6px 6px 0 #0B0B0C", color: "#142010" };
+  const primaryButtonStyle = { color: "#142010" };
 
   return (
-    <div
-      className="min-h-[70vh] px-6 py-16"
-      style={{ background: "var(--cream)", color: "#0B0B0C" }}
-    >
+    <div className="min-h-[70vh] px-4 sm:px-6 py-12">
       <SEO
         title="Set new password"
         description="Choose a new password for your xixvi.shop account."
@@ -106,7 +103,7 @@ export function ResetPasswordPage() {
         noindex
       />
       <div className="w-full max-w-[980px] mx-auto">
-        <p className="label-lock" style={{ color: "#0B0B0C" }}>
+        <p className="label-lock" style={{ color: "var(--pist)" }}>
           Account recovery
         </p>
         <h1 className="clash text-6xl md:text-8xl mt-3">New password</h1>
@@ -115,8 +112,7 @@ export function ResetPasswordPage() {
         </p>
 
         <div
-          className="mt-7 p-9"
-          style={{ border: "2px solid #0B0B0C", background: "#F7F0E6" }}
+          className="site-panel mt-7"
         >
           {!ready && (
             <p className="text-[13px] text-slate-600 text-center">
@@ -190,7 +186,7 @@ export function ResetPasswordPage() {
         </div>
 
         <div className="serif-quiet text-center mt-6">
-          <Link to="/login" className="underline font-semibold" style={{ color: "#0B0B0C" }}>
+          <Link to="/login" className="underline font-semibold" style={{ color: "var(--pist)" }}>
             Back to sign in
           </Link>
         </div>

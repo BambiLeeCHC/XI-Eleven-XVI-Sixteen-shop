@@ -9,6 +9,7 @@ import "./tn-lock.css";
 import "./tn-landing.css";
 import "./tn-landing-atmo.css";
 import "./tn-glass.css";
+import "./site-glass.css";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>

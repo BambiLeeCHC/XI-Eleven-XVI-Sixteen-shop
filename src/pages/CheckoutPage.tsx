@@ -140,23 +140,27 @@ function getDeliveryDateRange(rate: ShippingRate): string {
 /* ─── Shared styles ──────────────────────────────────────────────────── */
 
 const glassCard: React.CSSProperties = {
-  background: "#F7F0E6",
-  border: "2px solid #0B0B0C",
-  color: "#0B0B0C",
+  background: "rgba(12, 14, 18, 0.72)",
+  border: "1px solid rgba(247, 240, 230, 0.22)",
+  color: "#F7F0E6",
+  borderRadius: 22,
+  backdropFilter: "blur(18px)",
 };
 
 const inputStyle: React.CSSProperties = {
-  background: "#F7F0E6",
-  border: "2px solid #0B0B0C",
-  color: "#0B0B0C",
-  fontSize: "13px",
-  padding: "12px 14px",
+  background: "rgba(247, 240, 230, 0.06)",
+  border: "1px solid rgba(247, 240, 230, 0.32)",
+  color: "#F7F0E6",
+  fontSize: "16px",
+  padding: "14px",
+  borderRadius: 14,
+  minHeight: 48,
   outline: "none",
   width: "100%",
 };
 
 const labelStyle: React.CSSProperties = {
-  color: "#0B0B0C",
+  color: "#D8F0C4",
   fontSize: "10px",
   letterSpacing: "0.15em",
   textTransform: "uppercase" as const,
