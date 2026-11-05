@@ -1,11 +1,14 @@
 import { Helmet } from "react-helmet-async";
+import { TRUE_NORTH_FREE_ACCESS } from "../lib/freeAccess";
 
 const SITE_URL = "https://xixvi.shop";
 const BRAND = "XI Eleven XVI Sixteen";
 const BRAND_SHORT = "XI · XVI";
 const DEFAULT_TITLE = "XI Eleven XVI Sixteen — Made-on-Demand Streetwear";
 const DEFAULT_DESCRIPTION =
-  "Shop XI Eleven XVI Sixteen (XI · XVI) at xixvi.shop — a house of clothing, made on demand. True North is the same numbers, opened. Long Read $7/week. Free shipping.";
+  TRUE_NORTH_FREE_ACCESS
+    ? "Shop XI Eleven XVI Sixteen (XI · XVI) at xixvi.shop — a house of clothing, made on demand. True North is the same numbers, opened. Free shipping."
+    : "Shop XI Eleven XVI Sixteen (XI · XVI) at xixvi.shop — a house of clothing, made on demand. True North is the same numbers, opened. Long Read $7/week. Free shipping.";
 const DEFAULT_IMAGE = `${SITE_URL}/og-default.png`;
 const INSTAGRAM = "https://www.instagram.com/xielevenxvisixteen/";
 const LOGO =
@@ -149,7 +152,9 @@ export function buildOrganizationJsonLd() {
     email: "support@xixvi.shop",
     sameAs: [INSTAGRAM],
     description:
-      "A house of clothing, made on demand. True North is the same numbers, opened — natal chart, Almanac, Long Read $7/week. XI Eleven XVI Sixteen L.L.C., Florida.",
+      TRUE_NORTH_FREE_ACCESS
+        ? "A house of clothing, made on demand. True North is the same numbers, opened — natal chart, Almanac, and the Long Read. XI Eleven XVI Sixteen L.L.C., Florida."
+        : "A house of clothing, made on demand. True North is the same numbers, opened — natal chart, Almanac, Long Read $7/week. XI Eleven XVI Sixteen L.L.C., Florida.",
     address: {
       "@type": "PostalAddress",
       addressRegion: "FL",
@@ -187,7 +192,9 @@ export function buildTrueNorthJsonLd() {
         name: "What is True North on xixvi.shop?",
         acceptedAnswer: {
           "@type": "Answer",
-          text: "XI Eleven XVI Sixteen is a house of clothing. True North is the same numbers, opened — natal chart, Almanac, and the Long Read ($7 per week). A piece is made when you order it; a reading is written when you say what's going on.",
+          text: TRUE_NORTH_FREE_ACCESS
+            ? "XI Eleven XVI Sixteen is a house of clothing. True North is the same numbers, opened — natal chart, Almanac, tandem readings, and the Long Read. A piece is made when you order it; a reading is written when you say what's going on."
+            : "XI Eleven XVI Sixteen is a house of clothing. True North is the same numbers, opened — natal chart, Almanac, and the Long Read ($7 per week). A piece is made when you order it; a reading is written when you say what's going on.",
         },
       },
       {
@@ -203,7 +210,9 @@ export function buildTrueNorthJsonLd() {
         name: "What is the Long Read?",
         acceptedAnswer: {
           "@type": "Answer",
-          text: "The Long Read is the paid membership of True North. Seven cards, three times a day, written against what is actually going on. $7 per week after a seven-day trial. Cancel anytime.",
+          text: TRUE_NORTH_FREE_ACCESS
+            ? "The Long Read is seven cards, three times a day, written against what is actually going on. It is open with a True North account. Existing memberships are left as they are."
+            : "The Long Read is the paid membership of True North. Seven cards, three times a day, written against what is actually going on. $7 per week after a seven-day trial. Cancel anytime.",
         },
       },
       {
@@ -211,7 +220,9 @@ export function buildTrueNorthJsonLd() {
         name: "How much is the Long Read?",
         acceptedAnswer: {
           "@type": "Answer",
-          text: "The Long Read is $7 per week after a seven-day trial. Cancel anytime. Numerology is $19.99 once. Follow-up questions are $2.99.",
+          text: TRUE_NORTH_FREE_ACCESS
+            ? "True North readings, numerology, and follow-up questions are open with an account. Subscription records are kept and are not charged from the reading room."
+            : "The Long Read is $7 per week after a seven-day trial. Cancel anytime. Numerology is $19.99 once. Follow-up questions are $2.99.",
         },
       },
       {
@@ -239,13 +250,13 @@ export function buildLongReadOfferJsonLd() {
       "@type": "Offer",
       url: `${SITE_URL}/chart/long-read`,
       priceCurrency: "USD",
-      price: "7.00",
+      price: TRUE_NORTH_FREE_ACCESS ? "0.00" : "7.00",
       availability: "https://schema.org/InStock",
       priceSpecification: {
         "@type": "UnitPriceSpecification",
-        price: "7.00",
+        price: TRUE_NORTH_FREE_ACCESS ? "0.00" : "7.00",
         priceCurrency: "USD",
-        unitText: "WEEK",
+        unitText: TRUE_NORTH_FREE_ACCESS ? "ACCOUNT" : "WEEK",
       },
     },
   };

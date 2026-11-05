@@ -94,7 +94,7 @@ export function ChartHomePage({ embedded = false }: { embedded?: boolean } = {})
   }
 
   return (
-    <div id="chart" className="journal-stack tn-shell">
+    <div id="chart" className="tn-embed">
 
         {loading && (
           <div className="tn-card">
@@ -105,7 +105,7 @@ export function ChartHomePage({ embedded = false }: { embedded?: boolean } = {})
         {!loading && chartError && (
           <div className="tn-card tn-card--alert">
             <p className="tn-alert">{chartError}</p>
-            <Link to="/profile" className="tn-inline">Complete your birth details on your account →</Link>
+            <Link to="/profile#profile" className="tn-inline">Add birth details in Profile →</Link>
           </div>
         )}
 

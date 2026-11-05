@@ -80,6 +80,9 @@ export function BackendProvider({ children }: { children: ReactNode }) {
     supabase.auth.getSession().then(({ data }) => {
       if (!active) return;
       setState({ session: data.session ?? null, loading: false });
+    }).catch(() => {
+      if (!active) return;
+      setState({ session: null, loading: false });
     });
 
     const { data: subscription } = supabase.auth.onAuthStateChange(

@@ -26,6 +26,8 @@
  * payment (metadata.kind === "numerology_unlock").
  */
 
+import { shouldStartPaidCheckout } from "../src/lib/freeAccess.js";
+import { generateWithGroq } from "./_lib/groq.js";
 import {
   type ApiRequest,
   type ApiResponse,
@@ -48,18 +50,71 @@ const SUBSCRIPTION_TIERS = {
 
 type SubscriptionTier = keyof typeof SUBSCRIPTION_TIERS;
 
+const QUESTION_SYSTEM_PROMPT = `You are the XI · XVI Reader, answering one specific follow-up question about a tarot reading the person already received. Your only job is to bring hope: show what they are already doing right and the best-case path still open — even if that path is slim. Never dwell on failure, doom, or worst-case outcomes. Be direct, specific, and grounded in the cards and situation given — never hedge with "may" or "could," never generic. Answer the actual question asked, in 120-200 words, second person, no greeting, no sign-off. Sparing bold (wrap in **like this**) on at most one or two key phrases.`;
+
+async function answerQuestionWithoutCharge(
+  userId: string,
+  question: string,
+  readingContext: unknown,
+) {
+  const admin = supabaseAdmin();
+  const { data: row, error } = await admin
+    .from("reading_questions")
+    .insert({
+      user_id: userId,
+      question,
+      reading_context: readingContext ?? null,
+      status: "pending",
+    })
+    .select("id")
+    .single();
+  if (error) throw error;
+
+  const userPrompt = `Their reading context: ${JSON.stringify(readingContext ?? {}).slice(0, 4000)}\n\nTheir follow-up question: "${question}"\n\nAnswer it now, following the rules exactly.`;
+  const result = await generateWithGroq(
+    QUESTION_SYSTEM_PROMPT,
+    userPrompt,
+    1200,
+  );
+  const answer = result.success
+    ? result.text
+    : "The reading desk is offline, so this follow-up wasn't written. Your question is saved on your account. Ask again when the desk is back. No charge was made.";
+
+  const { error: updateError } = await admin
+    .from("reading_questions")
+    .update({
+      answer,
+      status: result.success ? "answered" : "unavailable",
+      answered_at: new Date().toISOString(),
+    })
+    .eq("id", row.id)
+    .eq("user_id", userId);
+  if (updateError) throw updateError;
+  return { id: row.id as string, answer, charged: false as const };
+}
+
 async function handleQuestionCheckout(req: ApiRequest, res: ApiResponse) {
   const user = await currentUser(req);
   if (!user) throw new HttpError(401, "Please sign in first");
 
-  const { question, readingContext, successUrl, cancelUrl } =
-    (req.body ?? {}) as {
-      question?: string;
-      readingContext?: unknown;
-      successUrl?: string;
-      cancelUrl?: string;
-    };
+  const { question, readingContext, successUrl, cancelUrl } = (req.body ??
+    {}) as {
+    question?: string;
+    readingContext?: unknown;
+    successUrl?: string;
+    cancelUrl?: string;
+  };
   if (!question?.trim()) throw new HttpError(400, "A question is required");
+  if (!shouldStartPaidCheckout()) {
+    const answered = await answerQuestionWithoutCharge(
+      user.id,
+      question.trim(),
+      readingContext,
+    );
+    return res
+      .status(200)
+      .json({ success: true, openAccess: true, url: null, ...answered });
+  }
   if (!successUrl || !cancelUrl) {
     throw new HttpError(400, "Invalid checkout request");
   }
@@ -102,7 +157,10 @@ async function handleQuestionCheckout(req: ApiRequest, res: ApiResponse) {
   return res.status(200).json({ success: true, url: session.url });
 }
 
-async function handleNumerologyUnlockCheckout(req: ApiRequest, res: ApiResponse) {
+async function handleNumerologyUnlockCheckout(
+  req: ApiRequest,
+  res: ApiResponse,
+) {
   const user = await currentUser(req);
   if (!user) throw new HttpError(401, "Please sign in first");
 
@@ -110,6 +168,14 @@ async function handleNumerologyUnlockCheckout(req: ApiRequest, res: ApiResponse)
     successUrl?: string;
     cancelUrl?: string;
   };
+  if (!shouldStartPaidCheckout()) {
+    return res.status(200).json({
+      success: true,
+      openAccess: true,
+      charged: false,
+      url: null,
+    });
+  }
   if (!successUrl || !cancelUrl) {
     throw new HttpError(400, "Invalid checkout request");
   }
@@ -124,8 +190,11 @@ async function handleNumerologyUnlockCheckout(req: ApiRequest, res: ApiResponse)
     "payment_intent_data[metadata][kind]": "numerology_unlock",
     "payment_intent_data[metadata][user_id]": user.id,
     "line_items[0][price_data][currency]": "usd",
-    "line_items[0][price_data][product_data][name]": "Numerology — one-time unlock",
-    "line_items[0][price_data][unit_amount]": String(NUMEROLOGY_UNLOCK_PRICE_CENTS),
+    "line_items[0][price_data][product_data][name]":
+      "Numerology — one-time unlock",
+    "line_items[0][price_data][unit_amount]": String(
+      NUMEROLOGY_UNLOCK_PRICE_CENTS,
+    ),
     "line_items[0][quantity]": "1",
   };
   if (user.email) params.customer_email = user.email;
@@ -144,13 +213,23 @@ async function handleSubscribeCheckout(req: ApiRequest, res: ApiResponse) {
     cancelUrl?: string;
     tier?: string;
   };
+  if (!shouldStartPaidCheckout()) {
+    return res.status(200).json({
+      success: true,
+      openAccess: true,
+      charged: false,
+      url: null,
+    });
+  }
   if (!successUrl || !cancelUrl) {
     throw new HttpError(400, "Invalid checkout request");
   }
 
   // Only long_read remains; any other/legacy tier value falls back to it.
   const resolvedTier: SubscriptionTier =
-    tier && tier in SUBSCRIPTION_TIERS ? (tier as SubscriptionTier) : "long_read";
+    tier && tier in SUBSCRIPTION_TIERS
+      ? (tier as SubscriptionTier)
+      : "long_read";
   const { priceCents, productName } = SUBSCRIPTION_TIERS[resolvedTier];
 
   const params: Record<string, string> = {
@@ -160,7 +239,7 @@ async function handleSubscribeCheckout(req: ApiRequest, res: ApiResponse) {
     client_reference_id: user.id,
     "metadata[user_id]": user.id,
     "metadata[tier]": resolvedTier,
-        "subscription_data[metadata][user_id]": user.id,
+    "subscription_data[metadata][user_id]": user.id,
     "subscription_data[metadata][tier]": resolvedTier,
     "line_items[0][price_data][currency]": "usd",
     "line_items[0][price_data][product_data][name]": productName,

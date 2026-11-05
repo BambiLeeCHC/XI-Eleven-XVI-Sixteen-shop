@@ -1,6 +1,8 @@
 /**
  * Backend handlers — restored with admin paywall bypass and Long Read window param.
  */
+import { longReadEntitled, TRUE_NORTH_FREE_ACCESS } from "../freeAccess";
+import { parseNorthProfile } from "../northProfile";
 import { supabase } from "../supabase";
 import {
   mapBlogPost,
@@ -117,6 +119,42 @@ export const handlers: Record<string, Handler> = {
     return mapProfile(row as Row);
   },
 
+  "profile.updateNorth": async (args: Args) => {
+    const userId = await requireUserId();
+    const parsed = parseNorthProfile(args);
+    if (!parsed.ok) throw new Error(parsed.message);
+    const current = unwrap(
+      await supabase
+        .from("profiles")
+        .select("birth_location, north_onboarded_at")
+        .eq("id", userId)
+        .maybeSingle(),
+    ) as { birth_location: string | null; north_onboarded_at: string | null } | null;
+    const nextLocation = parsed.value.birthLocation;
+    const locationChanged = (current?.birth_location ?? "") !== (nextLocation ?? "");
+    const patch: Record<string, unknown> = {
+      name: parsed.value.name,
+      north_focus: parsed.value.focus,
+      north_note: parsed.value.note,
+      birth_date: parsed.value.birthDate,
+      birth_time: parsed.value.birthTime,
+      birth_location: nextLocation,
+      north_onboarded_at: current?.north_onboarded_at ?? new Date().toISOString(),
+    };
+    if (locationChanged) {
+      patch.birth_lat = null;
+      patch.birth_lng = null;
+    }
+    const { data, error } = await supabase.from("profiles").update(patch).eq("id", userId).select("*").single();
+    if (error) {
+      if (/north_focus|north_note|north_onboarded/i.test(error.message)) {
+        throw new Error("True North profile fields aren't on this database yet. Apply the latest migration, then save again.");
+      }
+      throw new Error(error.message);
+    }
+    return mapProfile(data as Row);
+  },
+
   "users.isAdmin": async () => {
     const userId = await currentUserId();
     if (!userId) return false;
@@ -159,30 +197,23 @@ export const handlers: Record<string, Handler> = {
     const freeLimit = 3;
     const freeRemaining = Math.max(0, freeLimit - (readingsThisWeek ?? 0));
     const isAdmin = profile?.role === "admin";
-    const numerologyUnlocked = isAdmin || !!profile?.numerology_unlocked_at;
-    if (isAdmin) {
-      return {
-        entitled: true,
-        status: row?.status ?? "admin",
-        tier: row?.tier ?? "admin",
-        trialEnd: row?.trial_end ?? null,
-        currentPeriodEnd: row?.current_period_end ?? null,
-        numerologyUnlocked: true,
-        isAdmin: true,
-        freeLimit,
-        freeRemaining,
-        readingsThisWeek: readingsThisWeek ?? 0,
-      };
-    }
-    if (!row) return { entitled: false, status: "none", tier: null, numerologyUnlocked: true, isAdmin: false, freeLimit, freeRemaining, readingsThisWeek: readingsThisWeek ?? 0 };
+    const access = longReadEntitled({
+      isAdmin,
+      subscriptionStatus: row?.status ?? "none",
+      readingsThisWeek: readingsThisWeek ?? 0,
+      freeLimit,
+    });
+    const numerologyUnlocked = TRUE_NORTH_FREE_ACCESS || isAdmin || !!profile?.numerology_unlocked_at;
     return {
-      entitled: row.status === "trialing" || row.status === "active",
-      status: row.status,
-      tier: row.tier,
-      trialEnd: row.trial_end,
-      currentPeriodEnd: row.current_period_end,
-      numerologyUnlocked: true,
-      isAdmin: false,
+      entitled: access.entitled,
+      openAccess: access.openAccess,
+      via: access.via,
+      status: isAdmin && !row ? "admin" : row?.status ?? "none",
+      tier: row?.tier ?? (isAdmin ? "admin" : null),
+      trialEnd: row?.trial_end ?? null,
+      currentPeriodEnd: row?.current_period_end ?? null,
+      numerologyUnlocked,
+      isAdmin,
       freeLimit,
       freeRemaining,
       readingsThisWeek: readingsThisWeek ?? 0,
@@ -220,6 +251,25 @@ export const handlers: Record<string, Handler> = {
   "readingQuestions.checkout": async ({ question, readingContext, successUrl, cancelUrl } = {}) => {
     return callApi("/api/reading-checkout", { kind: "question", question, readingContext, successUrl, cancelUrl });
   },
+
+  "readingQuestions.ask": async ({ question, readingContext } = {}) => {
+    return callApi("/api/reading-checkout", { kind: "question", question, readingContext });
+  },
+
+  "north.list": async () => callApi("/api/chart", { kind: "north", op: "list" }),
+  "north.person": async ({ userId } = {}) => callApi("/api/chart", { kind: "north", op: "person", userId }),
+  "north.invite": async ({ email } = {}) => callApi("/api/chart", { kind: "north", op: "invite", email }),
+  "north.respond": async ({ connectionId, decision } = {}) =>
+    callApi("/api/chart", { kind: "north", op: "respond", connectionId, decision }),
+  "north.revoke": async ({ connectionId } = {}) =>
+    callApi("/api/chart", { kind: "north", op: "revoke", connectionId }),
+  "north.open": async ({ connectionId, focus, prompt } = {}) =>
+    callApi("/api/chart", { kind: "north", op: "open", connectionId, focus, prompt }),
+  "north.answer": async ({ sessionId, decision } = {}) =>
+    callApi("/api/chart", { kind: "north", op: "answer", sessionId, decision }),
+  "north.contribute": async ({ sessionId, body } = {}) =>
+    callApi("/api/chart", { kind: "north", op: "contribute", sessionId, body }),
+  "north.close": async ({ sessionId } = {}) => callApi("/api/chart", { kind: "north", op: "close", sessionId }),
 
   "natalChart.get": async () => callApi("/api/chart", { kind: "natal" }),
   "natalProfile.get": async () => callApi("/api/chart", { kind: "natal-profile" }),

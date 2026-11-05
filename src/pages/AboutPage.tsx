@@ -74,9 +74,8 @@ export function AboutPage() {
             </p>
             <h3 className="clash text-4xl mt-3">Written tarot</h3>
             <p className="serif-quiet mt-4 text-lg" style={{ color: "rgba(247,240,230,0.8)" }}>
-              You describe what is going on. We write you three tarot
-              readings a day from that. Seven-day trial, then $7 a week.
-              Cancel anytime.
+              You describe what is going on. The Long Read writes three tarot
+              readings a day from that. It is open with your account.
             </p>
             <Link to="/chart/long-read" className="cta-ghost mt-6 inline-flex">
               Start written tarot
@@ -149,19 +148,18 @@ export function AboutPage() {
           className="clash text-center mt-4"
           style={{ fontSize: "clamp(36px, 6vw, 72px)" }}
         >
-          Written tarot. Paid separately.
+          Written tarot. Open with your account.
         </h2>
         <p
           className="serif-quiet text-xl text-center max-w-2xl mx-auto mt-5"
           style={{ color: "rgba(247,240,230,0.8)" }}
         >
-          Create an account and we calculate your natal chart. That chart
-          is free. The Long Read is the paid product: three written
-          readings each day for $7 a week after a seven-day trial.
+          Create an account and we calculate your natal chart. The Long Read,
+          the numbers, and tandem readings are open with that same account.
         </p>
         <div className="flex flex-wrap gap-3 justify-center mt-8">
           <Link to="/chart/long-read" className="cta-pist">
-            Start written tarot — $7/week
+            Open True North
           </Link>
           <Link to="/chart" className="cta-ghost">
             See your natal chart

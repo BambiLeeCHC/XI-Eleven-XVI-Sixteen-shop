@@ -1,13 +1,24 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { SEO } from "../../components/SEO";
 import { TrueNorthAtmosphere } from "../../components/journal/TrueNorthAtmosphere";
 import { TrueNorthSignIcon } from "../../components/journal/TrueNorthGlyphs";
-import { api, useAuthStatus, useQuery } from "../../lib/backend";
+import { SEO } from "../../components/SEO";
+import {
+  api,
+  useAuthStatus,
+  useBackend,
+  useMutation,
+  useQuery,
+} from "../../lib/backend";
+import {
+  NORTH_FOCUSES,
+  type NorthFocus,
+  type PublicNorthProfile,
+} from "../../lib/northProfile";
 import { supabase } from "../../lib/supabase";
 import { TrueNorthHero, TrueNorthSignedOutTeaser, useSunSign } from "./shared";
 
-type Focus = "general" | "career" | "love" | "money";
+type Focus = NorthFocus;
 
 type Reading = {
   id: string;
@@ -27,17 +38,57 @@ type Row = {
   created_at: string;
 };
 
+type ConnectionView = {
+  id: string;
+  status: "pending" | "accepted";
+  direction: "incoming" | "outgoing";
+  createdAt: string;
+  person: PublicNorthProfile;
+};
+
+type SessionView = {
+  id: string;
+  connectionId: string;
+  status: "invited" | "active" | "declined" | "closed";
+  focus: Focus;
+  prompt: string;
+  role: "host" | "guest";
+  partner: PublicNorthProfile;
+  sharedReading: string | null;
+  createdAt: string;
+  mineSubmitted: boolean;
+  entries: {
+    authorId: string;
+    name: string;
+    body: string;
+    createdAt: string;
+  }[];
+};
+
+type Room = {
+  connections: ConnectionView[];
+  sessions: SessionView[];
+};
+
 const SIGNS = [
-  "Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo",
-  "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces",
+  "Aries",
+  "Taurus",
+  "Gemini",
+  "Cancer",
+  "Leo",
+  "Virgo",
+  "Libra",
+  "Scorpio",
+  "Sagittarius",
+  "Capricorn",
+  "Aquarius",
+  "Pisces",
 ];
 
-const FOCUS: { id: Focus; label: string }[] = [
-  { id: "general", label: "General" },
-  { id: "career", label: "Career" },
-  { id: "love", label: "Love" },
-  { id: "money", label: "Money" },
-];
+const FOCUS: { id: Focus; label: string }[] = NORTH_FOCUSES.map(id => ({
+  id,
+  label: id[0].toUpperCase() + id.slice(1),
+}));
 
 const FILTERS: { id: Focus | "all"; label: string }[] = [
   { id: "all", label: "All" },
@@ -60,22 +111,96 @@ function mergeReading(list: Reading[], next: Reading): Reading[] {
   return [next, ...list].sort((a, b) => b.at - a.at).slice(0, 80);
 }
 
+function PersonLine({ person }: { person: PublicNorthProfile }) {
+  return (
+    <div className="tn-person">
+      <span className="tn-profile__mark" aria-hidden="true">
+        <TrueNorthSignIcon sign={person.sign || "Virgo"} size={28} />
+      </span>
+      <div>
+        <p className="tn-person__name">{person.name}</p>
+        <p className="tn-person__meta">
+          {person.sign ? `${person.sign} · ` : ""}
+          {person.focus}
+        </p>
+      </div>
+    </div>
+  );
+}
+
 export function CirclePage() {
   const { isLoading: authLoading, isAuthenticated } = useAuthStatus();
-  const user = useQuery(api.auth.currentUser, authLoading || !isAuthenticated ? "skip" : {});
+  const user = useQuery(
+    api.auth.currentUser,
+    authLoading || !isAuthenticated ? "skip" : {},
+  );
   const sunSign = useSunSign(user);
+  const { query } = useBackend();
+  const invite = useMutation(api.north.invite);
+  const respond = useMutation(api.north.respond);
+  const revoke = useMutation(api.north.revoke);
+  const openSession = useMutation(api.north.open);
+  const answerSession = useMutation(api.north.answer);
+  const contribute = useMutation(api.north.contribute);
+  const closeSession = useMutation(api.north.close);
+  const viewPerson = useMutation(api.north.person);
+
   const [focus, setFocus] = useState<Focus | "all">("all");
   const [readings, setReadings] = useState<Reading[]>([]);
   const [draft, setDraft] = useState("");
   const [mineFocus, setMineFocus] = useState<Focus>("general");
-  const [pair, setPair] = useState<string[]>([]);
-  const [live, setLive] = useState<"connecting" | "live" | "offline">("connecting");
+  const [live, setLive] = useState<"connecting" | "live" | "offline">(
+    "connecting",
+  );
   const [notice, setNotice] = useState("");
   const [saving, setSaving] = useState(false);
 
+  const [room, setRoom] = useState<Room | null>(null);
+  const [roomState, setRoomState] = useState<
+    "idle" | "loading" | "ready" | "error"
+  >("idle");
+  const [roomError, setRoomError] = useState("");
+  const [email, setEmail] = useState("");
+  const [actionError, setActionError] = useState("");
+  const [busy, setBusy] = useState("");
+  const [promptByConnection, setPromptByConnection] = useState<
+    Record<string, string>
+  >({});
+  const [focusByConnection, setFocusByConnection] = useState<
+    Record<string, Focus>
+  >({});
+  const [entryBySession, setEntryBySession] = useState<Record<string, string>>(
+    {},
+  );
+  const [viewed, setViewed] = useState<PublicNorthProfile | null>(null);
+
+  const loadRoom = useCallback(async () => {
+    setRoomState(current => (current === "ready" ? current : "loading"));
+    try {
+      const result = (await query(api.north.list, {})) as Room & {
+        success?: boolean;
+      };
+      setRoom({
+        connections: result.connections ?? [],
+        sessions: result.sessions ?? [],
+      });
+      setRoomError("");
+      setRoomState("ready");
+    } catch (error) {
+      setRoomState("error");
+      setRoomError(
+        error instanceof Error ? error.message : "Couldn't open tandem.",
+      );
+    }
+  }, [query]);
+
+  useEffect(() => {
+    if (!isAuthenticated) return;
+    void loadRoom();
+  }, [isAuthenticated, loadRoom]);
+
   useEffect(() => {
     let stop = false;
-
     const pull = async () => {
       const { data, error } = await supabase
         .from("circle_readings")
@@ -85,17 +210,19 @@ export function CirclePage() {
       if (stop) return;
       if (error) {
         setLive("offline");
-        setNotice("The shared room is not reachable yet. Readings will appear here once the circle table is live.");
+        setNotice(
+          "The shared room is not reachable yet. Public notes will appear here once the circle table is live.",
+        );
         return;
       }
       setLive("live");
       setNotice("");
       setReadings((data as Row[]).map(fromRow));
     };
-
     void pull();
-    const poll = window.setInterval(() => { void pull(); }, 8000);
-
+    const poll = window.setInterval(() => {
+      void pull();
+    }, 8000);
     const channel = supabase
       .channel("true-north-circle")
       .on(
@@ -108,11 +235,7 @@ export function CirclePage() {
           setReadings(list => mergeReading(list, fromRow(row)));
         },
       )
-      .subscribe(status => {
-        if (stop) return;
-        if (status === "SUBSCRIBED") setLive(current => (current === "offline" ? current : "live"));
-      });
-
+      .subscribe();
     return () => {
       stop = true;
       window.clearInterval(poll);
@@ -125,12 +248,9 @@ export function CirclePage() {
     [readings, focus],
   );
 
-  const tandem = pair
-    .map(id => readings.find(r => r.id === id))
-    .filter((r): r is Reading => !!r);
-
-  const displayName = (user?.name as string | undefined)
-    || (user?.email ? String(user.email).split("@")[0] : "You");
+  const displayName =
+    (user?.name as string | undefined) ||
+    (user?.email ? String(user.email).split("@")[0] : "You");
   const sign = sunSign && SIGNS.includes(sunSign) ? sunSign : "Virgo";
 
   const share = async () => {
@@ -165,15 +285,39 @@ export function CirclePage() {
     setDraft("");
   };
 
-  const togglePair = (id: string) => {
-    setPair(current => {
-      if (current.includes(id)) return current.filter(x => x !== id);
-      if (current.length >= 2) return [current[1]!, id];
-      return [...current, id];
-    });
+  const run = async (key: string, work: () => Promise<unknown>) => {
+    setBusy(key);
+    setActionError("");
+    try {
+      await work();
+      await loadRoom();
+    } catch (error) {
+      setActionError(
+        error instanceof Error ? error.message : "That didn't go through.",
+      );
+    } finally {
+      setBusy("");
+    }
   };
 
-  const liveLabel = live === "live" ? "Live" : live === "offline" ? "Offline" : "Connecting";
+  const connections = room?.connections ?? [];
+  const incoming = connections.filter(
+    item => item.direction === "incoming" && item.status === "pending",
+  );
+  const outgoing = connections.filter(
+    item => item.direction === "outgoing" && item.status === "pending",
+  );
+  const accepted = connections.filter(item => item.status === "accepted");
+  const sessions = room?.sessions ?? [];
+  const currentSessions = sessions.filter(
+    item => item.status === "invited" || item.status === "active",
+  );
+  const history = sessions.filter(
+    item => item.status === "closed" || item.status === "declined",
+  );
+
+  const liveLabel =
+    live === "live" ? "Live" : live === "offline" ? "Offline" : "Connecting";
 
   return (
     <div className="journal-page journal-page--truenorth">
@@ -181,138 +325,524 @@ export function CirclePage() {
       <div className="journal-stack tn-shell">
         <SEO
           title="Circle — True North"
-          description="A shared room. Daily orientations sync live. Read two at once. Career, love, and money — without the oracle voice."
+          description="Connect with someone, accept a tandem, and keep the shared reading between the two of you."
           url="/chart/circle"
         />
-        {isAuthenticated ? <TrueNorthHero sunSign={sunSign} /> : (
+        {isAuthenticated ? (
+          <TrueNorthHero sunSign={sunSign} />
+        ) : (
           <TrueNorthSignedOutTeaser
             pageTitleTag={
               <div className="tn-card tn-invite-card">
-                <p className="label-lock">The circle</p>
+                <p className="label-lock">Tandem</p>
                 <p className="serif-quiet tn-invite-card__copy">
-                  A shared room. What you write here is visible to everyone in it, as it is written.
+                  A reading between two people starts with an invitation they
+                  can accept. Public notes stay separate.
                 </p>
               </div>
             }
           />
         )}
 
-        <section className="tn-card tn-invite-card">
-          <p className="label-lock">Circle · {liveLabel}</p>
-          <h2 className="clash" style={{ fontSize: "clamp(32px, 5vw, 52px)", margin: "0.35rem 0 0.4rem" }}>
-            Higher self, in company.
+        <section className="tn-card">
+          <p className="label-lock">Tandem</p>
+          <h2 className="clash tn-section-title">
+            Read with someone you choose.
           </h2>
-          <p className="serif-quiet tn-invite-card__copy">
-            One room. Profiles, a daily note, and tandem readings for a friend, a partner, or family.
-            Career, love, and money are lenses — not fortunes.
+          <p className="serif-quiet tn-lede">
+            Invitations stay in the app. No email is sent. A tandem opens only
+            after the other person accepts, and the result stays between you.
           </p>
-          <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 16 }}>
+          {!isAuthenticated && (
+            <p className="serif-quiet tn-lede">
+              <Link to="/login" className="tn-inline">
+                Sign in
+              </Link>{" "}
+              to invite someone or answer an invitation.
+            </p>
+          )}
+          {isAuthenticated && roomState === "loading" && (
+            <p className="tn-meta" role="status">
+              Opening your connections…
+            </p>
+          )}
+          {isAuthenticated && roomState === "error" && (
+            <p className="tn-alert" role="alert">
+              {roomError}
+            </p>
+          )}
+          {actionError && (
+            <p className="tn-alert" role="alert">
+              {actionError}
+            </p>
+          )}
+
+          {isAuthenticated && (
+            <form
+              className="tn-stack"
+              onSubmit={event => {
+                event.preventDefault();
+                void run("invite", async () => {
+                  await invite({ email });
+                  setEmail("");
+                });
+              }}
+            >
+              <label className="tn-label" htmlFor="tandem-email">
+                Their account email
+              </label>
+              <input
+                id="tandem-email"
+                className="tn-field"
+                type="email"
+                inputMode="email"
+                autoComplete="off"
+                value={email}
+                onChange={event => setEmail(event.target.value)}
+                placeholder="name@email.com"
+                required
+              />
+              <button
+                type="submit"
+                className="cta-pist tn-action"
+                disabled={busy === "invite"}
+              >
+                {busy === "invite" ? "Saving invitation…" : "Invite in the app"}
+              </button>
+            </form>
+          )}
+        </section>
+
+        {isAuthenticated &&
+          roomState === "ready" &&
+          incoming.length === 0 &&
+          outgoing.length === 0 &&
+          accepted.length === 0 && (
+            <p className="serif-quiet tn-opening">
+              No connections yet. An invitation appears here for the person you
+              invite.
+            </p>
+          )}
+
+        {incoming.length > 0 && (
+          <section className="tn-stack" aria-label="Invitations for you">
+            {incoming.map(item => (
+              <article key={item.id} className="tn-card">
+                <p className="label-lock">Invitation</p>
+                <PersonLine person={item.person} />
+                {item.person.note && (
+                  <p className="serif-quiet tn-lede">{item.person.note}</p>
+                )}
+                <div className="tn-actions">
+                  <button
+                    type="button"
+                    className="cta-pist tn-action"
+                    disabled={busy === item.id}
+                    onClick={() => {
+                      void run(item.id, () =>
+                        respond({
+                          connectionId: item.id,
+                          decision: "accepted",
+                        }),
+                      );
+                    }}
+                  >
+                    Accept
+                  </button>
+                  <button
+                    type="button"
+                    className="cta-ghost tn-action"
+                    disabled={busy === item.id}
+                    onClick={() => {
+                      void run(item.id, () =>
+                        respond({
+                          connectionId: item.id,
+                          decision: "declined",
+                        }),
+                      );
+                    }}
+                  >
+                    Decline
+                  </button>
+                </div>
+              </article>
+            ))}
+          </section>
+        )}
+
+        {outgoing.map(item => (
+          <article key={item.id} className="tn-card">
+            <p className="label-lock">Waiting</p>
+            <PersonLine person={item.person} />
+            <p className="tn-meta">
+              They'll see this the next time they open Circle. Nothing was
+              emailed.
+            </p>
+          </article>
+        ))}
+
+        {accepted.map(item => (
+          <article key={item.id} className="tn-card">
+            <PersonLine person={item.person} />
+            {item.person.note && (
+              <p className="serif-quiet tn-lede">{item.person.note}</p>
+            )}
+            <div className="tn-actions">
+              <button
+                type="button"
+                className="cta-ghost tn-action"
+                onClick={() => {
+                  void run(`view-${item.person.id}`, async () => {
+                    const result = (await viewPerson({
+                      userId: item.person.id,
+                    })) as { person: PublicNorthProfile };
+                    setViewed(result.person);
+                  });
+                }}
+              >
+                View profile
+              </button>
+              <button
+                type="button"
+                className="cta-ghost tn-action"
+                disabled={busy === `end-${item.id}`}
+                onClick={() => {
+                  void run(`end-${item.id}`, () =>
+                    revoke({ connectionId: item.id }),
+                  );
+                }}
+              >
+                End connection
+              </button>
+            </div>
+            <form
+              className="tn-stack"
+              onSubmit={event => {
+                event.preventDefault();
+                void run(`open-${item.id}`, () =>
+                  openSession({
+                    connectionId: item.id,
+                    focus: focusByConnection[item.id] ?? "general",
+                    prompt: promptByConnection[item.id] ?? "",
+                  }),
+                );
+              }}
+            >
+              <label className="tn-label" htmlFor={`prompt-${item.id}`}>
+                Open a tandem
+              </label>
+              <div className="tn-choice__row">
+                {FOCUS.map(choice => (
+                  <button
+                    key={choice.id}
+                    type="button"
+                    className={`tn-choice__item ${(focusByConnection[item.id] ?? "general") === choice.id ? "is-on" : ""}`}
+                    onClick={() =>
+                      setFocusByConnection(current => ({
+                        ...current,
+                        [item.id]: choice.id,
+                      }))
+                    }
+                  >
+                    {choice.label}
+                  </button>
+                ))}
+              </div>
+              <textarea
+                id={`prompt-${item.id}`}
+                className="tn-field tn-field--area"
+                maxLength={280}
+                value={promptByConnection[item.id] ?? ""}
+                onChange={event =>
+                  setPromptByConnection(current => ({
+                    ...current,
+                    [item.id]: event.target.value,
+                  }))
+                }
+                placeholder="What should you read together?"
+              />
+              <button
+                type="submit"
+                className="cta-pist tn-action"
+                disabled={busy === `open-${item.id}`}
+              >
+                {busy === `open-${item.id}`
+                  ? "Opening…"
+                  : "Send tandem invitation"}
+              </button>
+            </form>
+          </article>
+        ))}
+
+        {viewed && (
+          <section className="tn-card" aria-live="polite">
+            <p className="label-lock">Profile</p>
+            <PersonLine person={viewed} />
+            <p className="serif-quiet tn-lede">
+              {viewed.note || "No note yet."}
+            </p>
+            <button
+              type="button"
+              className="cta-ghost tn-action"
+              onClick={() => setViewed(null)}
+            >
+              Close
+            </button>
+          </section>
+        )}
+
+        {currentSessions.map(session => (
+          <section key={session.id} className="tn-card">
+            <p className="label-lock">
+              Tandem · {session.focus} · {session.status}
+            </p>
+            <PersonLine person={session.partner} />
+            <p className="serif-quiet tn-lede">{session.prompt}</p>
+            {session.status === "invited" && session.role === "guest" && (
+              <div className="tn-actions">
+                <button
+                  type="button"
+                  className="cta-pist tn-action"
+                  disabled={!!busy}
+                  onClick={() => {
+                    void run(session.id, () =>
+                      answerSession({
+                        sessionId: session.id,
+                        decision: "active",
+                      }),
+                    );
+                  }}
+                >
+                  Accept tandem
+                </button>
+                <button
+                  type="button"
+                  className="cta-ghost tn-action"
+                  disabled={!!busy}
+                  onClick={() => {
+                    void run(session.id, () =>
+                      answerSession({
+                        sessionId: session.id,
+                        decision: "declined",
+                      }),
+                    );
+                  }}
+                >
+                  Decline
+                </button>
+              </div>
+            )}
+            {session.status === "invited" && session.role === "host" && (
+              <p className="tn-meta">
+                Waiting for them to accept. You can withdraw it.
+              </p>
+            )}
+            {session.status === "active" &&
+              (session.mineSubmitted ? (
+                <p className="tn-meta">
+                  Your side is in. Theirs appears when they add it.
+                </p>
+              ) : (
+                <form
+                  className="tn-stack"
+                  onSubmit={event => {
+                    event.preventDefault();
+                    void run(`write-${session.id}`, () =>
+                      contribute({
+                        sessionId: session.id,
+                        body: entryBySession[session.id] ?? "",
+                      }),
+                    );
+                  }}
+                >
+                  <label className="tn-label" htmlFor={`entry-${session.id}`}>
+                    Your side
+                  </label>
+                  <textarea
+                    id={`entry-${session.id}`}
+                    className="tn-field tn-field--area"
+                    maxLength={2000}
+                    value={entryBySession[session.id] ?? ""}
+                    onChange={event =>
+                      setEntryBySession(current => ({
+                        ...current,
+                        [session.id]: event.target.value,
+                      }))
+                    }
+                  />
+                  <button
+                    type="submit"
+                    className="cta-pist tn-action"
+                    disabled={busy === `write-${session.id}`}
+                  >
+                    {busy === `write-${session.id}`
+                      ? "Saving…"
+                      : "Add your side"}
+                  </button>
+                </form>
+              ))}
+            {session.entries.length > 0 && (
+              <div className="tn-tandem">
+                {session.entries.map(entry => (
+                  <article key={entry.authorId}>
+                    <p className="label-lock">{entry.name}</p>
+                    <p className="serif-quiet tn-lede">{entry.body}</p>
+                  </article>
+                ))}
+              </div>
+            )}
+            {session.sharedReading && (
+              <pre className="tn-shared">{session.sharedReading}</pre>
+            )}
+            {(session.role === "host" || session.status === "active") && (
+              <button
+                type="button"
+                className="cta-ghost tn-action"
+                disabled={!!busy}
+                onClick={() => {
+                  void run(`close-${session.id}`, () =>
+                    closeSession({ sessionId: session.id }),
+                  );
+                }}
+              >
+                {session.status === "invited"
+                  ? "Withdraw invitation"
+                  : "Close tandem"}
+              </button>
+            )}
+          </section>
+        ))}
+
+        <section className="tn-card">
+          <p className="label-lock">History</p>
+          {history.length === 0 ? (
+            <p className="tn-meta">
+              Closed tandems stay here for the two of you.
+            </p>
+          ) : (
+            <ul className="tn-history">
+              {history.map(session => (
+                <li key={session.id}>
+                  <p className="label-lock">
+                    {session.partner.name} · {session.focus} · {session.status}
+                  </p>
+                  <p className="serif-quiet tn-lede">{session.prompt}</p>
+                  {session.sharedReading && (
+                    <pre className="tn-shared">{session.sharedReading}</pre>
+                  )}
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
+
+        <section className="tn-card">
+          <p className="label-lock">Public circle · {liveLabel}</p>
+          <h2 className="clash tn-section-title">
+            A note anyone in the room can read.
+          </h2>
+          <p className="serif-quiet tn-lede">
+            This is separate from tandem. What you share here is visible to
+            everyone signed into Circle.
+          </p>
+          <div className="tn-choice__row">
             {FILTERS.map(item => (
               <button
                 key={item.id}
                 type="button"
-                className={focus === item.id ? "cta-pist" : "cta-ghost"}
+                className={`tn-choice__item ${focus === item.id ? "is-on" : ""}`}
                 onClick={() => setFocus(item.id)}
-                style={{ padding: "10px 14px" }}
               >
                 {item.label}
               </button>
             ))}
           </div>
-          {notice && <p className="serif-quiet" style={{ marginTop: 12 }}>{notice}</p>}
+          {notice && (
+            <p className="tn-alert" role="status">
+              {notice}
+            </p>
+          )}
         </section>
 
-        <section className="tn-card tn-invite-card">
-          <p className="label-lock">Your profile</p>
+        <section className="tn-card">
+          <p className="label-lock">Your public note</p>
           {isAuthenticated ? (
             <>
-              <div style={{ display: "flex", gap: 14, alignItems: "center", marginTop: 12 }}>
-                <span style={{ color: "var(--pist)" }}><TrueNorthSignIcon sign={sign} size={36} /></span>
-                <div>
-                  <p className="clash" style={{ margin: 0, fontSize: 28 }}>{displayName}</p>
-                  <p className="serif-quiet" style={{ margin: 0 }}>{sign} · orientation, not prediction</p>
-                </div>
-              </div>
-              <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 14 }}>
+              <PersonLine
+                person={{
+                  id: "self",
+                  name: displayName,
+                  focus: mineFocus,
+                  note: null,
+                  sign,
+                }}
+              />
+              <div className="tn-choice__row">
                 {FOCUS.map(item => (
                   <button
                     key={item.id}
                     type="button"
-                    className={mineFocus === item.id ? "cta-pist" : "cta-ghost"}
+                    className={`tn-choice__item ${mineFocus === item.id ? "is-on" : ""}`}
                     onClick={() => setMineFocus(item.id)}
-                    style={{ padding: "8px 12px" }}
                   >
                     {item.label}
                   </button>
                 ))}
               </div>
               <textarea
+                className="tn-field tn-field--area"
                 value={draft}
-                onChange={e => setDraft(e.target.value)}
+                onChange={event => setDraft(event.target.value)}
                 maxLength={280}
                 placeholder="Today's orientation, in a few lines."
-                style={{
-                  width: "100%",
-                  marginTop: 12,
-                  minHeight: 96,
-                  background: "transparent",
-                  color: "inherit",
-                  border: "1px solid rgba(247,240,230,0.25)",
-                  padding: 12,
-                  fontFamily: "inherit",
-                }}
               />
-              <button type="button" className="cta-pist" style={{ marginTop: 12 }} onClick={() => { void share(); }} disabled={!draft.trim() || saving || live === "offline"}>
+              <button
+                type="button"
+                className="cta-pist tn-action"
+                onClick={() => {
+                  void share();
+                }}
+                disabled={!draft.trim() || saving || live === "offline"}
+              >
                 {saving ? "Sharing…" : "Share with the circle"}
               </button>
             </>
           ) : (
-            <p className="serif-quiet tn-invite-card__copy">
-              <Link to="/login" className="tn-inline">Sign in</Link> to publish. Anyone can read what is already in the room.
+            <p className="serif-quiet tn-lede">
+              <Link to="/login" className="tn-inline">
+                Sign in
+              </Link>{" "}
+              to publish. Anyone can read what is already in the room.
             </p>
           )}
         </section>
 
-        {tandem.length === 2 && (
-          <section className="tn-card tn-invite-card">
-            <p className="label-lock">Tandem</p>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginTop: 12 }}>
-              {tandem.map(r => (
-                <article key={r.id}>
-                  <TrueNorthSignIcon sign={r.sign} size={28} />
-                  <p className="label-lock" style={{ marginTop: 8 }}>{r.name} · {r.focus}</p>
-                  <p className="serif-quiet">{r.text}</p>
-                </article>
-              ))}
-            </div>
-          </section>
-        )}
-
         {visible.length === 0 && live === "live" && (
-          <p className="serif-quiet tn-opening">The circle is quiet. The first note sets the room.</p>
+          <p className="serif-quiet tn-opening">
+            The circle is quiet. The first note sets the room.
+          </p>
+        )}
+        {live === "connecting" && (
+          <p className="tn-meta" role="status">
+            Loading public notes…
+          </p>
         )}
 
-        <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "grid", gap: 12 }}>
-          {visible.map(r => {
-            const selected = pair.includes(r.id);
-            return (
-              <li key={r.id} className="tn-card tn-invite-card">
-                <div style={{ display: "flex", justifyContent: "space-between", gap: 12, alignItems: "center" }}>
-                  <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
-                    <TrueNorthSignIcon sign={r.sign} size={26} />
-                    <div>
-                      <p className="label-lock" style={{ margin: 0 }}>{r.name}</p>
-                      <p className="serif-quiet" style={{ margin: 0 }}>{r.sign} · {r.focus}</p>
-                    </div>
-                  </div>
-                  <button type="button" className={selected ? "cta-pist" : "cta-ghost"} onClick={() => togglePair(r.id)}>
-                    {selected ? "In tandem" : "Read with"}
-                  </button>
-                </div>
-                <p className="serif-quiet tn-invite-card__copy" style={{ marginTop: 10 }}>{r.text}</p>
-              </li>
-            );
-          })}
+        <ul className="tn-feed-list">
+          {visible.map(item => (
+            <li key={item.id} className="tn-card">
+              <PersonLine
+                person={{
+                  id: item.id,
+                  name: item.name,
+                  focus: item.focus,
+                  note: null,
+                  sign: item.sign,
+                }}
+              />
+              <p className="serif-quiet tn-lede">{item.text}</p>
+            </li>
+          ))}
         </ul>
       </div>
     </div>

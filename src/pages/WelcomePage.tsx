@@ -11,7 +11,7 @@ import { api, useQuery } from "../lib/backend";
  * Supabase confirms the account and signs the browser in → lands here.
  *
  * Collage-style personalized heading (name + sun sign, once the chart
- * resolves), a plain-language rundown of what's free vs. paywalled, and a
+ * resolves), a plain-language welcome into True North, and a
  * playful "loading the sky" animation while the natal chart computes (a
  * few hundred ms to a couple seconds — long enough to want *something*
  * on screen instead of a blank beat).
@@ -158,22 +158,22 @@ export function WelcomePage() {
                 </span>
               </div>
               <div className="welcome-line">
-                <span className="jcol-tag jcol-tag--sm jcol-kraft jcol-type">$7/week</span>
+                <span className="jcol-tag jcol-tag--sm jcol-kraft jcol-type">Open</span>
                 <span className="text-sm text-muted-foreground">
                   The Long Read — three written tarot readings a day, based on
-                  what you tell us. Seven-day trial, then $7 a week. Cancel anytime.
+                  what you tell us. Open with this account.
                 </span>
               </div>
               <div className="welcome-line">
-                <span className="jcol-tag jcol-tag--sm jcol-ink jcol-type">$19.99</span>
+                <span className="jcol-tag jcol-tag--sm jcol-ink jcol-type">Yours</span>
                 <span className="text-sm text-muted-foreground">
-                  Numerology, once. Follow-up questions on a reading are $2.99 each.
+                  Numerology lives on your profile. A tandem reading opens only with someone who accepts.
                 </span>
               </div>
             </div>
 
-            <Link to="/chart/long-read" className="cta-pist" style={{ textAlign: "center" }}>
-              Start written tarot — $7/week
+            <Link to="/profile#profile" className="cta-pist" style={{ textAlign: "center" }}>
+              Set up your profile
             </Link>
             <Link to="/chart" className="cta-ghost" style={{ textAlign: "center", color: "#0B0B0C", borderColor: "#0B0B0C" }}>
               Open your natal chart

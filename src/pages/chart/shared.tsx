@@ -118,7 +118,7 @@ export const TRUE_NORTH_PAGES = [
   { path: "/chart/numbers", label: "Numbers", glyph: "◆", blurb: "The constants underneath the chart." },
   { path: "/chart/almanac", label: "Almanac", glyph: "☾", blurb: "The day's mood, in one page." },
   { path: "/chart/circle", label: "Circle", glyph: "◎", blurb: "Daily notes, shared. Tandem when you want company." },
-  { path: "/chart/long-read", label: "Long Read", glyph: "♠", blurb: "Seven cards. Three windows. $7/week." },
+  { path: "/chart/long-read", label: "Long Read", glyph: "♠", blurb: "Seven cards. Three windows. Open with your account." },
 ] as const;
 
 export const TRUE_NORTH_FEATURES = [
@@ -353,7 +353,7 @@ export function TrueNorthSignedOutTeaser({ pageTitleTag }: { pageTitleTag: React
         <span>Available exclusively at xixvi.shop</span>
       </div>
 
-      <div className="tn-cosmic__hidden-slot" hidden>{pageTitleTag}</div>
+      <div className="tn-cosmic__note">{pageTitleTag}</div>
       <TrueNorthNav />
     </header>
   );

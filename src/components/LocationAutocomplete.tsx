@@ -15,10 +15,12 @@ export function LocationAutocomplete({
   value,
   onChange,
   inputClassName = defaultInputClass,
+  id,
 }: {
   value: string;
   onChange: (value: string) => void;
   inputClassName?: string;
+  id?: string;
 }) {
   const search = useAction(api.geocode.search);
   const [suggestions, setSuggestions] = useState<{ displayName: string }[]>([]);
@@ -66,6 +68,7 @@ export function LocationAutocomplete({
   return (
     <div ref={containerRef} className="relative">
       <input
+        id={id}
         type="text"
         value={value}
         onChange={(e) => handleInputChange(e.target.value)}

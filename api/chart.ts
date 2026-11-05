@@ -47,6 +47,7 @@ import {
 import { generateWithGroq, type GroqFailure } from "./_lib/groq.js";
 import { fullNumerologyProfile, NUMBER_MEANINGS } from "../src/lib/numerology.js";
 import { BODY_MEANINGS, explainAspect } from "../src/lib/astrologyMeanings.js";
+import { handleNorth } from "./_lib/north.js";
 
 const NUMEROLOGY_SYSTEM_PROMPT = `You are the XI · XVI Reader, writing the numerology narrative for the XI Eleven XVI Sixteen (xixvi.shop) brand — the paid, higher-tier companion to the natal chart. Same voice as always: direct, poignant, specific — never a generic horoscope, never hedging ("may"/"could"), never false authority.
 
@@ -255,6 +256,7 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
     if (kind === "natal-profile") {
       return await handleNatalProfile(req, res);
     }
+    if (kind === "north") return await handleNorth(req, res);
     if (kind === "natal" || kind === undefined) {
       return await handleNatalChart(req, res);
     }

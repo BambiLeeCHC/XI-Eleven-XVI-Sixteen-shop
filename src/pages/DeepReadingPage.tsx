@@ -1,13 +1,17 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { SEO, buildLongReadOfferJsonLd } from "../components/SEO";
-import { TrueNorthAtmosphere } from "../components/journal/TrueNorthAtmosphere";
 import { CardArt } from "../components/journal/CardArt";
 import { SectionBoundary } from "../components/journal/SectionBoundary";
-import { SubscriptionTierPicker, type SubscriptionTier } from "../components/SubscriptionTierPicker";
-import { api, useAction, useAuthStatus, useQuery } from "../lib/backend";
-import { DEEP_SPREAD, drawDeepSpread, type SpreadCard } from "../lib/ritual";
+import { TrueNorthAtmosphere } from "../components/journal/TrueNorthAtmosphere";
+import { buildLongReadOfferJsonLd, SEO } from "../components/SEO";
+import {
+  type SubscriptionTier,
+  SubscriptionTierPicker,
+} from "../components/SubscriptionTierPicker";
 import { PAGE_SEO } from "../data/seoMeta";
+import { api, useAction, useAuthStatus, useQuery } from "../lib/backend";
+import { TRUE_NORTH_FREE_ACCESS } from "../lib/freeAccess";
+import { DEEP_SPREAD, drawDeepSpread, type SpreadCard } from "../lib/ritual";
 import {
   BoldParagraphs,
   HouseDressing,
@@ -29,19 +33,22 @@ const WINDOWS: Array<{
     id: "morning",
     label: "Morning",
     hours: "12:00 AM – 11:59 AM",
-    blurb: "Orient the day — what's already solid under you and what's working in your favor.",
+    blurb:
+      "Orient the day — what's already solid under you and what's working in your favor.",
   },
   {
     id: "midday",
     label: "Midday",
     hours: "12:00 PM – 4:59 PM",
-    blurb: "Align mid-course — the best move available and the gift you haven't fully claimed yet.",
+    blurb:
+      "Align mid-course — the best move available and the gift you haven't fully claimed yet.",
   },
   {
     id: "evening",
     label: "Evening",
     hours: "5:00 PM – 11:59 PM",
-    blurb: "Integrate the day — the best-case path from here and where your real advantage sits.",
+    blurb:
+      "Integrate the day — the best-case path from here and where your real advantage sits.",
   },
 ];
 
@@ -90,7 +97,11 @@ function fallbackReading(spread: SpreadCard[], situation: string) {
 }
 
 function isPaywallError(message: string) {
-  return /subscription/i.test(message) || /sign in/i.test(message) || /402/.test(message);
+  return (
+    /subscription/i.test(message) ||
+    /sign in/i.test(message) ||
+    /402/.test(message)
+  );
 }
 
 export default function DeepReadingPage() {
@@ -115,6 +126,7 @@ export default function DeepReadingPage() {
   const startTrialAction = useAction(api.subscription.startTrial);
   const drawAction = useAction(api.deepReadings.draw);
   const questionCheckoutAction = useAction(api.readingQuestions.checkout);
+  const askAction = useAction(api.readingQuestions.ask);
 
   const [now] = useState(() => new Date());
   const active = useMemo(() => activeDailyWindow(now), [now]);
@@ -128,25 +140,36 @@ export default function DeepReadingPage() {
     Partial<Record<DailyWindow, { spread: SpreadCard[]; reading: string }>>
   >({});
   const [drawing, setDrawing] = useState(false);
-  const [subscribingTier, setSubscribingTier] = useState<SubscriptionTier | null>(null);
+  const [subscribingTier, setSubscribingTier] =
+    useState<SubscriptionTier | null>(null);
   const [question, setQuestion] = useState("");
   const [askingQuestion, setAskingQuestion] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [followUp, setFollowUp] = useState<string | null>(null);
   const [blockedByApi, setBlockedByApi] = useState(false);
 
   const isAdmin =
     adminFlag === true ||
     subscription?.isAdmin === true ||
     user?.role === "admin";
-  const freeRemaining = typeof subscription?.freeRemaining === "number" ? subscription.freeRemaining : 3;
+  const freeRemaining =
+    typeof subscription?.freeRemaining === "number"
+      ? subscription.freeRemaining
+      : 3;
   const subscribed =
     subscription?.entitled === true ||
     subscription?.status === "active" ||
     subscription?.status === "trialing";
+  const openAccess =
+    TRUE_NORTH_FREE_ACCESS || subscription?.openAccess === true;
   const entitled =
-    !blockedByApi &&
-    (isAdmin || subscribed || freeRemaining > 0);
-  const entitlementLoading = isAuthenticated && !isAdmin && subscription === undefined;
+    openAccess ||
+    (!blockedByApi && (isAdmin || subscribed || freeRemaining > 0));
+  const entitlementLoading =
+    !TRUE_NORTH_FREE_ACCESS &&
+    isAuthenticated &&
+    !isAdmin &&
+    subscription === undefined;
 
   const todayByWindow = useMemo(() => {
     const map: Partial<Record<DailyWindow, SavedDeepReading>> = {};
@@ -164,7 +187,8 @@ export default function DeepReadingPage() {
   const selectedSaved = todayByWindow[selectedWindow];
   const selectedLocal = localByWindow[selectedWindow];
   const displaySpread = selectedLocal?.spread ?? selectedSaved?.spread ?? null;
-  const displayReading = selectedLocal?.reading ?? selectedSaved?.reading ?? null;
+  const displayReading =
+    selectedLocal?.reading ?? selectedSaved?.reading ?? null;
   const hasReading = Boolean(displayReading && displaySpread);
 
   const stateFor = (id: DailyWindow): WindowState => {
@@ -219,13 +243,18 @@ export default function DeepReadingPage() {
         setBlockedByApi(false);
         setLocalByWindow(prev => ({
           ...prev,
-          [selectedWindow]: { spread: drawn, reading: result.reading as string },
+          [selectedWindow]: {
+            spread: drawn,
+            reading: result.reading as string,
+          },
         }));
       } else {
         const message = (result as { error?: string })?.error || "";
         if (isPaywallError(message)) {
           setBlockedByApi(true);
-          setError(message || "An active subscription is required for the Long Read.");
+          setError(
+            message || "An active subscription is required for the Long Read.",
+          );
         } else {
           keepLocal(drawn, situationText);
         }
@@ -247,14 +276,28 @@ export default function DeepReadingPage() {
     if (!question.trim() || !displayReading) return;
     setAskingQuestion(true);
     setError(null);
+    const readingContext = {
+      spread: displaySpread,
+      reading: displayReading,
+      window: selectedWindow,
+    };
     try {
+      if (openAccess) {
+        const result = await askAction({
+          question: question.trim(),
+          readingContext,
+        });
+        if (result?.answer) {
+          setFollowUp(result.answer as string);
+          setQuestion("");
+        } else {
+          setError(result?.error || "Couldn't write that follow-up.");
+        }
+        return;
+      }
       const result = await questionCheckoutAction({
         question: question.trim(),
-        readingContext: {
-          spread: displaySpread,
-          reading: displayReading,
-          window: selectedWindow,
-        },
+        readingContext,
         successUrl: `${window.location.origin}${LONG_READ_ORIGIN}`,
         cancelUrl: `${window.location.origin}${LONG_READ_ORIGIN}`,
       });
@@ -269,6 +312,7 @@ export default function DeepReadingPage() {
 
   useEffect(() => {
     setQuestion("");
+    setFollowUp(null);
     setError(null);
   }, [selectedWindow]);
 
@@ -289,11 +333,14 @@ export default function DeepReadingPage() {
       <div className="journal-page journal-page--truenorth">
         <TrueNorthAtmosphere />
         <div className="journal-stack long-read-stack tn-shell">
-          <SEO title={pageTitle} description={pageDescription} url={pageUrl} jsonLd={longReadJsonLd} />
+          <SEO
+            title={pageTitle}
+            description={pageDescription}
+            url={pageUrl}
+            jsonLd={longReadJsonLd}
+          />
           <TrueNorthHero sunSign={sunSign} />
-          <p className="serif-quiet tn-opening">
-            Opening your Long Read…
-          </p>
+          <p className="serif-quiet tn-opening">Opening your Long Read…</p>
         </div>
       </div>
     );
@@ -304,13 +351,24 @@ export default function DeepReadingPage() {
       <div className="journal-page journal-page--truenorth">
         <TrueNorthAtmosphere />
         <div className="journal-stack long-read-stack tn-shell">
-          <SEO title={pageTitle} description={pageDescription} url={pageUrl} jsonLd={longReadJsonLd} />
+          <SEO
+            title={pageTitle}
+            description={pageDescription}
+            url={pageUrl}
+            jsonLd={longReadJsonLd}
+          />
           <TrueNorthSignedOutTeaser
             pageTitleTag={
               <div className="tn-card tn-invite-card">
-                <p className="label-lock">Readings · 3 free each week</p>
+                <p className="label-lock">
+                  {openAccess
+                    ? "Readings, open"
+                    : "Readings · 3 free each week"}
+                </p>
                 <p className="serif-quiet tn-invite-card__copy">
-                  Readings live apart from your chart. Three a week are included. Unlimited is $3.99 a week.
+                  {openAccess
+                    ? "Sign in to draw the Long Read. It is open with your account. Existing memberships stay on file."
+                    : "Readings live apart from your chart. Three a week are included. Unlimited is $3.99 a week."}
                 </p>
               </div>
             }
@@ -324,12 +382,23 @@ export default function DeepReadingPage() {
     <div className="journal-page journal-page--truenorth">
       <TrueNorthAtmosphere />
       <div className="journal-stack long-read-stack tn-shell">
-        <SEO title={pageTitle} description={pageDescription} url={pageUrl} jsonLd={longReadJsonLd} />
+        <SEO
+          title={pageTitle}
+          description={pageDescription}
+          url={pageUrl}
+          jsonLd={longReadJsonLd}
+        />
         <TrueNorthHero sunSign={sunSign} />
-        <SectionHeading wordA="The" wordB="Long Read" ariaLabel="The Long Read" />
+        <SectionHeading
+          wordA="The"
+          wordB="Long Read"
+          ariaLabel="The Long Read"
+        />
         <div className="tn-card tn-lede-card">
           <p className="serif-quiet tn-lede">
-            Three readings a week are included with your profile. Unlimited is $3.99 a week.
+            {openAccess
+              ? "The Long Read is open with your account. Morning, midday, and evening. No charge is started from this page."
+              : "Three readings a week are included with your profile. Unlimited is $3.99 a week."}
           </p>
         </div>
         {error && (
@@ -337,25 +406,35 @@ export default function DeepReadingPage() {
             <p className="tn-alert">{error}</p>
           </div>
         )}
-        {subscribed && (
+        {!openAccess && subscribed && (
           <p className="tn-sky__note">Unlimited readings. $3.99 a week.</p>
         )}
-        {!subscribed && entitled && (
-          <p className="tn-sky__note">{freeRemaining} of 3 free readings left this week.</p>
+        {!openAccess && !subscribed && entitled && (
+          <p className="tn-sky__note">
+            {freeRemaining} of 3 free readings left this week.
+          </p>
         )}
-        {!entitled && (
+        {!openAccess && !entitled && (
           <div className="tn-card tn-paywall">
             <p className="label-lock">$3.99 / week</p>
             <h2 className="clash tn-paywall__title">Unlimited readings.</h2>
             <p className="serif-quiet tn-lede">
-              Your three free readings for this week are used. $3.99 a week keeps the room open — as many readings as you want.
+              Your three free readings for this week are used. $3.99 a week
+              keeps the room open — as many readings as you want.
             </p>
-            <SubscriptionTierPicker subscribingTier={subscribingTier} onStart={startTrial} />
+            <SubscriptionTierPicker
+              subscribingTier={subscribingTier}
+              onStart={startTrial}
+            />
           </div>
         )}
         {entitled && (
           <div className="chart-feed tn-feed tn-longread">
-            <div className="tn-windows" role="tablist" aria-label="Daily Long Read windows">
+            <div
+              className="tn-windows"
+              role="tablist"
+              aria-label="Daily Long Read windows"
+            >
               {WINDOWS.map(w => {
                 const state = stateFor(w.id);
                 const isActiveWindow = w.id === active;
@@ -371,7 +450,13 @@ export default function DeepReadingPage() {
                     <span className="label-lock">{w.hours}</span>
                     <span className="clash tn-window__title">{w.label}</span>
                     <span className="tn-window__meta">
-                      {isActiveWindow ? "Now" : state === "done" ? "Drawn" : state === "locked" ? "Later" : "Open"}
+                      {isActiveWindow
+                        ? "Now"
+                        : state === "done"
+                          ? "Drawn"
+                          : state === "locked"
+                            ? "Later"
+                            : "Open"}
                     </span>
                   </button>
                 );
@@ -385,7 +470,8 @@ export default function DeepReadingPage() {
               </div>
               {selectedState === "locked" && (
                 <p className="serif-quiet tn-lede">
-                  This window opens later today. You can still review Morning or Midday once you've drawn them.
+                  This window opens later today. You can still review Morning or
+                  Midday once you've drawn them.
                 </p>
               )}
               {selectedState === "open" && !hasReading && (
@@ -396,13 +482,28 @@ export default function DeepReadingPage() {
                   <textarea
                     id="deep-situation"
                     value={situations[selectedWindow]}
-                    onChange={e => setSituations(prev => ({ ...prev, [selectedWindow]: e.target.value }))}
+                    onChange={e =>
+                      setSituations(prev => ({
+                        ...prev,
+                        [selectedWindow]: e.target.value,
+                      }))
+                    }
                     rows={4}
-                    placeholder={'e.g. "trying to decide whether to leave my job"'}
+                    placeholder={
+                      'e.g. "trying to decide whether to leave my job"'
+                    }
                     className="tn-field"
                   />
-                  <button type="button" onClick={drawTheLongRead} disabled={drawing} className="cta-pist tn-draw" style={{ opacity: drawing ? 0.6 : 1 }}>
-                    {drawing ? "Drawing…" : `Draw the ${selectedMeta.label} Long Read ✦`}
+                  <button
+                    type="button"
+                    onClick={drawTheLongRead}
+                    disabled={drawing}
+                    className="cta-pist tn-draw"
+                    style={{ opacity: drawing ? 0.6 : 1 }}
+                  >
+                    {drawing
+                      ? "Drawing…"
+                      : `Draw the ${selectedMeta.label} Long Read ✦`}
                   </button>
                 </>
               )}
@@ -412,10 +513,13 @@ export default function DeepReadingPage() {
                     <div className="long-read-spread tn-spread">
                       {displaySpread?.map(s => (
                         <div key={s.slot} className="long-read-card">
-                          <p className="long-read-slot-label label-lock">{s.slotName}</p>
+                          <p className="long-read-slot-label label-lock">
+                            {s.slotName}
+                          </p>
                           <CardArt card={s.card} reversed={s.reversed} />
                           <p className="long-read-card-name">
-                            {s.card.name}{s.reversed ? " (rev.)" : ""}
+                            {s.card.name}
+                            {s.reversed ? " (rev.)" : ""}
                           </p>
                         </div>
                       ))}
@@ -432,16 +536,54 @@ export default function DeepReadingPage() {
                     </div>
                   </SectionBoundary>
                   {isAdmin && selectedState === "done" && (
-                    <button type="button" onClick={drawTheLongRead} disabled={drawing} className="cta-ghost" style={{ alignSelf: "flex-start", opacity: drawing ? 0.6 : 0.9, cursor: "pointer" }}>
+                    <button
+                      type="button"
+                      onClick={drawTheLongRead}
+                      disabled={drawing}
+                      className="cta-ghost"
+                      style={{
+                        alignSelf: "flex-start",
+                        opacity: drawing ? 0.6 : 0.9,
+                        cursor: "pointer",
+                      }}
+                    >
                       {drawing ? "Drawing…" : "Admin · redraw this window"}
                     </button>
                   )}
-                  <div className="tn-followup">
-                    <p className="label-lock">Ask a follow-up — $2.99</p>
-                    <textarea value={question} onChange={e => setQuestion(e.target.value)} rows={3} placeholder="What do you want to know more about?" className="tn-field" />
-                    <button type="button" onClick={askQuestion} disabled={askingQuestion || !question.trim()} className="cta-pist" style={{ alignSelf: "flex-start", opacity: askingQuestion || !question.trim() ? 0.5 : 1, cursor: askingQuestion || !question.trim() ? "default" : "pointer" }}>
-                      {askingQuestion ? "Starting…" : "Ask — $2.99"}
+                  <div className="tn-followup tn-stack">
+                    <p className="label-lock">
+                      {openAccess
+                        ? "Ask a follow-up"
+                        : "Ask a follow-up — $2.99"}
+                    </p>
+                    <textarea
+                      value={question}
+                      onChange={e => setQuestion(e.target.value)}
+                      rows={3}
+                      placeholder="What do you want to know more about?"
+                      className="tn-field"
+                    />
+                    <button
+                      type="button"
+                      onClick={askQuestion}
+                      disabled={askingQuestion || !question.trim()}
+                      className="cta-pist tn-action"
+                      style={{
+                        opacity: askingQuestion || !question.trim() ? 0.5 : 1,
+                      }}
+                    >
+                      {askingQuestion
+                        ? "Writing…"
+                        : openAccess
+                          ? "Ask"
+                          : "Ask — $2.99"}
                     </button>
+                    {followUp && (
+                      <div className="tn-letter__body">
+                        <p className="label-lock">Follow-up</p>
+                        <BoldParagraphs text={followUp} />
+                      </div>
+                    )}
                   </div>
                 </>
               )}
@@ -449,11 +591,24 @@ export default function DeepReadingPage() {
           </div>
         )}
         <HouseDressing />
-        <p className="serif-quiet" style={{ textAlign: "center", marginTop: "0.5rem", color: "#F4EFE6" }}>
+        <p
+          className="serif-quiet"
+          style={{ textAlign: "center", marginTop: "0.5rem", color: "#F4EFE6" }}
+        >
           Prefer the free five-card draw?{" "}
-          <Link to="/journal" style={{ textDecoration: "underline", color: "#D8F0C4" }}>Open The Journal →</Link>
+          <Link
+            to="/journal"
+            style={{ textDecoration: "underline", color: "#D8F0C4" }}
+          >
+            Open The Journal →
+          </Link>
           {" · "}
-          <Link to="/shop" style={{ textDecoration: "underline", color: "#D8F0C4" }}>Shop the house →</Link>
+          <Link
+            to="/shop"
+            style={{ textDecoration: "underline", color: "#D8F0C4" }}
+          >
+            Shop the house →
+          </Link>
         </p>
       </div>
     </div>

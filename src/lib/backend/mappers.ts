@@ -144,6 +144,9 @@ export function mapProfile(row: Row | null | undefined) {
     situation: row.situation ?? undefined,
     genderIdentity: row.gender_identity ?? undefined,
     sexualOrientation: row.sexual_orientation ?? undefined,
+    northFocus: row.north_focus ?? "general",
+    northNote: row.north_note ?? undefined,
+    northOnboardedAt: row.north_onboarded_at ?? undefined,
   };
 }
 

@@ -3,11 +3,15 @@
  * Titles are appended with " | XI Eleven XVI Sixteen" unless they already name the brand.
  */
 
+import { TRUE_NORTH_FREE_ACCESS } from "../lib/freeAccess";
+
 export const PAGE_SEO = {
   home: {
     title: "",
     description:
-      "XI Eleven XVI Sixteen clothing, made when you order it. Dresses, bras, leggings, jerseys, shorts. Written tarot is a separate $7/week product.",
+      TRUE_NORTH_FREE_ACCESS
+        ? "XI Eleven XVI Sixteen clothing, made when you order it. Dresses, bras, leggings, jerseys, shorts. True North readings are open with an account."
+        : "XI Eleven XVI Sixteen clothing, made when you order it. Dresses, bras, leggings, jerseys, shorts. Written tarot is a separate $7/week product.",
   },
   shopAll: {
     title: "Shop All",
@@ -27,7 +31,9 @@ export const PAGE_SEO = {
   about: {
     title: "About",
     description:
-      "XI Eleven XVI Sixteen makes clothing to order. The Journal is writing. True North is a $7/week written tarot membership.",
+      TRUE_NORTH_FREE_ACCESS
+        ? "XI Eleven XVI Sixteen makes clothing to order. The Journal is writing. True North is the chart, the numbers, and the Long Read."
+        : "XI Eleven XVI Sixteen makes clothing to order. The Journal is writing. True North is a $7/week written tarot membership.",
   },
   contact: {
     title: "Contact",
@@ -42,12 +48,15 @@ export const PAGE_SEO = {
   chart: {
     title: "True North",
     description:
-      "True North is the reading room of XI Eleven XVI Sixteen. Free natal chart with an account. Long Read: written tarot, $7/week.",
+      TRUE_NORTH_FREE_ACCESS
+        ? "True North is the reading room of XI Eleven XVI Sixteen. Chart, numbers, Almanac, tandem, and the Long Read — open with an account."
+        : "True North is the reading room of XI Eleven XVI Sixteen. Free natal chart with an account. Long Read: written tarot, $7/week.",
   },
   longRead: {
-    title: "The Long Read — $7/week",
-    description:
-      "Three written tarot readings a day, based on what you tell us. $7 a week after a seven-day trial. Cancel anytime.",
+    title: TRUE_NORTH_FREE_ACCESS ? "The Long Read" : "The Long Read — $7/week",
+    description: TRUE_NORTH_FREE_ACCESS
+      ? "Three written tarot readings a day, based on what you tell us. Open with your True North account."
+      : "Three written tarot readings a day, based on what you tell us. $7 a week after a seven-day trial. Cancel anytime.",
   },
   almanac: {
     title: "The Almanac — 11:16",
@@ -57,7 +66,9 @@ export const PAGE_SEO = {
   numbers: {
     title: "Numerology",
     description:
-      "Life Path, Expression, Soul Urge under your natal chart. XI Eleven XVI Sixteen True North. $19.99 once.",
+      TRUE_NORTH_FREE_ACCESS
+        ? "Life Path, Expression, Soul Urge under your natal chart. XI Eleven XVI Sixteen True North."
+        : "Life Path, Expression, Soul Urge under your natal chart. XI Eleven XVI Sixteen True North. $19.99 once.",
   },
   cart: {
     title: "Your Cart",
