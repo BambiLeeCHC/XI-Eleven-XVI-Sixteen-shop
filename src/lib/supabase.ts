@@ -12,10 +12,11 @@ import { getSessionId } from "./session";
  * Typed Long Read helpers (window column) live in ./deepReadingsClient.ts.
  */
 
-const url = import.meta.env.VITE_SUPABASE_URL as string;
-const key = import.meta.env.VITE_SUPABASE_ANON_KEY as string;
+const url = import.meta.env.VITE_SUPABASE_URL as string | undefined;
+const key = import.meta.env.VITE_SUPABASE_ANON_KEY as string | undefined;
+const configured = Boolean(url && key);
 
-if (!url || !key) {
+if (!configured) {
   // Fail loudly in the console rather than throwing: a missing env var should not
   // white-screen the storefront the way the previous backend outage did.
   console.error(
@@ -40,7 +41,10 @@ function parkRecoveryOnResetPage() {
 
 parkRecoveryOnResetPage();
 
-export const supabase = createClient(url ?? "", key ?? "", {
+export const supabase = createClient(
+  configured ? (url as string) : "https://placeholder.supabase.co",
+  configured ? (key as string) : "public-anon-placeholder",
+  {
   global: {
     // Scopes the guest cart: RLS on `cart_items` matches rows against this.
     headers: { "x-cart-session": getSessionId() },

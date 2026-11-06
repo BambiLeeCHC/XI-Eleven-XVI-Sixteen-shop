@@ -11,6 +11,7 @@ import { api, useQuery } from "../../lib/backend";
 import { HOUSE_HINGE, HOUSE_LINE } from "../../lib/brand";
 import { NUMEROLOGY_CALC_EXPLAIN } from "../../lib/numerology";
 import { signAtLongitude } from "../../lib/chartGeometry";
+import { circleViewFromHash } from "../../lib/northSocial";
 import { moonPhase } from "../../lib/ritual";
 
 export interface NatalPlacement {
@@ -115,12 +116,22 @@ export const SIGN_GLYPH: Record<string, string> = {
 };
 
 export const TRUE_NORTH_PAGES = [
-  { path: "/chart", label: "Chart", glyph: "✦", blurb: "The sky the second you were born." },
-  { path: "/chart/numbers", label: "Numbers", glyph: "◆", blurb: "The constants underneath the chart." },
-  { path: "/chart/almanac", label: "Almanac", glyph: "☾", blurb: "The day's mood, in one page." },
-  { path: "/chart/circle", label: "Circle", glyph: "◎", blurb: "Daily notes, shared. Tandem when you want company." },
-  { path: "/chart/long-read", label: "Long Read", glyph: "♠", blurb: "Seven cards. Three windows. Open with your account." },
+  { path: "/chart", label: "Feed", glyph: "✦", blurb: "Your posts, tandem readings, and the people you follow.", view: "feed" },
+  { path: "/chart#sky", label: "My Sky", glyph: "✧", blurb: "Chart, numbers, and your constellation.", view: "sky" },
+  { path: "/chart#friends", label: "Friends", glyph: "◎", blurb: "Who you follow, and who can reach your feed.", view: "friends" },
+  { path: "/chart/almanac", label: "Almanac", glyph: "☾", blurb: "The day's mood, in one page.", view: "route" },
+  { path: "/chart/long-read", label: "Tarot Studio", glyph: "♠", blurb: "Seven cards. Three windows. Open with your account.", view: "route" },
+  { path: "/chart/circle", label: "Tandem", glyph: "⚭", blurb: "A consented reading, opened only when they accept.", view: "route" },
 ] as const;
+
+function trueNorthActive(pathname: string, hash: string, page: (typeof TRUE_NORTH_PAGES)[number]) {
+  if (page.view === "feed") return pathname === "/chart" && circleViewFromHash(hash) === "feed";
+  if (page.view === "sky") {
+    return pathname === "/profile" || pathname === "/chart/numbers" || (pathname === "/chart" && circleViewFromHash(hash) === "sky");
+  }
+  if (page.view === "friends") return pathname === "/chart" && circleViewFromHash(hash) === "friends";
+  return pathname === page.path || pathname.startsWith(`${page.path}/`);
+}
 
 export const TRUE_NORTH_FEATURES = [
   { title: "Clarity", body: "Complex charts, simplified without losing the point.", glyph: "✦" },
@@ -253,8 +264,8 @@ export function TrueNorthNav() {
   return (
     <nav className="tn-rail" aria-label="True North sections">
       {TRUE_NORTH_PAGES.map(p => {
-        const active = p.path === "/chart" ? location.pathname === "/chart" : location.pathname.startsWith(p.path);
-        return (<Link key={p.path} to={p.path} aria-current={active ? "true" : undefined} className={`tn-rail__item ${active ? "is-active" : ""}`}><span className="tn-rail__glyph" aria-hidden="true">{p.glyph}</span><span className="tn-rail__label">{p.label}</span></Link>);
+        const active = trueNorthActive(location.pathname, location.hash, p);
+        return (<Link key={p.path} to={p.path} aria-current={active ? "page" : undefined} className={`tn-rail__item ${active ? "is-active" : ""}`}><span className="tn-rail__glyph" aria-hidden="true">{p.glyph}</span><span className="tn-rail__label">{p.label}</span></Link>);
       })}
     </nav>
   );
