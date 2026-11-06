@@ -2,12 +2,16 @@ import { Link, useLocation } from "react-router-dom";
 import { PlanetIcon, SignIcon } from "../../components/journal/SkyGlyphs";
 import { TrueNorthSignIcon } from "../../components/journal/TrueNorthGlyphs";
 import {
+  ASPECT_ANGLE_LABEL,
+  ASPECT_TITLES,
+  BODY_ROLES,
   explainAspectAcrossHouses,
   explainAspectFull,
   explainHouseFull,
   explainPlacementFull,
   explainPlacementInHouse,
   explainSignInHouse,
+  HOUSE_CARD_SHORT,
 } from "../../lib/astrologyMeanings";
 import { api, useQuery } from "../../lib/backend";
 import { HOUSE_LINE } from "../../lib/brand";
@@ -150,9 +154,27 @@ export const SIGN_GLYPH: Record<string, string> = {
 };
 
 export const TRUE_NORTH_PAGES = [
-  { id: "feed", path: "/chart", label: "Feed", glyph: "✦", blurb: "Notes, pulls, and the people you read with." },
-  { id: "sky", path: "/chart#sky", label: MY_SKY_LABEL, glyph: "◎", blurb: "Your chart, your numbers, and your constellation." },
-  { id: "readings", path: "/chart#readings", label: "Readings", glyph: "♠", blurb: "A quick pull, a deep spread, or a live tandem." },
+  {
+    id: "feed",
+    path: "/chart",
+    label: "Feed",
+    glyph: "✦",
+    blurb: "Notes, pulls, and the people you read with.",
+  },
+  {
+    id: "sky",
+    path: "/chart#sky",
+    label: MY_SKY_LABEL,
+    glyph: "◎",
+    blurb: "Your chart, your numbers, and your constellation.",
+  },
+  {
+    id: "readings",
+    path: "/chart#readings",
+    label: "Readings",
+    glyph: "♠",
+    blurb: "A quick pull, a deep spread, or a live tandem.",
+  },
 ] as const;
 
 export const TRUE_NORTH_FEATURES = [
@@ -296,9 +318,11 @@ export function PlacementRow({
   const houseSign = placement.houseSign || cusp?.sign || sign;
   const houseTitle =
     (house ? explainHouseFull(house)?.title : null) ?? `House ${house ?? "—"}`;
+  const houseShort = house ? HOUSE_CARD_SHORT[house] : "";
+  const retrogradeNote = retrograde ? " · Retrograde" : "";
   const residents = house
-    ? `Stationed in House ${house} (${houseTitle} · ${houseSign} cusp) · ${deg}° ${sign}`
-    : `Stationed without a house · ${deg}° ${sign}`;
+    ? `${body} at ${deg}° ${sign} · House ${house} (${houseTitle} · ${houseSign} cusp)${retrogradeNote}`
+    : `${body} at ${deg}° ${sign}${retrogradeNote}`;
   return (
     <SkyCard
       element={element}
@@ -309,8 +333,10 @@ export function PlacementRow({
       title={full.title}
       signLine={
         <>
-          <SignIcon sign={sign} size={16} /> {deg}° {sign}
-          {full.summary ? ` · ${full.summary}` : ""}
+          <SignIcon sign={sign} size={16} />{" "}
+          {`${sign} (${deg}°${retrograde ? " Rx" : ""}) · ${
+            house && houseShort ? `House ${house}: ${houseShort}` : full.summary
+          }`}
         </>
       }
       bodies={
@@ -336,10 +362,13 @@ export function PlacementRow({
       detail={full.detail}
       keywords={full.keywords}
       synthesisHeading={
-        <>
-          <SignIcon sign={sign} size={13} /> {body} in {sign} inside House{" "}
-          {house ?? "—"}
-        </>
+        house ? (
+          <>
+            In House {house} — {houseTitle}
+          </>
+        ) : (
+          <>No house on file</>
+        )
       }
       synthesis={explainPlacementInHouse(body, sign, house ?? 0, houseSign)}
       question={full.question}
@@ -380,8 +409,12 @@ export function AspectRow({
   const signB = aspect.signB || right?.sign || "—";
   const houseA = aspect.houseA ?? left?.house ?? houses[0]?.house ?? 1;
   const houseB = aspect.houseB ?? right?.house ?? houses[0]?.house ?? 1;
-  const concise = full.summary.split("—")[0]?.trim() || full.summary;
   const named = aspectLabel(aspect.aspect);
+  const plainRole = ASPECT_TITLES[key] ?? named;
+  const roleA = BODY_ROLES[aspect.bodyA] ?? aspect.bodyA;
+  const roleB = BODY_ROLES[aspect.bodyB] ?? aspect.bodyB;
+  const versus = key === "square" || key === "opposition";
+  const angle = ASPECT_ANGLE_LABEL[key] ?? named;
   return (
     <SkyCard
       element={tone}
@@ -389,29 +422,29 @@ export function AspectRow({
       expanded={expanded}
       onToggle={onToggle}
       badge={ASPECT_GLYPH[key] ?? "·"}
-      title={full.title}
+      title={`${aspect.bodyA} ${named.toLowerCase()} ${aspect.bodyB} · ${plainRole}`}
       signLine={
         <>
-          <PlanetIcon body={aspect.bodyA} size={15} /> {signA}
-          <span aria-hidden="true"> · </span>
-          <PlanetIcon body={aspect.bodyB} size={15} /> {signB}
-          {concise ? ` · ${concise}` : ""}
+          {roleA} ({signA}) {versus ? "vs." : "+"} {roleB} ({signB})
         </>
       }
       bodies={
         <>
           <span className="lock-pill mute">{aspect.orb.toFixed(1)}°</span>
-          <span className="lock-pill mute">H{houseA}</span>
-          <span className="lock-pill mute">H{houseB}</span>
+          <span className="lock-pill mute">{`H${houseA}–H${houseB}`}</span>
         </>
       }
-      residents={`${aspect.bodyA} (${signA} · House ${houseA}) in ${named} (${aspect.orb.toFixed(1)}°) with ${aspect.bodyB} (${signB} · House ${houseB})`}
+      residents={`${aspect.bodyA} in ${signA} (House ${houseA}) · ${angle} with ${aspect.bodyB} in ${signB} (House ${houseB}) · ${aspect.orb.toFixed(1)}° orb`}
       detail={full.detail}
       keywords={full.keywords}
       synthesisHeading={
-        <>
-          {named} across House {houseA} and House {houseB}
-        </>
+        houseA === houseB ? (
+          <>Inside House {houseA}</>
+        ) : (
+          <>
+            How this links House {houseA} and House {houseB}
+          </>
+        )
       }
       synthesis={explainAspectAcrossHouses(
         aspect.aspect,
@@ -574,8 +607,15 @@ export function TrueNorthNav() {
       {TRUE_NORTH_PAGES.map(p => {
         const active = p.id === view.destination;
         return (
-          <Link key={p.id} to={p.path} aria-current={active ? "page" : undefined} className={`tn-rail__item ${active ? "is-active" : ""}`}>
-            <span className="tn-rail__glyph" aria-hidden="true">{p.glyph}</span>
+          <Link
+            key={p.id}
+            to={p.path}
+            aria-current={active ? "page" : undefined}
+            className={`tn-rail__item ${active ? "is-active" : ""}`}
+          >
+            <span className="tn-rail__glyph" aria-hidden="true">
+              {p.glyph}
+            </span>
             <span className="tn-rail__label">{p.label}</span>
           </Link>
         );

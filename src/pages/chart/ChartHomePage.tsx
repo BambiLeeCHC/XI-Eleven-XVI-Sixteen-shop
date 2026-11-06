@@ -260,7 +260,8 @@ export function ChartHomePage({
                 ariaLabel="The Placements"
               />
               <p className="chart-expand-hint">
-                Tap a planet. The sign is how that part of you actually moves.
+                Each planet rules one part of you. Its sign shows how it
+                operates; its house shows where it shows up in daily life.
               </p>
               <div className="tn-houses">
                 {chart.placements.map(placement => (
@@ -332,8 +333,9 @@ export function ChartHomePage({
                 ariaLabel="Tightest Aspects"
               />
               <p className="chart-expand-hint">
-                The tighter the orb, the stronger the conversation between two
-                planets.
+                Aspects are angles between two planets showing whether those
+                parts of you work smoothly together or create friction. Smaller
+                orbs (closer to 0°) mean a stronger effect.
               </p>
               {chart.aspects.length > 0 ? (
                 <div className="tn-houses">
