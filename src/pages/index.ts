@@ -18,6 +18,7 @@ export { JournalPage } from "./JournalPage";
 export { JournalPostPage } from "./JournalPostPage";
 export { default as DeepReadingPage } from "./DeepReadingPage";
 export { ChartHomePage } from "./chart/ChartHomePage";
+export { NorthSocialPage } from "./NorthSocialPage";
 export { NumbersPage } from "./chart/NumbersPage";
 export { AlmanacTNPage } from "./chart/AlmanacTNPage";
 export { CirclePage } from "./chart/CirclePage";

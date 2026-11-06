@@ -28,7 +28,7 @@ import {
   JournalPostPage,
   CategoryPage,
   DeepReadingPage,
-  ChartHomePage,
+  NorthSocialPage,
   NumbersPage,
   AlmanacTNPage,
   CirclePage,
@@ -65,7 +65,7 @@ function App() {
             {/* Long Read lives in True North nav; keep old journal URL as alias */}
             <Route path="/journal/deep-reading" element={<Navigate to="/chart/long-read" replace />} />
             <Route path="/journal/:slug" element={<JournalPostPage />} />
-            <Route path="/chart" element={<ChartHomePage />} />
+            <Route path="/chart" element={<NorthSocialPage />} />
             <Route path="/chart/numbers" element={<NumbersPage />} />
             <Route path="/chart/almanac" element={<AlmanacTNPage />} />
             <Route path="/chart/circle" element={<CirclePage />} />
