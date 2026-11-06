@@ -17,6 +17,12 @@
 // named exports aren't statically detectable under Node's ESM loader, so
 // import the default and destructure instead of `import { Origin, ... }`.
 import circularNatalHoroscope from "circular-natal-horoscope-js";
+import {
+  houseForLongitude,
+  roundLongitude,
+  signAtLongitude,
+  tightestAspects,
+} from "../../src/lib/chartGeometry.js";
 const { Origin, Horoscope } = circularNatalHoroscope as any;
 
 export interface GeoResult {
@@ -168,40 +174,57 @@ export function computeNatalChart(
     language: "en",
   });
 
-  const placements: NatalPlacement[] = BODIES.map((body) => {
+  const rawBodies = BODIES.map((body) => {
     const cel = horoscope.CelestialBodies[body];
+    const longitude = Number(cel.ChartPosition.Ecliptic.DecimalDegrees);
     return {
       body: body.charAt(0).toUpperCase() + body.slice(1),
-      sign: cel.Sign.label,
-      degree: Math.round(cel.ChartPosition.Ecliptic.DecimalDegrees * 100) / 100,
-      house: cel.House?.id ?? null,
+      longitude,
       retrograde: Boolean(cel.isRetrograde),
     };
   });
 
   const rawHouses = horoscope.Houses ?? horoscope._houses ?? [];
-  const houses: NatalHouseCusp[] = (rawHouses as any[]).map((h: any) => ({
-    house: h.id,
-    sign: h.Sign?.label ?? "",
-    degree: Math.round((h.ChartPosition?.StartPosition?.Ecliptic?.DecimalDegrees ?? 0) * 100) / 100,
+  const houses: NatalHouseCusp[] = (rawHouses as any[])
+    .map((h: any) => {
+      const longitude = Number(
+        h.ChartPosition?.StartPosition?.Ecliptic?.DecimalDegrees ?? 0,
+      );
+      return {
+        house: Number(h.id),
+        sign: signAtLongitude(longitude).sign,
+        degree: roundLongitude(longitude),
+      };
+    })
+    .sort((a, b) => a.house - b.house);
+
+  const cusps = houses.map(house => house.degree);
+  const placements: NatalPlacement[] = rawBodies.map(body => ({
+    body: body.body,
+    sign: signAtLongitude(body.longitude).sign,
+    degree: roundLongitude(body.longitude),
+    house: houseForLongitude(body.longitude, cusps),
+    retrograde: body.retrograde,
   }));
 
-  const bodyKeySet = new Set(BODIES);
-  const aspects: NatalAspect[] = (horoscope.Aspects?.all ?? [])
-    .filter((a: any) => bodyKeySet.has(a.point1Key) && bodyKeySet.has(a.point2Key))
-    .map((a: any) => ({
-      bodyA: a.point1Label,
-      bodyB: a.point2Label,
-      aspect: a.aspectKey,
-      orb: Math.round(a.orb * 100) / 100,
-    }))
-    .sort((a: NatalAspect, b: NatalAspect) => a.orb - b.orb);
+  const aspects: NatalAspect[] = tightestAspects(
+    rawBodies.map(body => ({ name: body.body, longitude: body.longitude })),
+  );
+
+  const ascendantCusp = houses.find(house => house.house === 1);
+  const midheavenCusp = houses.find(house => house.house === 10);
+  const ascendantLongitude = Number(
+    horoscope.Ascendant?.ChartPosition?.Ecliptic?.DecimalDegrees ?? ascendantCusp?.degree ?? 0,
+  );
+  const midheavenLongitude = Number(
+    horoscope.Midheaven?.ChartPosition?.Ecliptic?.DecimalDegrees ?? midheavenCusp?.degree ?? 0,
+  );
 
   return {
-    ascendant: horoscope.Ascendant.Sign.label,
-    ascendantDegree: Math.round(horoscope.Ascendant.ChartPosition.Ecliptic.DecimalDegrees * 100) / 100,
-    midheaven: horoscope.Midheaven?.Sign?.label ?? "Unknown",
-    midheavenDegree: Math.round((horoscope.Midheaven?.ChartPosition?.Ecliptic?.DecimalDegrees ?? 0) * 100) / 100,
+    ascendant: ascendantCusp?.sign ?? signAtLongitude(ascendantLongitude).sign,
+    ascendantDegree: ascendantCusp?.degree ?? roundLongitude(ascendantLongitude),
+    midheaven: midheavenCusp?.sign ?? signAtLongitude(midheavenLongitude).sign,
+    midheavenDegree: midheavenCusp?.degree ?? roundLongitude(midheavenLongitude),
     placements,
     houses,
     aspects,

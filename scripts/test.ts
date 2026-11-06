@@ -9,6 +9,14 @@ import {
   toPublicNorthProfile,
 } from "../src/lib/northProfile.js";
 import {
+  angularSeparation,
+  houseForLongitude,
+  longitudeOnArc,
+  signAtLongitude,
+  tightestAspects,
+} from "../src/lib/chartGeometry.js";
+import { nextEnabledIndex, ringStep, wrapIndex } from "../src/lib/radialDial.js";
+import {
   canAnswerSession,
   canCloseSession,
   canContribute,
@@ -271,5 +279,47 @@ check(
     assert.doesNotMatch(text, /@/);
   },
 );
+
+check("the size dial spaces six sizes evenly and skips unavailable colors", () => {
+  assert.equal(ringStep(6), 60);
+  assert.equal(ringStep(0), 0);
+  assert.equal(wrapIndex(0, -1, 6), 5);
+  assert.equal(nextEnabledIndex(0, 1, [true, false, true]), 2);
+  assert.equal(nextEnabledIndex(2, 1, [false, false, true]), 2);
+  assert.equal(nextEnabledIndex(0, 1, [false, false]), -1);
+});
+
+check("houses, placements, and aspects share one ecliptic cut", () => {
+  assert.equal(signAtLongitude(0).sign, "Aries");
+  assert.equal(signAtLongitude(29.99).sign, "Aries");
+  assert.equal(signAtLongitude(30).sign, "Taurus");
+  assert.equal(signAtLongitude(359).sign, "Pisces");
+  assert.equal(signAtLongitude(-1).sign, "Pisces");
+  assert.equal(longitudeOnArc(15, 10, 40), true);
+  assert.equal(longitudeOnArc(0, 340, 10), true);
+  assert.equal(longitudeOnArc(20, 340, 10), false);
+
+  const cusps = Array.from({ length: 12 }, (_, i) => (10 + i * 30) % 360);
+  assert.equal(houseForLongitude(15, cusps), 1);
+  assert.equal(houseForLongitude(0, cusps), 12);
+  assert.equal(signAtLongitude(cusps[0] ?? 0).sign, "Aries");
+  assert.equal(signAtLongitude(15).sign, "Aries");
+
+  const aspects = tightestAspects([
+    { name: "Sun", longitude: 10 },
+    { name: "Moon", longitude: 10.4 },
+    { name: "Mars", longitude: 100 },
+    { name: "Venus", longitude: 50 },
+  ]);
+  assert.equal(aspects[0]?.aspect, "square");
+  assert.equal(aspects[0]?.orb, 0);
+  assert.equal(
+    aspects.find(item => item.bodyA === "Sun" && item.bodyB === "Moon")?.aspect,
+    "conjunction",
+  );
+  assert.equal(aspects.some(item => item.bodyB === "Venus"), false);
+  assert.ok(aspects.every((item, index) => index === 0 || item.orb >= (aspects[index - 1]?.orb ?? 0)));
+  assert.equal(Math.round(angularSeparation(10, 350) * 10) / 10, 20);
+});
 
 console.log(`\n${passed} tests passed`);
