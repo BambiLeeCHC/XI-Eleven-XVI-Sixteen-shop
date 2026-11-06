@@ -1,5 +1,5 @@
 import { SEO } from "../../components/SEO";
-import { Navigate } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import { TrueNorthAtmosphere } from "../../components/journal/TrueNorthAtmosphere";
 import { SectionBoundary } from "../../components/journal/SectionBoundary";
 import { api, useQuery } from "../../lib/backend";
@@ -12,6 +12,7 @@ import {
   TrueNorthSignedOutTeaser,
   parseProfileSections,
   useSunSign,
+  type NumerologyResult,
 } from "./shared";
 import { PAGE_SEO } from "../../data/seoMeta";
 
@@ -23,6 +24,20 @@ export function NumbersPage({ embedded = false }: { embedded?: boolean } = {}) {
 
   const pageTitle = PAGE_SEO.numbers.title;
   const pageDescription = PAGE_SEO.numbers.description;
+
+  if (embedded && user === undefined) {
+    return <p className="tn-sky__note">Calculating your numbers…</p>;
+  }
+
+  if (embedded && !user) {
+    return (
+      <div className="tn-card tn-invite-card">
+        <p className="label-lock">Numbers</p>
+        <p className="serif-quiet tn-invite-card__copy">Sign in to see the six numbers under your chart.</p>
+        <Link to="/login" className="tn-inline">Sign in</Link>
+      </div>
+    );
+  }
 
   if (!user) {
     return (

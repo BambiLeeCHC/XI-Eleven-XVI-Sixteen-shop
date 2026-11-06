@@ -153,8 +153,8 @@ export function buildOrganizationJsonLd() {
     sameAs: [INSTAGRAM],
     description:
       TRUE_NORTH_FREE_ACCESS
-        ? "A house of clothing, made on demand. True North is the same numbers, opened — natal chart, Almanac, and the Long Read. XI Eleven XVI Sixteen L.L.C., Florida."
-        : "A house of clothing, made on demand. True North is the same numbers, opened — natal chart, Almanac, Long Read $7/week. XI Eleven XVI Sixteen L.L.C., Florida.",
+        ? "A house of clothing, made on demand. True North is the same numbers, opened — natal chart, readings, and the Long Read. XI Eleven XVI Sixteen L.L.C., Florida."
+        : "A house of clothing, made on demand. True North is the same numbers, opened — natal chart and the Long Read. XI Eleven XVI Sixteen L.L.C., Florida.",
     address: {
       "@type": "PostalAddress",
       addressRegion: "FL",
@@ -193,8 +193,8 @@ export function buildTrueNorthJsonLd() {
         acceptedAnswer: {
           "@type": "Answer",
           text: TRUE_NORTH_FREE_ACCESS
-            ? "XI Eleven XVI Sixteen is a house of clothing. True North is the same numbers, opened — natal chart, Almanac, tandem readings, and the Long Read. A piece is made when you order it; a reading is written when you say what's going on."
-            : "XI Eleven XVI Sixteen is a house of clothing. True North is the same numbers, opened — natal chart, Almanac, and the Long Read ($7 per week). A piece is made when you order it; a reading is written when you say what's going on.",
+            ? "XI Eleven XVI Sixteen is a house of clothing. True North is the same numbers, opened — natal chart, tandem readings, and the Long Read. A piece is made when you order it; a reading is written when you say what's going on."
+            : "XI Eleven XVI Sixteen is a house of clothing. True North is the same numbers, opened — natal chart and the Long Read ($7 per week). A piece is made when you order it; a reading is written when you say what's going on.",
         },
       },
       {
@@ -230,7 +230,7 @@ export function buildTrueNorthJsonLd() {
         name: "What does 11:16 mean for XI Eleven XVI Sixteen?",
         acceptedAnswer: {
           "@type": "Answer",
-          text: "Eleven is the signal. Sixteen is the reckoning. 11:16 is the brand hour — set intention in the morning, check your work at night. The Almanac keeps that time.",
+          text: "Eleven is the signal. Sixteen is the reckoning. 11:16 is the brand hour — set intention in the morning, check your work at night.",
         },
       },
     ],

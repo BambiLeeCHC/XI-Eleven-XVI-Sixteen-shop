@@ -32,6 +32,8 @@ export type TopFriend = {
   vibe: string;
 };
 
+export type AvatarMode = "ai" | "original";
+
 export type SpaceProfile = {
   name: string;
   manifesto: string;
@@ -43,7 +45,18 @@ export type SpaceProfile = {
   moon: string;
   rising: string;
   lifePath: string;
+  /** Optional @handle. Older saved profiles omit it and still load. */
+  handle: string;
+  /** Square data URL of the uploaded photo. Empty until the person adds one. */
+  photoUrl: string;
+  /** Square data URL of the generated True North portrait. */
+  aiAvatarUrl: string;
+  avatarMode: AvatarMode;
 };
+
+export type TrueNorthDestination = "feed" | "sky" | "readings";
+export type SkyPanel = "chart" | "numbers" | "constellation";
+export type ReadingMode = "quick" | "deep" | "tandem";
 
 export type SocialState = {
   posts: SocialPost[];
@@ -88,6 +101,10 @@ export function starterSpace(): SpaceProfile {
     moon: "Cancer",
     rising: "Libra",
     lifePath: "11",
+    handle: "you",
+    photoUrl: "",
+    aiAvatarUrl: "",
+    avatarMode: "ai",
   };
 }
 
@@ -246,4 +263,116 @@ export function createPost(input: {
     mine: [],
     comments: [],
   };
+}
+
+function skyFromHash(hash: string): SkyPanel {
+  if (hash === "numbers") return "numbers";
+  if (hash === "constellation" || hash === "friends") return "constellation";
+  return "chart";
+}
+
+/** One reading of every True North URL. Almanac and the old extra tabs fold in here. */
+export function resolveTrueNorthView(pathname: string, hash = ""): {
+  destination: TrueNorthDestination;
+  sky: SkyPanel;
+  reading: ReadingMode;
+} {
+  const h = hash.replace(/^#/, "");
+  if (pathname.startsWith("/chart/long-read") || h === "deep" || h === "long-read") {
+    return { destination: "readings", sky: skyFromHash(h), reading: "deep" };
+  }
+  if (pathname.startsWith("/chart/circle") || h === "tandem") {
+    return { destination: "readings", sky: "chart", reading: "tandem" };
+  }
+  if (h === "readings" || h === "quick") {
+    return { destination: "readings", sky: "chart", reading: "quick" };
+  }
+  if (
+    pathname.startsWith("/profile") ||
+    h === "sky" ||
+    h === "chart" ||
+    h === "numbers" ||
+    h === "constellation" ||
+    h === "friends" ||
+    h === "profile" ||
+    h === "details" ||
+    h === "birth"
+  ) {
+    return { destination: "sky", sky: skyFromHash(h), reading: "quick" };
+  }
+  return { destination: "feed", sky: "chart", reading: "quick" };
+}
+
+/** Backwards-compatible load of xixvi-north-social-v1, including profiles saved before avatars. */
+export function upgradeSocialState(raw: unknown, now = Date.now()): SocialState {
+  if (!raw || typeof raw !== "object") return blankState(now);
+  const parsed = raw as Partial<SocialState>;
+  if (!Array.isArray(parsed.posts) || !parsed.top || !parsed.space || typeof parsed.space !== "object") {
+    return blankState(now);
+  }
+  const space = parsed.space as Partial<SpaceProfile>;
+  const base = starterSpace();
+  return {
+    posts: parsed.posts,
+    top: rankedEight(parsed.top),
+    space: {
+      ...base,
+      ...space,
+      name: typeof space.name === "string" && space.name.trim() ? space.name : base.name,
+      manifesto: typeof space.manifesto === "string" ? space.manifesto : base.manifesto,
+      mood: typeof space.mood === "string" ? space.mood : base.mood,
+      anthem: typeof space.anthem === "string" ? space.anthem : base.anthem,
+      altar: typeof space.altar === "string" ? space.altar : base.altar,
+      aura: typeof space.aura === "string" ? space.aura : base.aura,
+      sun: typeof space.sun === "string" ? space.sun : base.sun,
+      moon: typeof space.moon === "string" ? space.moon : base.moon,
+      rising: typeof space.rising === "string" ? space.rising : base.rising,
+      lifePath: typeof space.lifePath === "string" ? space.lifePath : base.lifePath,
+      handle: typeof space.handle === "string" ? space.handle : base.handle,
+      photoUrl: typeof space.photoUrl === "string" ? space.photoUrl : "",
+      aiAvatarUrl: typeof space.aiAvatarUrl === "string" ? space.aiAvatarUrl : "",
+      avatarMode: space.avatarMode === "original" ? "original" : "ai",
+    },
+  };
+}
+
+export function activeAvatarUrl(space: Partial<SpaceProfile> | null | undefined): string {
+  const photo = typeof space?.photoUrl === "string" ? space.photoUrl : "";
+  const ai = typeof space?.aiAvatarUrl === "string" ? space.aiAvatarUrl : "";
+  if (space?.avatarMode === "original") return photo || ai;
+  return ai || photo;
+}
+
+type AvatarSyncClient = {
+  from: (table: string) => {
+    update: (patch: Record<string, unknown>) => {
+      eq: (column: string, value: string) => Promise<{ error: { message?: string } | null }>;
+    };
+  };
+};
+
+/** Best-effort profile sync. Missing columns (migration not applied) are not an error. */
+export async function syncNorthAvatar(
+  client: AvatarSyncClient,
+  userId: string,
+  space: SpaceProfile,
+): Promise<boolean> {
+  try {
+    const { error } = await client
+      .from("profiles")
+      .update({
+        north_photo_url: space.photoUrl || null,
+        north_ai_avatar_url: space.aiAvatarUrl || null,
+        north_avatar_mode: space.avatarMode || "ai",
+      })
+      .eq("id", userId);
+    if (!error) return true;
+    const message = error.message ?? "";
+    if (/north_photo_url|north_ai_avatar_url|north_avatar_mode|schema cache|column/i.test(message)) {
+      return false;
+    }
+    return false;
+  } catch {
+    return false;
+  }
 }

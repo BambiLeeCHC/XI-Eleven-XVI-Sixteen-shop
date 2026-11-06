@@ -53,6 +53,20 @@ export function ChartHomePage({ embedded = false }: { embedded?: boolean } = {})
     ]),
   ];
 
+  if (embedded && (authLoading || loading)) {
+    return <p className="tn-sky__note">Calculating your chart…</p>;
+  }
+
+  if (embedded && !authLoading && !isAuthenticated) {
+    return (
+      <div className="tn-card tn-invite-card">
+        <p className="label-lock">Chart</p>
+        <p className="serif-quiet tn-invite-card__copy">Sign in to see the wheel drawn from your birth data.</p>
+        <Link to="/login" className="tn-inline">Sign in</Link>
+      </div>
+    );
+  }
+
   if (authLoading) {
     return (
       <div className="journal-page journal-page--truenorth">
@@ -113,8 +127,10 @@ export function ChartHomePage({ embedded = false }: { embedded?: boolean } = {})
           <div className="chart-feed tn-feed">
             <ChartSkyPanel chart={chart} selectedBody={selectedBody} setSelectedBody={setSelectedBody} />
 
-            <div className="tn-card chart-feed-card" style={{ ["--i" as any]: 1 }}>
+            <details className="tn-card chart-feed-card" open style={{ ["--i" as any]: 1 }}>
+              <summary className="chart-fold">
               <SectionHeading wordA="The" wordB="Placements" ariaLabel="The Placements" />
+              </summary>
               <p className="chart-expand-hint">
                 Tap a planet. The sign is how that part of you actually moves.
               </p>
@@ -128,10 +144,12 @@ export function ChartHomePage({ embedded = false }: { embedded?: boolean } = {})
                   />
                 ))}
               </div>
-            </div>
+            </details>
 
-            <div className="tn-card chart-feed-card" style={{ ["--i" as any]: 2 }}>
+            <details className="tn-card chart-feed-card" style={{ ["--i" as any]: 2 }}>
+              <summary className="chart-fold">
               <SectionHeading wordA="Tightest" wordB="Aspects" ariaLabel="Tightest Aspects" />
+              </summary>
               <p className="chart-expand-hint">
                 The tighter the orb, the stronger the conversation between two planets.
               </p>
@@ -149,10 +167,12 @@ export function ChartHomePage({ embedded = false }: { embedded?: boolean } = {})
               ) : (
                 <p className="tn-sky__note">No tight aspects to show yet.</p>
               )}
-            </div>
+            </details>
 
-            <div className="tn-card chart-feed-card" style={{ ["--i" as any]: 3 }}>
+            <details className="tn-card chart-feed-card" style={{ ["--i" as any]: 3 }}>
+              <summary className="chart-fold">
               <SectionHeading wordA="The" wordB="Houses" ariaLabel="The Houses" />
+              </summary>
               <p className="chart-expand-hint">
                 Tap a house. The sign on the cusp is how that room of your life actually runs.
               </p>
@@ -167,7 +187,7 @@ export function ChartHomePage({ embedded = false }: { embedded?: boolean } = {})
                   />
                 ))}
               </div>
-            </div>
+            </details>
 
             <div className="tn-card tn-letter chart-feed-card chart-feed-card--wide" style={{ position: "relative", ["--i" as any]: 4 }}>
               <SectionHeading wordA="Your" wordB="Profile" ariaLabel="Your Personality Profile" />

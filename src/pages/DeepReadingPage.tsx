@@ -104,7 +104,7 @@ function isPaywallError(message: string) {
   );
 }
 
-export default function DeepReadingPage() {
+export default function DeepReadingPage({ embedded = false }: { embedded?: boolean } = {}) {
   const { isLoading: authLoading, isAuthenticated } = useAuthStatus();
   const user = useQuery(
     api.auth.currentUser,
@@ -328,6 +328,24 @@ export default function DeepReadingPage() {
     return `tn-window${selected ? " is-active" : ""}${state === "locked" ? " is-locked" : ""}${state === "done" ? " is-done" : ""}${isNow ? " is-now" : ""}`;
   };
 
+  if ((authLoading || entitlementLoading) && embedded) {
+    return <p className="serif-quiet tn-opening">Opening your Long Read…</p>;
+  }
+
+  if (!authLoading && !entitlementLoading && !isAuthenticated && embedded) {
+    return (
+      <div className="tn-card tn-invite-card">
+        <p className="label-lock">{openAccess ? "Readings, open" : "Readings · 3 free each week"}</p>
+        <p className="serif-quiet tn-invite-card__copy">
+          {openAccess
+            ? "Sign in to draw the Long Read. It is open with your account."
+            : "Sign in to draw the seven-card spread."}
+        </p>
+        <Link to="/login" className="tn-inline">Sign in</Link>
+      </div>
+    );
+  }
+
   if (authLoading || entitlementLoading) {
     return (
       <div className="journal-page journal-page--truenorth">
@@ -379,16 +397,16 @@ export default function DeepReadingPage() {
   }
 
   return (
-    <div className="journal-page journal-page--truenorth">
-      <TrueNorthAtmosphere />
-      <div className="journal-stack long-read-stack tn-shell">
+    <div className={embedded ? "tn-embed tn-reading-embed" : "journal-page journal-page--truenorth"}>
+      {!embedded && <TrueNorthAtmosphere />}
+      <div className={embedded ? "tn-reading-embed__stack" : "journal-stack long-read-stack tn-shell"}>
         <SEO
           title={pageTitle}
           description={pageDescription}
           url={pageUrl}
           jsonLd={longReadJsonLd}
         />
-        <TrueNorthHero sunSign={sunSign} />
+        {!embedded && <TrueNorthHero sunSign={sunSign} />}
         <SectionHeading
           wordA="The"
           wordB="Long Read"

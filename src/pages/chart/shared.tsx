@@ -11,6 +11,7 @@ import { api, useQuery } from "../../lib/backend";
 import { HOUSE_HINGE, HOUSE_LINE } from "../../lib/brand";
 import { NUMEROLOGY_CALC_EXPLAIN } from "../../lib/numerology";
 import { signAtLongitude } from "../../lib/chartGeometry";
+import { MY_SKY_LABEL, resolveTrueNorthView } from "../../lib/northSocial";
 import { moonPhase } from "../../lib/ritual";
 
 export interface NatalPlacement {
@@ -115,11 +116,9 @@ export const SIGN_GLYPH: Record<string, string> = {
 };
 
 export const TRUE_NORTH_PAGES = [
-  { path: "/chart", label: "Chart", glyph: "✦", blurb: "The sky the second you were born." },
-  { path: "/chart/numbers", label: "Numbers", glyph: "◆", blurb: "The constants underneath the chart." },
-  { path: "/chart/almanac", label: "Almanac", glyph: "☾", blurb: "The day's mood, in one page." },
-  { path: "/chart/circle", label: "Circle", glyph: "◎", blurb: "Daily notes, shared. Tandem when you want company." },
-  { path: "/chart/long-read", label: "Long Read", glyph: "♠", blurb: "Seven cards. Three windows. Open with your account." },
+  { id: "feed", path: "/chart", label: "Feed", glyph: "✦", blurb: "Notes, pulls, and the people you read with." },
+  { id: "sky", path: "/chart#sky", label: MY_SKY_LABEL, glyph: "◎", blurb: "Your chart, your numbers, and your constellation." },
+  { id: "readings", path: "/chart#readings", label: "Readings", glyph: "♠", blurb: "A quick pull, a deep spread, or a live tandem." },
 ] as const;
 
 export const TRUE_NORTH_FEATURES = [
@@ -250,11 +249,16 @@ export function NumberRow({ numKey, value }: { numKey: string; value: number }) 
 
 export function TrueNorthNav() {
   const location = useLocation();
+  const view = resolveTrueNorthView(location.pathname, location.hash);
   return (
-    <nav className="tn-rail" aria-label="True North sections">
+    <nav className="tn-rail" aria-label="True North">
       {TRUE_NORTH_PAGES.map(p => {
-        const active = p.path === "/chart" ? location.pathname === "/chart" : location.pathname.startsWith(p.path);
-        return (<Link key={p.path} to={p.path} aria-current={active ? "true" : undefined} className={`tn-rail__item ${active ? "is-active" : ""}`}><span className="tn-rail__glyph" aria-hidden="true">{p.glyph}</span><span className="tn-rail__label">{p.label}</span></Link>);
+        const active = p.id === view.destination;
+        return (
+          <Link key={p.id} to={p.path} aria-current={active ? "page" : undefined} className={`tn-rail__item ${active ? "is-active" : ""}`}>
+            <span className="tn-rail__label">{p.label}</span>
+          </Link>
+        );
       })}
     </nav>
   );
