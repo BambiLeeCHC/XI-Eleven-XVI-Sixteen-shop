@@ -6,7 +6,7 @@
  * browser can paint a celestial canvas portrait instead of failing the upload.
  */
 
-import { type ApiRequest, type ApiResponse } from "./_lib/server.js";
+import { type ApiRequest, type ApiResponse } from "./server.js";
 
 const MAX_DATA_URL = 1_800_000;
 const STYLES = new Set(["astral", "engraving", "glass"]);
@@ -231,21 +231,25 @@ async function xaiPortrait(input: AvatarInput, signal: AbortSignal): Promise<str
   return null;
 }
 
-export default async function handler(req: ApiRequest, res: ApiResponse) {
+export async function handleAvatar(req: ApiRequest, res: ApiResponse) {
   if (req.method !== "POST") {
     res.setHeader("Allow", "POST");
     return res.status(405).json({ success: false, error: "Method not allowed" });
   }
   const parsed = parseAvatarRequest(req.body);
-  if (!parsed.ok) return res.status(400).json({ success: false, error: parsed.error });
+  if (!parsed.ok) {
+    const message = (parsed as { ok: false; error: string }).error;
+    return res.status(400).json({ success: false, error: message });
+  }
+  const input = (parsed as { ok: true; value: AvatarInput }).value;
 
   const ctrl = new AbortController();
   const timer = setTimeout(() => ctrl.abort(), 45000);
   try {
     const image =
-      (await geminiPortrait(parsed.value, ctrl.signal)) ||
-      (await openAiPortrait(parsed.value, ctrl.signal)) ||
-      (await xaiPortrait(parsed.value, ctrl.signal));
+      (await geminiPortrait(input, ctrl.signal)) ||
+      (await openAiPortrait(input, ctrl.signal)) ||
+      (await xaiPortrait(input, ctrl.signal));
     if (image) return res.status(200).json({ success: true, imageDataUrl: image });
   } catch (error) {
     console.error("True North avatar upstream failed");

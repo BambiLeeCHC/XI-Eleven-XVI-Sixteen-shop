@@ -15,28 +15,39 @@ import {
   signAtLongitude,
   tightestAspects,
 } from "../src/lib/chartGeometry.js";
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import {
+  addFriend,
+  blankState,
+  circleViewFromHash,
+  filterFeed,
   moveTop,
   MY_CONSTELLATION_LABEL,
   MY_SKY_LABEL,
   NORTH_SOCIAL_SKY_TAB,
   NORTH_SOCIAL_STORAGE_KEY,
+  FEED_FILTERS,
+  overallFeed,
+  personalFeed,
+  PROFILE_CATEGORIES,
+  profileCategoryFromHash,
   promoteTop,
+  publishToFeed,
   rankedEight,
+  removeFriend,
   resolveTrueNorthView,
+  starterSpace,
   starterTop,
   syncNorthAvatar,
   toggleReaction,
   upgradeSocialState,
   upsertFriend,
   activeAvatarUrl,
-  starterSpace,
 } from "../src/lib/northSocial.js";
 import { celestialPortraitSvg, ELEMENT_AURA, styleLabel } from "../src/lib/celestialAvatar.js";
-import { parseAvatarRequest } from "../api/avatar.ts";
+import { parseAvatarRequest } from "../api/_lib/avatar.ts";
 import { localHour, paletteForHour, skyAt } from "../src/lib/skyMode.js";
 import { nextEnabledIndex, ringStep, wrapIndex } from "../src/lib/radialDial.js";
 import {
@@ -354,22 +365,53 @@ check("houses, placements, and aspects share one ecliptic cut", () => {
   assert.equal(Math.round(angularSeparation(10, 350) * 10) / 10, 20);
 });
 
-check("My Sky and My Constellation name the profile and ranked seats", () => {
+check("My Sky holds Chart, Numbers, and My Constellation", () => {
   assert.equal(MY_SKY_LABEL, "My Sky");
   assert.equal(MY_CONSTELLATION_LABEL, "My Constellation");
   assert.equal(NORTH_SOCIAL_SKY_TAB, "My Sky & My Constellation");
   assert.equal(NORTH_SOCIAL_STORAGE_KEY, "xixvi-north-social-v1");
+  assert.deepEqual(
+    PROFILE_CATEGORIES.map(item => item.label),
+    ["Chart", "Numbers", "My Constellation"],
+  );
+  assert.deepEqual(
+    FEED_FILTERS.map(item => item.label),
+    ["All", "Posts & Pulls", "Tandem Readings"],
+  );
+  assert.equal(circleViewFromHash("#numbers"), "sky");
+  assert.equal(circleViewFromHash("#constellation"), "sky");
+  assert.equal(circleViewFromHash("#friends"), "friends");
+  assert.equal(circleViewFromHash(""), "feed");
+  assert.equal(profileCategoryFromHash("#numbers"), "numbers");
+  assert.equal(profileCategoryFromHash("#constellation"), "constellation");
+  assert.equal(profileCategoryFromHash("#chart"), "chart");
   const root = join(dirname(fileURLToPath(import.meta.url)), "..");
   const page = readFileSync(join(root, "src/pages/NorthSocialPage.tsx"), "utf8");
+  const profile = readFileSync(join(root, "src/components/north/PersonalProfile.tsx"), "utf8");
+  const nav = readFileSync(join(root, "src/pages/chart/shared.tsx"), "utf8");
   const css = readFileSync(join(root, "src/north-social.css"), "utf8");
-  assert.match(page, /MY_SKY_LABEL/);
-  assert.match(page, /MY_CONSTELLATION_LABEL/);
-  assert.match(page, /NORTH_SOCIAL_SKY_TAB/);
-  assert.match(page, /NORTH_SOCIAL_STORAGE_KEY/);
-  assert.match(page, /Make #1/);
-  assert.match(page, /#1 Star/);
-  assert.match(page, /Move down/);
-  assert.match(page, /Sun · Moon · Rising/);
+  const feed = readFileSync(join(root, "src/components/north/SocialFeed.tsx"), "utf8");
+  const surface = `${page}\n${profile}\n${feed}`;
+  assert.match(profile, /MY_SKY_LABEL/);
+  assert.match(profile, /MY_CONSTELLATION_LABEL/);
+  assert.match(profile, /PROFILE_CATEGORIES/);
+  assert.match(page, /NORTH_SOCIAL_STORAGE_KEY|useNorthSocial/);
+  assert.equal(surface.includes(NORTH_SOCIAL_SKY_TAB), false);
+  assert.match(profile, /Make #1/);
+  assert.match(profile, /#1 Star/);
+  assert.match(profile, /Move down/);
+  assert.match(profile, /Sun · Moon · Rising/);
+  assert.match(profile, /Share chart highlight/);
+  assert.match(profile, /Share number note/);
+  assert.match(profile, /Replace seat #8/);
+  assert.match(profile, /Edit details \/ birth data/);
+  assert.match(feed, /FEED_FILTERS/);
+  assert.match(surface, /\+ Add Friend/);
+  assert.match(nav, /label: "Feed"/);
+  assert.match(nav, /MY_SKY_LABEL|label: "My Sky"/);
+  assert.match(nav, /label: "Readings"/);
+  assert.equal(/almanac/i.test(nav), false);
+  assert.equal(nav.includes(NORTH_SOCIAL_SKY_TAB), false);
   const banned = new RegExp(
     [
       "MySpace",
@@ -378,7 +420,7 @@ check("My Sky and My Constellation name the profile and ranked seats", () => {
       ["Top", "8"].join(" "),
     ].join("|"),
   );
-  assert.equal(banned.test(page), false);
+  assert.equal(banned.test(surface), false);
   assert.equal(banned.test(css), false);
   assert.equal(banned.test(readFileSync(join(root, "src/lib/northSocial.ts"), "utf8")), false);
 
@@ -425,6 +467,77 @@ check("My Sky and My Constellation name the profile and ranked seats", () => {
   };
   const next = toggleReaction({ ...post, mine: [] }, "claim");
   assert.equal(next.reactions.claim, 2);
+});
+
+check("personal posts and tandem readings roll into the overall feed through the friends list", () => {
+  const state = blankState(1_700_000_000_000);
+  const personal = personalFeed(state);
+  const overall = overallFeed(state);
+  assert.ok(personal.some(item => item.kind === "tandem" && item.partnerName === "Nova"));
+  assert.ok(personal.some(item => item.kind === "note" || item.kind === "pull"));
+  assert.equal(personal.some(item => item.kind === "bulletin"), false);
+  assert.ok(overall.some(item => item.authorId === "me"));
+  assert.ok(overall.some(item => item.kind === "tandem"));
+  assert.ok(overall.some(item => item.kind === "bulletin"));
+  assert.ok(overall.some(item => item.handle === "nova"));
+  assert.equal(overall.some(item => item.handle === "ori"), false);
+  assert.ok(filterFeed(personal, "tandem").every(item => item.kind === "tandem"));
+  assert.ok(filterFeed(personal, "tandem").length > 0);
+  assert.ok(filterFeed(personal, "posts").every(item => item.kind !== "tandem"));
+  assert.equal(filterFeed(personal, "all").length, personal.length);
+
+  const added = addFriend(state, "suggest-ori");
+  const withOri = overallFeed(added);
+  assert.ok(added.friends?.some(friend => friend.id === "suggest-ori"));
+  assert.equal(added.suggested?.some(friend => friend.id === "suggest-ori"), false);
+  assert.ok(withOri.some(item => item.handle === "ori" && item.kind === "pull"));
+  assert.ok(withOri.some(item => item.handle === "ori" && item.kind === "tandem"));
+
+  const removed = removeFriend(added, "suggest-ori");
+  assert.equal(overallFeed(removed).some(item => item.handle === "ori"), false);
+  assert.equal(removed.top.some(seat => seat.id === "suggest-ori"), false);
+
+  const published = publishToFeed(state, {
+    kind: "note",
+    title: "Sky note",
+    body: "Posted from the profile.",
+    now: 42,
+  });
+  assert.ok(personalFeed(published).some(item => item.body === "Posted from the profile."));
+  assert.ok(overallFeed(published).some(item => item.body === "Posted from the profile."));
+
+  const legacy = upgradeSocialState(
+    {
+      posts: [
+        {
+          id: "keep-me",
+          author: "Ada",
+          handle: "ada",
+          sign: "Aries",
+          kind: "note",
+          title: "Kept",
+          body: "Still here",
+          cards: [],
+          createdAt: 10,
+          reactions: { claim: 0, felt: 0, sync: 0, save: 0 },
+          mine: [],
+          comments: [],
+        },
+      ],
+      top: starterTop(),
+      space: { ...starterSpace(), name: "Ada", mood: "Quiet", handle: "ada" },
+    },
+    1000,
+  );
+  assert.equal(legacy.space.name, "Ada");
+  assert.equal(legacy.space.mood, "Quiet");
+  assert.equal(NORTH_SOCIAL_STORAGE_KEY, "xixvi-north-social-v1");
+  assert.ok(legacy.posts.some(item => item.id === "keep-me" && item.body === "Still here"));
+  assert.equal(legacy.friends?.length, 8);
+  assert.ok(legacy.suggested?.some(friend => friend.handle === "ori"));
+  assert.ok(legacy.posts.some(item => item.id === "starter-ori"));
+  assert.equal(overallFeed(legacy).some(item => item.handle === "ori"), false);
+  assert.ok(overallFeed(legacy).some(item => item.id === "keep-me"));
 });
 
 check("local hour paints the sky and the clouds without a mode bar", () => {
@@ -494,7 +607,15 @@ check("True North is a three-room shell and avatars upgrade cleanly", () => {
   const shared = readFileSync(join(root, "src/pages/chart/shared.tsx"), "utf8");
   const app = readFileSync(join(root, "src/App.tsx"), "utf8");
   const page = readFileSync(join(root, "src/pages/NorthSocialPage.tsx"), "utf8");
-  const avatarApi = readFileSync(join(root, "api/avatar.ts"), "utf8");
+  const avatarApi = readFileSync(join(root, "api/_lib/avatar.ts"), "utf8");
+  const chartApi = readFileSync(join(root, "api/chart.ts"), "utf8");
+  const vercel = readFileSync(join(root, "vercel.json"), "utf8");
+  const apiFiles = readdirSync(join(root, "api")).filter(name => name.endsWith(".ts"));
+  assert.ok(apiFiles.length <= 12);
+  assert.equal(apiFiles.includes("avatar.ts"), false);
+  assert.match(chartApi, /action === "avatar"|requestedAction\(req\) === "avatar"/);
+  assert.match(vercel, /\/api\/avatar/);
+  assert.match(vercel, /\/api\/chart\?action=avatar/);
   assert.equal(/almanac/i.test(shared), false);
   assert.match(shared, /label: "Feed"/);
   assert.match(shared, /label: "Readings"/);

@@ -255,10 +255,11 @@ export async function stylizeCelestialPortrait(input: AvatarRequest, size = 512)
 
 export async function createTrueNorthAvatar(input: AvatarRequest): Promise<{ imageDataUrl: string; source: "api" | "canvas" }> {
   try {
-    const response = await fetch("/api/avatar", {
+    const response = await fetch("/api/chart?action=avatar", {
       method: "POST",
       headers: { "content-type": "application/json" },
       body: JSON.stringify({
+        action: "avatar",
         imageDataUrl: input.imageDataUrl,
         name: input.name ?? "",
         sun: input.sun ?? "",

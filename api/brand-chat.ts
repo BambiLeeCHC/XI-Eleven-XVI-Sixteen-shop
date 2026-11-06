@@ -252,7 +252,7 @@ Current JSON: ${JSON.stringify(body.current ?? {})}`;
 
     const result = await generateWithGroqChat(BRAND_SYSTEM_PROMPT, chatHistory, 800);
     if (!result.success) {
-      console.error("Concierge Groq call failed", result.reason);
+      console.error("Concierge Groq call failed", (result as { success: false; reason: string }).reason);
       return res.status(200).json({ success: true, response: FALLBACK });
     }
     return res.status(200).json({ success: true, response: result.text });

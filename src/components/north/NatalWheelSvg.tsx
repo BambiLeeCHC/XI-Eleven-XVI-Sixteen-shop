@@ -64,7 +64,20 @@ export function NatalWheelSvg({
         const [x, y] = point(body.degree, 96);
         const hot = active === body.body;
         return (
-          <g key={body.body} onClick={() => onPick?.(body.body)} style={{ cursor: "pointer" }}>
+          <g
+            key={body.body}
+            role="button"
+            tabIndex={0}
+            aria-label={body.body}
+            onClick={() => onPick?.(body.body)}
+            onKeyDown={event => {
+              if (event.key === "Enter" || event.key === " ") {
+                event.preventDefault();
+                onPick?.(body.body);
+              }
+            }}
+            style={{ cursor: "pointer" }}
+          >
             <circle cx={x} cy={y} r={hot ? 8 : 5} fill={hot ? "#d8f0c4" : "#f6f1e8"} />
             <text x={x} y={y - 10} textAnchor="middle" className="natal-wheel__body">
               {body.body.slice(0, 2)}
