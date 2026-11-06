@@ -10,6 +10,7 @@ import {
 import { api, useQuery } from "../../lib/backend";
 import { HOUSE_HINGE, HOUSE_LINE } from "../../lib/brand";
 import { NUMEROLOGY_CALC_EXPLAIN } from "../../lib/numerology";
+import { signAtLongitude } from "../../lib/chartGeometry";
 import { moonPhase } from "../../lib/ritual";
 
 export interface NatalPlacement {
@@ -136,7 +137,7 @@ export function useSunSign(user: unknown): string | undefined {
 
 export function PlacementRow({ placement, expanded, onToggle }: { placement: NatalPlacement; expanded: boolean; onToggle: () => void }) {
   const { body, sign, house, retrograde, degree } = placement;
-  const degInSign = Math.floor(((degree % 30) + 30) % 30);
+  const degInSign = Math.floor(signAtLongitude(degree).degreeInSign);
   const full = explainPlacementFull(body, sign);
   const element = SIGN_ELEMENT[sign] ?? "air";
   return (

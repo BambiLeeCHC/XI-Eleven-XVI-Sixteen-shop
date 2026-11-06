@@ -10,6 +10,7 @@ import "./tn-landing.css";
 import "./tn-landing-atmo.css";
 import "./tn-glass.css";
 import "./site-glass.css";
+import "./radial-dial.css";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>

@@ -11,7 +11,6 @@ import { buildBreadcrumbJsonLd, SEO } from "../components/SEO";
 import { PAGE_SEO } from "../data/seoMeta";
 import { api, useQuery } from "../lib/backend";
 import {
-  colorCountLabel,
   colorFromName,
   displayProductName,
   formatPrice,
@@ -21,6 +20,7 @@ import {
   styleKeyFromName,
 } from "../lib/brand";
 import { hiResProductImage } from "../lib/productImage";
+import { RadialVariantDial } from "../components/RadialVariantDial";
 
 export function ShopPage() {
   const [searchParams] = useSearchParams();
@@ -197,70 +197,75 @@ export function ShopPage() {
                 padding: "16px 18px",
               }}
             >
-              <div>
-                <p
-                  className="label-lock mb-2"
-                  style={{ color: "var(--pist)" }}
-                >
-                  Select a colour
-                </p>
-                <div className="flex gap-2.5 flex-wrap">
-                  {current?.items.map((item: any) => {
-                    const color = colorFromName(item.name) || item.name;
-                    const on = item._id === sku._id;
-                    return (
-                      <button
-                        type="button"
-                        key={item._id}
-                        aria-label={color}
-                        className={`snap ${on ? "on" : ""}`}
-                        style={{ background: snapHex(color) }}
-                        onClick={() => setSkuId(item._id)}
-                      />
-                    );
-                  })}
-                </div>
-                <p className="serif-quiet mt-3 text-[15px]">
-                  {displayProductName(sku.name)}
-                  {current?.items.length > 1
-                    ? ` · ${colorCountLabel(current.items.length)}`
-                    : ""}
-                </p>
-              </div>
-              <div>
-                <p
-                  className="label-lock mb-2 text-center"
-                  style={{ color: "var(--lilac)" }}
-                >
-                  Select a size
-                </p>
-                <div className="size-ring mx-auto">
-                  {(sku.sizes || ["XS", "S", "M", "L", "XL"])
-                    .slice(0, 6)
-                    .map((label: string, i: number) => {
-                      const clean =
-                        String(label).split("/").pop()?.trim() || label;
-                      return (
-                        <button
-                          type="button"
-                          key={label}
-                          className={size === label ? "on" : ""}
-                          style={{ ["--i" as string]: i }}
-                          onClick={() => setSize(label)}
-                        >
-                          {clean}
-                        </button>
+              <RadialVariantDial
+                sizes={(() => {
+                  const labels = new Map<string, string>();
+                  for (const item of current?.items || []) {
+                    for (const raw of item.sizes || []) {
+                      const label = String(raw).split("/").pop()?.trim() || raw;
+                      if (!labels.has(label)) labels.set(label, raw);
+                    }
+                  }
+                  if (labels.size === 0) {
+                    for (const label of ["XS", "S", "M", "L", "XL", "2XL"]) {
+                      labels.set(label, label);
+                    }
+                  }
+                  return [...labels.entries()].map(([label, id]) => ({
+                    id,
+                    label,
+                    available: (current?.items || []).some((item: any) =>
+                      (item.sizes || ["XS", "S", "M", "L", "XL"]).some(
+                        (raw: string) =>
+                          (String(raw).split("/").pop()?.trim() || raw) === label,
+                      ),
+                    ),
+                  }));
+                })()}
+                colors={(current?.items || []).map((item: any) => {
+                  const label = colorFromName(item.name) || displayProductName(item.name);
+                  const wanted = size
+                    ? String(size).split("/").pop()?.trim() || size
+                    : "";
+                  const available = !wanted
+                    ? true
+                    : (item.sizes || ["XS", "S", "M", "L", "XL"]).some(
+                        (raw: string) =>
+                          (String(raw).split("/").pop()?.trim() || raw) === wanted,
                       );
-                    })}
-                  <div className="core">Size</div>
-                </div>
-              </div>
+                  return {
+                    id: item._id as string,
+                    label,
+                    hex: snapHex(label),
+                    available,
+                  };
+                })}
+                sizeId={size}
+                colorId={sku._id}
+                onSize={setSize}
+                onColor={next => {
+                  setSkuId(next);
+                  const item = current?.items.find((entry: any) => entry._id === next);
+                  const wanted = size
+                    ? String(size).split("/").pop()?.trim() || size
+                    : "";
+                  if (
+                    wanted &&
+                    item &&
+                    !(item.sizes || []).some(
+                      (raw: string) =>
+                        (String(raw).split("/").pop()?.trim() || raw) === wanted,
+                    )
+                  ) {
+                    setSize("");
+                  }
+                }}
+              />
               <Link
-                to={`/product/${sku._id}`}
+                to={`/product/${sku._id}${size ? `?size=${encodeURIComponent(String(size).split("/").pop()?.trim() || size)}` : ""}`}
                 className="cta-pist text-center"
-                style={{ boxShadow: "5px 5px 0 var(--blush)" }}
               >
-                Add to cart
+                {size ? "Add to cart" : "Select a size"}
               </Link>
             </div>
           ) : null}

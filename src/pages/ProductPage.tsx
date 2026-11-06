@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { CompleteTheLook } from "../components/CompleteTheLook";
 import { ProductFitGuide } from "../components/ProductFitGuide";
 import {
@@ -12,7 +12,6 @@ import { getProductSEO } from "../data/seoMeta";
 import { useSessionId } from "../hooks/useSessionId";
 import { api, useMutation, useQuery } from "../lib/backend";
 import {
-  colorCountLabel,
   colorFromName,
   displayProductName,
   formatPrice,
@@ -20,6 +19,7 @@ import {
   styleKeyFromName,
 } from "../lib/brand";
 import { hiResProductImage } from "../lib/productImage";
+import { RadialVariantDial } from "../components/RadialVariantDial";
 
 /** Extract just the size label from a variant name like "D-SLIP DRESS [BLACK] / XS" → "XS" */
 function cleanSizeLabel(size: string): string {
@@ -271,6 +271,8 @@ function Product360Viewer({
 /* ─── Product Page ────────────────────────────────────────────────── */
 export function ProductPage() {
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const product = useQuery(
     api.products.getById,
     id ? { productId: id as string } : "skip",
@@ -278,10 +280,21 @@ export function ProductPage() {
   const addToCart = useMutation(api.cart.addItem);
   const sessionId = useSessionId();
   const allProducts = useQuery(api.products.list, {}) ?? [];
-  const [selectedSize, setSelectedSize] = useState<string>("");
+  const [selectedSize, setSelectedSize] = useState<string>(
+    () => searchParams.get("size") || "",
+  );
   const [selectedColor, setSelectedColor] = useState<string>("");
   const [added, setAdded] = useState(false);
   const [activeTab, setActiveTab] = useState<"details" | "fit">("details");
+
+  useEffect(() => {
+    const wanted = searchParams.get("size");
+    if (!wanted || !product?.sizes) return;
+    const match = (product.sizes as string[]).find(
+      size => cleanSizeLabel(size) === wanted || size === wanted,
+    );
+    if (match) setSelectedSize(match);
+  }, [product, searchParams]);
 
   if (product === undefined) {
     return (
@@ -423,7 +436,7 @@ export function ProductPage() {
             />
           </div>
 
-          <div className="px-8 py-8 flex flex-col">
+          <div className="px-4 sm:px-8 py-8 flex flex-col">
             <p className="clash text-6xl">{styleKeyFromName(product.name)}</p>
             <p className="serif-quiet text-xl mt-2">Made on demand. Made for one person.</p>
             <p className="label-lock mt-3" style={{ color: "var(--pist)" }}>
@@ -446,106 +459,81 @@ export function ProductPage() {
               {formatPrice(product.price)}
             </p>
 
-            {(() => {
-              const style = styleKeyFromName(product.name);
-              const siblings = allProducts.filter(
-                (p: any) => styleKeyFromName(p.name) === style,
-              );
-              const useSiblings = !hasColorAxis && siblings.length > 1;
-              if (hasColorAxis) {
-                return (
-                  <div className="mt-6">
-                    <p
-                      className="label-lock mb-2"
-                      style={{ color: "var(--pist)" }}
-                    >
-                      Select a colour
-                    </p>
-                    <div className="flex gap-2.5 flex-wrap">
-                      {colorOptions.map((color: string) => (
-                        <button
-                          type="button"
-                          key={color}
-                          aria-label={color}
-                          className={`snap ${selectedColor === color ? "on" : ""}`}
-                          style={{ background: snapHex(color) }}
-                          onClick={() => setSelectedColor(color)}
-                        />
-                      ))}
-                    </div>
-                    <p className="serif-quiet mt-3 text-[15px]">
-                      {selectedColor || colorFromName(product.name) || "Colour"}
-                      {colorOptions.length > 1
-                        ? ` · ${colorCountLabel(colorOptions.length)}`
-                        : ""}
-                    </p>
-                  </div>
-                );
-              }
-              if (useSiblings) {
-                return (
-                  <div className="mt-6">
-                    <p
-                      className="label-lock mb-2"
-                      style={{ color: "var(--pist)" }}
-                    >
-                      Select a colour
-                    </p>
-                    <div className="flex gap-2.5 flex-wrap">
-                      {siblings.map((item: any) => {
-                        const color = colorFromName(item.name) || item.name;
-                        return (
-                          <Link
-                            key={item._id}
-                            to={`/product/${item._id}`}
-                            aria-label={color}
-                            className={`snap ${item._id === product._id ? "on" : ""}`}
-                            style={{ background: snapHex(color) }}
-                          />
-                        );
-                      })}
-                    </div>
-                    <p className="serif-quiet mt-3 text-[15px]">
-                      {displayProductName(product.name)}
-                      {siblings.length > 1
-                        ? ` · ${colorCountLabel(siblings.length)}`
-                        : ""}
-                    </p>
-                  </div>
-                );
-              }
-              return null;
-            })()}
-
             {product.sizes?.length > 0 && (
               <div className="mt-6">
-                <p
-                  className="label-lock mb-1"
-                  style={{ color: "var(--lilac)" }}
-                >
-                  Select a size
-                </p>
-                <div className="size-ring">
-                  {product.sizes.slice(0, 6).map((raw: string, i: number) => {
-                    const available = isSizeAvailable(raw);
-                    return (
-                      <button
-                        type="button"
-                        key={raw}
-                        className={selectedSize === raw ? "on" : ""}
-                        style={{
-                          ["--i" as string]: i,
-                          opacity: available ? 1 : 0.35,
-                        }}
-                        onClick={() => available && setSelectedSize(raw)}
-                        disabled={!available}
-                      >
-                        {cleanSizeLabel(raw)}
-                      </button>
+                <RadialVariantDial
+                  sizes={(product.sizes as string[]).map(raw => ({
+                    id: raw,
+                    label: cleanSizeLabel(raw),
+                    available: isSizeAvailable(raw),
+                  }))}
+                  colors={(() => {
+                    const style = styleKeyFromName(product.name);
+                    const siblings = allProducts.filter(
+                      (item: any) => styleKeyFromName(item.name) === style,
                     );
-                  })}
-                  <div className="core">Size</div>
-                </div>
+                    const inStock = (variant: any) =>
+                      Boolean(
+                        variant?.id &&
+                          variant?.is_ignored !== true &&
+                          variant?.availability_status !== "out_of_stock" &&
+                          variant?.availability_status !== "discontinued",
+                      );
+                    if (hasColorAxis) {
+                      return colorOptions.map(color => ({
+                        id: color,
+                        label: color,
+                        hex: snapHex(color),
+                        available: selectedSize
+                          ? inStock(variantForSize(selectedSize, color))
+                          : true,
+                      }));
+                    }
+                    if (siblings.length > 1) {
+                      return siblings.map((item: any) => {
+                        const label =
+                          colorFromName(item.name) || displayProductName(item.name);
+                        return {
+                          id: item._id as string,
+                          label,
+                          hex: snapHex(label),
+                          available: !selectedSize
+                            ? true
+                            : (item.sizes || []).some(
+                                (size: string) =>
+                                  cleanSizeLabel(size) === cleanSizeLabel(selectedSize),
+                              ),
+                        };
+                      });
+                    }
+                    return [];
+                  })()}
+                  sizeId={selectedSize}
+                  colorId={hasColorAxis ? selectedColor : product._id}
+                  onSize={raw => {
+                    setSelectedSize(raw);
+                    if (!hasColorAxis || !selectedColor) return;
+                    const variant = variantForSize(raw, selectedColor);
+                    const stillThere = Boolean(
+                      variant?.id &&
+                        variant?.is_ignored !== true &&
+                        variant?.availability_status !== "out_of_stock" &&
+                        variant?.availability_status !== "discontinued",
+                    );
+                    if (!stillThere) setSelectedColor("");
+                  }}
+                  onColor={next => {
+                    if (hasColorAxis) {
+                      setSelectedColor(next);
+                      return;
+                    }
+                    if (next === product._id) return;
+                    const sizeLabel = selectedSize ? cleanSizeLabel(selectedSize) : "";
+                    navigate(
+                      `/product/${next}${sizeLabel ? `?size=${encodeURIComponent(sizeLabel)}` : ""}`,
+                    );
+                  }}
+                />
               </div>
             )}
 
