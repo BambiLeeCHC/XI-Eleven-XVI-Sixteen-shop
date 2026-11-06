@@ -13,16 +13,18 @@
  * (src/lib/numerology.ts) is the separate paywalled add-on.
  */
 
-// @ts-ignore — no published types for this package; it's CJS-only and its
-// named exports aren't statically detectable under Node's ESM loader, so
-// import the default and destructure instead of `import { Origin, ... }`.
+// No published types for this package; it's CJS-only and its named exports
+// aren't statically detectable under Node's ESM loader, so import the default
+// and destructure instead of `import { Origin, ... }`.
 import circularNatalHoroscope from "circular-natal-horoscope-js";
 import {
-  houseForLongitude,
+  buildChartFromLongitudes,
+  type ChartAspect,
+  type ChartPlacement,
   roundLongitude,
   signAtLongitude,
-  tightestAspects,
 } from "../../src/lib/chartGeometry.js";
+
 const { Origin, Horoscope } = circularNatalHoroscope as any;
 
 export interface GeoResult {
@@ -34,7 +36,9 @@ export interface GeoResult {
  * null on any failure (no match, network error, rate limit) — callers must
  * treat that as "chart unavailable until location is resolved", not a hard
  * error, since sign-up birth location is optional/free text. */
-export async function geocodeLocation(location: string): Promise<GeoResult | null> {
+export async function geocodeLocation(
+  location: string,
+): Promise<GeoResult | null> {
   try {
     const url = `https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${encodeURIComponent(location)}`;
     const res = await fetch(url, {
@@ -67,7 +71,9 @@ export interface LocationSuggestion {
  * candidates with a full display name instead of resolving straight to one
  * lat/lng. Returns [] on any failure or empty query — callers should treat
  * that as "no suggestions right now", never a hard error. */
-export async function searchLocations(query: string): Promise<LocationSuggestion[]> {
+export async function searchLocations(
+  query: string,
+): Promise<LocationSuggestion[]> {
   const q = query.trim();
   if (q.length < 2) return [];
   try {
@@ -78,14 +84,18 @@ export async function searchLocations(query: string): Promise<LocationSuggestion
       },
     });
     if (!res.ok) return [];
-    const rows = (await res.json()) as Array<{ lat: string; lon: string; display_name: string }>;
+    const rows = (await res.json()) as Array<{
+      lat: string;
+      lon: string;
+      display_name: string;
+    }>;
     return rows
-      .map((row) => ({
+      .map(row => ({
         displayName: row.display_name,
         lat: Number(row.lat),
         lng: Number(row.lon),
       }))
-      .filter((r) => Number.isFinite(r.lat) && Number.isFinite(r.lng));
+      .filter(r => Number.isFinite(r.lat) && Number.isFinite(r.lng));
   } catch {
     return [];
   }
@@ -97,7 +107,11 @@ export interface NatalPlacement {
   /** Absolute ecliptic longitude, 0-360°, used to place the body on the
    * chart wheel — NOT degree-within-sign. */
   degree: number;
+  /** Degree inside the sign, from the same rounded longitude as `degree`. */
+  degreeInSign: number;
   house: number | null;
+  /** Sign on the cusp of `house`, from the same rounded cusps. */
+  houseSign: string;
   retrograde: boolean;
 }
 
@@ -115,6 +129,13 @@ export interface NatalAspect {
   aspect: string;
   /** How exact the aspect is, in degrees — smaller is tighter/stronger. */
   orb: number;
+  /** Endpoint houses and signs. Optional so older cached payloads still parse. */
+  signA?: string;
+  houseA?: number;
+  degreeA?: number;
+  signB?: string;
+  houseB?: number;
+  degreeB?: number;
 }
 
 export interface NatalChart {
@@ -133,8 +154,16 @@ export interface NatalChart {
 }
 
 const BODIES = [
-  "sun", "moon", "mercury", "venus", "mars",
-  "jupiter", "saturn", "uranus", "neptune", "pluto",
+  "sun",
+  "moon",
+  "mercury",
+  "venus",
+  "mars",
+  "jupiter",
+  "saturn",
+  "uranus",
+  "neptune",
+  "pluto",
 ];
 
 /**
@@ -174,7 +203,7 @@ export function computeNatalChart(
     language: "en",
   });
 
-  const rawBodies = BODIES.map((body) => {
+  const rawBodies = BODIES.map(body => {
     const cel = horoscope.CelestialBodies[body];
     const longitude = Number(cel.ChartPosition.Ecliptic.DecimalDegrees);
     return {
@@ -185,46 +214,47 @@ export function computeNatalChart(
   });
 
   const rawHouses = horoscope.Houses ?? horoscope._houses ?? [];
-  const houses: NatalHouseCusp[] = (rawHouses as any[])
-    .map((h: any) => {
-      const longitude = Number(
+  const orderedCusps = (rawHouses as any[])
+    .map((h: any) => ({
+      house: Number(h.id),
+      longitude: Number(
         h.ChartPosition?.StartPosition?.Ecliptic?.DecimalDegrees ?? 0,
-      );
-      return {
-        house: Number(h.id),
-        sign: signAtLongitude(longitude).sign,
-        degree: roundLongitude(longitude),
-      };
-    })
+      ),
+    }))
     .sort((a, b) => a.house - b.house);
-
-  const cusps = houses.map(house => house.degree);
-  const placements: NatalPlacement[] = rawBodies.map(body => ({
-    body: body.body,
-    sign: signAtLongitude(body.longitude).sign,
-    degree: roundLongitude(body.longitude),
-    house: houseForLongitude(body.longitude, cusps),
-    retrograde: body.retrograde,
-  }));
-
-  const aspects: NatalAspect[] = tightestAspects(
-    rawBodies.map(body => ({ name: body.body, longitude: body.longitude })),
-  );
+  const built = buildChartFromLongitudes({
+    cusps: orderedCusps.map(cusp => cusp.longitude),
+    bodies: rawBodies.map(body => ({
+      name: body.body,
+      longitude: body.longitude,
+      retrograde: body.retrograde,
+    })),
+  });
+  const houses: NatalHouseCusp[] = built.houses;
+  const placements: NatalPlacement[] =
+    built.placements satisfies ChartPlacement[];
+  const aspects: NatalAspect[] = built.aspects satisfies ChartAspect[];
 
   const ascendantCusp = houses.find(house => house.house === 1);
   const midheavenCusp = houses.find(house => house.house === 10);
   const ascendantLongitude = Number(
-    horoscope.Ascendant?.ChartPosition?.Ecliptic?.DecimalDegrees ?? ascendantCusp?.degree ?? 0,
+    horoscope.Ascendant?.ChartPosition?.Ecliptic?.DecimalDegrees ??
+      ascendantCusp?.degree ??
+      0,
   );
   const midheavenLongitude = Number(
-    horoscope.Midheaven?.ChartPosition?.Ecliptic?.DecimalDegrees ?? midheavenCusp?.degree ?? 0,
+    horoscope.Midheaven?.ChartPosition?.Ecliptic?.DecimalDegrees ??
+      midheavenCusp?.degree ??
+      0,
   );
 
   return {
     ascendant: ascendantCusp?.sign ?? signAtLongitude(ascendantLongitude).sign,
-    ascendantDegree: ascendantCusp?.degree ?? roundLongitude(ascendantLongitude),
+    ascendantDegree:
+      ascendantCusp?.degree ?? roundLongitude(ascendantLongitude),
     midheaven: midheavenCusp?.sign ?? signAtLongitude(midheavenLongitude).sign,
-    midheavenDegree: midheavenCusp?.degree ?? roundLongitude(midheavenLongitude),
+    midheavenDegree:
+      midheavenCusp?.degree ?? roundLongitude(midheavenLongitude),
     placements,
     houses,
     aspects,

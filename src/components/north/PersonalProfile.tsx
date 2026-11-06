@@ -3,11 +3,6 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { TrueNorthSignIcon } from "../journal/TrueNorthGlyphs";
 import { api, useAuthStatus, useQuery } from "../../lib/backend";
 import {
-  TROPICAL_SIGNS,
-  signAtLongitude,
-  tightestAspects,
-} from "../../lib/chartGeometry";
-import {
   MY_CONSTELLATION_LABEL,
   MY_SKY_LABEL,
   PROFILE_CATEGORIES,
@@ -39,9 +34,23 @@ import {
 } from "../../lib/numerology";
 import { ChartHomePage } from "../../pages/chart/ChartHomePage";
 import { NumbersPage } from "../../pages/chart/NumbersPage";
-import { ProfileEditor, type ProfileAccount } from "../../pages/chart/ProfileEditor";
-import { NumberRow, TrueNorthNav, type NatalChartResult } from "../../pages/chart/shared";
-import { NatalWheelSvg } from "./NatalWheelSvg";
+import { ProfileEditor } from "../../pages/chart/ProfileEditor";
+
+type ProfileAccount = {
+  _id?: string;
+  name?: string;
+  email?: string;
+  northNote?: string;
+  northFocus?: string;
+  northOnboardedAt?: string | null;
+  birthDate?: string;
+  birthTime?: string;
+  birthLocation?: string;
+  photoUrl?: string;
+  aiAvatarUrl?: string;
+  avatarMode?: string;
+};
+import { NumberRow, type NatalChartResult } from "../../pages/chart/shared";
 import { FilteredFeed, PersonalComposer } from "./SocialFeed";
 
 function focusLabel(value: string) {
@@ -51,94 +60,8 @@ function focusLabel(value: string) {
   return "General";
 }
 
-function signDegree(sign: string, within = 10) {
-  const index = TROPICAL_SIGNS.indexOf(sign as (typeof TROPICAL_SIGNS)[number]);
-  return ((index < 0 ? 0 : index) * 30 + within) % 360;
-}
-
 function atHandle(handle: string) {
   return `@${handle.trim().replace(/^@+/, "")}`;
-}
-
-function LocalSkyChart({
-  sun,
-  moon,
-  rising,
-}: {
-  sun: string;
-  moon: string;
-  rising: string;
-}) {
-  const [active, setActive] = useState<string | null>("Sun");
-  const bodies = [
-    { name: "Sun", longitude: signDegree(sun, 12) },
-    { name: "Moon", longitude: signDegree(moon, 8) },
-    { name: "Mercury", longitude: signDegree(sun, 4) },
-    { name: "Venus", longitude: signDegree(moon, 18) },
-    { name: "Mars", longitude: signDegree(rising, 14) },
-  ];
-  const aspects = tightestAspects(bodies).slice(0, 6);
-  const asc = signDegree(rising, 0);
-  const houses = Array.from({ length: 12 }, (_, index) => {
-    const degree = (asc + index * 30) % 360;
-    return { house: index + 1, sign: signAtLongitude(degree).sign, degree };
-  });
-  return (
-    <div className="tn-card local-chart">
-      <NatalWheelSvg
-        placements={bodies.map(body => ({ body: body.name, degree: body.longitude }))}
-        aspects={aspects.map(aspect => ({
-          bodyA: aspect.bodyA,
-          bodyB: aspect.bodyB,
-          aspect: aspect.aspect,
-        }))}
-        active={active}
-        onPick={setActive}
-      />
-      <p className="tn-sky__hint">
-        {active ? `${active} is lit on the wheel.` : "Tap a planet."}
-      </p>
-      <div className="local-chart__lists">
-        <div>
-          <p className="label-lock">Placements</p>
-          <ul className="house-pips">
-            {bodies.map(body => {
-              const place = signAtLongitude(body.longitude);
-              return (
-                <li key={body.name}>
-                  <button type="button" className={active === body.name ? "is-on" : ""} onClick={() => setActive(body.name)}>
-                    <strong>{body.name}</strong>
-                    <span>{Math.floor(place.degreeInSign)}° {place.sign}</span>
-                  </button>
-                </li>
-              );
-            })}
-          </ul>
-        </div>
-        <div>
-          <p className="label-lock">Tightest aspects</p>
-          <ul className="aspect-list">
-            {aspects.length === 0 && <li className="tn-meta">No tight aspects in this sketch.</li>}
-            {aspects.map(aspect => (
-              <li key={`${aspect.bodyA}-${aspect.bodyB}`}>
-                {aspect.bodyA} {aspect.aspect} {aspect.bodyB}
-                <span>{aspect.orb.toFixed(1)}°</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </div>
-      <p className="label-lock">Houses</p>
-      <ol className="house-pips house-pips--twelve">
-        {houses.map(house => (
-          <li key={house.house}>
-            <strong>{house.house}</strong>
-            <span>{house.sign}</span>
-          </li>
-        ))}
-      </ol>
-    </div>
-  );
 }
 
 function LocalNumbers({ name, birthDate, lifePath }: { name: string; birthDate?: string; lifePath: string }) {
@@ -318,12 +241,10 @@ export function PersonalProfile({
   surface,
   state,
   update,
-  showNav = false,
 }: {
   surface: "circle" | "account";
   state: SocialState;
   update: (next: (current: SocialState) => SocialState) => void;
-  showNav?: boolean;
 }) {
   const location = useLocation();
   const navigate = useNavigate();
@@ -421,7 +342,6 @@ export function PersonalProfile({
 
   return (
     <div className="sky-profile">
-      {showNav && <TrueNorthNav />}
       {preview && soul && (
         <div className="tn-card preview-banner">
           <p className="label-lock">Viewing {soul.name}&apos;s sky</p>
@@ -568,8 +488,9 @@ export function PersonalProfile({
               </div>
             )}
             {chartLoading && <p className="tn-card tn-sky__note">Calculating your chart…</p>}
-            {!chartLoading && chart && <ChartHomePage embedded />}
-            {!chartLoading && !chart && <LocalSkyChart sun={sun} moon={moon} rising={rising} />}
+            {!chartLoading && (
+              <ChartHomePage embedded allowPreview={!chart} previewSigns={{ sun, moon, rising }} />
+            )}
           </div>
         )}
 

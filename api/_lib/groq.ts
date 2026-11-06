@@ -34,23 +34,31 @@ async function callGroqOnce(
   messages: ChatMessage[],
   maxTokens: number,
 ): Promise<GroqResult> {
-  const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${apiKey}`,
+  const response = await fetch(
+    "https://api.groq.com/openai/v1/chat/completions",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify({
+        model,
+        messages,
+        temperature: 0.95,
+        max_tokens: maxTokens,
+      }),
     },
-    body: JSON.stringify({
-      model,
-      messages,
-      temperature: 0.95,
-      max_tokens: maxTokens,
-    }),
-  });
+  );
 
   const bodyText = await response.text().catch(() => "");
   if (!response.ok) {
-    console.error("Groq call failed", model, response.status, bodyText.slice(0, 500));
+    console.error(
+      "Groq call failed",
+      model,
+      response.status,
+      bodyText.slice(0, 500),
+    );
     return {
       success: false,
       reason: "upstream_error",
@@ -62,7 +70,11 @@ async function callGroqOnce(
   try {
     json = JSON.parse(bodyText);
   } catch {
-    return { success: false, reason: "empty", detail: "Invalid JSON from Groq" };
+    return {
+      success: false,
+      reason: "empty",
+      detail: "Invalid JSON from Groq",
+    };
   }
 
   const text = json?.choices?.[0]?.message?.content;
@@ -72,7 +84,10 @@ async function callGroqOnce(
   return { success: true, text: text.trim() };
 }
 
-async function callGroq(messages: ChatMessage[], maxTokens: number): Promise<GroqResult> {
+async function callGroq(
+  messages: ChatMessage[],
+  maxTokens: number,
+): Promise<GroqResult> {
   const apiKey = (process.env.GROQ_API_KEY || "").trim();
   if (!apiKey) {
     console.error(
@@ -93,7 +108,7 @@ async function callGroq(messages: ChatMessage[], maxTokens: number): Promise<Gro
 
   for (const model of GROQ_MODELS) {
     const result = await callGroqOnce(apiKey, model, messages, maxTokens);
-    if (result.success) return result;
+    if (!("reason" in result)) return result;
     lastFailure = result;
     if ((result as { success: false; reason: string }).reason === "empty") return result;
   }
@@ -122,5 +137,8 @@ export async function generateWithGroqChat(
   history: ChatMessage[],
   maxOutputTokens: number,
 ): Promise<GroqResult> {
-  return callGroq([{ role: "system", content: systemPrompt }, ...history], maxOutputTokens);
+  return callGroq(
+    [{ role: "system", content: systemPrompt }, ...history],
+    maxOutputTokens,
+  );
 }

@@ -85,7 +85,7 @@ export type SpaceProfile = {
 };
 
 export type TrueNorthDestination = "feed" | "sky" | "readings";
-export type SkyPanel = "chart" | "numbers" | "constellation";
+export type SkyPanel = "chart" | "numbers" | "constellation" | "posts";
 export type ReadingMode = "quick" | "deep" | "tandem";
 
 export type SocialState = {
@@ -669,6 +669,7 @@ export function createPost(input: {
 function skyFromHash(hash: string): SkyPanel {
   if (hash === "numbers") return "numbers";
   if (hash === "constellation" || hash === "friends") return "constellation";
+  if (hash === "posts") return "posts";
   return "chart";
 }
 
@@ -695,6 +696,7 @@ export function resolveTrueNorthView(pathname: string, hash = ""): {
     h === "numbers" ||
     h === "constellation" ||
     h === "friends" ||
+    h === "posts" ||
     h === "profile" ||
     h === "details" ||
     h === "birth"

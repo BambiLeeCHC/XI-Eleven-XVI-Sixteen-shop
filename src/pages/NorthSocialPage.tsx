@@ -206,7 +206,9 @@ export function NorthSocialPage() {
   const [note, setNote] = useState<Record<string, string>>({});
   const [friend, setFriend] = useState({ name: "", handle: "", sun: "Aries", moon: "Cancer", rising: "Libra" });
   const [pull, setPull] = useState<string[]>([]);
-  const [filter, setFilter] = useState<"all" | "posts" | "tandem">("all");
+  const [filter, setFilter] = useState<"all" | "posts" | "tandem" | "friends">("all");
+  const [composerOpen, setComposerOpen] = useState(false);
+  const [seatTab, setSeatTab] = useState<"seats" | "friends">("seats");
   const [studio, setStudio] = useState(false);
   const [editor, setEditor] = useState(false);
   const [sheet, setSheet] = useState<TopFriend | null>(null);
@@ -323,7 +325,7 @@ export function NorthSocialPage() {
     setState(current => {
       const space = { ...current.space, ...next };
       const id = user?._id as string | undefined;
-      if (id) void syncNorthAvatar(supabase, id, space);
+      if (id) void syncNorthAvatar(supabase as never, id, space);
       return { ...current, space };
     });
   };
@@ -347,6 +349,7 @@ export function NorthSocialPage() {
     const base = location.pathname.startsWith("/profile") ? "/profile" : "/chart";
     if (panel === "numbers") navigate(`${base}#numbers`);
     else if (panel === "constellation") navigate(`${base}#constellation`);
+    else if (panel === "posts") navigate(`${base}#posts`);
     else navigate(base === "/profile" ? "/profile#chart" : "/chart#sky");
   };
 
@@ -391,46 +394,58 @@ export function NorthSocialPage() {
               ))}
             </div>
 
-            <form className="tn-card north-composer" onSubmit={event => { event.preventDefault(); publish(pull.length ? "A pull" : "A note", draft || pull.join(" · "), pull, pull.length ? "pull" : "bulletin"); }}>
-              <label className="tn-label" htmlFor="north-draft">Write a note</label>
-              <textarea id="north-draft" className="tn-field tn-field--area" value={draft} onChange={event => setDraft(event.target.value)} placeholder="A note, a pull, or a tandem reading." rows={3} />
-              {pull.length > 0 && <div className="north-cards">{pull.map(card => <TarotCardArt key={card} name={card} />)}</div>}
-              <div className="tn-actions">
-                <button type="button" className="cta-ghost tn-action" onClick={() => setPull(drawCards(1))}>1 card</button>
-                <button type="button" className="cta-ghost tn-action" onClick={() => setPull(drawCards(3))}>3 cards</button>
-                <button type="button" className="cta-ghost tn-action" onClick={() => publish(`You × ${rankedEight(state.top)[0]?.name ?? "a friend"}`, draft || "Logged a tandem reading.", pull, "tandem")}>Tandem</button>
-                <button type="submit" className="cta-pist tn-action">Post</button>
-              </div>
-            </form>
-
-            <details className="tn-card find-friends">
-              <summary>Find Friends</summary>
-              <ul className="find-friends__list">
-                {rankedEight(state.top).slice(0, 4).map(person => (
-                  <li key={person.id}>
-                    <SkyAvatar name={person.name} sign={person.sun} size={36} />
-                    <span>{person.name}</span>
-                    <em>{atHandle(person.handle)}</em>
-                  </li>
-                ))}
-              </ul>
-              <form className="north-friend" onSubmit={event => { event.preventDefault(); saveFriend(); }}>
-                <label className="tn-label" htmlFor="feed-friend-name">Add someone to seat #8</label>
-                <input id="feed-friend-name" className="tn-field" value={friend.name} onChange={event => setFriend(current => ({ ...current, name: event.target.value }))} placeholder="Name" />
-                <input className="tn-field" value={friend.handle} onChange={event => setFriend(current => ({ ...current, handle: event.target.value }))} placeholder="Handle" aria-label="Handle" />
-                <button type="submit" className="cta-pist tn-action">Save to seat 8</button>
-              </form>
-            </details>
+            <div className="tn-card north-composer">
+              <button type="button" className="tn-inline" aria-expanded={composerOpen} onClick={() => setComposerOpen(open => !open)}>
+                {composerOpen ? "Close composer" : "Share a pull"}
+              </button>
+              {composerOpen && (
+                <form onSubmit={event => { event.preventDefault(); publish(pull.length ? "A pull" : "A note", draft || pull.join(" · "), pull, pull.length ? "pull" : "bulletin"); }}>
+                  <label className="tn-label" htmlFor="north-draft">Write a note</label>
+                  <textarea id="north-draft" className="tn-field tn-field--area" value={draft} onChange={event => setDraft(event.target.value)} placeholder="A note, a pull, or a tandem reading." rows={3} />
+                  {pull.length > 0 && <div className="north-cards">{pull.map(card => <TarotCardArt key={card} name={card} />)}</div>}
+                  <div className="tn-actions">
+                    <button type="button" className="cta-ghost tn-action" onClick={() => setPull(drawCards(1))}>1 card</button>
+                    <button type="button" className="cta-ghost tn-action" onClick={() => setPull(drawCards(3))}>3 cards</button>
+                    <button type="button" className="cta-ghost tn-action" onClick={() => publish(`You × ${rankedEight(state.top)[0]?.name ?? "a friend"}`, draft || "Logged a tandem reading.", pull, "tandem")}>Tandem</button>
+                    <button type="submit" className="cta-pist tn-action">Post</button>
+                  </div>
+                </form>
+              )}
+            </div>
 
             <div className="feed-filters" role="tablist" aria-label="Feed filter">
-              {(["all", "posts", "tandem"] as const).map(id => (
+              {([
+                ["all", "All"],
+                ["posts", "Posts & Pulls"],
+                ["tandem", "Tandem"],
+                ["friends", "Find Friends"],
+              ] as const).map(([id, label]) => (
                 <button key={id} type="button" role="tab" aria-selected={filter === id} className={filter === id ? "is-on" : ""} onClick={() => setFilter(id)}>
-                  {id === "all" ? "All" : id === "posts" ? "Posts" : "Tandem"}
+                  {label}
                 </button>
               ))}
             </div>
 
-            {feed.map(post => (
+            {filter === "friends" ? (
+              <section className="tn-card find-friends">
+                <h2 className="north-post__title">Find Friends</h2>
+                <ul className="find-friends__list">
+                  {rankedEight(state.top).slice(0, 4).map(person => (
+                    <li key={person.id}>
+                      <SkyAvatar name={person.name} sign={person.sun} size={36} />
+                      <span>{person.name}</span>
+                      <em>{atHandle(person.handle)}</em>
+                    </li>
+                  ))}
+                </ul>
+                <form className="north-friend" onSubmit={event => { event.preventDefault(); saveFriend(); }}>
+                  <label className="tn-label" htmlFor="feed-friend-name">Add someone to seat #8</label>
+                  <input id="feed-friend-name" className="tn-field" value={friend.name} onChange={event => setFriend(current => ({ ...current, name: event.target.value }))} placeholder="Name" />
+                  <input className="tn-field" value={friend.handle} onChange={event => setFriend(current => ({ ...current, handle: event.target.value }))} placeholder="Handle" aria-label="Handle" />
+                  <button type="submit" className="cta-pist tn-action">Save to seat 8</button>
+                </form>
+              </section>
+            ) : feed.map(post => (
               <PostCard
                 key={post.id}
                 post={post}
@@ -454,7 +469,7 @@ export function NorthSocialPage() {
             <section className="tn-card my-sky">
               <div className="my-sky__top">
                 <button type="button" className="sky-avatar-hit" onClick={() => setStudio(true)} aria-label="Upload photo or create AI avatar">
-                  <SkyAvatar name={author} sign={sun} src={youSrc} size={112} />
+                  <SkyAvatar name={author} sign={sun} src={youSrc} size={84} />
                 </button>
                 <div className="my-sky__copy">
                   <h2 className="my-sky__name">{MY_SKY_LABEL}</h2>
@@ -463,29 +478,31 @@ export function NorthSocialPage() {
                   <p className="serif-quiet tn-lede">{state.space.manifesto}</p>
                 </div>
               </div>
-              <ul className="sky-pills">
-                <li>Sun {sun}</li>
-                <li>Moon {moon}</li>
-                <li>Rising {rising}</li>
-                <li>Life Path {lifePath}</li>
-              </ul>
-              <div className="sky-chips">
-                {(["mood", "anthem", "altar"] as const).map(key => (
-                  <label key={key} className="sky-chip">
-                    <span>{key === "mood" ? "Mood" : key === "anthem" ? "Soundtrack" : "Altar"}</span>
-                    {chip === key ? (
-                      <input
-                        className="tn-field"
-                        value={state.space[key]}
-                        autoFocus
-                        onChange={event => patchSpace({ [key]: event.target.value })}
-                        onBlur={() => setChip(null)}
-                      />
-                    ) : (
-                      <button type="button" onClick={() => setChip(key)}>{state.space[key]}</button>
-                    )}
-                  </label>
-                ))}
+              <div className="sky-meta">
+                <ul className="sky-pills">
+                  <li>Sun {sun}</li>
+                  <li>Moon {moon}</li>
+                  <li>Rising {rising}</li>
+                  <li>Life Path {lifePath}</li>
+                </ul>
+                <div className="sky-chips">
+                  {(["mood", "anthem", "altar"] as const).map(key => (
+                    <span key={key} className="sky-chip">
+                      <span>{key === "mood" ? "Mood" : key === "anthem" ? "Soundtrack" : "Altar"}</span>
+                      {chip === key ? (
+                        <input
+                          className="tn-field"
+                          value={state.space[key]}
+                          autoFocus
+                          onChange={event => patchSpace({ [key]: event.target.value })}
+                          onBlur={() => setChip(null)}
+                        />
+                      ) : (
+                        <button type="button" onClick={() => setChip(key)}>{state.space[key]}</button>
+                      )}
+                    </span>
+                  ))}
+                </div>
               </div>
               <div className="tn-actions">
                 <button type="button" className="cta-pist tn-action" onClick={() => setEditor(true)}>Edit Profile & Birth Data</button>
@@ -493,32 +510,43 @@ export function NorthSocialPage() {
               </div>
             </section>
 
-            <div className="tn-profile__tabs" role="tablist" aria-label="Profile">
-              {([
-                ["chart", "Chart"],
-                ["numbers", "Numbers"],
-                ["constellation", MY_CONSTELLATION_LABEL],
-              ] as const).map(([id, label]) => (
-                <button key={id} type="button" role="tab" aria-selected={view.sky === id} className={`tn-profile__tab ${view.sky === id ? "is-on" : ""}`} onClick={() => goSky(id)}>
-                  {label}
+            <div className="sky-tabrow">
+              <div className="tn-profile__tabs tn-profile__tabs--quad" role="tablist" aria-label="Profile">
+                {([
+                  ["chart", "Chart"],
+                  ["numbers", "Numbers"],
+                  ["constellation", "Constellation"],
+                  ["posts", "Posts"],
+                ] as const).map(([id, label]) => (
+                  <button key={id} type="button" role="tab" aria-selected={view.sky === id} className={`tn-profile__tab ${view.sky === id ? "is-on" : ""}`} onClick={() => goSky(id)}>
+                    {label}
+                  </button>
+                ))}
+              </div>
+              {(view.sky === "chart" || view.sky === "numbers") && (
+                <button
+                  type="button"
+                  className="cta-ghost sky-share"
+                  onClick={() => publish(
+                    view.sky === "numbers" ? "Numbers" : "Chart highlight",
+                    view.sky === "numbers" ? `Life Path ${lifePath}.` : `${sun} sun, ${moon} moon, ${rising} rising.`,
+                    [],
+                    "chart",
+                  )}
+                >
+                  Share to Feed
                 </button>
-              ))}
+              )}
             </div>
 
             {view.sky === "chart" && (
               <div className="sky-panel">
-                <div className="tn-actions">
-                  <button type="button" className="cta-pist tn-action" onClick={() => publish("Chart highlight", `${sun} sun, ${moon} moon, ${rising} rising.`, [], "chart")}>Share to Feed</button>
-                </div>
-                <ChartHomePage embedded />
+                <ChartHomePage embedded allowPreview={!chart} previewSigns={{ sun, moon, rising }} />
               </div>
             )}
 
             {view.sky === "numbers" && (
               <div className="sky-panel">
-                <div className="tn-actions">
-                  <button type="button" className="cta-pist tn-action" onClick={() => publish("Numbers", `Life Path ${lifePath}.`, [], "chart")}>Share to Feed</button>
-                </div>
                 <NumbersPage embedded />
               </div>
             )}
@@ -526,46 +554,54 @@ export function NorthSocialPage() {
             {view.sky === "constellation" && (
               <section className="tn-card" aria-labelledby="my-constellation-heading">
                 <h2 id="my-constellation-heading" className="north-post__title">{MY_CONSTELLATION_LABEL}</h2>
-                <p className="serif-quiet tn-lede">Eight ranked seats. The first star leads. Swap anyone into seat #8.</p>
-                <ol className="constellation" aria-label={MY_CONSTELLATION_LABEL}>
-                  {rankedEight(state.top).map((person, index) => (
-                    <ConstellationSeat
-                      key={person.id}
-                      person={person}
-                      index={index}
-                      onOpen={() => setSheet(person)}
-                      onPromote={() => setState(current => ({ ...current, top: promoteTop(rankedEight(current.top), index) }))}
-                      onMove={direction => setState(current => ({ ...current, top: moveTop(rankedEight(current.top), index, direction) }))}
-                    />
-                  ))}
-                </ol>
-                <div className="friend-list">
-                  <h3>Friends</h3>
-                  <ul>
-                    {rankedEight(state.top).map(person => (
-                      <li key={`list-${person.id}`}>
-                        <button type="button" onClick={() => setSheet(person)}>
-                          <SkyAvatar name={person.name} sign={person.sun} size={40} />
-                          <span>{person.name}</span>
-                          <em>{atHandle(person.handle)}</em>
-                        </button>
-                      </li>
-                    ))}
-                  </ul>
+                <div className="tn-subtabs" role="tablist" aria-label={MY_CONSTELLATION_LABEL}>
+                  <button type="button" role="tab" aria-selected={seatTab === "seats"} className={seatTab === "seats" ? "is-on" : ""} onClick={() => setSeatTab("seats")}>Top 8</button>
+                  <button type="button" role="tab" aria-selected={seatTab === "friends"} className={seatTab === "friends" ? "is-on" : ""} onClick={() => setSeatTab("friends")}>Friends & Add</button>
                 </div>
-                <form id="add-friend" className="north-friend" onSubmit={event => { event.preventDefault(); saveFriend(); }}>
-                  <label className="tn-label" htmlFor="friend-name">Add a friend to seat #8</label>
-                  <input id="friend-name" className="tn-field" value={friend.name} onChange={event => setFriend(current => ({ ...current, name: event.target.value }))} placeholder="Name" />
-                  <input className="tn-field" value={friend.handle} onChange={event => setFriend(current => ({ ...current, handle: event.target.value }))} placeholder="Handle" aria-label="Handle" />
-                  <label className="tn-label" htmlFor="friend-sun">Sun</label>
-                  <select id="friend-sun" className="tn-field" value={friend.sun} onChange={event => setFriend(current => ({ ...current, sun: event.target.value }))}>
-                    {SIGNS.map(sign => <option key={sign}>{sign}</option>)}
-                  </select>
-                  <button type="submit" className="cta-pist tn-action">Save to seat 8</button>
-                </form>
+                {seatTab === "seats" && (
+                  <ol className="constellation" aria-label={MY_CONSTELLATION_LABEL}>
+                    {rankedEight(state.top).map((person, index) => (
+                      <ConstellationSeat
+                        key={person.id}
+                        person={person}
+                        index={index}
+                        onOpen={() => setSheet(person)}
+                        onPromote={() => setState(current => ({ ...current, top: promoteTop(rankedEight(current.top), index) }))}
+                        onMove={direction => setState(current => ({ ...current, top: moveTop(rankedEight(current.top), index, direction) }))}
+                      />
+                    ))}
+                  </ol>
+                )}
+                {seatTab === "friends" && (
+                  <div className="friend-list">
+                    <h3>Friends</h3>
+                    <ul>
+                      {rankedEight(state.top).map(person => (
+                        <li key={`list-${person.id}`}>
+                          <button type="button" onClick={() => setSheet(person)}>
+                            <SkyAvatar name={person.name} sign={person.sun} size={40} />
+                            <span>{person.name}</span>
+                            <em>{atHandle(person.handle)}</em>
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                    <form id="add-friend" className="north-friend" onSubmit={event => { event.preventDefault(); saveFriend(); }}>
+                      <label className="tn-label" htmlFor="friend-name">Add a friend to seat #8</label>
+                      <input id="friend-name" className="tn-field" value={friend.name} onChange={event => setFriend(current => ({ ...current, name: event.target.value }))} placeholder="Name" />
+                      <input className="tn-field" value={friend.handle} onChange={event => setFriend(current => ({ ...current, handle: event.target.value }))} placeholder="Handle" aria-label="Handle" />
+                      <label className="tn-label" htmlFor="friend-sun">Sun</label>
+                      <select id="friend-sun" className="tn-field" value={friend.sun} onChange={event => setFriend(current => ({ ...current, sun: event.target.value }))}>
+                        {SIGNS.map(sign => <option key={sign}>{sign}</option>)}
+                      </select>
+                      <button type="submit" className="cta-pist tn-action">Save to seat 8</button>
+                    </form>
+                  </div>
+                )}
               </section>
             )}
 
+            {view.sky === "posts" && (
             <section className="personal-feed" aria-label="Your notes and tandem readings">
               <h2 className="north-post__title">Your notes</h2>
               {personal.length === 0 ? (
@@ -587,6 +623,7 @@ export function NorthSocialPage() {
                 />
               ))}
             </section>
+            )}
 
             <footer className="tn-profile__foot">
               <Link to="/orders" className="tn-inline">Orders</Link>

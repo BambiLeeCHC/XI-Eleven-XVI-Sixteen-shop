@@ -47,7 +47,11 @@ export function signAtLongitude(degree: number): {
 }
 
 /** True when `longitude` sits on the arc from `start` up to but not including `end`. */
-export function longitudeOnArc(longitude: number, start: number, end: number): boolean {
+export function longitudeOnArc(
+  longitude: number,
+  start: number,
+  end: number,
+): boolean {
   const lon = normalizeLongitude(longitude);
   const from = normalizeLongitude(start);
   const to = normalizeLongitude(end);
@@ -110,4 +114,164 @@ export function tightestAspects(bodies: BodyLongitude[]): TightAspect[] {
     }
   }
   return found.sort((a, b) => a.orb - b.orb || a.bodyA.localeCompare(b.bodyA));
+}
+
+export type ChartBodyInput = {
+  name: string;
+  longitude: number;
+  retrograde?: boolean;
+};
+
+/** House cusp after the same rounding and sign cut as placements. */
+export type ChartHouse = {
+  house: number;
+  sign: TropicalSign;
+  degree: number;
+};
+
+/** Placement carrying the exact cusp-derived house parameters. */
+export type ChartPlacement = {
+  body: string;
+  sign: TropicalSign;
+  degree: number;
+  degreeInSign: number;
+  house: number;
+  houseSign: TropicalSign;
+  retrograde: boolean;
+};
+
+/**
+ * Aspect between two normalized placements. House and sign fields are always
+ * filled by the builder; older payloads may omit them.
+ */
+export type ChartAspect = TightAspect & {
+  signA: TropicalSign;
+  houseA: number;
+  degreeA: number;
+  signB: TropicalSign;
+  houseB: number;
+  degreeB: number;
+};
+
+export function longitudeOfSign(sign: string, degreeInSign = 0): number {
+  const index = TROPICAL_SIGNS.indexOf(sign as TropicalSign);
+  const base = index < 0 ? 0 : index * 30;
+  return normalizeLongitude(base + degreeInSign);
+}
+
+/**
+ * One house-parameterized pipeline for server charts and local previews.
+ * Cusps are rounded first. Placements and aspects then read those exact
+ * cusp degrees — never a second, unrounded copy of the sky.
+ */
+export function buildChartFromLongitudes(input: {
+  bodies: ChartBodyInput[];
+  cusps: number[];
+}): {
+  houses: ChartHouse[];
+  placements: ChartPlacement[];
+  aspects: ChartAspect[];
+} {
+  const houses: ChartHouse[] = input.cusps.slice(0, 12).map((cusp, index) => {
+    const degree = roundLongitude(cusp);
+    const { sign } = signAtLongitude(degree);
+    return { house: index + 1, sign, degree };
+  });
+  houses.sort((a, b) => a.house - b.house);
+
+  const cusps = houses.map(house => house.degree);
+  const placements: ChartPlacement[] = input.bodies.map(body => {
+    const degree = roundLongitude(body.longitude);
+    const placed = signAtLongitude(degree);
+    const house = houseForLongitude(degree, cusps);
+    const houseSign =
+      houses.find(item => item.house === house)?.sign ?? placed.sign;
+    return {
+      body: body.name,
+      sign: placed.sign,
+      degree,
+      degreeInSign: placed.degreeInSign,
+      house,
+      houseSign,
+      retrograde: Boolean(body.retrograde),
+    };
+  });
+
+  const aspects: ChartAspect[] = tightestAspects(
+    placements.map(placement => ({
+      name: placement.body,
+      longitude: placement.degree,
+    })),
+  ).map(aspect => {
+    const left = placements.find(item => item.body === aspect.bodyA);
+    const right = placements.find(item => item.body === aspect.bodyB);
+    return {
+      ...aspect,
+      signA: left?.sign ?? "Aries",
+      houseA: left?.house ?? 1,
+      degreeA: left?.degree ?? 0,
+      signB: right?.sign ?? "Aries",
+      houseB: right?.house ?? 1,
+      degreeB: right?.degree ?? 0,
+    };
+  });
+
+  return { houses, placements, aspects };
+}
+
+const PREVIEW_OFFSETS: {
+  name: string;
+  from: "sun" | "moon" | "rising";
+  add: number;
+}[] = [
+  { name: "Sun", from: "sun", add: 10 },
+  { name: "Moon", from: "moon", add: 18 },
+  { name: "Mercury", from: "sun", add: 22 },
+  { name: "Venus", from: "sun", add: -18 },
+  { name: "Mars", from: "moon", add: 47 },
+  { name: "Jupiter", from: "rising", add: 78 },
+  { name: "Saturn", from: "rising", add: 132 },
+  { name: "Uranus", from: "sun", add: 96 },
+  { name: "Neptune", from: "moon", add: 124 },
+  { name: "Pluto", from: "rising", add: 210 },
+];
+
+/** Equal-house preview from Sun, Moon, and rising — same builder as the server. */
+export function buildPreviewNatalChart(signs: {
+  sun: string;
+  moon: string;
+  rising: string;
+}) {
+  const risingDegree = longitudeOfSign(signs.rising, 15);
+  const cusps = Array.from({ length: 12 }, (_, index) =>
+    normalizeLongitude(risingDegree + index * 30),
+  );
+  const anchors = {
+    sun: longitudeOfSign(signs.sun, 0),
+    moon: longitudeOfSign(signs.moon, 0),
+    rising: risingDegree,
+  };
+  const built = buildChartFromLongitudes({
+    cusps,
+    bodies: PREVIEW_OFFSETS.map(body => ({
+      name: body.name,
+      longitude: anchors[body.from] + body.add,
+      retrograde: body.name === "Mercury" || body.name === "Saturn",
+    })),
+  });
+  const ascendant = built.houses.find(house => house.house === 1);
+  const midheaven = built.houses.find(house => house.house === 10);
+  return {
+    ascendant: ascendant?.sign ?? signAtLongitude(risingDegree).sign,
+    ascendantDegree: ascendant?.degree ?? roundLongitude(risingDegree),
+    midheaven: midheaven?.sign ?? signAtLongitude(cusps[9] ?? 0).sign,
+    midheavenDegree: midheaven?.degree ?? roundLongitude(cusps[9] ?? 0),
+    placements: built.placements,
+    houses: built.houses,
+    aspects: built.aspects,
+    houseSystem: "Equal",
+    zodiac: "Tropical",
+    approximateTime: true,
+    preview: true,
+  };
 }

@@ -10,6 +10,8 @@ import {
 } from "../src/lib/northProfile.js";
 import {
   angularSeparation,
+  buildChartFromLongitudes,
+  buildPreviewNatalChart,
   houseForLongitude,
   longitudeOnArc,
   signAtLongitude,
@@ -417,7 +419,6 @@ check("My Sky holds Chart, Numbers, and My Constellation", () => {
       "MySpace",
       ["My", "Space"].join(" "),
       ["My", "space"].join(" "),
-      ["Top", "8"].join(" "),
     ].join("|"),
   );
   assert.equal(banned.test(surface), false);
@@ -715,6 +716,57 @@ check("True North is a three-room shell and avatars upgrade cleanly", () => {
   )).then(missing => {
     assert.equal(missing, false);
   });
+});
+
+check("house parameters, jewel cards, and cartoon avatars stay inside the three-tab shell", () => {
+  const root = join(dirname(fileURLToPath(import.meta.url)), "..");
+  const built = buildChartFromLongitudes({
+    cusps: Array.from({ length: 12 }, (_, index) => index * 30),
+    bodies: [
+      { name: "Sun", longitude: 15 },
+      { name: "Mars", longitude: 105 },
+    ],
+  });
+  const sun = built.placements.find(item => item.body === "Sun");
+  const square = built.aspects.find(item => item.bodyA === "Sun" && item.bodyB === "Mars");
+  assert.equal(sun?.house, 1);
+  assert.equal(sun?.houseSign, "Aries");
+  assert.equal(sun?.degreeInSign, 15);
+  assert.equal(square?.houseB, 4);
+  assert.equal(square?.signB, "Cancer");
+  const preview = buildPreviewNatalChart({ sun: "Leo", moon: "Pisces", rising: "Scorpio" });
+  assert.equal(preview.ascendant, "Scorpio");
+  assert.equal(preview.placements.length, 10);
+  const shared = readFileSync(join(root, "src/pages/chart/shared.tsx"), "utf8");
+  const chart = readFileSync(join(root, "src/pages/chart/ChartHomePage.tsx"), "utf8");
+  const numbers = readFileSync(join(root, "src/pages/chart/NumbersPage.tsx"), "utf8");
+  const page = readFileSync(join(root, "src/pages/NorthSocialPage.tsx"), "utf8");
+  const glass = readFileSync(join(root, "src/tn-glass.css"), "utf8");
+  assert.match(shared, /explainPlacementInHouse/);
+  assert.match(shared, /explainAspectAcrossHouses/);
+  assert.match(shared, /Stationed in House/);
+  assert.match(chart, /Wheel/);
+  assert.match(chart, /Placements/);
+  assert.match(chart, /Houses/);
+  assert.match(chart, /Aspects/);
+  assert.match(chart, /Overview/);
+  assert.match(chart, /tab === "wheel"/);
+  assert.match(numbers, /Core Numbers/);
+  assert.match(numbers, /Reading/);
+  assert.match(page, /Posts & Pulls/);
+  assert.match(page, /Find Friends/);
+  assert.match(page, /Top 8/);
+  assert.match(page, /Friends & Add/);
+  assert.match(page, /"Posts"/);
+  assert.equal(page.split("<TrueNorthNav").length - 1, 1);
+  assert.match(glass, /#F5B971/);
+  assert.match(glass, /#8CE0B1/);
+  assert.match(glass, /#8CCBFF/);
+  assert.match(glass, /#C7A6FF/);
+  const portrait = decodeURIComponent(celestialPortraitSvg("Maren", { outfit: "hoodie", hairStyle: "curls" }));
+  assert.match(portrait, /XI · XVI/);
+  assert.match(portrait, /data-outfit="hoodie"/);
+  assert.match(portrait, /xi-crest/);
 });
 
 await Promise.all(pending);

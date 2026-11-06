@@ -32,7 +32,7 @@
   margin: 0.85rem 0 0;
   padding: 0;
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 0.75rem;
 }
 .constellation__seat {
@@ -76,7 +76,22 @@
   color: #f6e7b0;
   filter: drop-shadow(0 0 6px rgba(246, 231, 176, 0.85));
 }
+.constellation__avatar {
+  width: 3.1rem;
+  height: 3.1rem;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid rgba(199, 166, 255, 0.55);
+}
 .constellation__name { font-size: 1.12rem; overflow-wrap: anywhere; }
+.avatar-studio__preview {
+  width: min(100%, 16rem);
+  height: auto;
+  border-radius: 50%;
+  display: block;
+  margin: 0.6rem 0 1rem;
+}
+.avatar-studio__picks { display: grid; gap: 0.35rem; margin-bottom: 0.8rem; }
 .constellation__handle { color: rgba(247, 240, 230, 0.72); font-size: 0.85rem; overflow-wrap: anywhere; }
 .constellation__big3 { margin: 0.2rem 0 0; display: grid; gap: 0.08rem; font-size: 0.84rem; }
 .constellation__big3-label {
@@ -255,11 +270,31 @@
   cursor: pointer;
 }
 .constellation__open { display: grid; justify-items: start; gap: 0.12rem; }
-.my-sky { display: grid; gap: 0.85rem; padding: 1.25rem 1.3rem 1.35rem; }
-.my-sky__top { display: flex; gap: 1rem; align-items: center; }
-.my-sky__name { margin: 0; color: #d8f0c4; font-size: 0.75rem; letter-spacing: 0.14em; text-transform: uppercase; }
-.my-sky__person { margin: 0.15rem 0 0; color: #f7f0e6; font-size: clamp(1.6rem, 4vw, 2.1rem); font-weight: 650; }
-.my-sky__handle { margin: 0; color: rgba(247, 240, 230, 0.7); }
+.my-sky { display: grid; gap: 0.45rem; padding: 0.7rem 0.9rem 0.65rem; }
+.my-sky__top { display: flex; gap: 0.75rem; align-items: center; }
+.my-sky__name { margin: 0; color: #d8f0c4; font-size: 0.68rem; letter-spacing: 0.14em; text-transform: uppercase; }
+.my-sky__person { margin: 0; color: #f7f0e6; font-size: 1.35rem; font-weight: 650; line-height: 1; }
+.my-sky__handle { margin: 0; color: rgba(247, 240, 230, 0.7); font-size: 0.85rem; }
+.my-sky .tn-lede {
+  margin: 0.1rem 0 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.my-sky .tn-actions { flex-direction: row; flex-wrap: wrap; gap: 0.35rem; }
+.my-sky .tn-action { width: auto; min-height: 36px; padding: 0.3rem 0.7rem; font-size: 12px; }
+.sky-meta { display: flex; flex-wrap: wrap; gap: 0.35rem; align-items: center; }
+.sky-tabrow { display: flex; align-items: center; gap: 0.45rem; }
+.sky-tabrow .tn-profile__tabs { flex: 1; margin: 0; }
+.sky-share {
+  width: auto;
+  min-height: 40px;
+  padding: 0.35rem 0.8rem;
+  border-radius: 999px;
+  white-space: nowrap;
+  font-size: 12px;
+}
 .sky-pills,
 .sky-chips,
 .feed-filters,
@@ -270,12 +305,14 @@
 .sky-chip,
 .feed-filters button,
 .reading-switch button,
-.avatar-studio__styles label {
+.avatar-studio__styles label,
+.avatar-studio__modes button,
+.avatar-studio__fits button {
   border-radius: 999px;
   border: 1px solid rgba(247, 240, 230, 0.22);
   background: rgba(8, 10, 14, 0.28);
   color: #f7f0e6;
-  padding: 0.4rem 0.75rem;
+  padding: 0.28rem 0.6rem;
 }
 .sky-chip { display: grid; gap: 0.15rem; }
 .sky-chip span { font-size: 0.68rem; letter-spacing: 0.08em; text-transform: uppercase; color: #d8f0c4; }
@@ -322,6 +359,23 @@
 .avatar-studio__file input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
 .avatar-studio__styles input { position: absolute; opacity: 0; }
 .avatar-studio__note { margin: 0; color: #d8f0c4; }
+.avatar-studio__modes,
+.avatar-studio__fits { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+.avatar-studio__modes button,
+.avatar-studio__fits button { min-height: 36px; cursor: pointer; background: transparent; }
+.avatar-studio__modes button.is-on,
+.avatar-studio__fits button.is-on { background: #d8f0c4; color: #142010; border-color: #d8f0c4; }
+.avatar-studio__traits { display: grid; grid-template-columns: 1fr 1fr; gap: 0.4rem 0.6rem; }
+.avatar-studio__traits label { display: grid; gap: 0.2rem; }
+.avatar-studio__preview {
+  width: 9.5rem;
+  height: 9.5rem;
+  border-radius: 50%;
+  display: block;
+  margin: 0 auto;
+  object-fit: cover;
+  border: 1px solid rgba(199, 166, 255, 0.55);
+}
 .friend-sheet { flex-direction: column; align-items: center; text-align: center; }
 .tandem-lockup strong { font-weight: 650; }
 @media (max-width: 640px) {
