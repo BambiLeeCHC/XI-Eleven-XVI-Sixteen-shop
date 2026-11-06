@@ -11,8 +11,14 @@ import {
   blankState,
   createPost,
   moveTop,
+  MY_CONSTELLATION_LABEL,
+  MY_SKY_LABEL,
+  NORTH_SOCIAL_SKY_TAB,
+  NORTH_SOCIAL_STORAGE_KEY,
   promoteTop,
+  rankedEight,
   REACTION_LABEL,
+  starterSpace,
   toggleReaction,
   upsertFriend,
   type ReactionKey,
@@ -21,19 +27,78 @@ import {
 } from "../lib/northSocial";
 import { TrueNorthNav } from "./chart/shared";
 
-const KEY = "xixvi-north-social-v1";
 type View = "feed" | "space" | "studio" | "tandem";
 
 function loadState(): SocialState {
   try {
-    const raw = localStorage.getItem(KEY);
+    const raw = localStorage.getItem(NORTH_SOCIAL_STORAGE_KEY);
     if (!raw) return blankState();
     const parsed = JSON.parse(raw) as SocialState;
-    if (!parsed.posts || !parsed.top || !parsed.space) return blankState();
-    return parsed;
+    if (!parsed?.posts || !parsed.top || !parsed.space) return blankState();
+    return {
+      posts: parsed.posts,
+      top: rankedEight(parsed.top),
+      space: { ...starterSpace(), ...parsed.space },
+    };
   } catch {
     return blankState();
   }
+}
+
+function atHandle(handle: string) {
+  return `@${handle.trim().replace(/^@+/, "")}`;
+}
+
+function ConstellationSeat({
+  person,
+  index,
+  onPromote,
+  onMove,
+}: {
+  person: TopFriend;
+  index: number;
+  onPromote: () => void;
+  onMove: (direction: -1 | 1) => void;
+}) {
+  const rank = index + 1;
+  const first = rank === 1;
+  return (
+    <li className={first ? "constellation__seat constellation__seat--star" : "constellation__seat"}>
+      <div className="constellation__rank">
+        {first ? (
+          <svg className="constellation__mark" viewBox="0 0 24 24" aria-hidden="true">
+            <path fill="currentColor" d="M12 1.8 14.7 8.6 22 9.2 16.6 14.1 18.3 21.4 12 17.6 5.7 21.4 7.4 14.1 2 9.2 9.3 8.6Z" />
+          </svg>
+        ) : null}
+        <span>#{rank}</span>
+      </div>
+      <strong className="constellation__name">{person.name}</strong>
+      <span className="constellation__handle">{atHandle(person.handle)}</span>
+      <p className="constellation__big3">
+        <span className="constellation__big3-label">Sun · Moon · Rising</span>
+        <span>{person.sun} · {person.moon} · {person.rising}</span>
+      </p>
+      <span className="constellation__vibe">{person.vibe}</span>
+      <div className="constellation__actions">
+        {first ? (
+          <span className="constellation__star-pill">#1 Star</span>
+        ) : (
+          <button type="button" className="cta-ghost tn-action" onClick={onPromote} aria-label={`Make ${person.name} #1`}>
+            Make #1
+          </button>
+        )}
+        <button type="button" className="cta-ghost tn-action" onClick={() => onMove(-1)} disabled={index === 0} aria-label={`Move ${person.name} up`}>
+          Move up
+        </button>
+        <button type="button" className="cta-ghost tn-action" onClick={() => onMove(1)} disabled={index === 7} aria-label={`Move ${person.name} down`}>
+          Move down
+        </button>
+        <Link className="cta-pist tn-action" to="/chart/circle" aria-label={`Tandem with ${person.name}`}>
+          Tandem
+        </Link>
+      </div>
+    </li>
+  );
 }
 
 function drawThree() {
@@ -66,7 +131,7 @@ export function NorthSocialPage() {
 
   useEffect(() => {
     if (!ready) return;
-    localStorage.setItem(KEY, JSON.stringify(state));
+    localStorage.setItem(NORTH_SOCIAL_STORAGE_KEY, JSON.stringify(state));
   }, [ready, state]);
 
   const author = (user?.name as string | undefined) || state.space.name || "You";
@@ -152,7 +217,7 @@ export function NorthSocialPage() {
           <div className="north-social__switch" role="tablist" aria-label="True North">
             {([
               ["feed", "Feed"],
-              ["space", "My Space & Top 8"],
+              ["space", NORTH_SOCIAL_SKY_TAB],
               ["studio", "Tarot & Chart Studio"],
               ["tandem", "Tandem Bonds"],
             ] as const).map(([id, label]) => (
@@ -218,9 +283,9 @@ export function NorthSocialPage() {
 
         {view === "space" && (
           <div className="north-space">
-            <section className="tn-card">
-              <p className="label-lock">My space</p>
-              <h2 className="clash north-post__title">{state.space.name}</h2>
+            <section className="tn-card my-sky" aria-labelledby="my-sky-heading">
+              <h2 id="my-sky-heading" className="clash north-post__title">{MY_SKY_LABEL}</h2>
+              <p className="my-sky__name">{state.space.name}</p>
               <p className="serif-quiet tn-lede">{state.space.manifesto}</p>
               <p className="tn-meta">{state.space.sun} · {state.space.moon} · {state.space.rising} · Life path {state.space.lifePath}</p>
               <p className="tn-meta">Altar: {state.space.altar}</p>
@@ -229,29 +294,25 @@ export function NorthSocialPage() {
               <label className="tn-label" htmlFor="anthem">Soundtrack</label>
               <input id="anthem" className="tn-field" value={state.space.anthem} onChange={event => setState(current => ({ ...current, space: { ...current.space, anthem: event.target.value } }))} />
             </section>
-            <section className="tn-card">
-              <p className="label-lock">Top 8</p>
-              <ol className="top8">
-                {state.top.slice(0, 8).map((person, index) => (
-                  <li key={person.id}>
-                    <span className="top8__rank">#{index + 1}</span>
-                    <strong>{person.name}</strong>
-                    <span>@{person.handle}</span>
-                    <span>{person.sun} · {person.moon} · {person.rising}</span>
-                    <span>{person.vibe}</span>
-                    <div className="tn-actions">
-                      <button type="button" className="cta-ghost tn-action" onClick={() => setState(current => ({ ...current, top: promoteTop(current.top, index) }))}>Make #1</button>
-                      <button type="button" className="cta-ghost tn-action" onClick={() => setState(current => ({ ...current, top: moveTop(current.top, index, -1) }))}>Move up</button>
-                      <Link className="cta-pist tn-action" to="/chart/circle">Tandem</Link>
-                    </div>
-                  </li>
+            <section className="tn-card" aria-labelledby="my-constellation-heading">
+              <h2 id="my-constellation-heading" className="clash north-post__title">{MY_CONSTELLATION_LABEL}</h2>
+              <p className="serif-quiet tn-lede">Eight ranked seats. The first star leads.</p>
+              <ol className="constellation" aria-label={MY_CONSTELLATION_LABEL}>
+                {rankedEight(state.top).map((person, index) => (
+                  <ConstellationSeat
+                    key={person.id}
+                    person={person}
+                    index={index}
+                    onPromote={() => setState(current => ({ ...current, top: promoteTop(rankedEight(current.top), index) }))}
+                    onMove={direction => setState(current => ({ ...current, top: moveTop(rankedEight(current.top), index, direction) }))}
+                  />
                 ))}
               </ol>
               <form className="north-friend" onSubmit={event => { event.preventDefault(); saveFriend(); }}>
-                <label className="tn-label" htmlFor="friend-name">Add to the last seat</label>
+                <label className="tn-label" htmlFor="friend-name">Replace the 8th seat</label>
                 <input id="friend-name" className="tn-field" value={friend.name} onChange={event => setFriend(current => ({ ...current, name: event.target.value }))} placeholder="Name" />
                 <input className="tn-field" value={friend.handle} onChange={event => setFriend(current => ({ ...current, handle: event.target.value }))} placeholder="Handle" aria-label="Handle" />
-                <button type="submit" className="cta-pist tn-action">Save friend</button>
+                <button type="submit" className="cta-pist tn-action">Save to seat 8</button>
               </form>
             </section>
           </div>
