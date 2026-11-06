@@ -147,6 +147,9 @@ export function mapProfile(row: Row | null | undefined) {
     northFocus: row.north_focus ?? "general",
     northNote: row.north_note ?? undefined,
     northOnboardedAt: row.north_onboarded_at ?? undefined,
+    photoUrl: typeof row.north_photo_url === "string" ? row.north_photo_url : undefined,
+    aiAvatarUrl: typeof row.north_ai_avatar_url === "string" ? row.north_ai_avatar_url : undefined,
+    avatarMode: row.north_avatar_mode === "ai" || row.north_avatar_mode === "original" ? row.north_avatar_mode : undefined,
   };
 }
 

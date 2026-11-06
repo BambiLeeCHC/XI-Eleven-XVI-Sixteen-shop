@@ -239,7 +239,7 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
       });
       emailed = emailResult.success;
       if (!emailResult.success) {
-        console.error("Long Read keepsake email failed:", emailResult.error);
+        console.error("Long Read keepsake email failed:", (emailResult as { success: false; error: string }).error);
       }
     }
 

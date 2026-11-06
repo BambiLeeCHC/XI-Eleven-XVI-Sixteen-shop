@@ -66,8 +66,8 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
     });
 
     if (!result.success) {
-      await log("failed", undefined, result.error);
-      throw new HttpError(502, `Email failed to send: ${result.error}`);
+      await log("failed", undefined, (result as { success: false; error: string }).error);
+      throw new HttpError(502, `Email failed to send: ${(result as { success: false; error: string }).error}`);
     }
 
     await log("sent", result.providerId);

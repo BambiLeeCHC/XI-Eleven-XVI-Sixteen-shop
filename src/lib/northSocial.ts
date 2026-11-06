@@ -49,6 +49,8 @@ export type TopFriend = {
   vibe: string;
 };
 
+export type AvatarMode = "ai" | "original";
+
 export type SocialFriend = TopFriend & {
   note?: string;
   birthDate?: string;
@@ -71,10 +73,20 @@ export type SpaceProfile = {
   moon: string;
   rising: string;
   lifePath: string;
-  handle?: string;
+  /** Optional @handle. Older saved profiles omit it and still load. */
+  handle: string;
+  /** Square data URL of the uploaded photo. Empty until the person adds one. */
+  photoUrl: string;
+  /** Square data URL of the generated True North portrait. */
+  aiAvatarUrl: string;
+  avatarMode: AvatarMode;
   birthDate?: string;
   focus?: string;
 };
+
+export type TrueNorthDestination = "feed" | "sky" | "readings";
+export type SkyPanel = "chart" | "numbers" | "constellation";
+export type ReadingMode = "quick" | "deep" | "tandem";
 
 export type SocialState = {
   posts: SocialPost[];
@@ -170,6 +182,9 @@ export function starterSpace(): SpaceProfile {
     lifePath: String(lifePathNumber(VIEWER_BIRTH)),
     birthDate: VIEWER_BIRTH,
     focus: "career",
+    photoUrl: "",
+    aiAvatarUrl: "",
+    avatarMode: "ai",
   };
 }
 
@@ -651,6 +666,85 @@ export function createPost(input: {
   };
 }
 
+function skyFromHash(hash: string): SkyPanel {
+  if (hash === "numbers") return "numbers";
+  if (hash === "constellation" || hash === "friends") return "constellation";
+  return "chart";
+}
+
+/** One reading of every True North URL. Almanac and the old extra tabs fold in here. */
+export function resolveTrueNorthView(pathname: string, hash = ""): {
+  destination: TrueNorthDestination;
+  sky: SkyPanel;
+  reading: ReadingMode;
+} {
+  const h = hash.replace(/^#/, "");
+  if (pathname.startsWith("/chart/long-read") || h === "deep" || h === "long-read") {
+    return { destination: "readings", sky: skyFromHash(h), reading: "deep" };
+  }
+  if (pathname.startsWith("/chart/circle") || h === "tandem") {
+    return { destination: "readings", sky: "chart", reading: "tandem" };
+  }
+  if (h === "readings" || h === "quick") {
+    return { destination: "readings", sky: "chart", reading: "quick" };
+  }
+  if (
+    pathname.startsWith("/profile") ||
+    h === "sky" ||
+    h === "chart" ||
+    h === "numbers" ||
+    h === "constellation" ||
+    h === "friends" ||
+    h === "profile" ||
+    h === "details" ||
+    h === "birth"
+  ) {
+    return { destination: "sky", sky: skyFromHash(h), reading: "quick" };
+  }
+  return { destination: "feed", sky: "chart", reading: "quick" };
+}
+
+export function activeAvatarUrl(space: Partial<SpaceProfile> | null | undefined): string {
+  const photo = typeof space?.photoUrl === "string" ? space.photoUrl : "";
+  const ai = typeof space?.aiAvatarUrl === "string" ? space.aiAvatarUrl : "";
+  if (space?.avatarMode === "original") return photo || ai;
+  return ai || photo;
+}
+
+type AvatarSyncClient = {
+  from: (table: string) => {
+    update: (patch: Record<string, unknown>) => {
+      eq: (column: string, value: string) => Promise<{ error: { message?: string } | null }>;
+    };
+  };
+};
+
+/** Best-effort profile sync. Missing columns (migration not applied) are not an error. */
+export async function syncNorthAvatar(
+  client: AvatarSyncClient,
+  userId: string,
+  space: SpaceProfile,
+): Promise<boolean> {
+  try {
+    const { error } = await client
+      .from("profiles")
+      .update({
+        north_photo_url: space.photoUrl || null,
+        north_ai_avatar_url: space.aiAvatarUrl || null,
+        north_avatar_mode: space.avatarMode || "ai",
+      })
+      .eq("id", userId);
+    if (!error) return true;
+    const message = error.message ?? "";
+    if (/north_photo_url|north_ai_avatar_url|north_avatar_mode|schema cache|column/i.test(message)) {
+      return false;
+    }
+    return false;
+  } catch {
+    return false;
+  }
+}
+
 function normalizeReactions(value: unknown): Record<ReactionKey, number> {
   const base = emptyReactions();
   if (!value || typeof value !== "object") return base;
@@ -749,6 +843,9 @@ export function upgradeSocialState(raw: unknown, now = Date.now()): SocialState 
   const record = raw as Partial<SocialState>;
   const savedSpace = record.space && typeof record.space === "object" ? record.space : null;
   const space: SpaceProfile = { ...starterSpace(), ...(savedSpace ?? {}) };
+  space.photoUrl = typeof space.photoUrl === "string" ? space.photoUrl : "";
+  space.aiAvatarUrl = typeof space.aiAvatarUrl === "string" ? space.aiAvatarUrl : "";
+  space.avatarMode = space.avatarMode === "original" ? "original" : "ai";
   if (savedSpace && !savedSpace.handle) space.handle = slug(savedSpace.name || space.name);
   if (savedSpace && !savedSpace.birthDate) delete space.birthDate;
   if (savedSpace && !savedSpace.focus) space.focus = "general";

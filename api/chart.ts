@@ -48,6 +48,7 @@ import { generateWithGroq, type GroqFailure } from "./_lib/groq.js";
 import { fullNumerologyProfile, NUMBER_MEANINGS } from "../src/lib/numerology.js";
 import { BODY_MEANINGS, explainAspect } from "../src/lib/astrologyMeanings.js";
 import { handleNorth } from "./_lib/north.js";
+import { handleAvatar } from "./_lib/avatar.js";
 
 const NUMEROLOGY_SYSTEM_PROMPT = `You are the XI · XVI Reader, writing the numerology narrative for the XI Eleven XVI Sixteen (xixvi.shop) brand — the paid, higher-tier companion to the natal chart. Same voice as always: direct, poignant, specific — never a generic horoscope, never hedging ("may"/"could"), never false authority.
 
@@ -138,7 +139,8 @@ async function handleNatalChart(req: ApiRequest, res: ApiResponse) {
 
   const resolved = await resolveUserChart(user.id);
   if (!resolved.ok) {
-    return res.status(200).json({ success: false, reason: resolved.reason, message: resolved.message });
+    const failed = resolved as { ok: false; reason: string; message: string };
+    return res.status(200).json({ success: false, reason: failed.reason, message: failed.message });
   }
 
   return res.status(200).json({ success: true, chart: resolved.chart });
@@ -150,7 +152,8 @@ async function handleNatalProfile(req: ApiRequest, res: ApiResponse) {
 
   const resolved = await resolveUserChart(user.id);
   if (!resolved.ok) {
-    return res.status(200).json({ success: false, reason: resolved.reason, message: resolved.message });
+    const failed = resolved as { ok: false; reason: string; message: string };
+    return res.status(200).json({ success: false, reason: failed.reason, message: failed.message });
   }
 
   const { chart, name, sourceKey } = resolved;
@@ -235,7 +238,18 @@ async function handleNumerology(req: ApiRequest, res: ApiResponse) {
   return res.status(200).json({ success: true, numbers, narrative: result.text });
 }
 
+function requestedAction(req: ApiRequest): string {
+  const queryAction = req.query?.action;
+  const fromQuery = Array.isArray(queryAction) ? queryAction[0] : queryAction;
+  const fromBody = (req.body as { action?: string } | undefined)?.action;
+  return fromBody || fromQuery || "";
+}
+
 export default async function handler(req: ApiRequest, res: ApiResponse) {
+  if (requestedAction(req) === "avatar") {
+    return handleAvatar(req, res);
+  }
+
   if (req.method !== "GET" && req.method !== "POST") {
     res.setHeader("Allow", "GET, POST");
     return res.status(405).json({ error: "Method not allowed" });

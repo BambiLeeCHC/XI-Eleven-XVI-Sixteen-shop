@@ -95,7 +95,7 @@ async function callGroq(messages: ChatMessage[], maxTokens: number): Promise<Gro
     const result = await callGroqOnce(apiKey, model, messages, maxTokens);
     if (result.success) return result;
     lastFailure = result;
-    if (result.reason === "empty") return result;
+    if ((result as { success: false; reason: string }).reason === "empty") return result;
   }
 
   return lastFailure;

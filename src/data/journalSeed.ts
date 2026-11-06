@@ -57,7 +57,7 @@ export const WELCOME_POST = {
 
 <p>This is the room where the brand thinks out loud. Three things live here, and they run on the same clock you do:</p>
 
-<p><strong>The Almanac.</strong> A calendar built around 11:16 — your two daily checkpoints, the moon overhead, and the number that governs each date. Time, treated as a design material instead of a countdown to a sale.</p>
+<p><strong>The hour.</strong> 11:16 is the house clock — two daily checkpoints, the moon overhead, and the number that governs each date. Time, treated as a design material instead of a countdown to a sale.</p>
 
 <p><strong>The Daily Code.</strong> One line, every day, on sustainability and self-possession. Not a platitude. A directive small enough to actually execute before noon.</p>
 

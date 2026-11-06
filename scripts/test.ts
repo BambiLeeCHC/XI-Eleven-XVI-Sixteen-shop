@@ -15,7 +15,7 @@ import {
   signAtLongitude,
   tightestAspects,
 } from "../src/lib/chartGeometry.js";
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import {
@@ -37,12 +37,17 @@ import {
   publishToFeed,
   rankedEight,
   removeFriend,
+  resolveTrueNorthView,
   starterSpace,
   starterTop,
+  syncNorthAvatar,
   toggleReaction,
   upgradeSocialState,
   upsertFriend,
+  activeAvatarUrl,
 } from "../src/lib/northSocial.js";
+import { celestialPortraitSvg, ELEMENT_AURA, styleLabel } from "../src/lib/celestialAvatar.js";
+import { parseAvatarRequest } from "../api/_lib/avatar.ts";
 import { localHour, paletteForHour, skyAt } from "../src/lib/skyMode.js";
 import { nextEnabledIndex, ringStep, wrapIndex } from "../src/lib/radialDial.js";
 import {
@@ -59,8 +64,17 @@ import {
 
 let passed = 0;
 
-function check(name: string, fn: () => void) {
-  fn();
+const pending: Promise<unknown>[] = [];
+
+function check(name: string, fn: () => void | Promise<void>) {
+  const result = fn();
+  if (result instanceof Promise) {
+    pending.push(result.then(() => {
+      passed += 1;
+      console.log(`ok ${name}`);
+    }));
+    return;
+  }
   passed += 1;
   console.log(`ok ${name}`);
 }
@@ -394,9 +408,9 @@ check("My Sky holds Chart, Numbers, and My Constellation", () => {
   assert.match(feed, /FEED_FILTERS/);
   assert.match(surface, /\+ Add Friend/);
   assert.match(nav, /label: "Feed"/);
-  assert.match(nav, /label: "My Sky"/);
-  assert.match(nav, /label: "Friends"/);
-  assert.match(nav, /label: "Tandem"/);
+  assert.match(nav, /MY_SKY_LABEL|label: "My Sky"/);
+  assert.match(nav, /label: "Readings"/);
+  assert.equal(/almanac/i.test(nav), false);
   assert.equal(nav.includes(NORTH_SOCIAL_SKY_TAB), false);
   const banned = new RegExp(
     [
@@ -588,4 +602,120 @@ check("local hour paints the sky and the clouds without a mode bar", () => {
   }
 });
 
+check("True North is a three-room shell and avatars upgrade cleanly", () => {
+  const root = join(dirname(fileURLToPath(import.meta.url)), "..");
+  const shared = readFileSync(join(root, "src/pages/chart/shared.tsx"), "utf8");
+  const app = readFileSync(join(root, "src/App.tsx"), "utf8");
+  const page = readFileSync(join(root, "src/pages/NorthSocialPage.tsx"), "utf8");
+  const avatarApi = readFileSync(join(root, "api/_lib/avatar.ts"), "utf8");
+  const chartApi = readFileSync(join(root, "api/chart.ts"), "utf8");
+  const vercel = readFileSync(join(root, "vercel.json"), "utf8");
+  const apiFiles = readdirSync(join(root, "api")).filter(name => name.endsWith(".ts"));
+  assert.ok(apiFiles.length <= 12);
+  assert.equal(apiFiles.includes("avatar.ts"), false);
+  assert.match(chartApi, /action === "avatar"|requestedAction\(req\) === "avatar"/);
+  assert.match(vercel, /\/api\/avatar/);
+  assert.match(vercel, /\/api\/chart\?action=avatar/);
+  assert.equal(/almanac/i.test(shared), false);
+  assert.match(shared, /label: "Feed"/);
+  assert.match(shared, /label: "Readings"/);
+  assert.match(shared, /MY_SKY_LABEL/);
+  assert.match(app, /path="\/chart\/almanac" element={<Navigate to="\/chart" replace \/>}/);
+  assert.match(app, /path="\/chart\/numbers" element={<Navigate to="\/chart#numbers" replace \/>}/);
+  assert.equal(page.split("<TrueNorthNav").length - 1, 1);
+  assert.match(page, /Quick Pull/);
+  assert.match(page, /Deep Spread/);
+  assert.match(page, /Live Tandem/);
+  assert.match(page, /Find Friends/);
+  assert.match(page, /AI Avatar/);
+  assert.equal(/Almanac/.test(page), false);
+  assert.equal(resolveTrueNorthView("/chart", "").destination, "feed");
+  assert.equal(resolveTrueNorthView("/chart", "#sky").destination, "sky");
+  assert.equal(resolveTrueNorthView("/chart", "#numbers").sky, "numbers");
+  assert.equal(resolveTrueNorthView("/profile", "#constellation").destination, "sky");
+  assert.equal(resolveTrueNorthView("/profile", "#constellation").sky, "constellation");
+  assert.equal(resolveTrueNorthView("/chart/long-read", "").reading, "deep");
+  assert.equal(resolveTrueNorthView("/chart/circle", "").reading, "tandem");
+  assert.equal(resolveTrueNorthView("/chart#readings".split("#")[0] ?? "", "#readings").destination, "readings");
+
+  const upgraded = upgradeSocialState({
+    posts: [],
+    top: starterTop().slice(0, 2),
+    space: {
+      name: "Ada",
+      manifesto: "Kept",
+      mood: "Bright",
+      anthem: "Night",
+      altar: "The Star",
+      aura: "lilac",
+      sun: "Leo",
+      moon: "Aries",
+      rising: "Gemini",
+      lifePath: "7",
+    },
+  });
+  assert.equal(upgraded.space.name, "Ada");
+  assert.equal(upgraded.space.manifesto, "Kept");
+  assert.equal(upgraded.space.avatarMode, "ai");
+  assert.equal(upgraded.space.photoUrl, "");
+  assert.equal(upgraded.space.aiAvatarUrl, "");
+  assert.equal(upgraded.top.length, 8);
+  assert.equal(upgraded.top[2]?.name, "Open seat");
+  const withPortrait = {
+    ...starterSpace(),
+    photoUrl: "data:image/jpeg;base64,abc",
+    aiAvatarUrl: "data:image/webp;base64,zzz",
+    avatarMode: "ai" as const,
+  };
+  assert.equal(activeAvatarUrl(withPortrait), "data:image/webp;base64,zzz");
+  assert.equal(activeAvatarUrl({ ...withPortrait, avatarMode: "original" }), "data:image/jpeg;base64,abc");
+  assert.match(celestialPortraitSvg("Nova", "Leo"), /^data:image\/svg\+xml/);
+  assert.match(decodeURIComponent(celestialPortraitSvg("Nova", "Leo")), /Leo|♌/);
+  assert.equal(styleLabel("engraving"), "Tarot Engraving");
+  assert.equal(ELEMENT_AURA.earth, "#d8f0c4");
+  assert.match(avatarApi, /gemini-2\.5-flash-image/);
+  assert.match(avatarApi, /gpt-4o-mini/);
+  assert.match(avatarApi, /grok-2-image/);
+  assert.match(avatarApi, /fallback: true/);
+  const tiny = `data:image/jpeg;base64,${"a".repeat(40)}`;
+  const parsed = parseAvatarRequest({ imageDataUrl: tiny, name: "Ada", sun: "Leo", style: "glass" });
+  assert.equal(parsed.ok, true);
+  if (parsed.ok) assert.equal(parsed.value.style, "glass");
+  assert.equal(parseAvatarRequest({ imageDataUrl: "nope" }).ok, false);
+  assert.equal(parseAvatarRequest({ imageDataUrl: `${tiny}${"a".repeat(2_000_000)}` }).ok, false);
+
+  let synced = false;
+  const ok = syncNorthAvatar(
+    {
+      from: () => ({
+        update: () => ({
+          eq: async () => {
+            synced = true;
+            return { error: null };
+          },
+        }),
+      }),
+    },
+    "user-1",
+    starterSpace(),
+  );
+  return ok.then(result => {
+    assert.equal(result, true);
+    assert.equal(synced, true);
+  }).then(() => syncNorthAvatar(
+    {
+      from: () => ({
+        update: () => ({
+          eq: async () => ({ error: { message: "column north_photo_url does not exist" } }),
+        }),
+      }),
+    },
+    "user-1",
+    starterSpace(),
+  )).then(missing => {
+    assert.equal(missing, false);
+  });
+});
+
+await Promise.all(pending);
 console.log(`\n${passed} tests passed`);

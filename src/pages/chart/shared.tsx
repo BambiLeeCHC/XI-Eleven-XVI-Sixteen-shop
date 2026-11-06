@@ -11,7 +11,7 @@ import { api, useQuery } from "../../lib/backend";
 import { HOUSE_HINGE, HOUSE_LINE } from "../../lib/brand";
 import { NUMEROLOGY_CALC_EXPLAIN } from "../../lib/numerology";
 import { signAtLongitude } from "../../lib/chartGeometry";
-import { circleViewFromHash } from "../../lib/northSocial";
+import { MY_SKY_LABEL, resolveTrueNorthView } from "../../lib/northSocial";
 import { moonPhase } from "../../lib/ritual";
 
 export interface NatalPlacement {
@@ -116,22 +116,10 @@ export const SIGN_GLYPH: Record<string, string> = {
 };
 
 export const TRUE_NORTH_PAGES = [
-  { path: "/chart", label: "Feed", glyph: "✦", blurb: "Your posts, tandem readings, and the people you follow.", view: "feed" },
-  { path: "/chart#sky", label: "My Sky", glyph: "✧", blurb: "Chart, numbers, and your constellation.", view: "sky" },
-  { path: "/chart#friends", label: "Friends", glyph: "◎", blurb: "Who you follow, and who can reach your feed.", view: "friends" },
-  { path: "/chart/almanac", label: "Almanac", glyph: "☾", blurb: "The day's mood, in one page.", view: "route" },
-  { path: "/chart/long-read", label: "Tarot Studio", glyph: "♠", blurb: "Seven cards. Three windows. Open with your account.", view: "route" },
-  { path: "/chart/circle", label: "Tandem", glyph: "⚭", blurb: "A consented reading, opened only when they accept.", view: "route" },
+  { id: "feed", path: "/chart", label: "Feed", glyph: "✦", blurb: "Notes, pulls, and the people you read with." },
+  { id: "sky", path: "/chart#sky", label: MY_SKY_LABEL, glyph: "◎", blurb: "Your chart, your numbers, and your constellation." },
+  { id: "readings", path: "/chart#readings", label: "Readings", glyph: "♠", blurb: "A quick pull, a deep spread, or a live tandem." },
 ] as const;
-
-function trueNorthActive(pathname: string, hash: string, page: (typeof TRUE_NORTH_PAGES)[number]) {
-  if (page.view === "feed") return pathname === "/chart" && circleViewFromHash(hash) === "feed";
-  if (page.view === "sky") {
-    return pathname === "/profile" || pathname === "/chart/numbers" || (pathname === "/chart" && circleViewFromHash(hash) === "sky");
-  }
-  if (page.view === "friends") return pathname === "/chart" && circleViewFromHash(hash) === "friends";
-  return pathname === page.path || pathname.startsWith(`${page.path}/`);
-}
 
 export const TRUE_NORTH_FEATURES = [
   { title: "Clarity", body: "Complex charts, simplified without losing the point.", glyph: "✦" },
@@ -261,11 +249,16 @@ export function NumberRow({ numKey, value }: { numKey: string; value: number }) 
 
 export function TrueNorthNav() {
   const location = useLocation();
+  const view = resolveTrueNorthView(location.pathname, location.hash);
   return (
-    <nav className="tn-rail" aria-label="True North sections">
+    <nav className="tn-rail" aria-label="True North">
       {TRUE_NORTH_PAGES.map(p => {
-        const active = trueNorthActive(location.pathname, location.hash, p);
-        return (<Link key={p.path} to={p.path} aria-current={active ? "page" : undefined} className={`tn-rail__item ${active ? "is-active" : ""}`}><span className="tn-rail__glyph" aria-hidden="true">{p.glyph}</span><span className="tn-rail__label">{p.label}</span></Link>);
+        const active = p.id === view.destination;
+        return (
+          <Link key={p.id} to={p.path} aria-current={active ? "page" : undefined} className={`tn-rail__item ${active ? "is-active" : ""}`}>
+            <span className="tn-rail__label">{p.label}</span>
+          </Link>
+        );
       })}
     </nav>
   );

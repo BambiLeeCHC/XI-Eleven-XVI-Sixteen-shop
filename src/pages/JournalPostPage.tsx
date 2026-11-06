@@ -3,13 +3,13 @@ import { Link, useParams } from "react-router-dom";
 import { SEO } from "../components/SEO";
 import { ShareRow } from "../components/journal/ShareRow";
 import { DockPanel, DockTab } from "../components/journal/DockPanel";
-import { AlmanacCalendar, ElevenSixteenStrip } from "../components/journal/Almanac";
+import { ElevenSixteenStrip } from "../components/journal/Almanac";
 import { DrawThree } from "../components/journal/DrawThree";
 import { JournalSky } from "../components/journal/JournalSky";
 import { DailyCode } from "../components/journal/DailyCode";
 import { usePostBySlug, usePublishedPosts } from "../lib/journalData";
 
-type Dock = "almanac" | "draw" | "code" | null;
+type Dock = "draw" | "code" | null;
 
 export function JournalPostPage() {
   const { slug = "" } = useParams();
@@ -58,13 +58,9 @@ export function JournalPostPage() {
       />
 
       <div className="journal-stack">
-      <ElevenSixteenStrip onOpenAlmanac={() => setDock("almanac")} />
+      <ElevenSixteenStrip />
 
       <div className="journal-body">
-        <div className="journal-rail journal-rail--left">
-          <DockTab label="Almanac" glyph="◍" accent="#5c9bcd" active={dock === "almanac"} onClick={() => toggle("almanac")} />
-        </div>
-
         <article className="journal-article lock-card">
           <Link to="/journal" className="journal-article__back">← The Journal</Link>
           <p className="label-lock journal-article__slug">
@@ -136,9 +132,6 @@ export function JournalPostPage() {
       </div>
       </div>
 
-      <DockPanel open={dock === "almanac"} onClose={() => setDock(null)} title="The XI·XVI Almanac" eyebrow="Calendar & time" side="left" accent="#5c9bcd">
-        <AlmanacCalendar />
-      </DockPanel>
       <DockPanel open={dock === "draw"} onClose={() => setDock(null)} title="The Draw" eyebrow="Three cards · the house deck" side="right" size="wide" accent="#c48dff">
         <DrawThree />
       </DockPanel>

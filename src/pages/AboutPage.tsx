@@ -61,8 +61,7 @@ export function AboutPage() {
             <h3 className="clash text-4xl mt-3">The writing</h3>
             <p className="serif-quiet mt-4 text-lg" style={{ color: "rgba(247,240,230,0.8)" }}>
               Fit guides, fabric notes, and how the house works. Essays you
-              can read for free. No card draw. No almanac. Those live in
-              True North.
+              can read for free. Readings live in True North.
             </p>
             <Link to="/journal" className="cta-ghost mt-6 inline-flex">
               Read the Journal
