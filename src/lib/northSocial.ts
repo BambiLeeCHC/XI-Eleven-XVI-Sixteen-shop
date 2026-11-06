@@ -58,6 +58,17 @@ export const REACTION_LABEL: Record<ReactionKey, string> = {
   save: "Save",
 };
 
+/** Profile space on The Circle. User-facing name only. */
+export const MY_SKY_LABEL = "My Sky";
+/** Ranked eight-seat circle. User-facing name only. */
+export const MY_CONSTELLATION_LABEL = "My Constellation";
+export const NORTH_SOCIAL_SKY_TAB = `${MY_SKY_LABEL} & ${MY_CONSTELLATION_LABEL}`;
+/**
+ * Saved browser state. Keep this key so existing profiles still load.
+ * Table names in applied migrations stay as they are.
+ */
+export const NORTH_SOCIAL_STORAGE_KEY = "xixvi-north-social-v1";
+
 const emptyReactions = (): Record<ReactionKey, number> => ({
   claim: 0,
   felt: 0,
@@ -161,19 +172,28 @@ export function moveTop(list: TopFriend[], index: number, direction: -1 | 1): To
   return next;
 }
 
+function emptySeat(index: number): TopFriend {
+  return {
+    id: `empty-${index + 1}`,
+    name: "Open seat",
+    handle: "open",
+    sun: "—",
+    moon: "—",
+    rising: "—",
+    vibe: "Waiting",
+  };
+}
+
+/** Always eight ranked seats, padding older saved lists that came up short. */
+export function rankedEight(list: TopFriend[] | null | undefined): TopFriend[] {
+  const source = Array.isArray(list) ? list.slice(0, 8) : [];
+  const next = source.map(friend => ({ ...friend }));
+  while (next.length < 8) next.push(emptySeat(next.length));
+  return next;
+}
+
 export function upsertFriend(list: TopFriend[], friend: TopFriend, slot: number): TopFriend[] {
-  const next = list.slice(0, 8);
-  while (next.length < 8) {
-    next.push({
-      id: `empty-${next.length}`,
-      name: "Open seat",
-      handle: "open",
-      sun: "—",
-      moon: "—",
-      rising: "—",
-      vibe: "Waiting",
-    });
-  }
+  const next = rankedEight(list);
   const index = Math.min(7, Math.max(0, slot));
   next[index] = friend;
   return next;

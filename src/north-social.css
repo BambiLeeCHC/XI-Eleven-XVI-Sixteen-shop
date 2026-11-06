@@ -1,6 +1,6 @@
 .north-social__title { margin: 0; font-size: clamp(2.4rem, 8vw, 4.5rem); color: #f6f1e8; }
 .north-social__brand { display: flex; gap: 0.8rem; align-items: center; }
-.north-social__switch, .story-row, .north-cards, .north-react, .top8 { display: flex; flex-wrap: wrap; gap: 0.45rem; }
+.north-social__switch, .story-row, .north-cards, .north-react { display: flex; flex-wrap: wrap; gap: 0.45rem; }
 .north-social__switch button, .north-react button, .story-ring {
   min-height: 44px;
   border-radius: 999px;
@@ -8,6 +8,8 @@
   background: rgba(8,10,14,0.55);
   color: #f6f1e8;
   padding: 0.4rem 0.8rem;
+  line-height: 1.25;
+  text-align: center;
 }
 .north-social__switch button.is-on, .north-react button.is-on { background: #d8f0c4; color: #142010; }
 .story-ring { display: flex; flex-direction: column; width: 4.6rem; border-radius: 1.2rem; }
@@ -21,11 +23,113 @@
 .tarot-plate svg { margin-top: auto; height: 3rem; }
 .natal-wheel { width: min(100%, 28rem); height: auto; }
 .natal-wheel__sign, .natal-wheel__body { fill: #f6f1e8; font-size: 9px; }
-.top8 { list-style: none; padding: 0; display: grid; grid-template-columns: 1fr; gap: 0.6rem; }
-.top8 li { border: 1px solid rgba(247,240,230,0.2); border-radius: 16px; padding: 0.7rem; display: grid; gap: 0.2rem; }
-.top8__rank { color: #d8f0c4; font-weight: 800; }
 .story-modal { position: fixed; inset: 0; z-index: 40; background: rgba(0,0,0,0.62); display: grid; place-items: center; padding: 1rem; }
 .tn-compass { animation: compass-spin 48s linear infinite; }
-@media (min-width: 800px) { .top8 { grid-template-columns: 1fr 1fr 1fr 1fr; } }
+.north-space { display: grid; gap: 1rem; }
+.my-sky__name { margin: 0.15rem 0 0; color: #f6f1e8; font-size: 1.05rem; font-weight: 700; }
+.constellation {
+  list-style: none;
+  margin: 0.85rem 0 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.75rem;
+}
+.constellation__seat {
+  position: relative;
+  display: grid;
+  align-content: start;
+  gap: 0.22rem;
+  min-width: 0;
+  padding: 0.85rem 0.8rem 0.75rem;
+  border-radius: 18px;
+  border: 1px solid rgba(247, 240, 230, 0.22);
+  background: rgba(8, 10, 14, 0.42);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 12px 28px rgba(0, 0, 0, 0.22);
+  backdrop-filter: blur(16px) saturate(1.2);
+  -webkit-backdrop-filter: blur(16px) saturate(1.2);
+  color: #f7f0e6;
+}
+.constellation__seat--star {
+  border-color: rgba(246, 231, 176, 0.72);
+  background:
+    radial-gradient(90% 70% at 100% 0%, rgba(246, 231, 176, 0.22), transparent 58%),
+    radial-gradient(80% 80% at 0% 100%, rgba(216, 240, 196, 0.12), transparent 62%),
+    rgba(10, 12, 16, 0.5);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 248, 220, 0.22),
+    0 0 0 1px rgba(216, 240, 196, 0.28),
+    0 0 28px rgba(246, 231, 176, 0.18);
+}
+.constellation__rank {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: #d8f0c4;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+}
+.constellation__seat--star .constellation__rank { color: #f6e7b0; }
+.constellation__mark {
+  width: 0.95rem;
+  height: 0.95rem;
+  color: #f6e7b0;
+  filter: drop-shadow(0 0 6px rgba(246, 231, 176, 0.85));
+}
+.constellation__name { font-size: 1.12rem; overflow-wrap: anywhere; }
+.constellation__handle { color: rgba(247, 240, 230, 0.72); font-size: 0.85rem; overflow-wrap: anywhere; }
+.constellation__big3 { margin: 0.2rem 0 0; display: grid; gap: 0.08rem; font-size: 0.84rem; }
+.constellation__big3-label {
+  color: #d8f0c4;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.constellation__vibe {
+  justify-self: start;
+  margin-top: 0.28rem;
+  padding: 0.16rem 0.5rem;
+  border-radius: 999px;
+  border: 1px solid rgba(216, 240, 196, 0.4);
+  background: rgba(216, 240, 196, 0.1);
+  color: #e7f6d8;
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+}
+.constellation__actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.35rem;
+  margin-top: 0.45rem;
+}
+.constellation__actions .tn-action,
+.constellation__star-pill {
+  width: 100%;
+  min-height: 40px;
+  padding: 0.4rem 0.3rem;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  line-height: 1.15;
+  text-align: center;
+  white-space: normal;
+}
+.constellation__star-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #f6e7b0;
+  border: 1px solid rgba(246, 231, 176, 0.6);
+  background: rgba(246, 231, 176, 0.14);
+  box-shadow: 0 0 16px rgba(246, 231, 176, 0.18);
+  text-transform: uppercase;
+}
+.constellation__actions .tn-action:disabled { opacity: 0.38; cursor: not-allowed; }
+.north-friend { display: grid; gap: 0.35rem; margin-top: 0.9rem; }
+@media (min-width: 960px) {
+  .constellation { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
 @media (prefers-reduced-motion: reduce) { .tn-compass { animation: none; } }
 @keyframes compass-spin { to { transform: rotate(360deg); } }

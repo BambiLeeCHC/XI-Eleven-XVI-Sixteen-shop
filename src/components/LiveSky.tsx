@@ -1,20 +1,23 @@
-import { useEffect, useMemo, useRef, useState } from "react";
-import { skyClock, skyGradient, SKY_MODES, type SkyMode } from "../lib/skyMode";
-
-const WEATHER =
-  "https://api.open-meteo.com/v1/forecast?latitude=25.7617&longitude=-80.1918&current=weather_code,cloud_cover,is_day&timezone=America/New_York";
+import { useEffect, useRef, useState } from "react";
+import {
+  AstrolabeAirship,
+  CelestialMoth,
+  CometTrail,
+  CrescentGondola,
+} from "./sky/NorthCraft";
+import { skyAt } from "../lib/skyMode";
 
 const CLOUDS = [
-  { src: "/cloud-real-1.webp", speed: 160, top: "4%", size: "34vw", opacity: 0.72, z: 4, dir: "right" as const, delay: -20 },
-  { src: "/davinci-cloud-1.webp", speed: 210, top: "8%", size: "26vw", opacity: 0.5, z: 2, dir: "right" as const, delay: -40 },
-  { src: "/cloud-real-3.webp", speed: 180, top: "14%", size: "30vw", opacity: 0.66, z: 3, dir: "left" as const, delay: -70, flip: true },
-  { src: "/cloud-real-5.webp", speed: 200, top: "22%", size: "28vw", opacity: 0.58, z: 3, dir: "right" as const, delay: -15 },
-  { src: "/davinci-cloud-3.webp", speed: 240, top: "30%", size: "32vw", opacity: 0.42, z: 2, dir: "left" as const, delay: -90, flip: true },
-  { src: "/cloud-real-2.webp", speed: 170, top: "38%", size: "24vw", opacity: 0.62, z: 5, dir: "left" as const, delay: -50 },
-  { src: "/cloud-real-4.webp", speed: 190, top: "48%", size: "36vw", opacity: 0.5, z: 4, dir: "right" as const, delay: -110, blur: 1 },
-  { src: "/davinci-cloud-2.webp", speed: 220, top: "56%", size: "22vw", opacity: 0.55, z: 3, dir: "right" as const, delay: -30 },
-  { src: "/cloud-real-1.webp", speed: 150, top: "64%", size: "40vw", opacity: 0.4, z: 6, dir: "left" as const, delay: -80, blur: 1.4, flip: true },
-  { src: "/davinci-cloud-4.webp", speed: 175, top: "18%", size: "20vw", opacity: 0.48, z: 5, dir: "left" as const, delay: -60 },
+  { src: "/cloud-real-1.webp", speed: 160, top: "6%", size: "34vw", weight: 0.72, z: 4, dir: "right" as const, delay: -20 },
+  { src: "/davinci-cloud-1.webp", speed: 210, top: "10%", size: "26vw", weight: 0.5, z: 2, dir: "right" as const, delay: -40 },
+  { src: "/cloud-real-3.webp", speed: 180, top: "16%", size: "30vw", weight: 0.62, z: 3, dir: "left" as const, delay: -70, flip: true },
+  { src: "/cloud-real-5.webp", speed: 200, top: "24%", size: "28vw", weight: 0.55, z: 3, dir: "right" as const, delay: -15 },
+  { src: "/davinci-cloud-3.webp", speed: 240, top: "32%", size: "32vw", weight: 0.42, z: 2, dir: "left" as const, delay: -90, flip: true, soft: true },
+  { src: "/cloud-real-2.webp", speed: 170, top: "40%", size: "24vw", weight: 0.58, z: 5, dir: "left" as const, delay: -50 },
+  { src: "/cloud-real-4.webp", speed: 190, top: "50%", size: "36vw", weight: 0.48, z: 4, dir: "right" as const, delay: -110, soft: true },
+  { src: "/davinci-cloud-2.webp", speed: 220, top: "58%", size: "22vw", weight: 0.5, z: 3, dir: "right" as const, delay: -30 },
+  { src: "/cloud-real-1.webp", speed: 150, top: "66%", size: "40vw", weight: 0.36, z: 5, dir: "left" as const, delay: -80, flip: true, soft: true },
+  { src: "/davinci-cloud-4.webp", speed: 175, top: "20%", size: "20vw", weight: 0.46, z: 5, dir: "left" as const, delay: -60 },
 ];
 
 const CONSTELLATIONS = [
@@ -35,7 +38,15 @@ function mulberry32(seed: number) {
   };
 }
 
-function StarCanvas({ show, reduced }: { show: boolean; reduced: boolean }) {
+function StarCanvas({
+  show,
+  reduced,
+  opacity,
+}: {
+  show: boolean;
+  reduced: boolean;
+  opacity: number;
+}) {
   const ref = useRef<HTMLCanvasElement>(null);
   useEffect(() => {
     const canvas = ref.current;
@@ -120,14 +131,14 @@ function StarCanvas({ show, reduced }: { show: boolean; reduced: boolean }) {
       window.removeEventListener("resize", resize);
     };
   }, [reduced, show]);
-  return <canvas ref={ref} className="xsky__stars" />;
+  return <canvas ref={ref} className="xsky__stars" style={{ opacity }} />;
 }
 
 export function LiveSky() {
-  const [mode, setMode] = useState<SkyMode>("live");
-  const [remote, setRemote] = useState<{ hour: number; isDay: boolean } | null>(null);
+  const [now, setNow] = useState(() => new Date());
   const [reduced, setReduced] = useState(false);
   const [shoot, setShoot] = useState(0);
+  const palette = skyAt(now);
 
   useEffect(() => {
     const media = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -138,82 +149,63 @@ export function LiveSky() {
   }, []);
 
   useEffect(() => {
-    let stop = false;
-    fetch(WEATHER)
-      .then(response => response.json())
-      .then(data => {
-        if (stop) return;
-        const hour = Number(String(data.current?.time ?? "").split("T")[1]?.slice(0, 2));
-        setRemote({
-          hour: Number.isFinite(hour) ? hour : new Date().getHours(),
-          isDay: data.current?.is_day === 1,
-        });
-      })
-      .catch(() => setRemote(null));
-    return () => {
-      stop = true;
-    };
+    const timer = window.setInterval(() => setNow(new Date()), 20000);
+    return () => window.clearInterval(timer);
   }, []);
 
   useEffect(() => {
     if (reduced) return;
-    const timer = window.setInterval(() => setShoot(value => value + 1), 14000);
+    const timer = window.setInterval(() => setShoot(value => value + 1), 16000);
     return () => window.clearInterval(timer);
   }, [reduced]);
 
-  const clock = skyClock(mode);
-  const hour = mode === "live" && remote ? remote.hour : clock.hour;
-  const isDay = mode === "live" && remote ? remote.isDay : clock.isDay;
-  const showStars = !isDay || hour < 7 || hour >= 18;
-  const cloudBoost = isDay ? 1 : 0.78;
-  const craft = useMemo(() => !reduced, [reduced]);
-
   return (
-    <>
-      <div className={`xsky${reduced ? " is-still" : ""}`} aria-hidden="true">
-        <div className="xsky__wash" style={{ background: skyGradient(hour, isDay) }} />
-        <StarCanvas show={showStars} reduced={reduced} />
-        <img src="/moon-hd.webp" alt="" className="xsky__moon" style={{ opacity: showStars ? 0.95 : 0.2 }} />
+    <div className={`xsky${reduced ? " is-still" : ""}`} aria-hidden="true">
+      <div className="xsky__wash" style={{ background: palette.gradient }} />
+      <StarCanvas show={palette.showStars} reduced={reduced} opacity={palette.starOpacity} />
+      <div className="xsky__mist" style={{ background: palette.cloud.veil }} />
+      <img
+        src="/moon-hd.webp"
+        alt=""
+        className="xsky__moon"
+        style={{ opacity: palette.moonOpacity, filter: palette.moonFilter }}
+      />
+      <div
+        className="xsky__clouds"
+        style={{
+          opacity: palette.cloud.opacity,
+          filter: palette.cloud.filter,
+          mixBlendMode: palette.cloud.blendMode,
+        }}
+      >
         {CLOUDS.map(cloud => (
-          <img
+          <div
             key={`${cloud.src}-${cloud.top}-${cloud.delay}`}
-            src={cloud.src}
-            alt=""
-            className={`xsky__cloud xsky__cloud--${cloud.dir}${cloud.flip ? " is-flip" : ""}`}
+            className={`xsky__cloud xsky__cloud--${cloud.dir}`}
             style={{
               top: cloud.top,
               width: cloud.size,
-              opacity: cloud.opacity * cloudBoost,
               zIndex: cloud.z,
               animationDuration: `${cloud.speed}s`,
               animationDelay: `${cloud.delay}s`,
-              filter: cloud.blur ? `blur(${cloud.blur}px) drop-shadow(0 0 12px rgba(180,200,230,0.35))` : "drop-shadow(0 0 12px rgba(180,200,230,0.28))",
             }}
-          />
-        ))}
-        {craft && (
-          <>
-            <img src="/willow-jet.webp" alt="" className="xsky__jet" />
-            <span className="xsky__banner">XIXVI · TRUE NORTH</span>
-            <img src="/willow-blimp.webp" alt="" className="xsky__blimp" />
-            <img src="/willow-rocket.webp" alt="" className="xsky__rocket" />
-            <img src="/willow-ufo.webp" alt="" className="xsky__ufo" />
-            <span key={shoot} className="xsky__shoot" />
-          </>
-        )}
-      </div>
-      <div className="xsky-pill" role="group" aria-label="Sky mode">
-        {SKY_MODES.map(item => (
-          <button
-            key={item.id}
-            type="button"
-            className={mode === item.id ? "is-on" : ""}
-            onClick={() => setMode(item.id)}
           >
-            {item.label}
-          </button>
+            <img
+              src={cloud.src}
+              alt=""
+              className={`${cloud.flip ? "is-flip" : ""} ${cloud.soft ? "is-soft" : ""}`.trim()}
+              style={{ opacity: cloud.weight }}
+            />
+          </div>
         ))}
       </div>
-    </>
+      <CometTrail id="linger" className="xsky__comet xsky__comet--linger" />
+      {!reduced && (
+        <CometTrail key={shoot} id="shoot" className="xsky__comet xsky__comet--shoot" />
+      )}
+      <AstrolabeAirship />
+      <CrescentGondola />
+      <CelestialMoth />
+    </div>
   );
 }

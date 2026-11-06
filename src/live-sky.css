@@ -9,13 +9,13 @@
 .xsky__wash,
 .xsky__stars,
 .xsky__moon,
+.xsky__mist,
+.xsky__clouds,
 .xsky__cloud,
-.xsky__jet,
-.xsky__banner,
-.xsky__blimp,
-.xsky__rocket,
-.xsky__ufo,
-.xsky__shoot {
+.xsky__airship,
+.xsky__gondola,
+.xsky__moth,
+.xsky__comet {
   position: absolute;
   pointer-events: none;
 }
@@ -24,105 +24,127 @@
 .xsky__stars { inset: 0; width: 100%; height: 100%; }
 
 .xsky__moon {
-  top: 4%;
-  right: 6%;
-  width: clamp(120px, 18vw, 280px);
+  top: 6%;
+  right: 7%;
+  width: clamp(108px, 16vw, 240px);
   height: auto;
-  z-index: 3;
-  border-radius: 50%;
-  animation: moonGlow 6s ease-in-out infinite;
+  z-index: 2;
 }
+
+.xsky__mist {
+  left: -8%;
+  right: -8%;
+  top: 4%;
+  height: 68%;
+  filter: blur(40px);
+  opacity: 0.72;
+  mix-blend-mode: soft-light;
+  z-index: 2;
+}
+
+.xsky__clouds { inset: 0; z-index: 3; }
 
 .xsky__cloud { height: auto; z-index: 4; }
+.xsky__cloud img {
+  width: 100%;
+  height: auto;
+  display: block;
+  -webkit-mask-image: radial-gradient(ellipse at 50% 50%, #000 38%, rgba(0, 0, 0, 0.55) 62%, transparent 82%);
+  mask-image: radial-gradient(ellipse at 50% 50%, #000 38%, rgba(0, 0, 0, 0.55) 62%, transparent 82%);
+}
+.xsky__cloud img.is-flip { transform: scaleX(-1); }
+.xsky__cloud img.is-soft { filter: blur(1.5px); }
 .xsky__cloud--right { animation: driftRight linear infinite; }
 .xsky__cloud--left { animation: driftLeft linear infinite; }
-.xsky__cloud.is-flip { transform: scaleX(-1); }
 
-.xsky__jet { top: 12%; width: 180px; z-index: 8; animation: jetFlyRight 28s linear infinite; }
-.xsky__banner {
-  top: 18%;
-  z-index: 8;
-  color: #142010;
-  background: #d8f0c4;
-  font-size: 11px;
-  font-weight: 800;
-  letter-spacing: 0.14em;
-  padding: 4px 8px;
-  animation: jetFlyRight 28s linear infinite;
-}
-.xsky__blimp { top: 26%; width: 160px; z-index: 7; animation: blimpCruiseLeft 70s linear infinite; }
-.xsky__rocket { left: 18%; bottom: 0; width: 70px; z-index: 8; animation: rocketVertical 36s linear infinite; }
-.xsky__ufo { top: 16%; width: 90px; z-index: 9; animation: ufoPass 48s linear infinite; }
-.xsky__shoot {
-  top: 20%;
-  left: 10%;
-  width: 90px;
-  height: 2px;
-  background: linear-gradient(90deg, transparent, #fff);
-  animation: shoot 1.4s ease-out 1;
+.xsky__airship {
+  top: 9%;
+  left: 7%;
+  width: min(220px, 32vw);
+  z-index: 6;
+  animation: airshipDrift 96s ease-in-out infinite;
 }
 
-.xsky-pill {
-  position: fixed;
-  top: 4.6rem;
+.xsky__gondola {
+  top: 52%;
+  left: 58%;
+  width: min(210px, 34vw);
+  z-index: 6;
+  animation: gondolaSail 110s ease-in-out infinite;
+}
+
+.xsky__moth {
+  top: 64%;
+  left: 30%;
+  width: min(176px, 28vw);
+  z-index: 7;
+  animation: mothLoop 72s ease-in-out infinite;
+}
+
+.xsky__comet--linger {
+  top: 36%;
+  left: 42%;
+  width: min(240px, 34vw);
+  z-index: 5;
+  opacity: 0.88;
+  animation: cometLinger 88s linear infinite;
+  animation-delay: -18s;
+}
+
+.xsky__comet--shoot {
+  top: 14%;
   left: 0;
-  right: 0;
-  z-index: 35;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 0.3rem;
-  padding: 0.35rem 0.6rem;
-  background: rgba(8, 10, 14, 0.72);
-  backdrop-filter: blur(10px);
+  width: min(300px, 48vw);
+  z-index: 8;
+  animation: cometArc 2.6s ease-in 1 both;
 }
 
-.store-main {
-  padding-top: 3rem;
+@keyframes driftRight {
+  from { transform: translateX(-48vw); }
+  to { transform: translateX(118vw); }
 }
-
-.xsky-pill button {
-  min-height: 36px;
-  border-radius: 999px;
-  border: 1px solid rgba(247, 240, 230, 0.35);
-  background: rgba(8, 10, 14, 0.78);
-  color: #f6f1e8;
-  font-size: 10px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  font-weight: 800;
-  padding: 0 0.7rem;
+@keyframes driftLeft {
+  from { transform: translateX(118vw); }
+  to { transform: translateX(-48vw); }
 }
-
-.xsky-pill button.is-on {
-  background: #d8f0c4;
-  color: #142010;
-  border-color: #d8f0c4;
+@keyframes airshipDrift {
+  0%, 100% { transform: translate3d(0, 0, 0); }
+  50% { transform: translate3d(46vw, 3.5vh, 0); }
 }
-
-@keyframes driftRight { from { transform: translateX(-40vw); } to { transform: translateX(115vw); } }
-@keyframes driftLeft { from { transform: translateX(115vw); } to { transform: translateX(-40vw); } }
-@keyframes jetFlyRight { from { transform: translateX(-30vw); } to { transform: translateX(120vw); } }
-@keyframes blimpCruiseLeft { from { transform: translateX(120vw); } to { transform: translateX(-40vw); } }
-@keyframes rocketVertical { from { transform: translateY(20vh); opacity: 0; } 10% { opacity: 1; } to { transform: translateY(-120vh); opacity: 0; } }
-@keyframes ufoPass { from { transform: translateX(120vw); } to { transform: translateX(-40vw); } }
-@keyframes shoot { from { transform: translate(0, 0); opacity: 0; } 20% { opacity: 1; } to { transform: translate(40vw, 18vh); opacity: 0; } }
-@keyframes moonGlow {
-  0%, 100% { filter: drop-shadow(0 0 30px rgba(200,210,230,0.35)) drop-shadow(0 0 80px rgba(200,210,230,0.18)); }
-  50% { filter: drop-shadow(0 0 50px rgba(200,210,230,0.6)) drop-shadow(0 0 120px rgba(200,210,230,0.28)); }
+@keyframes gondolaSail {
+  0%, 100% { transform: translate3d(0, 0, 0); }
+  50% { transform: translate3d(-32vw, 5vh, 0); }
+}
+@keyframes mothLoop {
+  0%, 100% { transform: translate3d(0, 0, 0) rotate(-6deg); }
+  50% { transform: translate3d(-14vw, 7vh, 0) rotate(7deg); }
+}
+@keyframes cometLinger {
+  from { transform: translateX(-36vw); }
+  to { transform: translateX(78vw); }
+}
+@keyframes cometArc {
+  from { transform: translate3d(-12vw, 0, 0); opacity: 0; }
+  18% { opacity: 0.95; }
+  to { transform: translate3d(72vw, 24vh, 0); opacity: 0; }
 }
 
 .xsky.is-still .xsky__cloud,
-.xsky.is-still .xsky__jet,
-.xsky.is-still .xsky__banner,
-.xsky.is-still .xsky__blimp,
-.xsky.is-still .xsky__rocket,
-.xsky.is-still .xsky__ufo,
-.xsky.is-still .xsky__moon,
-.xsky.is-still .xsky__shoot { animation: none !important; }
+.xsky.is-still .xsky__airship,
+.xsky.is-still .xsky__gondola,
+.xsky.is-still .xsky__moth,
+.xsky.is-still .xsky__comet,
+.xsky.is-still .xsky__moon {
+  animation: none !important;
+}
 
 @media (prefers-reduced-motion: reduce) {
-  .xsky__cloud, .xsky__jet, .xsky__banner, .xsky__blimp, .xsky__rocket, .xsky__ufo, .xsky__moon, .xsky__shoot {
+  .xsky__cloud,
+  .xsky__airship,
+  .xsky__gondola,
+  .xsky__moth,
+  .xsky__comet,
+  .xsky__moon {
     animation: none !important;
   }
 }
