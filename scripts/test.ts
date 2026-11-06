@@ -15,6 +15,8 @@ import {
   signAtLongitude,
   tightestAspects,
 } from "../src/lib/chartGeometry.js";
+import { moveTop, promoteTop, toggleReaction, starterTop } from "../src/lib/northSocial.js";
+import { skyClock, skyGradient } from "../src/lib/skyMode.js";
 import { nextEnabledIndex, ringStep, wrapIndex } from "../src/lib/radialDial.js";
 import {
   canAnswerSession,
@@ -320,6 +322,35 @@ check("houses, placements, and aspects share one ecliptic cut", () => {
   assert.equal(aspects.some(item => item.bodyB === "Venus"), false);
   assert.ok(aspects.every((item, index) => index === 0 || item.orb >= (aspects[index - 1]?.orb ?? 0)));
   assert.equal(Math.round(angularSeparation(10, 350) * 10) / 10, 20);
+});
+
+check("top 8 promote and sky modes stay predictable", () => {
+  const top = starterTop();
+  const first = promoteTop(top, 3);
+  assert.equal(first[0]?.handle, top[3]?.handle);
+  assert.equal(first.length, 8);
+  const swapped = moveTop(top, 1, -1);
+  assert.equal(swapped[0]?.id, top[1]?.id);
+  assert.equal(swapped[1]?.id, top[0]?.id);
+  const post = {
+    id: "p",
+    author: "You",
+    handle: "you",
+    sign: "Aries",
+    kind: "pull" as const,
+    title: "Pull",
+    body: "Hi",
+    cards: [],
+    createdAt: 1,
+    reactions: { claim: 1, felt: 0, sync: 0, save: 0 },
+    mine: [] as const,
+    comments: [],
+  };
+  const next = toggleReaction({ ...post, mine: [] }, "claim");
+  assert.equal(next.reactions.claim, 2);
+  assert.equal(skyClock("night").hour, 22);
+  assert.equal(skyClock("day").isDay, true);
+  assert.match(skyGradient(22, false), /#050510/);
 });
 
 console.log(`\n${passed} tests passed`);

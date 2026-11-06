@@ -11,6 +11,8 @@ import "./tn-landing-atmo.css";
 import "./tn-glass.css";
 import "./site-glass.css";
 import "./radial-dial.css";
+import "./live-sky.css";
+import "./north-social.css";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
