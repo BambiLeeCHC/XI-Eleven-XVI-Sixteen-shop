@@ -110,7 +110,7 @@ async function callGroq(
     const result = await callGroqOnce(apiKey, model, messages, maxTokens);
     if (!("reason" in result)) return result;
     lastFailure = result;
-    if (result.reason === "empty") return result;
+    if ((result as { success: false; reason: string }).reason === "empty") return result;
   }
 
   return lastFailure;

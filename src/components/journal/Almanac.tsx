@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link } from "react-router-dom";
 import {
   ALMANAC_DAY_VOICE,
   MONTH_NAMES,
@@ -31,7 +30,7 @@ function useNow(intervalMs = 1000) {
 }
 
 /** THE 11:16 STRIP — docked at the top of the Journal. Time as brand surface. */
-export function ElevenSixteenStrip({ showAlmanacLink = true }: { showAlmanacLink?: boolean }) {
+export function ElevenSixteenStrip() {
   const now = useNow();
   const es = nextElevenSixteen(now);
   const moon = moonPhase(now);
@@ -68,11 +67,6 @@ export function ElevenSixteenStrip({ showAlmanacLink = true }: { showAlmanacLink
           <span className="journal-strip__label">Day Number</span>
           <span className="journal-strip__value journal-strip__value--gold">{num}</span>
         </div>
-        {showAlmanacLink && (
-          <Link to="/chart/almanac" className="journal-strip__cta">
-            Open the Almanac ✦
-          </Link>
-        )}
       </div>
     </div>
   );

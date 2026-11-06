@@ -1,244 +1,180 @@
-import { useMemo, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
-  type AvatarFit,
-  type AvatarStyleOptions,
-  celestialPortraitSvg,
-  type HairStyle,
-  type Outfit,
-  type SkinTone,
-  stylizeCelestialPortrait,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "../ui/dialog";
+import {
+  AVATAR_STYLES,
+  type AvatarStyleId,
+  createTrueNorthAvatar,
+  resizeImageFile,
 } from "../../lib/celestialAvatar";
-import { supabase } from "../../lib/supabase";
+import { activeAvatarUrl, type SpaceProfile } from "../../lib/northSocial";
+import { SkyAvatar } from "./SkyAvatar";
 
-const FITS: { id: AvatarFit; label: string }[] = [
-  { id: "obsidian-hoodie", label: "Obsidian hoodie" },
-  { id: "sage-mockneck", label: "Sage mock-neck" },
-  { id: "astral-varsity", label: "Astral varsity" },
-];
-
-const HAIR: HairStyle[] = [
-  "curls",
-  "waves",
-  "locs",
-  "bob",
-  "bangs",
-  "fade",
-  "braids",
-];
-const SKIN: SkinTone[] = [
-  "porcelain",
-  "sand",
-  "honey",
-  "amber",
-  "bronze",
-  "deep",
-];
-const OUTFITS: Outfit[] = ["hoodie", "mockneck", "varsity", "cloak"];
+type Draft = {
+  photoUrl: string;
+  aiAvatarUrl: string;
+  avatarMode: SpaceProfile["avatarMode"];
+};
 
 export function AvatarStudio({
-  seed,
-  onClose,
+  open,
+  onOpenChange,
+  space,
+  onSave,
 }: {
-  seed: string;
-  onClose: () => void;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  space: SpaceProfile;
+  onSave: (next: Draft) => void;
 }) {
-  const [fit, setFit] = useState<AvatarFit>("obsidian-hoodie");
-  const [style, setStyle] = useState<AvatarStyleOptions>({ glasses: false });
-  const [photo, setPhoto] = useState<string | null>(null);
+  const [photoUrl, setPhotoUrl] = useState(space.photoUrl);
+  const [aiAvatarUrl, setAiAvatarUrl] = useState(space.aiAvatarUrl);
+  const [avatarMode, setAvatarMode] = useState(space.avatarMode);
+  const [style, setStyle] = useState<AvatarStyleId>("astral");
   const [busy, setBusy] = useState(false);
   const [note, setNote] = useState("");
-  const portrait = useMemo(
-    () => celestialPortraitSvg(seed, { ...style, fit }),
-    [seed, style, fit],
-  );
-  const shown =
-    photo ?? `data:image/svg+xml;charset=utf-8,${encodeURIComponent(portrait)}`;
+  const spaceRef = useRef(space);
+  spaceRef.current = space;
+
+  useEffect(() => {
+    if (!open) return;
+    const current = spaceRef.current;
+    setPhotoUrl(current.photoUrl);
+    setAiAvatarUrl(current.aiAvatarUrl);
+    setAvatarMode(current.avatarMode);
+    setNote("");
+  }, [open]);
+
+  const commit = (next: Draft, message: string) => {
+    setPhotoUrl(next.photoUrl);
+    setAiAvatarUrl(next.aiAvatarUrl);
+    setAvatarMode(next.avatarMode);
+    onSave(next);
+    setNote(message);
+  };
+
+  const generate = async (photo: string, nextStyle = style) => {
+    setBusy(true);
+    setNote("Creating your True North AI Avatar…");
+    try {
+      const result = await createTrueNorthAvatar({
+        imageDataUrl: photo,
+        name: space.name,
+        sun: space.sun,
+        moon: space.moon,
+        rising: space.rising,
+        altar: space.altar,
+        style: nextStyle,
+      });
+      commit(
+        { photoUrl: photo, aiAvatarUrl: result.imageDataUrl, avatarMode: "ai" },
+        result.source === "api"
+          ? "True North AI Avatar saved."
+          : "True North celestial portrait saved.",
+      );
+    } catch (error) {
+      setNote(error instanceof Error ? error.message : "Couldn't create that portrait.");
+    } finally {
+      setBusy(false);
+    }
+  };
 
   const onFile = async (file: File | undefined) => {
     if (!file) return;
-    const url = URL.createObjectURL(file);
-    const image = new Image();
-    image.onload = async () => {
-      try {
-        const next = await stylizeCelestialPortrait(image, { ...style, fit });
-        setPhoto(next);
-        setNote("Cartoon preview is ready. Generate to try the house model.");
-      } catch {
-        setNote(
-          "Couldn't cartoonize that photo. The XI · XVI character is still here.",
-        );
-      } finally {
-        URL.revokeObjectURL(url);
-      }
-    };
-    image.src = url;
-  };
-
-  const generate = async () => {
     setBusy(true);
     setNote("");
     try {
-      const { data } = await supabase.auth.getSession();
-      const token = data.session?.access_token;
-      const response = await fetch("/api/avatar", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        },
-        body: JSON.stringify({
-          image: photo ?? undefined,
-          fit,
-          style: { ...style, fit },
-          seed,
-        }),
-      });
-      const payload = (await response.json()) as {
-        success?: boolean;
-        image?: string;
-        error?: string;
-      };
-      if (payload.image) {
-        setPhoto(payload.image);
-        setNote("XI · XVI character saved in this preview.");
-      } else if ("error" in payload && payload.error) {
-        setNote(payload.error);
-      }
-    } catch {
-      setNote("The studio kept your cartoon character.");
+      const photo = await resizeImageFile(file);
+      setPhotoUrl(photo);
+      await generate(photo);
+    } catch (error) {
+      setNote(error instanceof Error ? error.message : "Couldn't use that photo.");
+      setBusy(false);
     }
-    setBusy(false);
   };
 
+  const shown = activeAvatarUrl({ photoUrl, aiAvatarUrl, avatarMode });
+
   return (
-    <section className="tn-card avatar-studio" aria-label="Avatar studio">
-      <p className="label-lock">XI · XVI character</p>
-      <h2 className="clash north-post__title">Cartoon avatar</h2>
-      <img
-        className="avatar-studio__preview"
-        src={shown}
-        alt="Cartoon XI · XVI avatar preview"
-      />
-      <div className="tn-subtabs" role="tablist" aria-label="House fit">
-        {FITS.map(item => (
-          <button
-            key={item.id}
-            type="button"
-            role="tab"
-            aria-selected={fit === item.id}
-            className={fit === item.id ? "is-on" : ""}
-            onClick={() => setFit(item.id)}
-          >
-            {item.label}
-          </button>
-        ))}
-      </div>
-      <div className="avatar-studio__picks">
-        <label className="tn-label" htmlFor="avatar-hair">
-          Hair
-        </label>
-        <select
-          id="avatar-hair"
-          className="tn-field"
-          value={style.hairStyle ?? ""}
-          onChange={event =>
-            setStyle(current => ({
-              ...current,
-              hairStyle: (event.target.value || undefined) as
-                | HairStyle
-                | undefined,
-            }))
-          }
-        >
-          <option value="">Seeded</option>
-          {HAIR.map(item => (
-            <option key={item} value={item}>
-              {item}
-            </option>
-          ))}
-        </select>
-        <label className="tn-label" htmlFor="avatar-skin">
-          Skin
-        </label>
-        <select
-          id="avatar-skin"
-          className="tn-field"
-          value={style.skinTone ?? ""}
-          onChange={event =>
-            setStyle(current => ({
-              ...current,
-              skinTone: (event.target.value || undefined) as
-                | SkinTone
-                | undefined,
-            }))
-          }
-        >
-          <option value="">Seeded</option>
-          {SKIN.map(item => (
-            <option key={item} value={item}>
-              {item}
-            </option>
-          ))}
-        </select>
-        <label className="tn-label" htmlFor="avatar-outfit">
-          Outfit
-        </label>
-        <select
-          id="avatar-outfit"
-          className="tn-field"
-          value={style.outfit ?? ""}
-          onChange={event =>
-            setStyle(current => ({
-              ...current,
-              outfit: (event.target.value || undefined) as Outfit | undefined,
-            }))
-          }
-        >
-          <option value="">Match the fit</option>
-          {OUTFITS.map(item => (
-            <option key={item} value={item}>
-              {item}
-            </option>
-          ))}
-        </select>
-        <label className="tn-choice__item">
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="avatar-studio">
+        <DialogHeader>
+          <DialogTitle>True North AI Avatar</DialogTitle>
+          <DialogDescription>
+            Upload a photo. We keep your likeness and wrap it in your chart's light.
+          </DialogDescription>
+        </DialogHeader>
+
+        <div className="avatar-studio__hero">
+          <SkyAvatar name={space.name} sign={space.sun} src={shown} size={148} />
+        </div>
+
+        <label className="avatar-studio__file">
+          Upload photo
           <input
-            type="checkbox"
-            checked={Boolean(style.glasses)}
-            onChange={event =>
-              setStyle(current => ({
-                ...current,
-                glasses: event.target.checked,
-              }))
-            }
+            type="file"
+            accept="image/*"
+            onChange={event => {
+              const file = event.target.files?.[0];
+              event.target.value = "";
+              void onFile(file);
+            }}
           />
-          Glasses
         </label>
-      </div>
-      <label className="tn-label" htmlFor="avatar-photo">
-        Photo to cartoonize
-      </label>
-      <input
-        id="avatar-photo"
-        className="tn-field"
-        type="file"
-        accept="image/*"
-        onChange={event => onFile(event.target.files?.[0])}
-      />
-      {note ? <p className="tn-meta">{note}</p> : null}
-      <div className="tn-actions">
+
+        <div className="avatar-studio__styles" role="radiogroup" aria-label="Celestial style">
+          {AVATAR_STYLES.map(item => (
+            <label key={item.id} className={style === item.id ? "is-on" : ""}>
+              <input
+                type="radio"
+                name="avatar-style"
+                value={item.id}
+                checked={style === item.id}
+                onChange={() => setStyle(item.id)}
+              />
+              {item.label}
+            </label>
+          ))}
+        </div>
+
         <button
           type="button"
           className="cta-pist tn-action"
-          onClick={generate}
-          disabled={busy}
+          disabled={busy || !photoUrl}
+          onClick={() => void generate(photoUrl)}
         >
-          {busy ? "Drawing…" : "Generate character"}
+          {busy ? "Creating…" : "Create True North AI Avatar"}
         </button>
-        <button type="button" className="cta-ghost tn-action" onClick={onClose}>
-          Close
-        </button>
-      </div>
-    </section>
+
+        {(photoUrl || aiAvatarUrl) && (
+          <div className="avatar-studio__compare">
+            <button
+              type="button"
+              className={avatarMode === "ai" ? "is-on" : ""}
+              onClick={() => commit({ photoUrl, aiAvatarUrl, avatarMode: "ai" }, "Showing your True North AI Avatar.")}
+            >
+              <SkyAvatar name={space.name} sign={space.sun} src={aiAvatarUrl || photoUrl} size={96} />
+              <span>True North AI Avatar</span>
+            </button>
+            <button
+              type="button"
+              className={avatarMode === "original" ? "is-on" : ""}
+              disabled={!photoUrl}
+              onClick={() => commit({ photoUrl, aiAvatarUrl, avatarMode: "original" }, "Showing your original photo.")}
+            >
+              <SkyAvatar name={space.name} sign={space.sun} src={photoUrl} size={96} />
+              <span>Original Photo</span>
+            </button>
+          </div>
+        )}
+
+        {note && <p className="avatar-studio__note" role="status">{note}</p>}
+      </DialogContent>
+    </Dialog>
   );
 }

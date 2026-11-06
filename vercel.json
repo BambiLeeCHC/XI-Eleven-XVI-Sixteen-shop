@@ -50,7 +50,7 @@
   "rewrites": [
     {
       "source": "/api/avatar",
-      "destination": "/api/chart?kind=avatar"
+      "destination": "/api/chart?action=avatar"
     },
     {
       "source": "/((?!api/|assets/|llms\\.txt|robots\\.txt|sitemap\\.xml).*)",

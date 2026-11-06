@@ -223,15 +223,22 @@ function faceMarkup(style: ReturnType<typeof resolveAvatarStyle>): string {
   </g>`;
 }
 
-/** Stylized 2D XI · XVI streetwear character, deterministic for a seed. */
+const SIGN_GLYPH: Record<string, string> = {
+  Aries: "♈", Taurus: "♉", Gemini: "♊", Cancer: "♋", Leo: "♌", Virgo: "♍",
+  Libra: "♎", Scorpio: "♏", Sagittarius: "♐", Capricorn: "♑", Aquarius: "♒", Pisces: "♓",
+};
+
+/** Stylized 2D XI · XVI streetwear character. A sign string keeps SkyAvatar compatible. */
 export function celestialPortraitSvg(
   seed: string,
-  options: AvatarStyleOptions = {},
+  options: AvatarStyleOptions | string = {},
 ): string {
-  const style = resolveAvatarStyle(seed, options);
+  const sign = typeof options === "string" ? options : undefined;
+  const style = resolveAvatarStyle(sign ? `${seed}|${sign}` : seed, typeof options === "string" ? {} : options);
   const hair = hairPath(style.hairStyle);
-  return `<?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" role="img" aria-label="XI · XVI cartoon avatar" data-outfit="${style.outfit}" data-hair="${style.hairStyle}">
+  const glyph = SIGN_GLYPH[sign ?? ""] ?? "✦";
+  const svg = `<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" role="img" aria-label="XI · XVI cartoon avatar" data-outfit="${style.outfit}" data-hair="${style.hairStyle}" data-sign="${sign ?? ""}">
   <defs>
     <radialGradient id="aura" cx="50%" cy="42%" r="60%">
       <stop offset="0%" stop-color="${style.accent}" stop-opacity="0.45"/>
@@ -255,8 +262,118 @@ export function celestialPortraitSvg(
     ${faceMarkup(style)}
     <path class="xi-hair-front" d="${style.hairStyle === "bangs" ? "M86 104c12-16 28-18 40-8 8-12 28-14 40 0 2 10-8 12-16 8-8 6-16 6-24 0-8 6-18 4-24-6-6 2-12 4-16 6z" : ""}" fill="${style.hair}"/>
   </g>
-  <text x="120" y="222" text-anchor="middle" font-size="11" font-family="sans-serif" fill="${style.accent}" letter-spacing="1.5">XI · XVI</text>
+  <text x="120" y="214" text-anchor="middle" font-size="11" font-family="sans-serif" fill="${style.accent}" letter-spacing="1.5">XI · XVI</text>
+  <text x="120" y="230" text-anchor="middle" font-size="10" fill="#f7f4ec">${glyph} ${sign ?? ""}</text>
 </svg>`;
+  return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
+}
+
+export const AVATAR_STYLES = [
+  { id: "astral", label: "Astral Ethereal" },
+  { id: "engraving", label: "Tarot Engraving" },
+  { id: "glass", label: "Celestial Glass" },
+] as const;
+
+export type AvatarStyleId = (typeof AVATAR_STYLES)[number]["id"];
+
+export type AvatarRequest = {
+  imageDataUrl: string;
+  name?: string;
+  sun?: string;
+  moon?: string;
+  rising?: string;
+  altar?: string;
+  style?: AvatarStyleId | string;
+};
+
+const ELEMENT: Record<string, "fire" | "earth" | "air" | "water"> = {
+  Aries: "fire", Leo: "fire", Sagittarius: "fire",
+  Taurus: "earth", Virgo: "earth", Capricorn: "earth",
+  Gemini: "air", Libra: "air", Aquarius: "air",
+  Cancer: "water", Scorpio: "water", Pisces: "water",
+};
+
+export const ELEMENT_AURA = {
+  fire: "#f0a070",
+  earth: "#d8f0c4",
+  air: "#e4d4f4",
+  water: "#9fd0ea",
+} as const;
+
+export function elementForSign(sign: string | undefined): "fire" | "earth" | "air" | "water" {
+  return ELEMENT[sign ?? ""] ?? "air";
+}
+
+export function styleLabel(style: string | undefined): string {
+  return AVATAR_STYLES.find(item => item.id === style)?.label ?? AVATAR_STYLES[0].label;
+}
+
+function fitForStyle(style: string | undefined): AvatarFit {
+  if (style === "glass") return "sage-mockneck";
+  if (style === "astral") return "astral-varsity";
+  return "obsidian-hoodie";
+}
+
+export function resizeImageFile(file: Blob, size = 512): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onerror = () => reject(new Error("Couldn't read that photo."));
+    reader.onload = () => {
+      const image = new Image();
+      image.onload = () => {
+        const canvas = document.createElement("canvas");
+        canvas.width = size;
+        canvas.height = size;
+        const ctx = canvas.getContext("2d");
+        if (!ctx) {
+          reject(new Error("Canvas unavailable"));
+          return;
+        }
+        const scale = Math.max(size / image.width, size / image.height);
+        const width = image.width * scale;
+        const height = image.height * scale;
+        ctx.drawImage(image, (size - width) / 2, (size - height) / 2, width, height);
+        resolve(canvas.toDataURL("image/jpeg", 0.86));
+      };
+      image.onerror = () => reject(new Error("Couldn't open that photo."));
+      image.src = String(reader.result || "");
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+export async function createTrueNorthAvatar(input: AvatarRequest): Promise<{ imageDataUrl: string; source: "api" | "canvas" }> {
+  try {
+    const response = await fetch("/api/chart?action=avatar", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ action: "avatar", ...input, style: input.style ?? "engraving" }),
+    });
+    const data = (await response.json().catch((): null => null)) as { success?: boolean; imageDataUrl?: string } | null;
+    if (data?.success && typeof data.imageDataUrl === "string" && data.imageDataUrl.startsWith("data:image/")) {
+      return { imageDataUrl: data.imageDataUrl, source: "api" };
+    }
+  } catch {
+    // Offline and missing keys use the cartoon portrait.
+  }
+  if (input.imageDataUrl) {
+    try {
+      const image = await new Promise<HTMLImageElement>((resolve, reject) => {
+        const picture = new Image();
+        picture.onload = () => resolve(picture);
+        picture.onerror = () => reject(new Error("photo"));
+        picture.src = input.imageDataUrl;
+      });
+      const imageDataUrl = await stylizeCelestialPortrait(image, { fit: fitForStyle(input.style), accent: ELEMENT_AURA[elementForSign(input.sun)] });
+      return { imageDataUrl, source: "canvas" };
+    } catch {
+      // Fall through to the drawn character.
+    }
+  }
+  return {
+    imageDataUrl: celestialPortraitSvg(input.name || "You", input.sun || "Aries"),
+    source: "canvas",
+  };
 }
 
 export function quantizeChannel(value: number, bands = 5): number {

@@ -143,6 +143,207 @@
 }
 .constellation__actions .tn-action:disabled { opacity: 0.38; cursor: not-allowed; }
 .north-friend { display: grid; gap: 0.35rem; margin-top: 0.9rem; }
+
+.north-social.journal-page--truenorth .north-shell {
+  display: grid;
+  gap: 0.9rem;
+  padding: 1.2rem 1.25rem 1.05rem;
+}
+.north-social .tn-label {
+  text-transform: none;
+  letter-spacing: 0.01em;
+  font-size: 0.92rem;
+  font-weight: 650;
+}
+.north-kicker {
+  margin: 0;
+  color: #d8f0c4;
+  font-size: 0.72rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+.north-social .north-social__title {
+  margin: 0.1rem 0 0;
+  font-size: clamp(2rem, 6vw, 3.3rem);
+  line-height: 0.95;
+}
+.north-social.journal-page--truenorth .tn-rail {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.45rem;
+}
+.north-social.journal-page--truenorth .tn-rail__item {
+  justify-content: center;
+  min-height: 46px;
+  border-radius: 999px;
+  letter-spacing: 0;
+  text-transform: none;
+  font-size: 1rem;
+  font-weight: 650;
+  padding: 0.45rem 0.35rem;
+}
+.north-social .story-row {
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  gap: 0.85rem;
+  padding: 0.15rem 0.1rem 0.35rem;
+}
+.north-social .story-ring {
+  width: 4.8rem;
+  min-height: 0;
+  border: 0;
+  background: transparent;
+  color: #f7f0e6;
+  padding: 0;
+  border-radius: 0;
+  gap: 0.35rem;
+}
+.north-social .story-ring small {
+  max-width: 4.8rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.72rem;
+}
+.sky-avatar {
+  display: inline-grid;
+  padding: 2px;
+  border-radius: 50%;
+  background: conic-gradient(from 120deg, #d8f0c4, #e4d4f4, #f6e7b0, #d8f0c4);
+  flex: none;
+}
+.sky-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+  background: #10141c;
+}
+.sky-avatar-hit {
+  border: 0;
+  padding: 0;
+  background: transparent;
+  border-radius: 50%;
+  cursor: pointer;
+}
+.north-post__who,
+.tandem-lockup,
+.north-comments li,
+.find-friends__list li,
+.friend-list button,
+.friend-sheet {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+}
+.north-post__who { margin-bottom: 0.75rem; }
+.north-post__who strong,
+.tandem-lockup strong { color: #f7f0e6; }
+.north-post__who > div { display: grid; min-width: 0; gap: 0.1rem; }
+.north-post__who span,
+.find-friends__list em,
+.friend-list em { color: rgba(247, 240, 230, 0.68); font-style: normal; }
+.north-social .north-post__title {
+  margin: 0 0 0.35rem;
+  color: #f7f0e6;
+  font-size: clamp(1.35rem, 3vw, 1.8rem);
+  font-weight: 560;
+}
+.north-post { padding: 1.15rem 1.2rem 1.2rem; }
+.north-comments { list-style: none; margin: 0.8rem 0; padding: 0; display: grid; gap: 0.55rem; }
+.north-comments li span { min-width: 0; }
+.find-friends summary,
+.chart-fold { cursor: pointer; }
+.chart-fold { list-style: none; }
+.chart-fold::-webkit-details-marker { display: none; }
+.find-friends__list,
+.friend-list ul { list-style: none; margin: 0.6rem 0 0; padding: 0; display: grid; gap: 0.35rem; }
+.friend-list h3 { margin: 1rem 0 0; font-size: 1rem; color: #f7f0e6; }
+.friend-list button,
+.constellation__open {
+  width: 100%;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+  padding: 0;
+  cursor: pointer;
+}
+.constellation__open { display: grid; justify-items: start; gap: 0.12rem; }
+.my-sky { display: grid; gap: 0.85rem; padding: 1.25rem 1.3rem 1.35rem; }
+.my-sky__top { display: flex; gap: 1rem; align-items: center; }
+.my-sky__name { margin: 0; color: #d8f0c4; font-size: 0.75rem; letter-spacing: 0.14em; text-transform: uppercase; }
+.my-sky__person { margin: 0.15rem 0 0; color: #f7f0e6; font-size: clamp(1.6rem, 4vw, 2.1rem); font-weight: 650; }
+.my-sky__handle { margin: 0; color: rgba(247, 240, 230, 0.7); }
+.sky-pills,
+.sky-chips,
+.feed-filters,
+.reading-switch,
+.avatar-studio__styles { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.sky-pills { list-style: none; margin: 0; padding: 0; }
+.sky-pills li,
+.sky-chip,
+.feed-filters button,
+.reading-switch button,
+.avatar-studio__styles label {
+  border-radius: 999px;
+  border: 1px solid rgba(247, 240, 230, 0.22);
+  background: rgba(8, 10, 14, 0.28);
+  color: #f7f0e6;
+  padding: 0.4rem 0.75rem;
+}
+.sky-chip { display: grid; gap: 0.15rem; }
+.sky-chip span { font-size: 0.68rem; letter-spacing: 0.08em; text-transform: uppercase; color: #d8f0c4; }
+.sky-chip button { border: 0; background: transparent; color: inherit; padding: 0; text-align: left; cursor: pointer; }
+.feed-filters button,
+.reading-switch button { min-height: 40px; cursor: pointer; }
+.feed-filters button.is-on,
+.reading-switch button.is-on,
+.avatar-studio__styles label.is-on { background: #d8f0c4; color: #142010; border-color: #d8f0c4; }
+.feed-filters {
+  width: fit-content;
+  padding: 0.28rem;
+  border-radius: 999px;
+  background: rgba(8, 10, 14, 0.55);
+}
+.reading-room,
+.sky-panel,
+.personal-feed { display: grid; gap: 0.8rem; }
+.avatar-studio {
+  background: #141820;
+  color: #f6f1e8;
+  border-color: rgba(247, 240, 230, 0.16);
+  max-height: min(92vh, 880px);
+  overflow: auto;
+}
+.avatar-studio__hero,
+.avatar-studio__compare,
+.friend-sheet { display: flex; justify-content: center; gap: 0.8rem; }
+.avatar-studio__compare { align-items: stretch; }
+.avatar-studio__compare button,
+.avatar-studio__file {
+  display: grid;
+  justify-items: center;
+  gap: 0.4rem;
+  border-radius: 18px;
+  border: 1px solid rgba(247, 240, 230, 0.2);
+  background: transparent;
+  color: inherit;
+  padding: 0.7rem;
+  cursor: pointer;
+}
+.avatar-studio__compare button.is-on { border-color: #d8f0c4; box-shadow: 0 0 0 1px #d8f0c4; }
+.avatar-studio__file { position: relative; }
+.avatar-studio__file input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+.avatar-studio__styles input { position: absolute; opacity: 0; }
+.avatar-studio__note { margin: 0; color: #d8f0c4; }
+.friend-sheet { flex-direction: column; align-items: center; text-align: center; }
+.tandem-lockup strong { font-weight: 650; }
+@media (max-width: 640px) {
+  .my-sky__top { align-items: flex-start; }
+  .north-social.journal-page--truenorth .tn-rail__item { font-size: 0.92rem; padding-inline: 0.2rem; }
+  .avatar-studio__compare { flex-direction: column; }
+}
 @media (min-width: 960px) {
   .constellation { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 }

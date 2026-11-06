@@ -27,11 +27,7 @@ import {
   JournalPage,
   JournalPostPage,
   CategoryPage,
-  DeepReadingPage,
   NorthSocialPage,
-  NumbersPage,
-  AlmanacTNPage,
-  CirclePage,
   WelcomePage,
 } from "./pages";
 
@@ -66,10 +62,10 @@ function App() {
             <Route path="/journal/deep-reading" element={<Navigate to="/chart/long-read" replace />} />
             <Route path="/journal/:slug" element={<JournalPostPage />} />
             <Route path="/chart" element={<NorthSocialPage />} />
-            <Route path="/chart/numbers" element={<NumbersPage />} />
-            <Route path="/chart/almanac" element={<AlmanacTNPage />} />
-            <Route path="/chart/circle" element={<CirclePage />} />
-            <Route path="/chart/long-read" element={<DeepReadingPage />} />
+            <Route path="/chart/numbers" element={<Navigate to="/chart#numbers" replace />} />
+            <Route path="/chart/almanac" element={<Navigate to="/chart" replace />} />
+            <Route path="/chart/circle" element={<NorthSocialPage />} />
+            <Route path="/chart/long-read" element={<NorthSocialPage />} />
             <Route path="/welcome" element={<WelcomePage />} />
 
             {/* Protected routes */}

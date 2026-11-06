@@ -1122,7 +1122,7 @@
 }
 
 @media (min-width: 640px) {
-  .tn-rail { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .tn-rail { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .tn-windows { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .tn-numbers,
   .journal-page--truenorth .chart-numbers-grid { grid-template-columns: 1fr 1fr 1fr; }

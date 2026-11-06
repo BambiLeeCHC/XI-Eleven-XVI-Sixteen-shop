@@ -128,7 +128,7 @@ function PersonLine({ person }: { person: PublicNorthProfile }) {
   );
 }
 
-export function CirclePage() {
+export function CirclePage({ embedded = false }: { embedded?: boolean } = {}) {
   const { isLoading: authLoading, isAuthenticated } = useAuthStatus();
   const user = useQuery(
     api.auth.currentUser,
@@ -320,15 +320,15 @@ export function CirclePage() {
     live === "live" ? "Live" : live === "offline" ? "Offline" : "Connecting";
 
   return (
-    <div className="journal-page journal-page--truenorth">
-      <TrueNorthAtmosphere />
-      <div className="journal-stack tn-shell">
+    <div className={embedded ? "tn-embed tn-reading-embed" : "journal-page journal-page--truenorth"}>
+      {!embedded && <TrueNorthAtmosphere />}
+      <div className={embedded ? "tn-reading-embed__stack" : "journal-stack tn-shell"}>
         <SEO
           title="Circle — True North"
           description="Connect with someone, accept a tandem, and keep the shared reading between the two of you."
           url="/chart/circle"
         />
-        {isAuthenticated ? (
+        {!embedded && (isAuthenticated ? (
           <TrueNorthHero sunSign={sunSign} />
         ) : (
           <TrueNorthSignedOutTeaser
@@ -342,7 +342,7 @@ export function CirclePage() {
               </div>
             }
           />
-        )}
+        ))}
 
         <section className="tn-card">
           <p className="label-lock">Tandem</p>

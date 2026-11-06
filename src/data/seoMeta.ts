@@ -49,7 +49,7 @@ export const PAGE_SEO = {
     title: "True North",
     description:
       TRUE_NORTH_FREE_ACCESS
-        ? "True North is the reading room of XI Eleven XVI Sixteen. Chart, numbers, Almanac, tandem, and the Long Read — open with an account."
+        ? "True North is the reading room of XI Eleven XVI Sixteen. Feed, chart, numbers, tandem, and the Long Read — open with an account."
         : "True North is the reading room of XI Eleven XVI Sixteen. Free natal chart with an account. Long Read: written tarot, $7/week.",
   },
   longRead: {
