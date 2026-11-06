@@ -49,6 +49,14 @@ import {
   activeAvatarUrl,
 } from "../src/lib/northSocial.js";
 import { celestialPortraitSvg, ELEMENT_AURA, styleLabel } from "../src/lib/celestialAvatar.js";
+import {
+  ASPECT_KEYWORDS,
+  SIGN_KEYWORDS,
+  explainAspectAcrossHouses,
+  explainAspectFull,
+  explainPlacementFull,
+  explainPlacementInHouse,
+} from "../src/lib/astrologyMeanings.js";
 import { parseAvatarRequest } from "../api/_lib/avatar.ts";
 import { localHour, paletteForHour, skyAt } from "../src/lib/skyMode.js";
 import { nextEnabledIndex, ringStep, wrapIndex } from "../src/lib/radialDial.js";
@@ -744,7 +752,15 @@ check("house parameters, jewel cards, and cartoon avatars stay inside the three-
   const glass = readFileSync(join(root, "src/tn-glass.css"), "utf8");
   assert.match(shared, /explainPlacementInHouse/);
   assert.match(shared, /explainAspectAcrossHouses/);
-  assert.match(shared, /Stationed in House/);
+  assert.match(shared, /at \$\{deg\}° \$\{sign\}/);
+  assert.match(shared, /House \$\{house\}: \$\{houseShort\}/);
+  assert.match(shared, /ASPECT_TITLES/);
+  assert.match(shared, /BODY_ROLES/);
+  assert.match(chart, /Each planet rules one part of you/);
+  assert.match(chart, /Smaller\s+orbs \(closer to 0°\)/);
+  assert.doesNotMatch(shared, /Stationed in House/);
+  assert.doesNotMatch(chart, /Tap a planet\. The sign is how/);
+  assert.doesNotMatch(chart, /stronger the conversation/);
   assert.match(chart, /Wheel/);
   assert.match(chart, /Placements/);
   assert.match(chart, /Houses/);
@@ -767,6 +783,84 @@ check("house parameters, jewel cards, and cartoon avatars stay inside the three-
   assert.match(portrait, /XI · XVI/);
   assert.match(portrait, /data-outfit="hoodie"/);
   assert.match(portrait, /xi-crest/);
+});
+
+
+check("placement and aspect copy is direct plain English", () => {
+  const sun = explainPlacementFull("Sun", "Aries");
+  assert.equal(sun.title, "Sun · Identity & core drive");
+  assert.equal(sun.detail, "You are direct, decisive, and energized by starting things yourself. You prefer taking action and figuring things out in motion rather than waiting around or overplanning.");
+  assert.deepEqual(SIGN_KEYWORDS.Aries, ["direct", "independent", "bold"]);
+  assert.deepEqual(SIGN_KEYWORDS.Pisces, ["empathetic", "imaginative", "receptive"]);
+  assert.equal(sun.question, "Where in your life right now do you feel most like yourself?");
+  assert.match(explainPlacementFull("Moon", "Cancer").detail, /recharge best in safe, familiar spaces/);
+  assert.match(explainPlacementFull("Mercury", "Aries").detail, /think fast and get straight to the point/);
+  assert.match(explainPlacementFull("Venus", "Pisces").detail, /clear boundaries/);
+  assert.match(explainPlacementFull("Ascendant", "Libra").detail, /People meet you/);
+  assert.match(explainPlacementFull("Midheaven", "Capricorn").detail, /In public and at work/);
+
+  const signs = ["Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo", "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces"];
+  const bodies = ["Sun", "Moon", "Mercury", "Venus", "Mars", "Jupiter", "Saturn", "Uranus", "Neptune", "Pluto", "Ascendant", "Midheaven"];
+  for (const body of bodies) {
+    for (const sign of signs) {
+      const detail = explainPlacementFull(body, sign).detail;
+      const sentences = detail.split(/(?<=[.!?])\s+/).filter(Boolean);
+      assert.ok(sentences.length >= 2, `${body} in ${sign} should be at least two sentences`);
+      assert.doesNotMatch(detail, /prayer with shoes|two tabs|whole weather|rule of the room|same fire/i);
+    }
+  }
+
+  const crossed = explainPlacementInHouse("Sun", "Aries", 6, "Pisces");
+  assert.match(crossed, /Sun in House 6 focuses your identity and core drive/);
+  assert.match(crossed, /Pisces on the house cusp/);
+  assert.doesNotMatch(crossed, /The sign is the style of the planet|rule of the room/);
+  const matched = explainPlacementInHouse("Moon", "Cancer", 4, "Cancer");
+  assert.match(matched, /Cancer is also on the house cusp/);
+
+  const sextile = explainAspectFull("Jupiter", "Neptune", "sextile");
+  assert.equal(sextile.detail, "Jupiter governs growth and big-picture plans, while Neptune governs intuition and imagination. A 60° sextile means these two parts of you cooperate easily: your instincts help guide your plans, and you're good at spotting practical ways to bring creative ideas to life.");
+  assert.deepEqual(ASPECT_KEYWORDS.sextile, ["60° angle", "supportive", "cooperative"]);
+  assert.deepEqual(ASPECT_KEYWORDS.square, ["90° angle", "friction", "motivator"]);
+  assert.equal(sextile.question, "Where can you lean on this natural link between growth and intuition this week?");
+  assert.doesNotMatch(sextile.detail, /same sentence|sitting there on purpose|while you sleep|splitting/);
+  assert.doesNotMatch(sextile.question, /splitting the sextile/);
+
+  const square = explainAspectFull("Mars", "Pluto", "square");
+  assert.match(square.detail, /A 90° square creates real internal pressure/);
+  assert.match(square.detail, /power struggles/);
+  assert.equal(square.question, "When your action & drive and deep power clash, how can you pause before reacting?");
+  const opposed = explainAspectFull("Jupiter", "Uranus", "opposition");
+  assert.match(opposed.detail, /180° opposition/);
+  assert.match(opposed.question, /swinging from one extreme to the other/);
+  const joined = explainAspectFull("Sun", "Moon", "conjunction");
+  assert.match(joined.detail, /0° conjunction/);
+  assert.match(joined.question, /combined focus on identity and emotions/);
+  const adjust = explainAspectFull("Venus", "Saturn", "quincunx");
+  assert.match(adjust.detail, /150° quincunx/);
+  assert.match(adjust.question, /stop working at cross-purposes/);
+  const moonMind = explainAspectFull("Moon", "Mercury", "trine");
+  assert.match(moonMind.detail, /120° trine/);
+  assert.match(moonMind.detail, /feelings into clear words/);
+  assert.doesNotMatch(moonMind.detail, /same sentence|on purpose/);
+
+  const link = explainAspectAcrossHouses(
+    "sextile",
+    { body: "Jupiter", sign: "Capricorn", house: 3 },
+    { body: "Neptune", sign: "Scorpio", house: 1 },
+  );
+  assert.equal(link, "This connects House 3 (thinking and daily communication) with House 1 (how you come across to others). What happens in your conversations and daily mindset directly shapes how confident and grounded you look in person.");
+  const friction = explainAspectAcrossHouses(
+    "square",
+    { body: "Mars", sign: "Leo", house: 5 },
+    { body: "Pluto", sign: "Taurus", house: 2 },
+  );
+  assert.match(friction, /Tension in your creative work, romance, and free time spills into money and what you value/);
+  const sharedHouse = explainAspectAcrossHouses(
+    "trine",
+    { body: "Moon", sign: "Cancer", house: 4 },
+    { body: "Venus", sign: "Pisces", house: 4 },
+  );
+  assert.match(sharedHouse, /Both planets are in House 4 \(home and family\)/);
 });
 
 await Promise.all(pending);

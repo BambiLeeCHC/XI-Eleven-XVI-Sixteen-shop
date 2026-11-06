@@ -1001,12 +1001,16 @@
   --house-tint: rgba(199, 166, 255, 0.22);
 }
 .tn-house.is-expanded { grid-column: 1 / -1; }
+.tn-house {
+  min-width: 0;
+}
 .tn-house__head {
   display: grid;
-  grid-template-columns: auto 1fr auto auto;
-  gap: 0.7rem;
+  grid-template-columns: auto minmax(0, 1fr) auto auto;
+  gap: 0.45rem 0.6rem;
   align-items: center;
   width: 100%;
+  min-width: 0;
   padding: 0.85rem 0.9rem;
   background: none;
   border: 0;
@@ -1032,27 +1036,40 @@
   flex-direction: column;
   gap: 0.28rem;
   min-width: 0;
+  max-width: 100%;
 }
 .tn-house__copy .label-lock {
   color: #f7f4ec;
   white-space: normal;
-  line-height: 1.25;
+  overflow-wrap: anywhere;
+  line-height: 1.35;
+  letter-spacing: 0.08em;
+  font-size: 11px;
+  max-width: 100%;
 }
 .tn-house__sign {
-  display: inline-flex;
+  display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  gap: 6px;
+  gap: 4px 6px;
+  min-width: 0;
+  max-width: 100%;
   font-size: 12px;
   font-weight: 700;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.04em;
+  line-height: 1.35;
   text-transform: uppercase;
+  white-space: normal;
+  overflow-wrap: anywhere;
 }
 .tn-house__bodies {
   display: flex;
   flex-wrap: wrap;
   justify-content: flex-end;
+  align-content: center;
   gap: 4px;
-  max-width: 72px;
+  max-width: 6.5rem;
+  min-width: 0;
 }
 .tn-house__body {
   display: inline-flex;
@@ -1143,6 +1160,22 @@
     padding-right: 0.9rem;
   }
   .tn-card, .tn-salon, .tn-paywall, .tn-numbers-wrap, .tn-almanac { padding: 1.2rem 1.05rem 1.35rem; }
+  .tn-house__head,
+  .journal-page--truenorth .tn-house__head {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    grid-template-areas:
+      "badge copy chevron"
+      "badge bodies chevron";
+    align-items: center;
+  }
+  .tn-house__num { grid-area: badge; }
+  .tn-house__copy { grid-area: copy; }
+  .tn-house__bodies {
+    grid-area: bodies;
+    justify-content: flex-start;
+    max-width: none;
+  }
+  .tn-house__head .chart-placement-row__chevron { grid-area: chevron; align-self: start; }
 }
 @media (prefers-reduced-motion: reduce) {
   .tn-window, .tn-spread .long-read-card { transition: none; }
