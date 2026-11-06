@@ -27,14 +27,14 @@ export function AboutPage() {
         >
           We cut a garment when you order it. That is the shop. The Journal
           is writing about those garments. True North is a separate product:
-          written tarot, seven dollars a week.
+          written tarot, open with your account.
         </p>
         <Link to="/shop" className="cta-pist mt-8">
           Shop clothing
         </Link>
       </section>
 
-      <section className="px-10 py-[72px]">
+      <section className="px-4 sm:px-10 py-16">
         <p className="label-lock text-center" style={{ color: "var(--pist)" }}>
           What we sell
         </p>
@@ -74,9 +74,8 @@ export function AboutPage() {
             </p>
             <h3 className="clash text-4xl mt-3">Written tarot</h3>
             <p className="serif-quiet mt-4 text-lg" style={{ color: "rgba(247,240,230,0.8)" }}>
-              You describe what is going on. We write you three tarot
-              readings a day from that. Seven-day trial, then $7 a week.
-              Cancel anytime.
+              You describe what is going on. The Long Read writes three tarot
+              readings a day from that. It is open with your account.
             </p>
             <Link to="/chart/long-read" className="cta-ghost mt-6 inline-flex">
               Start written tarot
@@ -103,11 +102,8 @@ export function AboutPage() {
         </div>
       </section>
 
-      <section
-        className="px-10 py-20 text-center"
-        style={{ background: "#F7F0E6", color: "#0B0B0C" }}
-      >
-        <p className="label-lock" style={{ color: "#0B0B0C" }}>
+      <section className="px-4 sm:px-10 py-16 text-center">
+        <p className="label-lock" style={{ color: "var(--pist)" }}>
           Why made-on-demand
         </p>
         <h2 className="clash mt-4" style={{ fontSize: "clamp(36px, 6vw, 72px)" }}>
@@ -126,11 +122,10 @@ export function AboutPage() {
           ].map(([n, l]) => (
             <div
               key={l}
-              className="py-6 px-3"
-              style={{ border: "2px solid #0B0B0C" }}
+              className="site-panel py-6 px-3"
             >
               <p className="clash text-[40px] sm:text-[52px] leading-none">{n}</p>
-              <p className="label-lock mt-2" style={{ color: "#0B0B0C" }}>
+              <p className="label-lock mt-2" style={{ color: "var(--pist)" }}>
                 {l}
               </p>
             </div>
@@ -141,7 +136,7 @@ export function AboutPage() {
         </Link>
       </section>
 
-      <section className="px-10 py-20">
+      <section className="px-4 sm:px-10 py-16">
         <p className="label-lock text-center" style={{ color: "var(--pist)" }}>
           True North
         </p>
@@ -149,19 +144,18 @@ export function AboutPage() {
           className="clash text-center mt-4"
           style={{ fontSize: "clamp(36px, 6vw, 72px)" }}
         >
-          Written tarot. Paid separately.
+          Written tarot. Open with your account.
         </h2>
         <p
           className="serif-quiet text-xl text-center max-w-2xl mx-auto mt-5"
           style={{ color: "rgba(247,240,230,0.8)" }}
         >
-          Create an account and we calculate your natal chart. That chart
-          is free. The Long Read is the paid product: three written
-          readings each day for $7 a week after a seven-day trial.
+          Create an account and we calculate your natal chart. The Long Read,
+          the numbers, and tandem readings are open with that same account.
         </p>
         <div className="flex flex-wrap gap-3 justify-center mt-8">
           <Link to="/chart/long-read" className="cta-pist">
-            Start written tarot — $7/week
+            Open True North
           </Link>
           <Link to="/chart" className="cta-ghost">
             See your natal chart

@@ -25,6 +25,7 @@ export const api = {
   },
   profile: {
     updateBirthDetails: ref("profile.updateBirthDetails"),
+    updateNorth: ref("profile.updateNorth"),
   },
   subscription: {
     status: ref("subscription.status"),
@@ -37,6 +38,18 @@ export const api = {
   readingQuestions: {
     mine: ref("readingQuestions.mine"),
     checkout: ref("readingQuestions.checkout"),
+    ask: ref("readingQuestions.ask"),
+  },
+  north: {
+    list: ref("north.list"),
+    person: ref("north.person"),
+    invite: ref("north.invite"),
+    respond: ref("north.respond"),
+    revoke: ref("north.revoke"),
+    open: ref("north.open"),
+    answer: ref("north.answer"),
+    contribute: ref("north.contribute"),
+    close: ref("north.close"),
   },
   natalChart: {
     get: ref("natalChart.get"),

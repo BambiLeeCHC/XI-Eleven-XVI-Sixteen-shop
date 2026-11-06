@@ -44,14 +44,6 @@ export function ImpactHero({
         }}
       />
       <div
-        className="absolute left-[-6%] right-[-6%] top-[108px] h-[6px] pointer-events-none z-[3]"
-        style={{
-          background: "var(--pist)",
-          transform: "rotate(-1.1deg)",
-          opacity: 0.7,
-        }}
-      />
-      <div
         className="absolute left-0 right-0 bottom-0 z-[4] px-7 py-6"
         style={{
           background:
@@ -166,12 +158,9 @@ export function ProcessSteps({
 export function JournalTrueNorthRooms() {
   return (
     <section className="grid md:grid-cols-2 min-h-[520px]">
-      <article
-        className="flex flex-col justify-between p-10 md:p-14"
-        style={{ background: "#F7F0E6", color: "#0B0B0C" }}
-      >
+      <article className="site-panel flex flex-col justify-between m-3 md:m-4 p-8 md:p-12">
         <div>
-          <p className="label-lock" style={{ color: "#6b6358" }}>
+          <p className="label-lock" style={{ color: "var(--pist)" }}>
             Editorial
           </p>
           <h2
@@ -187,19 +176,15 @@ export function JournalTrueNorthRooms() {
         <div>
           <Link
             to="/journal"
-            className="inline-block mt-8 px-6 py-4 text-[12px] tracking-[0.18em] uppercase font-extrabold"
-            style={{ background: "#0B0B0C", color: "#F7F0E6" }}
+            className="cta-pist inline-block mt-8"
           >
             Read the Journal
           </Link>
         </div>
       </article>
-      <article
-        className="relative overflow-hidden p-10 md:p-14"
-        style={{ background: "#0E0C12", color: "#F7F0E6" }}
-      >
+      <article className="site-panel relative overflow-hidden m-3 md:m-4 p-8 md:p-12">
         <p className="label-lock" style={{ color: "var(--pist)" }}>
-          The Long Read · $7/week
+          The Long Read
         </p>
         <h2
           className="clash mt-3"
@@ -215,7 +200,7 @@ export function JournalTrueNorthRooms() {
           className="clash mt-4"
           style={{ fontSize: "clamp(28px, 4vw, 44px)", color: "var(--pist)", letterSpacing: "-0.03em" }}
         >
-          $7<span style={{ fontSize: "0.38em", letterSpacing: "0.16em", marginLeft: "0.4em", fontWeight: 800 }}> / WEEK</span>
+          Open with your account
         </p>
         <div className="relative h-[280px] mt-7 mb-9">
           <div className="tarot-card c1">
@@ -236,14 +221,14 @@ export function JournalTrueNorthRooms() {
         </div>
         <div className="flex flex-wrap gap-3 items-center">
           <Link to="/chart/long-read" className="cta-pist">
-            Start the Long Read — $7/week
+            Open the Long Read
           </Link>
         </div>
         <p
           className="serif-quiet mt-4 text-[17px] max-w-md"
           style={{ color: "#D9D0C4" }}
         >
-          Seven days to try it. Then $7 a week. Cancel whenever.
+          Chart, numbers, and a written reading. No charge from this room.
         </p>
       </article>
     </section>

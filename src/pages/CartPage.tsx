@@ -41,7 +41,7 @@ export function CartPage() {
         noindex
       />
       <section className="grid lg:grid-cols-[1.15fr_.85fr] min-h-[70vh]">
-        <div className="px-10 py-8">
+        <div className="px-4 sm:px-8 py-8">
           <p className="clash text-6xl">Your cart</p>
           <p className="serif-quiet text-xl mt-3 mb-8">
             Made on demand. Ships after we produce it.
@@ -123,8 +123,7 @@ export function CartPage() {
           ))}
         </div>
         <aside
-          className="px-8 py-10"
-          style={{ background: "var(--cream)", color: "#0B0B0C" }}
+          className="site-panel mx-4 sm:mx-8 mb-8 lg:mx-0 lg:mb-0"
         >
           <p className="clash text-4xl">Bag</p>
           <div className="mt-8">

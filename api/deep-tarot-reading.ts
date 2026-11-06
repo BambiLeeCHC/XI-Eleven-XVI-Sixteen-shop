@@ -1,5 +1,6 @@
 /**
- * The Long Read — the paywalled seven-card deep reading.
+ * The Long Read — seven-card reading.
+ * TRUE_NORTH_FREE_ACCESS skips the weekly quota without writing subscription rows.
  */
 
 import {
@@ -10,6 +11,7 @@ import {
   HttpError,
   supabaseAdmin,
 } from "./_lib/server.js";
+import { TRUE_NORTH_FREE_ACCESS } from "../src/lib/freeAccess.js";
 import { generateWithGroq, type GroqFailure } from "./_lib/groq.js";
 import {
   buildKeepsakeEmailHtml,
@@ -125,7 +127,7 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
     const name = profile?.name || "friend";
     const isAdmin = profile?.role === "admin";
 
-    if (!isAdmin) {
+    if (!isAdmin && !TRUE_NORTH_FREE_ACCESS) {
       const { data: sub } = await admin
         .from("subscriptions")
         .select("status")

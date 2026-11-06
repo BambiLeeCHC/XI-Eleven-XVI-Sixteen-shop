@@ -104,7 +104,7 @@ export function JournalPage() {
             Shop clothing
           </Link>
           <Link to="/chart/long-read" className="cta-ghost">
-            Written tarot — $7/week
+            Open True North
           </Link>
         </div>
       </section>

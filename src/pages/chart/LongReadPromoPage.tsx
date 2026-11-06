@@ -1,2 +1,2 @@
 /** @deprecated Prefer DeepReadingPage at /chart/long-read */
-export { DeepReadingPage as LongReadPromoPage } from "../DeepReadingPage";
+export { default as LongReadPromoPage } from "../DeepReadingPage";

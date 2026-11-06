@@ -64,7 +64,7 @@ export function ContactPage() {
         url="/contact"
       />
 
-      <div className="min-h-screen relative" style={{ background: "#fdfbf9" }}>
+      <div className="site-sheet min-h-screen relative">
         {/* Background glow orbs — subtle, light-theme */}
         <div
           style={{
@@ -234,11 +234,9 @@ export function ContactPage() {
 
               {/* Location Card */}
               <div
+                className="site-card"
                 style={{
-                  background: "#ffffff",
-                  border: "1px solid rgba(21,36,61,0.1)",
                   borderRadius: "16px",
-                  boxShadow: "0 4px 20px rgba(21,36,61,0.05)",
                   padding: "24px",
                 }}
               >
@@ -276,11 +274,9 @@ export function ContactPage() {
             {/* ── Contact Form ── */}
             <div className="md:col-span-2">
               <div
+                className="site-card"
                 style={{
-                  background: "#ffffff",
-                  border: "1px solid rgba(21,36,61,0.1)",
                   borderRadius: "20px",
-                  boxShadow: "0 4px 24px rgba(21,36,61,0.06)",
                   padding: "32px",
                 }}
               >

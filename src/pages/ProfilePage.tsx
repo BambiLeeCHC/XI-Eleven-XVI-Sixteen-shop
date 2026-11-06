@@ -1,113 +1,217 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { api, useAuthActions, useMutation, useQuery } from "../lib/backend";
-import { LocationAutocomplete } from "../components/LocationAutocomplete";
 import { TrueNorthAtmosphere } from "../components/journal/TrueNorthAtmosphere";
 import { TrueNorthSignIcon } from "../components/journal/TrueNorthGlyphs";
+import { LocationAutocomplete } from "../components/LocationAutocomplete";
+import { api, useAuthActions, useMutation, useQuery } from "../lib/backend";
+import { NORTH_FOCUSES, type NorthFocus } from "../lib/northProfile";
 import { ChartHomePage } from "./chart/ChartHomePage";
 import { NumbersPage } from "./chart/NumbersPage";
-import { useSunSign } from "./chart/shared";
-
-const fieldInputClass =
-  "w-full bg-transparent text-[15px] px-3.5 py-2.5 outline-none rounded-md";
-
-const fieldStyle: React.CSSProperties = {
-  border: "1px solid rgba(247,240,230,0.28)",
-  color: "inherit",
-  colorScheme: "dark",
-};
+import { TrueNorthNav, useSunSign } from "./chart/shared";
 
 type Panel = "chart" | "numbers" | "details";
+
+const FOCUS_LABEL: Record<NorthFocus, string> = {
+  general: "General",
+  career: "Career",
+  love: "Love",
+  money: "Money",
+};
 
 function panelFromHash(): Panel | null {
   if (typeof window === "undefined") return null;
   const hash = window.location.hash.replace("#", "");
   if (hash === "numbers") return "numbers";
-  if (hash === "details" || hash === "birth") return "details";
+  if (hash === "details" || hash === "birth" || hash === "profile")
+    return "details";
   if (hash === "chart") return "chart";
   return null;
 }
 
-function BirthDetailsCard({ user, onSaved }: { user: any; onSaved?: () => void }) {
-  const updateBirthDetails = useMutation(api.profile.updateBirthDetails);
-  const [birthDate, setBirthDate] = useState(user?.birthDate ?? "");
-  const [birthTime, setBirthTime] = useState(user?.birthTime ?? "");
+function clockTime(value: string | undefined) {
+  if (!value) return "";
+  return value.slice(0, 5);
+}
+
+function ProfileEditor({ user, onSaved }: { user: any; onSaved?: () => void }) {
+  const updateNorth = useMutation(api.profile.updateNorth);
+  const [name, setName] = useState(user?.name ?? "");
+  const [focus, setFocus] = useState<NorthFocus>(
+    NORTH_FOCUSES.includes(user?.northFocus) ? user.northFocus : "general",
+  );
+  const [note, setNote] = useState(user?.northNote ?? "");
+  const [birthDate, setBirthDate] = useState(
+    user?.birthDate ? String(user.birthDate).slice(0, 10) : "",
+  );
+  const [birthTime, setBirthTime] = useState(clockTime(user?.birthTime));
   const [birthLocation, setBirthLocation] = useState(user?.birthLocation ?? "");
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState("");
 
   useEffect(() => {
-    setBirthDate(user?.birthDate ?? "");
-    setBirthTime(user?.birthTime ?? "");
+    setName(user?.name ?? "");
+    setFocus(
+      NORTH_FOCUSES.includes(user?.northFocus) ? user.northFocus : "general",
+    );
+    setNote(user?.northNote ?? "");
+    setBirthDate(user?.birthDate ? String(user.birthDate).slice(0, 10) : "");
+    setBirthTime(clockTime(user?.birthTime));
     setBirthLocation(user?.birthLocation ?? "");
-  }, [user?.birthDate, user?.birthTime, user?.birthLocation]);
+  }, [
+    user?.name,
+    user?.northFocus,
+    user?.northNote,
+    user?.birthDate,
+    user?.birthTime,
+    user?.birthLocation,
+  ]);
 
-  const handleSave = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSave = async (event: React.FormEvent) => {
+    event.preventDefault();
     setError("");
     setSaving(true);
     setSaved(false);
     try {
-      await updateBirthDetails({ birthDate, birthTime, birthLocation });
+      await updateNorth({
+        name,
+        focus,
+        note,
+        birthDate,
+        birthTime,
+        birthLocation,
+      });
       setSaved(true);
       onSaved?.();
-      setTimeout(() => setSaved(false), 2500);
-    } catch {
-      setError("Couldn't save your birth details. Please try again.");
+      window.setTimeout(() => setSaved(false), 2500);
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Couldn't save your profile. Please try again.",
+      );
     }
     setSaving(false);
   };
 
+  const welcoming = !user?.northOnboardedAt;
+
   return (
-    <div className="tn-card tn-invite-card">
-      <p className="label-lock">Birth details</p>
-      <p className="serif-quiet tn-invite-card__copy">
-        Date and place draw the chart. Time sharpens it. This stays on your profile.
+    <form className="tn-card tn-profile__editor" onSubmit={handleSave}>
+      <p className="label-lock">{welcoming ? "Welcome in" : "Your profile"}</p>
+      <h2 className="clash tn-profile__editor-title">
+        {welcoming ? "Make this room yours." : "Edit what people can see."}
+      </h2>
+      <p className="serif-quiet tn-lede">
+        Your name, focus, and a short note are what a connected person sees.
+        Birth details stay on this account and draw the chart. Nothing here is
+        emailed.
       </p>
-      <form onSubmit={handleSave} className="space-y-3" style={{ marginTop: 16 }}>
-        <div>
-          <label className="label-lock" style={{ display: "block", marginBottom: 6 }}>Date</label>
-          <input
-            type="date"
-            value={birthDate}
-            onChange={(e) => setBirthDate(e.target.value)}
-            className={fieldInputClass}
-            style={fieldStyle}
-            required
-          />
+
+      <label className="tn-label" htmlFor="tn-name">
+        Name
+      </label>
+      <input
+        id="tn-name"
+        className="tn-field"
+        value={name}
+        onChange={e => setName(e.target.value)}
+        autoComplete="name"
+        maxLength={80}
+        required
+      />
+
+      <fieldset className="tn-choice">
+        <legend className="tn-label">Current focus</legend>
+        <div className="tn-choice__row">
+          {NORTH_FOCUSES.map(item => (
+            <label
+              key={item}
+              className={`tn-choice__item ${focus === item ? "is-on" : ""}`}
+            >
+              <input
+                type="radio"
+                name="north-focus"
+                value={item}
+                checked={focus === item}
+                onChange={() => setFocus(item)}
+              />
+              {FOCUS_LABEL[item]}
+            </label>
+          ))}
         </div>
-        <div>
-          <label className="label-lock" style={{ display: "block", marginBottom: 6 }}>Time, if you know it</label>
-          <input
-            type="time"
-            value={birthTime}
-            onChange={(e) => setBirthTime(e.target.value)}
-            className={fieldInputClass}
-            style={fieldStyle}
-          />
-        </div>
-        <div>
-          <label className="label-lock" style={{ display: "block", marginBottom: 6 }}>Place</label>
-          <LocationAutocomplete
-            value={birthLocation}
-            onChange={setBirthLocation}
-            inputClassName={fieldInputClass}
-          />
-        </div>
-        {error && <p className="tn-alert">{error}</p>}
-        <button type="submit" disabled={saving} className="cta-pist" style={{ opacity: saving ? 0.6 : 1 }}>
-          {saving ? "Saving…" : saved ? "Saved" : "Save"}
-        </button>
-      </form>
-    </div>
+      </fieldset>
+
+      <label className="tn-label" htmlFor="tn-note">
+        Note
+      </label>
+      <textarea
+        id="tn-note"
+        className="tn-field tn-field--area"
+        value={note}
+        maxLength={280}
+        onChange={e => setNote(e.target.value)}
+        placeholder="A line about what you're walking toward."
+      />
+      <p className="tn-meta">{note.length}/280</p>
+
+      <label className="tn-label" htmlFor="tn-date">
+        Birth date
+      </label>
+      <input
+        id="tn-date"
+        className="tn-field"
+        type="date"
+        value={birthDate}
+        onChange={e => setBirthDate(e.target.value)}
+      />
+
+      <label className="tn-label" htmlFor="tn-time">
+        Birth time, if you know it
+      </label>
+      <input
+        id="tn-time"
+        className="tn-field"
+        type="time"
+        value={birthTime}
+        onChange={e => setBirthTime(e.target.value)}
+      />
+
+      <label className="tn-label" htmlFor="tn-place">
+        Birth place
+      </label>
+      <LocationAutocomplete
+        id="tn-place"
+        value={birthLocation}
+        onChange={setBirthLocation}
+        inputClassName="tn-field"
+      />
+
+      {error && (
+        <p className="tn-alert" role="alert">
+          {error}
+        </p>
+      )}
+      <p className="tn-meta" role="status">
+        {saved ? "Saved to your account." : "Saved on this account only."}
+      </p>
+      <button type="submit" className="cta-pist tn-action" disabled={saving}>
+        {saving
+          ? "Saving…"
+          : saved
+            ? "Saved"
+            : welcoming
+              ? "Save and continue"
+              : "Save profile"}
+      </button>
+    </form>
   );
 }
 
 const PANELS: { id: Panel; label: string }[] = [
   { id: "chart", label: "Chart" },
   { id: "numbers", label: "Numbers" },
-  { id: "details", label: "Details" },
+  { id: "details", label: "Profile" },
 ];
 
 export function ProfilePage() {
@@ -116,71 +220,133 @@ export function ProfilePage() {
   const sunSign = useSunSign(user);
   const { signOut } = useAuthActions();
   const navigate = useNavigate();
-  const [panel, setPanel] = useState<Panel>(() => panelFromHash() ?? "chart");
+  const [panel, setPanel] = useState<Panel>(() => panelFromHash() ?? "details");
 
   useEffect(() => {
     if (!user || panelFromHash()) return;
-    if (!user.birthDate) setPanel("details");
+    if (!user.northOnboardedAt || !user.birthDate) setPanel("details");
+    else setPanel("chart");
   }, [user]);
+
+  useEffect(() => {
+    const onHash = () => {
+      const next = panelFromHash();
+      if (next) setPanel(next);
+    };
+    window.addEventListener("hashchange", onHash);
+    return () => window.removeEventListener("hashchange", onHash);
+  }, []);
 
   const select = (next: Panel) => {
     setPanel(next);
-    const hash = next === "chart" ? "chart" : next;
+    const hash = next === "details" ? "profile" : next;
     window.history.replaceState(window.history.state, "", `#${hash}`);
   };
 
-  const handleSignOut = async () => {
-    await signOut();
-    navigate("/");
-  };
-
-  const name = (user?.name as string | undefined)
-    || (user?.email ? String(user.email).split("@")[0] : "Your profile");
+  const name =
+    (user?.name as string | undefined) ||
+    (user?.email ? String(user.email).split("@")[0] : "Your profile");
+  const focus = NORTH_FOCUSES.includes(user?.northFocus)
+    ? FOCUS_LABEL[user.northFocus as NorthFocus]
+    : "General";
 
   return (
     <div className="journal-page journal-page--truenorth">
       <TrueNorthAtmosphere />
-      <div className="journal-stack tn-shell">
-        <header className="tn-card tn-invite-card" style={{ display: "flex", justifyContent: "space-between", gap: 16, alignItems: "center", flexWrap: "wrap" }}>
-          <div style={{ display: "flex", gap: 14, alignItems: "center" }}>
-            {sunSign && (
-              <span style={{ color: "var(--pist)" }}>
-                <TrueNorthSignIcon sign={sunSign} size={36} />
-              </span>
-            )}
-            <div>
-              <p className="label-lock" style={{ margin: 0 }}>{sunSign || "Profile"}</p>
-              <h1 className="clash" style={{ fontSize: "clamp(32px, 5vw, 52px)", margin: "0.15rem 0" }}>{name}</h1>
-              <p className="serif-quiet" style={{ margin: 0 }}>{user?.email || "—"}</p>
-            </div>
-          </div>
-          <Link to="/chart/long-read" className="cta-pist">Readings</Link>
-        </header>
+      <div className="journal-stack tn-shell tn-profile">
+        {user === undefined ? (
+          <p className="serif-quiet tn-opening" role="status">
+            Opening your profile…
+          </p>
+        ) : (
+          <>
+            <header className="tn-card tn-profile__head">
+              <div className="tn-profile__identity">
+                <span className="tn-profile__mark" aria-hidden="true">
+                  <TrueNorthSignIcon sign={sunSign || "Virgo"} size={36} />
+                </span>
+                <div className="tn-profile__who">
+                  <p className="label-lock">
+                    {sunSign ? `${sunSign} sun` : "True North"}
+                  </p>
+                  <h1 className="clash tn-profile__name">{name}</h1>
+                  <p className="tn-profile__mail">
+                    {user?.email || "Signed in"}
+                  </p>
+                  <p className="tn-profile__focus">
+                    {focus}
+                    {user?.northNote ? ` · ${user.northNote}` : ""}
+                  </p>
+                </div>
+              </div>
+              <Link to="/chart/long-read" className="cta-pist tn-action">
+                Open a reading
+              </Link>
+            </header>
 
-        <div role="tablist" aria-label="Profile" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 8 }}>
-          {PANELS.map(item => (
-            <button
-              key={item.id}
-              type="button"
-              role="tab"
-              aria-selected={panel === item.id}
-              className={panel === item.id ? "cta-pist" : "cta-ghost"}
-              onClick={() => select(item.id)}
+            <TrueNorthNav />
+
+            <div
+              className="tn-profile__tabs"
+              role="tablist"
+              aria-label="Profile"
             >
-              {item.label}
-            </button>
-          ))}
-        </div>
+              {PANELS.map(item => (
+                <button
+                  key={item.id}
+                  type="button"
+                  role="tab"
+                  id={`tab-${item.id}`}
+                  aria-selected={panel === item.id}
+                  aria-controls={`panel-${item.id}`}
+                  className={`tn-profile__tab ${panel === item.id ? "is-on" : ""}`}
+                  onClick={() => select(item.id)}
+                >
+                  {item.label}
+                </button>
+              ))}
+            </div>
 
-        {panel === "chart" && <ChartHomePage embedded />}
-        {panel === "numbers" && <NumbersPage embedded />}
-        {panel === "details" && <BirthDetailsCard user={user} onSaved={() => select("chart")} />}
+            <div
+              role="tabpanel"
+              id={`panel-${panel}`}
+              aria-labelledby={`tab-${panel}`}
+              className="tn-profile__panel"
+            >
+              {panel === "chart" && <ChartHomePage embedded />}
+              {panel === "numbers" && <NumbersPage embedded />}
+              {panel === "details" && (
+                <ProfileEditor user={user} onSaved={() => select("chart")} />
+              )}
+            </div>
+          </>
+        )}
 
-        <footer style={{ display: "flex", gap: 16, flexWrap: "wrap", alignItems: "center" }}>
-          <Link to="/orders" className="tn-inline">Orders</Link>
-          <Link to="/shop" className="tn-inline">Shop</Link>
-          {isAdmin && <Link to="/admin" className="tn-inline">Admin</Link>}
-          <button type="button" onClick={handleSignOut} className="cta-ghost">Sign out</button>
+        <footer className="tn-profile__foot">
+          <Link to="/orders" className="tn-inline">
+            Orders
+          </Link>
+          <Link to="/shop" className="tn-inline">
+            Shop
+          </Link>
+          <Link to="/chart/circle" className="tn-inline">
+            Tandem
+          </Link>
+          {isAdmin && (
+            <Link to="/admin" className="tn-inline">
+              Admin
+            </Link>
+          )}
+          <button
+            type="button"
+            className="cta-ghost tn-action"
+            onClick={async () => {
+              await signOut();
+              navigate("/");
+            }}
+          >
+            Sign out
+          </button>
         </footer>
       </div>
     </div>

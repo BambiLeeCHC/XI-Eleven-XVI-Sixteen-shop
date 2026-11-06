@@ -121,3 +121,4 @@ Traditional glyphs are treated as a starting point only. They are redesigned as 
 
 *This document is the living source of truth for True North product and brand direction within xixvi.shop.*
 - **0.4** — Realtime sync via `circle_readings` and channel `true-north-circle`.
+- **0.5** — Open access is a reversible flag (`TRUE_NORTH_FREE_ACCESS`) and does not alter subscription rows. Profiles edit name, focus, note, and birth details on the account. Tandem is a consented in-app connection: invite, accept, session, shared result, history. It does not email. Public circle notes stay separate from tandem.

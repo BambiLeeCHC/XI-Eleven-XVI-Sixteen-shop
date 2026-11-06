@@ -1,5 +1,7 @@
 /** Locked IMPACT visual system — URLs, grouping, and snap colours. */
 
+import { TRUE_NORTH_FREE_ACCESS } from "./freeAccess";
+
 export const CREST_URL =
   "https://vgbujcuwptvheqijyjbe.supabase.co/storage/v1/object/public/hmac-uploads/projects/ce987dab-503d-4ae5-b4c4-bd584c4baf19/brand-assets/brand-xi-xvi-crest/xi-xvi-crest-logo.png?v=gold-shield";
 
@@ -122,8 +124,10 @@ export const CAMPAIGN_KICKER = "Unbothered in XI Eleven XVI Sixteen";
 export const HERO_TITLE = "The world is ending,";
 export const HERO_SUB = "we love that for them...";
 
-/** One house. Clothes are the floor. True North is the paid reading room. */
-export const HOUSE_LINE =
-  "XI Eleven XVI Sixteen is a clothing house. True North is written tarot — a separate $7/week membership.";
-export const HOUSE_HINGE =
-  "A garment is made when you order it. A Long Read is written when you say what is going on, and only if you subscribe.";
+/** One house. Clothes are the floor. True North is the reading room. */
+export const HOUSE_LINE = TRUE_NORTH_FREE_ACCESS
+  ? "XI Eleven XVI Sixteen is a clothing house. True North is the same numbers, opened — chart, numbers, and the Long Read."
+  : "XI Eleven XVI Sixteen is a clothing house. True North is written tarot — a separate $7/week membership.";
+export const HOUSE_HINGE = TRUE_NORTH_FREE_ACCESS
+  ? "A garment is made when you order it. A Long Read is written when you say what is going on."
+  : "A garment is made when you order it. A Long Read is written when you say what is going on, and only if you subscribe.";
