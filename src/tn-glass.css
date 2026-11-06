@@ -609,13 +609,17 @@
 }
 
 .tn-profile__tabs--quad {
-  display: flex;
-  overflow-x: auto;
-  grid-template-columns: none;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  overflow: visible;
 }
 
 .tn-profile__tabs--quad .tn-profile__tab {
-  flex: 1 0 auto;
+  flex: unset;
+  min-width: 0;
+  padding-inline: 0.2rem;
+  letter-spacing: 0.04em;
+  font-size: 11px;
 }
 
 .my-sky-head {

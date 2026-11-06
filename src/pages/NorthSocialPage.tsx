@@ -469,7 +469,7 @@ export function NorthSocialPage() {
             <section className="tn-card my-sky">
               <div className="my-sky__top">
                 <button type="button" className="sky-avatar-hit" onClick={() => setStudio(true)} aria-label="Upload photo or create AI avatar">
-                  <SkyAvatar name={author} sign={sun} src={youSrc} size={112} />
+                  <SkyAvatar name={author} sign={sun} src={youSrc} size={84} />
                 </button>
                 <div className="my-sky__copy">
                   <h2 className="my-sky__name">{MY_SKY_LABEL}</h2>
@@ -478,29 +478,31 @@ export function NorthSocialPage() {
                   <p className="serif-quiet tn-lede">{state.space.manifesto}</p>
                 </div>
               </div>
-              <ul className="sky-pills">
-                <li>Sun {sun}</li>
-                <li>Moon {moon}</li>
-                <li>Rising {rising}</li>
-                <li>Life Path {lifePath}</li>
-              </ul>
-              <div className="sky-chips">
-                {(["mood", "anthem", "altar"] as const).map(key => (
-                  <label key={key} className="sky-chip">
-                    <span>{key === "mood" ? "Mood" : key === "anthem" ? "Soundtrack" : "Altar"}</span>
-                    {chip === key ? (
-                      <input
-                        className="tn-field"
-                        value={state.space[key]}
-                        autoFocus
-                        onChange={event => patchSpace({ [key]: event.target.value })}
-                        onBlur={() => setChip(null)}
-                      />
-                    ) : (
-                      <button type="button" onClick={() => setChip(key)}>{state.space[key]}</button>
-                    )}
-                  </label>
-                ))}
+              <div className="sky-meta">
+                <ul className="sky-pills">
+                  <li>Sun {sun}</li>
+                  <li>Moon {moon}</li>
+                  <li>Rising {rising}</li>
+                  <li>Life Path {lifePath}</li>
+                </ul>
+                <div className="sky-chips">
+                  {(["mood", "anthem", "altar"] as const).map(key => (
+                    <span key={key} className="sky-chip">
+                      <span>{key === "mood" ? "Mood" : key === "anthem" ? "Soundtrack" : "Altar"}</span>
+                      {chip === key ? (
+                        <input
+                          className="tn-field"
+                          value={state.space[key]}
+                          autoFocus
+                          onChange={event => patchSpace({ [key]: event.target.value })}
+                          onBlur={() => setChip(null)}
+                        />
+                      ) : (
+                        <button type="button" onClick={() => setChip(key)}>{state.space[key]}</button>
+                      )}
+                    </span>
+                  ))}
+                </div>
               </div>
               <div className="tn-actions">
                 <button type="button" className="cta-pist tn-action" onClick={() => setEditor(true)}>Edit Profile & Birth Data</button>
@@ -508,33 +510,43 @@ export function NorthSocialPage() {
               </div>
             </section>
 
-            <div className="tn-profile__tabs" role="tablist" aria-label="Profile">
-              {([
-                ["chart", "Chart"],
-                ["numbers", "Numbers"],
-                ["constellation", "Constellation"],
-                ["posts", "Posts"],
-              ] as const).map(([id, label]) => (
-                <button key={id} type="button" role="tab" aria-selected={view.sky === id} className={`tn-profile__tab ${view.sky === id ? "is-on" : ""}`} onClick={() => goSky(id)}>
-                  {label}
+            <div className="sky-tabrow">
+              <div className="tn-profile__tabs tn-profile__tabs--quad" role="tablist" aria-label="Profile">
+                {([
+                  ["chart", "Chart"],
+                  ["numbers", "Numbers"],
+                  ["constellation", "Constellation"],
+                  ["posts", "Posts"],
+                ] as const).map(([id, label]) => (
+                  <button key={id} type="button" role="tab" aria-selected={view.sky === id} className={`tn-profile__tab ${view.sky === id ? "is-on" : ""}`} onClick={() => goSky(id)}>
+                    {label}
+                  </button>
+                ))}
+              </div>
+              {(view.sky === "chart" || view.sky === "numbers") && (
+                <button
+                  type="button"
+                  className="cta-ghost sky-share"
+                  onClick={() => publish(
+                    view.sky === "numbers" ? "Numbers" : "Chart highlight",
+                    view.sky === "numbers" ? `Life Path ${lifePath}.` : `${sun} sun, ${moon} moon, ${rising} rising.`,
+                    [],
+                    "chart",
+                  )}
+                >
+                  Share to Feed
                 </button>
-              ))}
+              )}
             </div>
 
             {view.sky === "chart" && (
               <div className="sky-panel">
-                <div className="tn-actions">
-                  <button type="button" className="cta-pist tn-action" onClick={() => publish("Chart highlight", `${sun} sun, ${moon} moon, ${rising} rising.`, [], "chart")}>Share to Feed</button>
-                </div>
                 <ChartHomePage embedded allowPreview={!chart} previewSigns={{ sun, moon, rising }} />
               </div>
             )}
 
             {view.sky === "numbers" && (
               <div className="sky-panel">
-                <div className="tn-actions">
-                  <button type="button" className="cta-pist tn-action" onClick={() => publish("Numbers", `Life Path ${lifePath}.`, [], "chart")}>Share to Feed</button>
-                </div>
                 <NumbersPage embedded />
               </div>
             )}
