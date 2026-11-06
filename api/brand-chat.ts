@@ -11,6 +11,11 @@
  */
 
 import {
+  type GroqFailure,
+  generateWithGroq,
+  generateWithGroqChat,
+} from "./_lib/groq.js";
+import {
   type ApiRequest,
   type ApiResponse,
   currentUser,
@@ -18,7 +23,6 @@ import {
   HttpError,
   supabaseAdmin,
 } from "./_lib/server.js";
-import { generateWithGroq, generateWithGroqChat, type GroqFailure } from "./_lib/groq.js";
 
 const BRAND_SYSTEM_PROMPT = `You are the XI · XVI Style Concierge — the personal shopping assistant for XI Eleven XVI Sixteen (xixvi.shop), a premium streetwear and luxury fashion brand. You speak with warmth, confidence, and sophistication. You're knowledgeable, stylish, and genuinely excited to help customers find their perfect pieces.
 
@@ -90,7 +94,10 @@ async function handleBlogGenerate(req: ApiRequest, res: ApiResponse) {
 
   let parsed: any = null;
   try {
-    const raw = result.text.trim().replace(/^```json\s*/i, "").replace(/```$/i, "");
+    const raw = result.text
+      .trim()
+      .replace(/^```json\s*/i, "")
+      .replace(/```$/i, "");
     parsed = JSON.parse(raw);
   } catch {
     return res.status(200).json({
@@ -151,25 +158,31 @@ async function handleBlogGenerate(req: ApiRequest, res: ApiResponse) {
   const igUser = process.env.META_IG_USER_ID;
   if (igToken && igUser && imageUrl && packageOut.instagramCaption) {
     try {
-      const create = await fetch(`https://graph.facebook.com/v19.0/${igUser}/media`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          image_url: imageUrl,
-          caption: packageOut.instagramCaption,
-          access_token: igToken,
-        }),
-      });
-      const created = await create.json();
-      if (created?.id) {
-        const pub = await fetch(`https://graph.facebook.com/v19.0/${igUser}/media_publish`, {
+      const create = await fetch(
+        `https://graph.facebook.com/v19.0/${igUser}/media`,
+        {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            creation_id: created.id,
+            image_url: imageUrl,
+            caption: packageOut.instagramCaption,
             access_token: igToken,
           }),
-        });
+        },
+      );
+      const created = await create.json();
+      if (created?.id) {
+        const pub = await fetch(
+          `https://graph.facebook.com/v19.0/${igUser}/media_publish`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              creation_id: created.id,
+              access_token: igToken,
+            }),
+          },
+        );
         social.instagram = { ok: pub.ok, creationId: created.id };
       } else {
         social.instagram = { ok: false, body: created };
@@ -230,12 +243,19 @@ Current JSON: ${JSON.stringify(body.current ?? {})}`;
         900,
       );
       if (!result.success) {
-        return res.status(200).json({ success: false, error: "AI assist unavailable" });
+        return res
+          .status(200)
+          .json({ success: false, error: "AI assist unavailable" });
       }
       try {
-        const raw = result.text.trim().replace(/^```json\s*/i, "").replace(/```$/i, "");
+        const raw = result.text
+          .trim()
+          .replace(/^```json\s*/i, "")
+          .replace(/```$/i, "");
         const parsed = JSON.parse(raw);
-        return res.status(200).json({ success: true, patch: parsed.patch || parsed });
+        return res
+          .status(200)
+          .json({ success: true, patch: parsed.patch || parsed });
       } catch {
         return res.status(200).json({ success: true, text: result.text });
       }
@@ -244,14 +264,18 @@ Current JSON: ${JSON.stringify(body.current ?? {})}`;
     const message = body.message;
     if (!message) throw new HttpError(400, "A message is required");
 
-    const chatHistory = (body.history ?? []).slice(-8).map((turn) => ({
+    const chatHistory = (body.history ?? []).slice(-8).map(turn => ({
       role: turn.role,
       content: turn.content,
     }));
     chatHistory.push({ role: "user", content: message });
 
-    const result = await generateWithGroqChat(BRAND_SYSTEM_PROMPT, chatHistory, 800);
-    if (!result.success) {
+    const result = await generateWithGroqChat(
+      BRAND_SYSTEM_PROMPT,
+      chatHistory,
+      800,
+    );
+    if ("reason" in result) {
       console.error("Concierge Groq call failed", result.reason);
       return res.status(200).json({ success: true, response: FALLBACK });
     }

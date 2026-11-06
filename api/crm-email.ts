@@ -2,6 +2,7 @@
  * Send a support email to a customer from the admin CRM, and log it.
  */
 
+import { escapeHtml, SUPPORT_FROM, sendResendEmail } from "./_lib/resend.js";
 import {
   type ApiRequest,
   type ApiResponse,
@@ -10,7 +11,6 @@ import {
   requireAdmin,
   supabaseAdmin,
 } from "./_lib/server.js";
-import { escapeHtml, sendResendEmail, SUPPORT_FROM } from "./_lib/resend.js";
 
 export default async function handler(req: ApiRequest, res: ApiResponse) {
   if (req.method !== "POST") {
@@ -65,7 +65,7 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
       text: body,
     });
 
-    if (!result.success) {
+    if ("error" in result) {
       await log("failed", undefined, result.error);
       throw new HttpError(502, `Email failed to send: ${result.error}`);
     }

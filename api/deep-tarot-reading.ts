@@ -3,6 +3,14 @@
  * TRUE_NORTH_FREE_ACCESS skips the weekly quota without writing subscription rows.
  */
 
+import { TRUE_NORTH_FREE_ACCESS } from "../src/lib/freeAccess.js";
+import { type GroqFailure, generateWithGroq } from "./_lib/groq.js";
+import {
+  buildKeepsakeEmailHtml,
+  readingTextToHtml,
+  SUPPORT_FROM,
+  sendResendEmail,
+} from "./_lib/resend.js";
 import {
   type ApiRequest,
   type ApiResponse,
@@ -11,14 +19,6 @@ import {
   HttpError,
   supabaseAdmin,
 } from "./_lib/server.js";
-import { TRUE_NORTH_FREE_ACCESS } from "../src/lib/freeAccess.js";
-import { generateWithGroq, type GroqFailure } from "./_lib/groq.js";
-import {
-  buildKeepsakeEmailHtml,
-  readingTextToHtml,
-  sendResendEmail,
-  SUPPORT_FROM,
-} from "./_lib/resend.js";
 
 interface SpreadCardInput {
   slot: string;
@@ -70,7 +70,9 @@ function buildUserPrompt(
     genderIdentity ? `gender identity: ${genderIdentity}` : null,
     sexualOrientation ? `sexual orientation: ${sexualOrientation}` : null,
   ].filter(Boolean);
-  const identityLine = identityBits.length ? ` Also on file: ${identityBits.join(", ")}.` : "";
+  const identityLine = identityBits.length
+    ? ` Also on file: ${identityBits.join(", ")}.`
+    : "";
   return `This reading is for ${name}. What they told us is going on: "${situation}".${identityLine}\n\nThe seven-card spread, in draw order:\n${lines.join("\n")}\n\nWrite the Long Read now, following the voice and structure rules exactly.`;
 }
 
@@ -90,8 +92,11 @@ function fallbackLongRead(
   spread: SpreadCardInput[],
 ): string {
   const who = name || "friend";
-  const sit = situation && situation !== "not specified" ? situation : "what you are carrying today";
-  const cards = spread.map((c) => {
+  const sit =
+    situation && situation !== "not specified"
+      ? situation
+      : "what you are carrying today";
+  const cards = spread.map(c => {
     const meaning = c.reversed ? c.card.reversed : c.card.upright;
     return `In the ${c.slotName} of this, **${c.card.name}**${c.reversed ? " (reversed)" : ""} speaks to ${sit}. ${meaning} The charge here is usable — not a warning, a next move.`;
   });
@@ -135,21 +140,33 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
         .maybeSingle();
       const subscribed = !!sub && ["trialing", "active"].includes(sub.status);
       if (!subscribed) {
-        const since = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
+        const since = new Date(
+          Date.now() - 7 * 24 * 60 * 60 * 1000,
+        ).toISOString();
         const { count, error: weekError } = await admin
           .from("deep_readings")
           .select("id", { count: "exact", head: true })
           .eq("user_id", user.id)
           .gte("created_at", since);
         if (weekError) {
-          console.error("weekly reading quota check failed:", weekError.message);
+          console.error(
+            "weekly reading quota check failed:",
+            weekError.message,
+          );
         } else if ((count ?? 0) >= 3) {
-          throw new HttpError(402, "You've used your 3 free readings this week. Readings are $3.99 a week after that.");
+          throw new HttpError(
+            402,
+            "You've used your 3 free readings this week. Readings are $3.99 a week after that.",
+          );
         }
       }
     }
 
-    const { spread, situation, window: windowRaw } = (req.body ?? {}) as {
+    const {
+      spread,
+      situation,
+      window: windowRaw,
+    } = (req.body ?? {}) as {
       spread?: SpreadCardInput[];
       situation?: string;
       window?: string;
@@ -165,7 +182,6 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
         'A daily window is required: "morning", "midday", or "evening"',
       );
     }
-
 
     const situationText = situation?.trim() || "not specified";
 
@@ -184,14 +200,21 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
     let usedFallback = false;
     if (!result.success) {
       const failure = result as GroqFailure;
-      console.error("Long Read Groq failed, using card-native fallback:", groqErrorMessage(failure));
+      console.error(
+        "Long Read Groq failed, using card-native fallback:",
+        groqErrorMessage(failure),
+      );
       readingText = fallbackLongRead(name, situationText, spread);
       usedFallback = true;
     } else {
       readingText = result.text;
     }
 
-    let saved: { id?: string; created_at?: string; window?: string | null } | null = null;
+    let saved: {
+      id?: string;
+      created_at?: string;
+      window?: string | null;
+    } | null = null;
     {
       const first = await admin
         .from("deep_readings")
@@ -205,7 +228,10 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
         .single();
 
       if (first.error) {
-        console.error("deep_readings insert with window failed:", first.error.message);
+        console.error(
+          "deep_readings insert with window failed:",
+          first.error.message,
+        );
         const fallback = await admin
           .from("deep_readings")
           .insert({
@@ -216,7 +242,10 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
           .select("id, created_at")
           .single();
         if (fallback.error) {
-          console.error("deep_readings insert fallback failed:", fallback.error.message);
+          console.error(
+            "deep_readings insert fallback failed:",
+            fallback.error.message,
+          );
         } else {
           saved = fallback.data;
         }
@@ -238,7 +267,7 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
         text: readingText,
       });
       emailed = emailResult.success;
-      if (!emailResult.success) {
+      if ("error" in emailResult) {
         console.error("Long Read keepsake email failed:", emailResult.error);
       }
     }

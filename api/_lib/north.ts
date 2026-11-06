@@ -486,7 +486,7 @@ async function openSession(
   if (!focus)
     throw new HttpError(400, "Choose general, career, love, or money.");
   const prompt = parseTandemText(promptRaw, 280, "a prompt");
-  if (!prompt.ok) throw new HttpError(400, prompt.message);
+  if ("message" in prompt) throw new HttpError(400, prompt.message);
 
   const row = await loadConnection(connectionId);
   const admin = supabaseAdmin();
@@ -566,7 +566,7 @@ async function answerSession(
 
 async function contribute(actorId: string, sessionId: string, body: unknown) {
   const text = parseTandemText(body, 2000, "your side");
-  if (!text.ok) throw new HttpError(400, text.message);
+  if ("message" in text) throw new HttpError(400, text.message);
   const row = await loadSession(sessionId);
   const admin = supabaseAdmin();
   const { data: existing, error: existingError } = await admin

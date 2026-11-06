@@ -30,6 +30,23 @@
  *  - admin role on the profile (full bypass of every paywall).
  */
 
+import { BODY_MEANINGS, explainAspect } from "../src/lib/astrologyMeanings.js";
+import {
+  fullNumerologyProfile,
+  NUMBER_MEANINGS,
+} from "../src/lib/numerology.js";
+import {
+  type AvatarRequestBody,
+  generateCartoonAvatar,
+} from "./_lib/avatar.js";
+import { type GroqFailure, generateWithGroq } from "./_lib/groq.js";
+import {
+  computeNatalChart,
+  geocodeLocation,
+  type NatalChart,
+  searchLocations,
+} from "./_lib/natalChart.js";
+import { handleNorth } from "./_lib/north.js";
 import {
   type ApiRequest,
   type ApiResponse,
@@ -38,16 +55,6 @@ import {
   HttpError,
   supabaseAdmin,
 } from "./_lib/server.js";
-import {
-  computeNatalChart,
-  geocodeLocation,
-  searchLocations,
-  type NatalChart,
-} from "./_lib/natalChart.js";
-import { generateWithGroq, type GroqFailure } from "./_lib/groq.js";
-import { fullNumerologyProfile, NUMBER_MEANINGS } from "../src/lib/numerology.js";
-import { BODY_MEANINGS, explainAspect } from "../src/lib/astrologyMeanings.js";
-import { handleNorth } from "./_lib/north.js";
 
 const NUMEROLOGY_SYSTEM_PROMPT = `You are the XI · XVI Reader, writing the numerology narrative for the XI Eleven XVI Sixteen (xixvi.shop) brand — the paid, higher-tier companion to the natal chart. Same voice as always: direct, poignant, specific — never a generic horoscope, never hedging ("may"/"could"), never false authority.
 
@@ -73,7 +80,9 @@ Sparing bold on 4-5 key phrases total across all three sections. Address them by
 async function handleGeocodeSearch(req: ApiRequest, res: ApiResponse) {
   const queryQ = req.query?.q;
   const qFromQuery = Array.isArray(queryQ) ? queryQ[0] : queryQ;
-  const q = ((req.body as { q?: string } | undefined)?.q ?? qFromQuery ?? "") as string;
+  const q = ((req.body as { q?: string } | undefined)?.q ??
+    qFromQuery ??
+    "") as string;
   const suggestions = await searchLocations(q);
   return res.status(200).json({ success: true, suggestions });
 }
@@ -86,7 +95,9 @@ async function resolveUserChart(userId: string): Promise<ChartResolution> {
   const admin = supabaseAdmin();
   const { data: profile, error: profileError } = await admin
     .from("profiles")
-    .select("name, birth_date, birth_time, birth_location, birth_lat, birth_lng")
+    .select(
+      "name, birth_date, birth_time, birth_location, birth_lat, birth_lng",
+    )
     .eq("id", userId)
     .maybeSingle();
   if (profileError) throw profileError;
@@ -102,7 +113,8 @@ async function resolveUserChart(userId: string): Promise<ChartResolution> {
     return {
       ok: false,
       reason: "missing_birth_location",
-      message: "Add your birth location in your account to generate a natal chart.",
+      message:
+        "Add your birth location in your account to generate a natal chart.",
     };
   }
 
@@ -127,7 +139,10 @@ async function resolveUserChart(userId: string): Promise<ChartResolution> {
       .eq("id", userId);
   }
 
-  const chart = computeNatalChart(profile.birth_date, profile.birth_time, { lat, lng });
+  const chart = computeNatalChart(profile.birth_date, profile.birth_time, {
+    lat,
+    lng,
+  });
   const sourceKey = `${profile.birth_date}|${profile.birth_time ?? ""}|${lat}|${lng}|${chart.houseSystem}`;
   return { ok: true, chart, name: profile.name ?? null, sourceKey };
 }
@@ -137,8 +152,12 @@ async function handleNatalChart(req: ApiRequest, res: ApiResponse) {
   if (!user) throw new HttpError(401, "Please sign in first");
 
   const resolved = await resolveUserChart(user.id);
-  if (!resolved.ok) {
-    return res.status(200).json({ success: false, reason: resolved.reason, message: resolved.message });
+  if ("reason" in resolved) {
+    return res.status(200).json({
+      success: false,
+      reason: resolved.reason,
+      message: resolved.message,
+    });
   }
 
   return res.status(200).json({ success: true, chart: resolved.chart });
@@ -149,8 +168,12 @@ async function handleNatalProfile(req: ApiRequest, res: ApiResponse) {
   if (!user) throw new HttpError(401, "Please sign in first");
 
   const resolved = await resolveUserChart(user.id);
-  if (!resolved.ok) {
-    return res.status(200).json({ success: false, reason: resolved.reason, message: resolved.message });
+  if ("reason" in resolved) {
+    return res.status(200).json({
+      success: false,
+      reason: resolved.reason,
+      message: resolved.message,
+    });
   }
 
   const { chart, name, sourceKey } = resolved;
@@ -161,19 +184,30 @@ async function handleNatalProfile(req: ApiRequest, res: ApiResponse) {
     .select("natal_profile_narrative, natal_profile_source_key")
     .eq("id", user.id)
     .maybeSingle();
-  if (cached?.natal_profile_narrative && cached.natal_profile_source_key === sourceKey) {
-    return res.status(200).json({ success: true, narrative: cached.natal_profile_narrative });
+  if (
+    cached?.natal_profile_narrative &&
+    cached.natal_profile_source_key === sourceKey
+  ) {
+    return res
+      .status(200)
+      .json({ success: true, narrative: cached.natal_profile_narrative });
   }
 
   const fullName = name || "friend";
 
   const placementLines = chart.placements
-    .map((p) => `${p.body} in ${p.sign}${p.house ? ` (house ${p.house})` : ""}${p.retrograde ? " retrograde" : ""} — governs ${BODY_MEANINGS[p.body] ?? ""}`)
+    .map(
+      p =>
+        `${p.body} in ${p.sign}${p.house ? ` (house ${p.house})` : ""}${p.retrograde ? " retrograde" : ""} — governs ${BODY_MEANINGS[p.body] ?? ""}`,
+    )
     .join("\n");
 
   const aspectLines = chart.aspects
     .slice(0, 8)
-    .map((a) => `${a.bodyA} ${a.aspect} ${a.bodyB} (orb ${a.orb}°) — ${explainAspect(a.aspect)}`)
+    .map(
+      a =>
+        `${a.bodyA} ${a.aspect} ${a.bodyB} (orb ${a.orb}°) — ${explainAspect(a.aspect)}`,
+    )
     .join("\n");
 
   const userPrompt = `This natal chart is for ${fullName}.
@@ -189,7 +223,11 @@ ${aspectLines || "None within a tight orb."}
 
 Write the personality profile now, following the voice and structure rules exactly.`;
 
-  const result = await generateWithGroq(NATAL_PROFILE_SYSTEM_PROMPT, userPrompt, 3200);
+  const result = await generateWithGroq(
+    NATAL_PROFILE_SYSTEM_PROMPT,
+    userPrompt,
+    3200,
+  );
   if (!result.success) {
     const failure = result as GroqFailure;
     return res.status(200).json({ success: false, reason: failure.reason });
@@ -197,7 +235,10 @@ Write the personality profile now, following the voice and structure rules exact
 
   await admin
     .from("profiles")
-    .update({ natal_profile_narrative: result.text, natal_profile_source_key: sourceKey })
+    .update({
+      natal_profile_narrative: result.text,
+      natal_profile_source_key: sourceKey,
+    })
     .eq("id", user.id);
 
   return res.status(200).json({ success: true, narrative: result.text });
@@ -226,13 +267,21 @@ async function handleNumerology(req: ApiRequest, res: ApiResponse) {
   );
   const userPrompt = `This reading is for ${fullName}.\n\nTheir numbers:\n${lines.join("\n")}\n\nWrite the numerology narrative now, following the voice and structure rules exactly.`;
 
-  const result = await generateWithGroq(NUMEROLOGY_SYSTEM_PROMPT, userPrompt, 3000);
+  const result = await generateWithGroq(
+    NUMEROLOGY_SYSTEM_PROMPT,
+    userPrompt,
+    3000,
+  );
   if (!result.success) {
     const failure = result as GroqFailure;
-    return res.status(200).json({ success: false, reason: failure.reason, numbers });
+    return res
+      .status(200)
+      .json({ success: false, reason: failure.reason, numbers });
   }
 
-  return res.status(200).json({ success: true, numbers, narrative: result.text });
+  return res
+    .status(200)
+    .json({ success: true, numbers, narrative: result.text });
 }
 
 export default async function handler(req: ApiRequest, res: ApiResponse) {
@@ -257,6 +306,19 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
       return await handleNatalProfile(req, res);
     }
     if (kind === "north") return await handleNorth(req, res);
+    if (kind === "avatar") {
+      const body = (req.body ?? {}) as AvatarRequestBody;
+      const result = await generateCartoonAvatar(body);
+      if ("error" in result) {
+        return res.status(200).json({ success: false, error: result.error });
+      }
+      return res.status(200).json({
+        success: true,
+        image: result.image,
+        provider: result.provider,
+        fit: result.fit,
+      });
+    }
     if (kind === "natal" || kind === undefined) {
       return await handleNatalChart(req, res);
     }

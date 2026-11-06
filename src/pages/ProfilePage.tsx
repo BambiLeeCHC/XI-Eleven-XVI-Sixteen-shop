@@ -1,15 +1,10 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { TrueNorthAtmosphere } from "../components/journal/TrueNorthAtmosphere";
-import { TrueNorthSignIcon } from "../components/journal/TrueNorthGlyphs";
 import { LocationAutocomplete } from "../components/LocationAutocomplete";
+import { PersonalProfile } from "../components/north/PersonalProfile";
 import { api, useAuthActions, useMutation, useQuery } from "../lib/backend";
 import { NORTH_FOCUSES, type NorthFocus } from "../lib/northProfile";
-import { ChartHomePage } from "./chart/ChartHomePage";
-import { NumbersPage } from "./chart/NumbersPage";
-import { TrueNorthNav, useSunSign } from "./chart/shared";
-
-type Panel = "chart" | "numbers" | "details";
 
 const FOCUS_LABEL: Record<NorthFocus, string> = {
   general: "General",
@@ -18,14 +13,19 @@ const FOCUS_LABEL: Record<NorthFocus, string> = {
   money: "Money",
 };
 
-function panelFromHash(): Panel | null {
-  if (typeof window === "undefined") return null;
+function skyFromHash(): "chart" | "numbers" | "constellation" | "posts" {
+  if (typeof window === "undefined") return "chart";
   const hash = window.location.hash.replace("#", "");
   if (hash === "numbers") return "numbers";
-  if (hash === "details" || hash === "birth" || hash === "profile")
-    return "details";
-  if (hash === "chart") return "chart";
-  return null;
+  if (hash === "constellation") return "constellation";
+  if (hash === "posts") return "posts";
+  return "chart";
+}
+
+function editingFromHash() {
+  if (typeof window === "undefined") return false;
+  const hash = window.location.hash.replace("#", "");
+  return hash === "details" || hash === "birth" || hash === "profile";
 }
 
 function clockTime(value: string | undefined) {
@@ -208,47 +208,14 @@ function ProfileEditor({ user, onSaved }: { user: any; onSaved?: () => void }) {
   );
 }
 
-const PANELS: { id: Panel; label: string }[] = [
-  { id: "chart", label: "Chart" },
-  { id: "numbers", label: "Numbers" },
-  { id: "details", label: "Profile" },
-];
-
 export function ProfilePage() {
   const user = useQuery(api.auth.currentUser);
   const isAdmin = useQuery(api.users.isAdmin);
-  const sunSign = useSunSign(user);
   const { signOut } = useAuthActions();
   const navigate = useNavigate();
-  const [panel, setPanel] = useState<Panel>(() => panelFromHash() ?? "details");
-
-  useEffect(() => {
-    if (!user || panelFromHash()) return;
-    if (!user.northOnboardedAt || !user.birthDate) setPanel("details");
-    else setPanel("chart");
-  }, [user]);
-
-  useEffect(() => {
-    const onHash = () => {
-      const next = panelFromHash();
-      if (next) setPanel(next);
-    };
-    window.addEventListener("hashchange", onHash);
-    return () => window.removeEventListener("hashchange", onHash);
-  }, []);
-
-  const select = (next: Panel) => {
-    setPanel(next);
-    const hash = next === "details" ? "profile" : next;
-    window.history.replaceState(window.history.state, "", `#${hash}`);
-  };
-
-  const name =
-    (user?.name as string | undefined) ||
-    (user?.email ? String(user.email).split("@")[0] : "Your profile");
-  const focus = NORTH_FOCUSES.includes(user?.northFocus)
-    ? FOCUS_LABEL[user.northFocus as NorthFocus]
-    : "General";
+  const needsDetails = Boolean(
+    user && (!user.northOnboardedAt || !user.birthDate),
+  );
 
   return (
     <div className="journal-page journal-page--truenorth">
@@ -259,67 +226,12 @@ export function ProfilePage() {
             Opening your profile…
           </p>
         ) : (
-          <>
-            <header className="tn-card tn-profile__head">
-              <div className="tn-profile__identity">
-                <span className="tn-profile__mark" aria-hidden="true">
-                  <TrueNorthSignIcon sign={sunSign || "Virgo"} size={36} />
-                </span>
-                <div className="tn-profile__who">
-                  <p className="label-lock">
-                    {sunSign ? `${sunSign} sun` : "True North"}
-                  </p>
-                  <h1 className="clash tn-profile__name">{name}</h1>
-                  <p className="tn-profile__mail">
-                    {user?.email || "Signed in"}
-                  </p>
-                  <p className="tn-profile__focus">
-                    {focus}
-                    {user?.northNote ? ` · ${user.northNote}` : ""}
-                  </p>
-                </div>
-              </div>
-              <Link to="/chart/long-read" className="cta-pist tn-action">
-                Open a reading
-              </Link>
-            </header>
-
-            <TrueNorthNav />
-
-            <div
-              className="tn-profile__tabs"
-              role="tablist"
-              aria-label="Profile"
-            >
-              {PANELS.map(item => (
-                <button
-                  key={item.id}
-                  type="button"
-                  role="tab"
-                  id={`tab-${item.id}`}
-                  aria-selected={panel === item.id}
-                  aria-controls={`panel-${item.id}`}
-                  className={`tn-profile__tab ${panel === item.id ? "is-on" : ""}`}
-                  onClick={() => select(item.id)}
-                >
-                  {item.label}
-                </button>
-              ))}
-            </div>
-
-            <div
-              role="tabpanel"
-              id={`panel-${panel}`}
-              aria-labelledby={`tab-${panel}`}
-              className="tn-profile__panel"
-            >
-              {panel === "chart" && <ChartHomePage embedded />}
-              {panel === "numbers" && <NumbersPage embedded />}
-              {panel === "details" && (
-                <ProfileEditor user={user} onSaved={() => select("chart")} />
-              )}
-            </div>
-          </>
+          <PersonalProfile
+            showNav
+            initialTab={skyFromHash()}
+            initialEditing={editingFromHash() || needsDetails}
+            editor={<ProfileEditor user={user} />}
+          />
         )}
 
         <footer className="tn-profile__foot">

@@ -721,11 +721,10 @@
 .journal-page--truenorth .chart-aspect-row__explain {
   font-family: "Fraunces", "Cormorant Garamond", Georgia, serif;
   font-style: italic;
-  color: #142010;
+  color: #f7f4ec;
   font-size: 14.5px;
   line-height: 1.5;
   margin: 0;
-  padding: 0 0.85rem 0.85rem;
 }
 .journal-page--truenorth .chart-aspect-row__explain { padding: 0; }
 .journal-page--truenorth .chart-placement-row__chevron {
@@ -955,22 +954,52 @@
   flex-shrink: 0;
 }
 
-/* Whole Sign house mosaic */
+/* XI · XVI celestial jewel-glass house mosaic */
 .tn-houses {
+  --house-fire: #F5B971;
+  --house-earth: #8CE0B1;
+  --house-air: #8CCBFF;
+  --house-water: #C7A6FF;
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 10px;
 }
 .tn-house {
-  background: #fff;
-  color: #0B0B0C;
-  box-shadow: 4px 4px 0 var(--lilac);
+  --house-accent: var(--house-air);
+  --house-surface: linear-gradient(135deg, rgba(140, 203, 255, 0.16), rgba(14, 19, 30, 0.82));
+  --house-border: rgba(140, 203, 255, 0.42);
+  --house-tint: rgba(140, 203, 255, 0.2);
+  background: var(--house-surface);
+  color: #f7f4ec;
+  border: 1px solid var(--house-border);
+  border-radius: 16px;
+  box-shadow: inset 3px 0 0 var(--house-accent), inset 0 1px 0 rgba(255, 255, 255, 0.16);
   min-height: 0;
 }
-.tn-house--fire { box-shadow: 4px 4px 0 var(--blush); }
-.tn-house--earth { box-shadow: 4px 4px 0 var(--pist); }
-.tn-house--air { box-shadow: 4px 4px 0 var(--powder); }
-.tn-house--water { box-shadow: 4px 4px 0 var(--lilac); }
+.tn-house--fire {
+  --house-accent: var(--house-fire);
+  --house-surface: linear-gradient(135deg, rgba(245, 185, 113, 0.16), rgba(20, 15, 24, 0.82));
+  --house-border: rgba(245, 185, 113, 0.42);
+  --house-tint: rgba(245, 185, 113, 0.2);
+}
+.tn-house--earth {
+  --house-accent: var(--house-earth);
+  --house-surface: linear-gradient(135deg, rgba(140, 224, 177, 0.16), rgba(14, 22, 20, 0.82));
+  --house-border: rgba(140, 224, 177, 0.42);
+  --house-tint: rgba(140, 224, 177, 0.2);
+}
+.tn-house--air {
+  --house-accent: var(--house-air);
+  --house-surface: linear-gradient(135deg, rgba(140, 203, 255, 0.16), rgba(14, 19, 30, 0.82));
+  --house-border: rgba(140, 203, 255, 0.42);
+  --house-tint: rgba(140, 203, 255, 0.2);
+}
+.tn-house--water {
+  --house-accent: var(--house-water);
+  --house-surface: linear-gradient(135deg, rgba(199, 166, 255, 0.17), rgba(20, 15, 32, 0.82));
+  --house-border: rgba(199, 166, 255, 0.44);
+  --house-tint: rgba(199, 166, 255, 0.22);
+}
 .tn-house.is-expanded { grid-column: 1 / -1; }
 .tn-house__head {
   display: grid;
@@ -992,11 +1021,12 @@
   letter-spacing: -0.06em;
   font-size: 28px;
   line-height: 0.86;
+  color: var(--house-accent, #f7f4ec);
 }
-.tn-house--fire .tn-house__num { color: #2A1218; }
-.tn-house--earth .tn-house__num { color: #142010; }
-.tn-house--air .tn-house__num { color: #102030; }
-.tn-house--water .tn-house__num { color: #1A1020; }
+.tn-house--fire .tn-house__num,
+.tn-house--earth .tn-house__num,
+.tn-house--air .tn-house__num,
+.tn-house--water .tn-house__num { color: var(--house-accent, #f7f4ec); }
 .tn-house__copy {
   display: flex;
   flex-direction: column;
@@ -1004,7 +1034,7 @@
   min-width: 0;
 }
 .tn-house__copy .label-lock {
-  color: #142010;
+  color: #f7f4ec;
   white-space: normal;
   line-height: 1.25;
 }
@@ -1030,8 +1060,9 @@
   justify-content: center;
   width: 22px;
   height: 22px;
-  background: #0B0B0C;
-  color: var(--cream);
+  background: var(--house-tint, rgba(247, 244, 236, 0.16));
+  color: #f7f4ec;
+  border-radius: 999px;
 }
 .tn-house__open {
   display: grid;
@@ -1039,19 +1070,48 @@
   padding: 0 1rem 1.1rem;
   font-family: "Fraunces", "Cormorant Garamond", Georgia, serif;
   font-style: italic;
-  color: #142010;
+  color: #f7f4ec;
   font-size: 15px;
   line-height: 1.5;
+}
+.tn-house__residents,
+.tn-house .chart-house-row__sign-heading,
+.tn-house .chart-house-row__sign-explain,
+.tn-house .chart-house-row__question {
+  color: #f7f4ec;
 }
 .tn-house__residents {
   margin: 0;
   font-family: "Satoshi", "Inter", sans-serif;
   font-style: normal;
   font-size: 11px;
-  letter-spacing: 0.16em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   font-weight: 800;
-  color: #0B0B0C;
+  color: var(--house-accent, #f7f4ec);
+}
+.tn-house .chart-house-row__sign-heading {
+  margin: 0;
+  font-family: "Satoshi", "Inter", sans-serif;
+  font-style: normal;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--house-accent, #f7f4ec);
+}
+.tn-house .chart-house-row__question {
+  margin: 0;
+  color: #f7f4ec;
+}
+.tn-house .lock-pill {
+  background: var(--house-tint, rgba(247, 244, 236, 0.16));
+  color: #f7f4ec;
+  border: 1px solid var(--house-border, rgba(247, 244, 236, 0.28));
+  box-shadow: none;
+}
+.tn-house.is-expanded .chart-placement-row__chevron {
+  transform: rotate(180deg);
 }
 
 @media (min-width: 720px) {
