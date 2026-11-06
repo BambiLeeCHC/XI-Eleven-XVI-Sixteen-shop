@@ -128,6 +128,105 @@
 }
 .constellation__actions .tn-action:disabled { opacity: 0.38; cursor: not-allowed; }
 .north-friend { display: grid; gap: 0.35rem; margin-top: 0.9rem; }
+.sky-profile, .sky-feed, .sky-feed-page, .friend-board-wrap { display: grid; gap: 0.9rem; }
+.sky-head__grid { display: grid; gap: 1rem; }
+.sky-head__identity { display: flex; gap: 0.85rem; align-items: flex-start; min-width: 0; }
+.sky-handle { margin: 0; color: #d8f0c4; font-weight: 800; letter-spacing: 0.04em; }
+.sky-manifesto { margin: 0.35rem 0; color: #f7f0e6; line-height: 1.45; }
+.sky-big3 { margin: 0.35rem 0 0.55rem; display: grid; gap: 0.12rem; }
+.sky-pills, .sky-side, .local-chart__lists, .tandem-logger { display: grid; gap: 0.45rem; }
+.sky-pills { grid-auto-flow: column; justify-content: start; margin-top: 0.35rem; }
+.sky-badge, .sky-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 36px;
+  padding: 0.2rem 0.75rem;
+  border-radius: 999px;
+  border: 1px solid rgba(216, 240, 196, 0.45);
+  background: rgba(216, 240, 196, 0.12);
+  color: #d8f0c4;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-size: 11px;
+}
+.sky-count { cursor: pointer; }
+.sky-altar {
+  padding: 0.8rem 0.85rem;
+  border-radius: 16px;
+  border: 1px solid rgba(247, 240, 230, 0.2);
+  background: rgba(255, 255, 255, 0.04);
+}
+.sky-share { display: flex; flex-wrap: wrap; gap: 0.7rem; align-items: center; justify-content: space-between; }
+.sky-share .tn-action { width: auto; }
+.sky-wall { display: grid; gap: 0.8rem; }
+.constellation__open {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.friend-board { list-style: none; margin: 0.4rem 0 0; padding: 0; }
+.friend-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.35rem 0.7rem;
+  align-items: center;
+  padding: 0.75rem 0;
+  border-top: 1px solid rgba(247, 240, 230, 0.12);
+}
+.friend-row__name {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: #f7f0e6;
+  font-weight: 800;
+  font-size: 1.05rem;
+  text-align: left;
+  cursor: pointer;
+}
+.friend-row__meta { grid-column: 1 / -1; margin: 0; }
+.friend-row .tn-action { width: auto; min-height: 40px; }
+.house-pips, .aspect-list { list-style: none; margin: 0.4rem 0 0; padding: 0; display: grid; gap: 0.4rem; }
+.house-pips { grid-template-columns: 1fr; }
+.house-pips button,
+.house-pips--twelve > li {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.55rem 0.7rem;
+  border-radius: 12px;
+  border: 1px solid rgba(247, 240, 230, 0.16);
+  background: rgba(8, 10, 14, 0.35);
+  color: #f7f0e6;
+  text-align: left;
+}
+.house-pips button.is-on { border-color: #d8f0c4; color: #d8f0c4; }
+.aspect-list li { display: flex; justify-content: space-between; gap: 0.6rem; color: #f7f0e6; }
+.north-post--tandem { border-color: rgba(216, 240, 196, 0.4); }
+.north-post--bulletin { border-color: rgba(228, 212, 244, 0.45); }
+.preview-banner .tn-actions { margin-top: 0.6rem; flex-direction: row; flex-wrap: wrap; }
+.preview-banner .tn-action { width: auto; }
+.journal-page--truenorth .sky-categories .tn-profile__tab {
+  letter-spacing: 0.03em;
+  font-size: 11px;
+  line-height: 1.2;
+  padding: 0.65rem 0.3rem;
+  white-space: normal;
+}
+@media (min-width: 720px) {
+  .house-pips { grid-template-columns: 1fr 1fr; }
+  .local-chart__lists { grid-template-columns: 1fr 1fr; }
+  .sky-head__grid { grid-template-columns: minmax(0, 1.4fr) minmax(16rem, 0.8fr); align-items: start; }
+}
+@media (min-width: 960px) {
+  .house-pips--twelve { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
 @media (min-width: 960px) {
   .constellation { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 }
