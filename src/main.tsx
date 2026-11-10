@@ -11,6 +11,7 @@ import "./tn-landing-atmo.css";
 import "./tn-glass.css";
 import "./site-glass.css";
 import "./radial-dial.css";
+import "./pdp-glass.css";
 import "./live-sky.css";
 import "./north-social.css";
 
