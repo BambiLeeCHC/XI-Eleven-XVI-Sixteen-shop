@@ -12,8 +12,7 @@ import { mergeLandingContent } from "../data/landingContent";
 import { PAGE_SEO } from "../data/seoMeta";
 import { api, useMutation, useQuery } from "../lib/backend";
 import {
-  CAMPAIGN_KICKER,
-  displayProductName,
+  colorFromName,
   formatPrice,
   groupProductsByStyle,
   HERO_SUB,
@@ -23,6 +22,18 @@ import {
 } from "../lib/brand";
 import { hiResProductImage } from "../lib/productImage";
 
+const CUT_NAME: Record<string, string> = {
+  "D-Slip": "Slip dress",
+  "B-Lift": "Sports bra",
+  "L-Flow": "Legging",
+  "J-Glitch": "Jersey",
+  "S-Glitch 2.5": "2.5\" short",
+  "S-Glitch 6.3": "6.3\" short",
+  "T-Icon Oversized": "Oversized tee",
+  "T-Icon Tie-Dye": "Tie-dye tee",
+  "T-Icon": "Tee",
+};
+
 export function HomePage() {
   const content = mergeLandingContent(undefined);
   const products = useQuery(api.products.list, {}) ?? [];
@@ -31,7 +42,7 @@ export function HomePage() {
   const frames = useMemo(() => {
     const campaign: HeroFrame = {
       src: IMPACT_HERO_URL,
-      kicker: CAMPAIGN_KICKER,
+      kicker: "XI · XVI",
       title: HERO_TITLE,
       sub: HERO_SUB,
       href: dslip ? `/product/${dslip._id}` : "/shop",
@@ -43,13 +54,14 @@ export function HomePage() {
         const item = group.items[0];
         const src = item?.images?.[0];
         if (!item || !src) return null;
+        const color = colorFromName(item.name);
         return {
           src: hiResProductImage(src, 1600),
-          kicker: String(group.key),
-          title: displayProductName(item.name).replace(group.key, "").trim() || group.key,
-          sub: "Made when you order it.",
+          kicker: color || "XI · XVI",
+          title: CUT_NAME[group.key] ?? group.key,
+          sub: formatPrice(item.price),
           href: `/product/${item._id}`,
-          cta: `Shop ${group.key}`,
+          cta: `Shop ${CUT_NAME[group.key] ?? group.key}`,
         } satisfies HeroFrame;
       })
       .filter((frame): frame is HeroFrame => frame !== null);
