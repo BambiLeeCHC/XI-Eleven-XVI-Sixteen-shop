@@ -29,29 +29,18 @@ function reducedMotion() {
 function readBox(node: HTMLElement): Box {
   const rect = node.getBoundingClientRect();
   const vw = document.documentElement.clientWidth;
-  const vh = window.innerHeight;
   const header = 76;
-  const desktop = window.matchMedia("(min-width: 1024px)").matches;
   const copy = node.closest(".pdp-copy");
   const title = copy?.querySelector(".pdp-title")?.getBoundingClientRect();
   const column = copy?.getBoundingClientRect();
   const centerX = rect.left + rect.width / 2;
-  const room = Math.max(48, Math.min(centerX - 8, vw - centerX - 8) * 2);
-
-  if (!desktop) {
-    const size = Math.min(268, vw - 24, vh * 0.42, room);
-    const top = Math.max(header + 6, (vh - size - 96) / 2);
-    const height = Math.max(72, rect.top - top + 2);
-    return { top, left: centerX - size / 2, size, height };
-  }
-
+  const room = Math.max(120, Math.min(centerX - 8, vw - centerX - 8) * 2);
   const titleTop = Math.max(header + 4, title?.top ?? header + 8);
   const span = Math.max(180, rect.top - titleTop);
   const columnWidth = column?.width ?? rect.width;
-  const size = Math.min(300, columnWidth - 4, room, Math.max(210, span * 0.58));
-  const top = titleTop;
-  const height = Math.max(72, rect.top - top + 2);
-  return { top, left: centerX - size / 2, size, height };
+  const size = Math.min(300, columnWidth - 4, room, Math.max(200, span * 0.58));
+  const height = Math.max(72, rect.top - titleTop + 2);
+  return { top: titleTop, left: centerX - size / 2, size, height };
 }
 
 export function VariantHologram({
