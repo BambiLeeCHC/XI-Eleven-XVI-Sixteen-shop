@@ -397,34 +397,10 @@ export function ProductPage() {
         type="product"
         jsonLd={[productJsonLd, breadcrumbLd]}
       />
-      <div className="px-4 md:px-0">
-        <div className="mb-4 px-6 pt-4">
-          <Link
-            to="/shop"
-            className="text-[11px] tracking-[0.15em] uppercase"
-            style={{ color: "var(--mute)" }}
-          >
-            ← Back to Collection
-          </Link>
-        </div>
-
-        <div className="grid md:grid-cols-[1.15fr_.85fr] min-h-[70vh]">
-          <div className="relative min-h-[70vh] px-4 py-6" style={{ background: "var(--cream)" }}>
-            <div className="absolute left-6 top-7 z-[3]">
-              <div className="bib">
-                <div className="holes">
-                  <i />
-                  <i />
-                  <i />
-                </div>
-                <p
-                  className="text-[13px] tracking-[0.12em] uppercase font-bold max-w-[180px] leading-snug"
-                  style={{ textTransform: "uppercase" }}
-                >
-                  {displayProductName(product.name)}
-                </p>
-              </div>
-            </div>
+      <div className="pdp">
+        <Link to="/shop" className="pdp-back">Shop</Link>
+        <div className="pdp-grid">
+          <div className="pdp-stage">
             <Product360Viewer
               images={product.images || []}
               rotationImages={
@@ -436,8 +412,9 @@ export function ProductPage() {
             />
           </div>
 
-          <div className="px-4 sm:px-8 py-8 flex flex-col">
-            <p className="clash text-6xl">{styleKeyFromName(product.name)}</p>
+          <div className="pdp-buy">
+            <p className="label-lock">{displayProductName(product.name)}</p>
+            <p className="clash pdp-title">{styleKeyFromName(product.name)}</p>
             <p className="serif-quiet text-xl mt-2">Made on demand. Made for one person.</p>
             <p className="label-lock mt-3" style={{ color: "var(--pist)" }}>
               11:16
@@ -448,16 +425,7 @@ export function ProductPage() {
                 True North is that cipher, opened.
               </Link>
             </p>
-            <p
-              className="clash mt-4"
-              style={{
-                fontSize: 64,
-                color: "var(--pist)",
-                letterSpacing: "-0.06em",
-              }}
-            >
-              {formatPrice(product.price)}
-            </p>
+            <p className="clash pdp-price">{formatPrice(product.price)}</p>
 
             {product.sizes?.length > 0 && (
               <div className="mt-6">
@@ -537,14 +505,7 @@ export function ProductPage() {
               </div>
             )}
 
-            <div
-              className="mt-4 mb-4"
-              style={{
-                background: activeTab === "fit" ? "#F4EFE8" : "transparent",
-                border: "1px solid rgba(247,240,230,0.16)",
-                padding: 12,
-              }}
-            >
+            <div className="pdp-notes">
               <div className="flex gap-2 mb-3">
                 <button
                   type="button"
@@ -585,7 +546,7 @@ export function ProductPage() {
                     );
                     if (match) setSelectedSize(match);
                   }}
-                  lightMode={true}
+                  lightMode={false}
                 />
               )}
             </div>
