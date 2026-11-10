@@ -7,7 +7,6 @@ import {
   HERO_SUB,
   HERO_TITLE,
   IMPACT_HERO_URL,
-  padCount,
   snapHex,
   TRUST_ITEMS,
 } from "../lib/brand";
@@ -18,7 +17,6 @@ export function ImpactHero({
   dslipHref,
   dslipPrice,
   dslipColors = [],
-  showDial = true,
 }: {
   dslipHref: string;
   dslipPrice?: number;
@@ -29,83 +27,55 @@ export function ImpactHero({
   const priceLabel = dslipPrice ? formatPrice(dslipPrice) : "$98";
 
   return (
-    <section className="relative min-h-[92vh] overflow-hidden bg-black">
-      <img
-        src={IMPACT_HERO_URL}
-        alt="UNBOTHERED — The Impact"
-        className="absolute inset-0 w-full h-full object-cover"
-        style={{ objectPosition: "center 46%" }}
-      />
-      <div
-        className="absolute inset-0 pointer-events-none"
-        style={{
-          background:
-            "linear-gradient(180deg, rgba(11,11,12,0.18) 0%, rgba(11,11,12,0) 22%, rgba(11,11,12,0) 62%, rgba(11,11,12,0.55) 88%, rgba(11,11,12,0.78) 100%)",
-        }}
-      />
-      <div
-        className="absolute left-0 right-0 bottom-0 z-[4] px-7 py-6"
-        style={{
-          background:
-            "linear-gradient(180deg, transparent 0%, rgba(11,11,12,0.28) 55%, rgba(11,11,12,0.62) 100%)",
-        }}
-      >
-        <div className="flex items-end justify-between gap-6 flex-wrap">
-          <div>
-            <span className="kicker-lock">{CAMPAIGN_KICKER}</span>
-            <div className="mt-2">
-              <h1 className="hero-title-lock">{HERO_TITLE}</h1>
-              <p className="hero-sub-lock">{HERO_SUB}</p>
-            </div>
-            <div className="flex flex-wrap gap-3 items-center">
-              <Link to={dslipHref} className="cta-pist">
-                Shop D-Slip · {priceLabel}
-              </Link>
-              {colorCount > 0 ? (
-                <Link to={dslipHref} className="cta-ghost">
-                  {colorCountLabel(colorCount)}
-                </Link>
-              ) : null}
-              {colorCount > 0 ? (
-                <div className="flex gap-2.5 items-center flex-wrap">
-                  {dslipColors.map(item => {
-                    const color = colorFromName(item.name) || item.name;
-                    return (
-                      <Link
-                        key={item._id}
-                        to={`/product/${item._id}`}
-                        aria-label={color}
-                        className="snap"
-                        style={{ background: snapHex(color) }}
-                      />
-                    );
-                  })}
-                </div>
-              ) : null}
-            </div>
-            <div className="flex flex-wrap gap-3.5 mt-4">
-              {TRUST_ITEMS.map(item => (
-                <span
-                  key={item}
-                  className="text-[10px] tracking-[0.2em] uppercase font-bold px-2.5 py-1.5"
-                  style={{ border: "1px solid rgba(247,240,230,0.35)" }}
-                >
-                  {item}
-                </span>
-              ))}
+    <>
+      <section className="home-hero">
+        <img
+          src={IMPACT_HERO_URL}
+          alt="UNBOTHERED — The Impact"
+          className="home-hero__photo"
+        />
+        <div className="home-hero__shade" />
+        <div className="home-hero__copy">
+          <span className="kicker-lock">{CAMPAIGN_KICKER}</span>
+          <h1 className="hero-title-lock">{HERO_TITLE}</h1>
+          <p className="hero-sub-lock">{HERO_SUB}</p>
+          <div className="home-hero__actions">
+            <Link to={dslipHref} className="cta-pist">
+              Shop D-Slip · {priceLabel}
+            </Link>
+            <Link to="/shop" className="cta-ghost">
+              All styles
+            </Link>
+          </div>
+        </div>
+      </section>
+      <section className="home-strip">
+        {colorCount > 0 ? (
+          <div className="home-strip__colors">
+            <span className="label-lock">{colorCountLabel(colorCount)}</span>
+            <div className="home-strip__snaps">
+              {dslipColors.map(item => {
+                const color = colorFromName(item.name) || item.name;
+                return (
+                  <Link
+                    key={item._id}
+                    to={`/product/${item._id}`}
+                    aria-label={color}
+                    className="snap"
+                    style={{ background: snapHex(color) }}
+                  />
+                );
+              })}
             </div>
           </div>
-          {showDial && colorCount > 0 ? (
-            <div className="dial-lock">
-              <span className="n">01</span>
-              <span className="serif-quiet text-[13px] mt-0.5">
-                of {padCount(colorCount)} colors
-              </span>
-            </div>
-          ) : null}
-        </div>
-      </div>
-    </section>
+        ) : null}
+        <ul className="home-strip__trust">
+          {TRUST_ITEMS.map(item => (
+            <li key={item}>{item}</li>
+          ))}
+        </ul>
+      </section>
+    </>
   );
 }
 
@@ -157,8 +127,8 @@ export function ProcessSteps({
 
 export function JournalTrueNorthRooms() {
   return (
-    <section className="grid md:grid-cols-2 min-h-[520px]">
-      <article className="site-panel flex flex-col justify-between m-3 md:m-4 p-8 md:p-12">
+    <section className="home-rooms">
+      <article className="site-panel home-room">
         <div>
           <p className="label-lock" style={{ color: "var(--pist)" }}>
             Editorial
@@ -182,7 +152,7 @@ export function JournalTrueNorthRooms() {
           </Link>
         </div>
       </article>
-      <article className="site-panel relative overflow-hidden m-3 md:m-4 p-8 md:p-12">
+      <article className="site-panel home-room">
         <p className="label-lock" style={{ color: "var(--pist)" }}>
           The Long Read
         </p>
@@ -196,32 +166,9 @@ export function JournalTrueNorthRooms() {
           Three written readings a day — morning, midday, night — pulled
           against the week you are actually in.
         </p>
-        <p
-          className="clash mt-4"
-          style={{ fontSize: "clamp(28px, 4vw, 44px)", color: "var(--pist)", letterSpacing: "-0.03em" }}
-        >
-          Open with your account
-        </p>
-        <div className="relative h-[280px] mt-7 mb-9">
-          <div className="tarot-card c1">
-            <span className="serif-quiet">I · Morning</span>
-            <span className="clash text-[22px]">Draw 01</span>
-            <span className="serif-quiet">first pull</span>
-          </div>
-          <div className="tarot-card c2">
-            <span className="serif-quiet">II · Midday</span>
-            <span className="clash text-[22px]">Draw 02</span>
-            <span className="serif-quiet">second pull</span>
-          </div>
-          <div className="tarot-card c3">
-            <span className="serif-quiet">III · Night</span>
-            <span className="clash text-[22px]">Draw 03</span>
-            <span className="serif-quiet">third pull</span>
-          </div>
-        </div>
-        <div className="flex flex-wrap gap-3 items-center">
-          <Link to="/chart/long-read" className="cta-pist">
-            Open the Long Read
+        <div className="flex flex-wrap gap-3 items-center mt-8">
+          <Link to="/chart" className="cta-pist">
+            Open True North
           </Link>
         </div>
         <p
