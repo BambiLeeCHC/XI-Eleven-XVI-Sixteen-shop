@@ -10,100 +10,97 @@
  */
 
 export const BODY_MEANINGS: Record<string, string> = {
-  Sun: "how you shine — the part of you that feels most like you when you use it on purpose",
-  Moon: "what steadies you — the inner weather that tells you when you are actually well",
-  Mercury:
-    "how you think and talk — the way your mind makes a path through the day",
-  Venus:
-    "how you love and choose — what you are drawn to, and how you make a room feel like yours",
-  Mars: "how you move — the clean yes that gets you out of the chair and into the work",
-  Jupiter:
-    "where you grow — the place luck, meaning, and a bigger life keep opening",
-  Saturn:
-    "where you build — the skill you earn, keep, and are quietly proud of",
-  Uranus: "where you break free — the original move only you would make",
-  Neptune:
-    "where you dream — imagination, faith, and the soft vision that keeps you kind",
-  Pluto:
-    "where you transform — the honest rebuild that leaves you stronger than before",
-  Ascendant:
-    "how you arrive — the first impression that is also a true door into you",
-  Midheaven: "your public path — the mark you are building in the world",
+  Sun: "identity and the drive to be yourself",
+  Moon: "emotions, instincts, and what helps you feel safe",
+  Mercury: "thinking, learning, and how you communicate",
+  Venus: "love, values, attraction, and what you enjoy",
+  Mars: "action, energy, and how you go after what you want",
+  Jupiter: "growth, opportunity, and the bigger plan",
+  Saturn: "discipline, responsibility, and long-term structure",
+  Uranus: "independence and the need to change a plan that no longer fits",
+  Neptune: "intuition, imagination, and what you sense before it is explained",
+  Pluto: "power, control, and deep change",
+  Ascendant: "the first impression you make",
+  Midheaven: "career, reputation, and public image",
 };
 
 export const BODY_TITLES: Record<string, string> = {
-  Sun: "How you shine",
-  Moon: "What steadies you",
-  Mercury: "How you think",
-  Venus: "How you love",
-  Mars: "How you move",
-  Jupiter: "Where you grow",
-  Saturn: "Where you build",
-  Uranus: "Where you break free",
-  Neptune: "Where you dream",
-  Pluto: "Where you transform",
-  Ascendant: "How you arrive",
-  Midheaven: "Your public path",
+  Sun: "Sun · Identity & core drive",
+  Moon: "Moon · Emotions & instincts",
+  Mercury: "Mercury · Thinking & communication",
+  Venus: "Venus · Love, values & attraction",
+  Mars: "Mars · Action, energy & drive",
+  Jupiter: "Jupiter · Growth & opportunity",
+  Saturn: "Saturn · Discipline & structure",
+  Uranus: "Uranus · Independence & change",
+  Neptune: "Neptune · Intuition & imagination",
+  Pluto: "Pluto · Power & deep change",
+  Ascendant: "Ascendant · First impression",
+  Midheaven: "Midheaven · Career & public image",
 };
 
-export const BODY_SHORT: Record<string, string> = {
-  Sun: "shine",
-  Moon: "inner weather",
-  Mercury: "mind",
-  Venus: "love",
-  Mars: "drive",
-  Jupiter: "growth",
-  Saturn: "craft",
-  Uranus: "freedom",
-  Neptune: "vision",
-  Pluto: "rebuild",
-  Ascendant: "arrival",
-  Midheaven: "public path",
+/** Plain noun for aspect cards and reflection questions. */
+export const BODY_ROLES: Record<string, string> = {
+  Sun: "Identity",
+  Moon: "Emotions",
+  Mercury: "Thinking",
+  Venus: "Love & values",
+  Mars: "Action & drive",
+  Jupiter: "Growth",
+  Saturn: "Discipline",
+  Uranus: "Independence",
+  Neptune: "Intuition",
+  Pluto: "Deep power",
+  Ascendant: "First impression",
+  Midheaven: "Public image",
 };
+
+export const BODY_SHORT: Record<string, string> = BODY_ROLES;
 
 export const SIGN_TRAITS: Record<string, string> = {
-  Aries: "heat, a clean start, and the courage to go first",
-  Taurus: "steady ground, the body, and what is worth keeping",
-  Gemini: "a quick mind, conversation, and more than one true answer",
-  Cancer: "care, home, and the instinct that knows who belongs",
-  Leo: "warm light, generosity, and being seen without shrinking",
-  Virgo: "clean craft, useful help, and the details that make a thing work",
-  Libra: "fairness, beauty, and the gift of making two sides meet",
-  Scorpio: "honest depth, loyalty, and the strength to look all the way in",
-  Sagittarius: "wide sky, humor, and a life that keeps getting bigger",
-  Capricorn: "the long game, earned respect, and work that lasts",
-  Aquarius: "your own way, a future you can stand in, and people who get it",
-  Pisces: "soft vision, kindness, and a door into the unseen",
+  Aries: "direct, independent, and willing to start before the plan is perfect",
+  Taurus: "steady, practical, and loyal to what they have decided matters",
+  Gemini: "curious, adaptable, and quick to talk a problem through",
+  Cancer: "protective, intuitive, and careful with the people they trust",
+  Leo: "confident, warm, and willing to be seen for what they contribute",
+  Virgo: "detail-oriented, organized, and focused on what is actually useful",
+  Libra: "fair-minded, diplomatic, and attentive to both sides",
+  Scorpio: "intense, private, and unwilling to stay on the surface",
+  Sagittarius: "adventurous, candid, and aimed at the bigger picture",
+  Capricorn: "disciplined, ambitious, and patient with a long-term plan",
+  Aquarius:
+    "independent, inventive, and more interested in a better system than the usual one",
+  Pisces: "empathetic, imaginative, and receptive to what is not being said",
 };
 
 export const SIGN_SUMMARY: Record<string, string> = {
-  Aries: "heat and start",
-  Taurus: "steady ground",
-  Gemini: "quick mind",
-  Cancer: "care and home",
-  Leo: "warm light",
-  Virgo: "clean craft",
-  Libra: "fair balance",
-  Scorpio: "honest depth",
-  Sagittarius: "wide sky",
-  Capricorn: "long game",
-  Aquarius: "your own way",
-  Pisces: "soft vision",
+  Aries: "direct, independent, bold",
+  Taurus: "steady, practical, loyal",
+  Gemini: "curious, adaptable, expressive",
+  Cancer: "protective, intuitive, caring",
+  Leo: "confident, warm, expressive",
+  Virgo: "detail-oriented, organized, helpful",
+  Libra: "fair-minded, diplomatic, social",
+  Scorpio: "intense, private, focused",
+  Sagittarius: "adventurous, candid, big-picture",
+  Capricorn: "disciplined, ambitious, patient",
+  Aquarius: "independent, inventive, future-minded",
+  Pisces: "empathetic, imaginative, receptive",
 };
 
 export const SIGN_KEYWORDS: Record<string, string[]> = {
-  Aries: ["start", "heat", "yes"],
-  Taurus: ["keep", "body", "slow"],
-  Gemini: ["talk", "curious", "two"],
-  Cancer: ["care", "home", "feel"],
-  Leo: ["shine", "give", "heart"],
-  Virgo: ["craft", "help", "order"],
-  Libra: ["fair", "beauty", "two"],
-  Scorpio: ["depth", "loyal", "true"],
-  Sagittarius: ["wide", "meaning", "go"],
-  Capricorn: ["build", "time", "earn"],
-  Aquarius: ["original", "future", "us"],
-  Pisces: ["dream", "kind", "flow"],
+  Aries: ["direct", "independent", "bold"],
+  Taurus: ["steady", "practical", "loyal"],
+  Gemini: ["curious", "adaptable", "expressive"],
+  Cancer: ["protective", "intuitive", "caring"],
+  Leo: ["confident", "warm", "expressive"],
+  Virgo: ["detail-oriented", "organized", "helpful"],
+  Libra: ["fair-minded", "diplomatic", "social"],
+  Scorpio: ["intense", "private", "focused"],
+  Sagittarius: ["adventurous", "candid", "big-picture"],
+  Capricorn: ["disciplined", "ambitious", "patient"],
+  Aquarius: ["independent", "inventive", "future-minded"],
+  Pisces: ["empathetic", "imaginative", "receptive"],
 };
 
 interface HouseMeaning {
@@ -219,6 +216,22 @@ export const HOUSE_MEANINGS: Record<number, string> = Object.fromEntries(
     `${m.title} — ${m.summary}`,
   ]),
 );
+
+/** Short topic shown on a collapsed placement card. */
+export const HOUSE_CARD_SHORT: Record<number, string> = {
+  1: "Self & image",
+  2: "Money & value",
+  3: "Communication",
+  4: "Home & family",
+  5: "Creativity & romance",
+  6: "Work & routine",
+  7: "Relationships",
+  8: "Shared finances & trust",
+  9: "Beliefs & travel",
+  10: "Career & reputation",
+  11: "Friends & community",
+  12: "Rest & inner life",
+};
 
 /** 144 unique sign-on-cusp explanations — restored from the
  * pre-IMPACT production bundle (dirty deploy a368484). Each
@@ -552,71 +565,217 @@ export type HouseBridgeEndpoint = {
   house: number | null;
 };
 
-/** How a body in a sign actually operates inside one house. */
+/** What this planet puts into a house, in plain language. */
+const PLANET_FOCUS: Record<string, string> = {
+  Sun: "your identity and core drive",
+  Moon: "your emotions and instincts",
+  Mercury: "your thinking and communication",
+  Venus: "how you love, what you value, and who you are drawn to",
+  Mars: "your action, energy, and drive",
+  Jupiter: "your growth and search for opportunity",
+  Saturn: "your discipline and need for structure",
+  Uranus: "your independence and need for change",
+  Neptune: "your intuition and imagination",
+  Pluto: "your relationship to power and deep change",
+  Ascendant: "the first impression you make",
+  Midheaven: "your career and public image",
+};
+
+const HOUSE_FOCUS: Record<number, string> = {
+  1: "how you present yourself and the image people meet first",
+  2: "money, possessions, and what you decide is worth your resources",
+  3: "everyday thinking, conversation, and short-range plans",
+  4: "home, family, and the private base you return to",
+  5: "creativity, romance, and what you do for enjoyment",
+  6: "work, health, and the routines that keep the day running",
+  7: "one-to-one relationships and how you show up with a partner",
+  8: "shared money, trust, and changes you handle with other people",
+  9: "beliefs, study, travel, and the bigger ideas behind your choices",
+  10: "career, reputation, and the work other people see",
+  11: "friends, groups, and the communities you join",
+  12: "rest, solitude, and what you sort out in private",
+};
+
+const SIGN_DAY_TO_DAY: Record<string, string> = {
+  Aries:
+    "you start the work yourself and prefer action over a long planning phase",
+  Taurus:
+    "you move slowly, stick with what works, and care about tangible results",
+  Gemini:
+    "you talk it through, keep a couple of options open, and adjust as you learn more",
+  Cancer: "you protect the people and routines that make you feel safe",
+  Leo: "you want the effort to feel meaningful and to be recognized for it",
+  Virgo: "you organize the details and look for a method that actually works",
+  Libra:
+    "you weigh both sides and care how the outcome lands with other people",
+  Scorpio:
+    "you keep it private, stay focused, and prefer a few honest commitments",
+  Sagittarius:
+    "you ask what it is for and get restless when the view stays too small",
+  Capricorn:
+    "you set a standard, keep the plan, and measure progress over time",
+  Aquarius: "you question the usual method and look for a setup that fits you",
+  Pisces:
+    "you read the mood and need clear limits so you do not take on everyone else's feelings",
+};
+
+const HOUSE_LINK: Record<
+  number,
+  { topic: string; happens: string; shapes: string }
+> = {
+  1: {
+    topic: "how you come across to others",
+    happens: "the way you enter a room",
+    shapes: "how confident and grounded you look in person",
+  },
+  2: {
+    topic: "money and what you value",
+    happens: "your money and your sense of what is worth keeping",
+    shapes: "how you earn, spend, and decide what is worth paying for",
+  },
+  3: {
+    topic: "thinking and daily communication",
+    happens: "your conversations and daily mindset",
+    shapes: "how you think, talk, and handle day-to-day plans",
+  },
+  4: {
+    topic: "home and family",
+    happens: "your home life and family ties",
+    shapes: "how settled you feel at home and with family",
+  },
+  5: {
+    topic: "creativity, romance, and enjoyment",
+    happens: "your creative work, romance, and free time",
+    shapes: "what you make, who you date, and how you spend free time",
+  },
+  6: {
+    topic: "work, health, and routine",
+    happens: "your work, health, and daily routine",
+    shapes: "how you handle tasks, health, and everyday habits",
+  },
+  7: {
+    topic: "one-to-one relationships",
+    happens: "your closest one-to-one relationships",
+    shapes: "how you show up with a partner or close collaborator",
+  },
+  8: {
+    topic: "shared money, trust, and deep change",
+    happens: "shared money, trust, and intimacy",
+    shapes: "how you handle shared resources and deep trust",
+  },
+  9: {
+    topic: "beliefs, study, and travel",
+    happens: "your beliefs, studies, and travel",
+    shapes: "the bigger ideas that steer your major choices",
+  },
+  10: {
+    topic: "career and reputation",
+    happens: "your career and public reputation",
+    shapes: "the work and reputation other people see",
+  },
+  11: {
+    topic: "friends and community",
+    happens: "your friendships and group life",
+    shapes: "the people you join and the communities you keep",
+  },
+  12: {
+    topic: "rest and private processing",
+    happens: "your rest and private processing",
+    shapes: "how you recover when no one is watching",
+  },
+};
+
+/** How a planet in a sign actually operates inside one house. */
 export function explainPlacementInHouse(
   body: string,
   sign: string,
   house: number,
   houseCuspSign: string,
 ): string {
-  const domain = BODY_MEANINGS[body] ?? "this part of you";
-  const room = HOUSE_MEANINGS_FULL[house];
-  const trait = SIGN_TRAITS[sign] ?? sign;
-  const cusp = SIGN_TRAITS[houseCuspSign] ?? houseCuspSign;
-  const roomTitle = room?.title ?? `House ${house}`;
-  return `${body} in ${sign} brings ${trait} into ${roomTitle}. Inside House ${house} that is ${domain}, under a ${houseCuspSign} cusp — ${cusp}. The sign is the style of the planet. The cusp is the rule of the room.`;
+  const focus = PLANET_FOCUS[body] ?? `the part of you named ${body}`;
+  const area = HOUSE_FOCUS[house] ?? `the topics of house ${house}`;
+  const signHow = SIGN_DAY_TO_DAY[sign] ?? `you bring a ${sign} approach`;
+  const cuspHow =
+    SIGN_DAY_TO_DAY[houseCuspSign] ?? `you bring a ${houseCuspSign} approach`;
+  if (!house) {
+    return `${body} in ${sign} focuses ${focus}. Day to day, ${signHow}.`;
+  }
+  const opening = `${body} in House ${house} focuses ${focus} on ${area}.`;
+  if (houseCuspSign && houseCuspSign !== sign) {
+    return `${opening} With ${body} in ${sign}, ${signHow}. ${houseCuspSign} on the house cusp changes the daily approach in this area: ${cuspHow}.`;
+  }
+  if (houseCuspSign) {
+    return `${opening} ${sign} is also on the house cusp, so that same approach runs the day-to-day: ${signHow}.`;
+  }
+  return `${opening} In ${sign}, the day-to-day approach is that ${signHow}.`;
 }
 
-/** How an aspect carries one house's work into another. */
+/** How an aspect carries one house's affairs into another. */
 export function explainAspectAcrossHouses(
   aspect: string,
   placementA: HouseBridgeEndpoint,
   placementB: HouseBridgeEndpoint,
 ): string {
   const key = aspect.toLowerCase();
-  const nature = ASPECT_MEANINGS_FULL[key]?.nature ?? aspect;
   const houseA = placementA.house ?? 0;
   const houseB = placementB.house ?? 0;
-  const roomA = HOUSE_MEANINGS_FULL[houseA]?.title ?? `House ${houseA}`;
-  const roomB = HOUSE_MEANINGS_FULL[houseB]?.title ?? `House ${houseB}`;
-  if (houseA && houseB && houseA !== houseB) {
-    return `This ${key} (${nature}) bridges House ${houseA} (${roomA}) and House ${houseB} (${roomB}). ${placementA.body} in ${placementA.sign} speaks from the first room. ${placementB.body} in ${placementB.sign} answers from the second.`;
+  const linkA = HOUSE_LINK[houseA];
+  const linkB = HOUSE_LINK[houseB];
+  const supportive =
+    key === "trine" || key === "sextile" || key === "conjunction";
+  const mismatched = key === "quincunx";
+
+  if (houseA && houseB && houseA !== houseB && linkA && linkB) {
+    const connection = `This connects House ${houseA} (${linkA.topic}) with House ${houseB} (${linkB.topic}).`;
+    if (mismatched) {
+      return `${connection} These two areas do not line up on their own, so a change in ${linkA.happens} asks for a matching adjustment in ${linkB.happens}.`;
+    }
+    if (supportive) {
+      return `${connection} What happens in ${linkA.happens} directly shapes ${linkB.shapes}.`;
+    }
+    return `${connection} Tension in ${linkA.happens} spills into ${linkB.topic}, and pressure around ${linkB.topic} feeds back into ${linkA.topic}.`;
   }
+
   const shared = houseA || houseB;
-  const room = HOUSE_MEANINGS_FULL[shared]?.title ?? `House ${shared}`;
-  return `This ${key} (${nature}) keeps ${placementA.body} in ${placementA.sign} and ${placementB.body} in ${placementB.sign} inside the same room — House ${shared} (${room}).`;
+  const link = HOUSE_LINK[shared];
+  const topic = link?.topic ?? `house ${shared}`;
+  const happens = link?.happens ?? topic;
+  if (!shared) {
+    return supportive
+      ? `${placementA.body} and ${placementB.body} describe two parts of you in the same decision. Progress on one side helps the other.`
+      : `${placementA.body} and ${placementB.body} describe two parts of you in the same decision. Tension on one side shows up in the other.`;
+  }
+  if (mismatched) {
+    return `Both planets are in House ${shared} (${topic}). A change in ${happens} needs a small adjustment before the rest of that area feels workable.`;
+  }
+  if (supportive) {
+    return `Both planets are in House ${shared} (${topic}). Progress in ${happens} helps the rest of that area, because both parts of you are working on the same part of life.`;
+  }
+  return `Both planets are in House ${shared} (${topic}). Tension in ${happens} stays in that one area, because these two needs are competing at the same time.`;
 }
 
 interface AspectMeaning {
   nature: string;
-  feel: string;
 }
 
 export const ASPECT_MEANINGS_FULL: Record<string, AspectMeaning> = {
   conjunction: {
-    nature: "fused strength — these two work as one",
-    feel: "They move as a single usable gift. When you name it, you can put the whole thing to work instead of wondering why it feels so natural.",
+    nature: "a 0° angle that blends the two planets into one focus",
   },
   sextile: {
-    nature: "an open door — they cooperate when you walk through",
-    feel: "This is easy help, sitting there on purpose. Reach for it once and both parts of you line up.",
+    nature: "a 60° angle of easy teamwork",
   },
   square: {
-    nature: "live spark — friction that makes you skilled",
-    feel: "These two keep you honest and in motion. The heat is not a problem to solve — it is the training that makes the gift reliable.",
+    nature: "a 90° angle of friction that pushes you to deal with both sides",
   },
   trine: {
-    nature: "natural flow — they already know how to help each other",
-    feel: "This one works while you sleep. Use it on purpose and it becomes a talent you can actually share.",
+    nature: "a 120° angle of natural flow",
   },
   opposition: {
-    nature: "a true conversation — two strengths that complete each other",
-    feel: "You get both sides. The work is not picking a winner — it is letting them take turns so the whole thing stays in balance.",
+    nature: "a 180° angle that pulls you in two directions",
   },
   quincunx: {
-    nature:
-      "an inventive pairing — they do not match on paper, and that is the talent",
-    feel: "These two invent a third way. Small honest adjustments turn an odd pairing into a skill nobody else has.",
+    nature: "a 150° angle that needs a small adjustment",
   },
 };
 
@@ -625,272 +784,679 @@ export const ASPECT_MEANINGS: Record<string, string> = Object.fromEntries(
 );
 
 export const ASPECT_TITLES: Record<string, string> = {
-  conjunction: "Fused strength",
-  sextile: "Open door",
-  square: "Live spark",
+  conjunction: "Blended focus",
+  sextile: "Easy teamwork",
+  square: "Push & friction",
   trine: "Natural flow",
-  opposition: "True conversation",
-  quincunx: "Inventive pairing",
+  opposition: "Pulling both ways",
+  quincunx: "Needs adjustment",
+};
+
+export const ASPECT_ANGLE_LABEL: Record<string, string> = {
+  conjunction: "0° Conjunction",
+  sextile: "60° Sextile",
+  square: "90° Square",
+  trine: "120° Trine",
+  quincunx: "150° Quincunx",
+  opposition: "180° Opposition",
 };
 
 export const ASPECT_KEYWORDS: Record<string, string[]> = {
-  conjunction: ["one", "gift", "use"],
-  sextile: ["door", "easy", "reach"],
-  square: ["spark", "skill", "honest"],
-  trine: ["flow", "ease", "share"],
-  opposition: ["both", "balance", "turn"],
-  quincunx: ["invent", "adjust", "new"],
+  conjunction: ["0° angle", "combined energy", "amplified"],
+  sextile: ["60° angle", "supportive", "cooperative"],
+  square: ["90° angle", "friction", "motivator"],
+  trine: ["120° angle", "harmonious", "effortless"],
+  opposition: ["180° angle", "tug-of-war", "balance"],
+  quincunx: ["150° angle", "mismatched", "adaptable"],
 };
 
-const ASPECT_VERBS: Record<string, string> = {
-  conjunction: "joins forces with",
-  sextile: "opens a door for",
-  square: "sharpens",
-  trine: "supports",
-  opposition: "balances",
-  quincunx: "invents a new way with",
+const BODY_GOVERNS: Record<string, string> = {
+  Sun: "identity and core drive",
+  Moon: "emotions and instincts",
+  Mercury: "thinking and communication",
+  Venus: "love, values, and attraction",
+  Mars: "action and assertiveness",
+  Jupiter: "growth and big-picture plans",
+  Saturn: "discipline and long-term structure",
+  Uranus: "independence and change",
+  Neptune: "intuition and imagination",
+  Pluto: "intensity and control",
+  Ascendant: "the first impression you make",
+  Midheaven: "career and public image",
 };
 
-/** Written body-in-sign lines — same voice as the house cusp table. */
+const BODY_ORDER = [
+  "Sun",
+  "Moon",
+  "Mercury",
+  "Venus",
+  "Mars",
+  "Jupiter",
+  "Saturn",
+  "Uranus",
+  "Neptune",
+  "Pluto",
+  "Ascendant",
+  "Midheaven",
+];
+
+function pairKey(bodyA: string, bodyB: string): string {
+  const indexA = BODY_ORDER.indexOf(bodyA);
+  const indexB = BODY_ORDER.indexOf(bodyB);
+  if (indexA < 0 || indexB < 0) return [bodyA, bodyB].sort().join("|");
+  return indexA <= indexB ? `${bodyA}|${bodyB}` : `${bodyB}|${bodyA}`;
+}
+
+/** Everyday result of a planet pair. `support` is the easy version; `friction` is the clash. */
+const PAIR_THEMES: Record<string, { support: string; friction: string }> = {
+  "Sun|Moon": {
+    support:
+      "your sense of who you are and your emotional needs point the same way, so decisions feel honest and you know what actually settles you",
+    friction:
+      "what you want to show the world and what you need in private can clash, and you may act confident while feeling unsettled, or protect your mood at the cost of being direct",
+  },
+  "Sun|Mercury": {
+    support:
+      "you can say what you mean in a way that matches who you are, and thinking something through usually clarifies your direction",
+    friction:
+      "you may talk yourself out of what you want, or defend an opinion because it feels like you rather than because it is accurate",
+  },
+  "Sun|Venus": {
+    support:
+      "you know what you like and you can show warmth without dropping your own priorities",
+    friction:
+      "the wish to be liked can pull against what you actually want, so you may agree to keep the peace or insist on your way and miss what the other person values",
+  },
+  "Sun|Mars": {
+    support:
+      "you can act on what matters to you without a long delay, because desire and identity are pointing the same way",
+    friction:
+      "you have a strong need to act and to be right about it, and impatience can turn a delay into a contest",
+  },
+  "Sun|Jupiter": {
+    support:
+      "you grow by backing a bigger goal that still feels like you, as long as optimism includes a real next step",
+    friction:
+      "you may overcommit to a big picture of yourself, or skip the work because the idea already feels true",
+  },
+  "Sun|Saturn": {
+    support:
+      "you can build a life that matches your standards, and discipline strengthens your confidence instead of replacing it",
+    friction:
+      "the wish to be yourself can collide with duty or a harsh inner critic, so you may overwork to prove yourself or hold back until the plan feels safe",
+  },
+  "Sun|Uranus": {
+    support:
+      "you are at your best when you have room to be original, and change feels like a choice rather than a threat",
+    friction:
+      "you may rebel just to prove you are free, or feel boxed in by any role that starts to define you",
+  },
+  "Sun|Neptune": {
+    support:
+      "imagination and empathy give your sense of self a direction when a hope is tied to a concrete way of showing up",
+    friction:
+      "you can lose track of what you want because you are absorbing a mood, an ideal, or someone else's story",
+  },
+  "Sun|Pluto": {
+    support:
+      "you can commit fully to a goal that matters, and you are willing to change when an old version of you no longer fits",
+    friction:
+      "identity and control get tangled, so you may try to force an outcome or hold on because letting go feels like losing yourself",
+  },
+  "Moon|Mercury": {
+    support:
+      "you can put feelings into clear words, and talking something through actually helps you settle",
+    friction:
+      "feelings and thoughts can interrupt each other, so you may rationalize a mood or get so flooded that you cannot say the simple thing you mean",
+  },
+  "Moon|Venus": {
+    support:
+      "care and affection line up, and you feel close when the relationship is kind and emotionally safe",
+    friction:
+      "the need to feel safe and the wish to be pleasing can pull apart, so you may give comfort you do not have or withdraw when a relationship asks for more openness",
+  },
+  "Moon|Mars": {
+    support:
+      "you can act on an emotional need instead of sitting with it, and protecting what matters can be the same motion as going after it",
+    friction:
+      "mood and anger trigger each other, so you may react before you know what you feel or swallow irritation until it comes out sideways",
+  },
+  "Moon|Jupiter": {
+    support:
+      "emotional honesty and a wider view help each other, and you feel better when care is generous and your life still has room to grow",
+    friction:
+      "you may swing between needing comfort and chasing a bigger experience, and overextending is the main thing to watch",
+  },
+  "Moon|Saturn": {
+    support:
+      "you can build emotional steadiness through routines, boundaries, and responsibilities you actually chose",
+    friction:
+      "need and duty argue, so you may act as if you have to be fine, delay rest, or treat a feeling as a problem to manage rather than a signal",
+  },
+  "Moon|Uranus": {
+    support:
+      "you settle when you have emotional freedom and relationships that do not require you to perform a mood",
+    friction:
+      "you may detach suddenly when feelings get intense, or feel restless whenever life becomes too predictable",
+  },
+  "Moon|Neptune": {
+    support:
+      "you read moods accurately and compassion comes easily, especially when rest and a little solitude keep that sensitivity useful",
+    friction:
+      "you absorb feelings that are not yours and can confuse sympathy with an obligation",
+  },
+  "Moon|Pluto": {
+    support:
+      "you can handle deep feelings honestly, and you are loyal once trust is real",
+    friction:
+      "emotions can become all-or-nothing, so you may try to control a situation to feel safe or hold a grudge because letting it go feels unsafe",
+  },
+  "Mercury|Venus": {
+    support:
+      "you can talk about what you like, what you value, and what you need in a relationship without turning it into a debate",
+    friction:
+      "the wish to keep things pleasant can blur what you actually think, so you may edit yourself to avoid friction or criticize someone when you meant to ask for care",
+  },
+  "Mercury|Mars": {
+    support:
+      "you think fast and can speak up when something needs to move, and clear words help you act",
+    friction:
+      "words can come out sharp, or you argue to win before you have understood the point",
+  },
+  "Mercury|Jupiter": {
+    support:
+      "you learn by connecting a detail to a bigger idea, and you can explain that idea in a way other people can use",
+    friction:
+      "you may talk in big claims, skip the facts, or commit to a plan before you have checked it",
+  },
+  "Mercury|Saturn": {
+    support:
+      "you think in steps, and you can turn a complicated topic into a plan with priorities",
+    friction:
+      "you may get stuck perfecting the wording, or go quiet because you do not want to be wrong",
+  },
+  "Mercury|Uranus": {
+    support:
+      "you see unusual connections and can explain a new idea before other people have caught up",
+    friction:
+      "your mind can jump ahead, interrupt, or reject a normal explanation just because it is the normal one",
+  },
+  "Mercury|Neptune": {
+    support:
+      "you can translate a hunch or a feeling into words other people understand",
+    friction:
+      "facts and impressions blur, so you may miss a detail, hear what you hoped was said, or struggle to be specific when the mood is strong",
+  },
+  "Mercury|Pluto": {
+    support:
+      "you look for the real issue under the stated one, and you can talk about a difficult topic directly",
+    friction:
+      "a conversation can turn into a need to be right, and pushing someone for a confession creates the conflict you were trying to solve",
+  },
+  "Venus|Mars": {
+    support:
+      "desire and affection can move together, so you can want a person or a result and still stay considerate",
+    friction:
+      "wanting and liking do not always agree, so you may chase a spark and neglect what you value, or keep the peace and resent that you never asked for what you want",
+  },
+  "Venus|Jupiter": {
+    support:
+      "you are generous in relationships, and you grow through shared enjoyment or a partnership that widens your life",
+    friction:
+      "you may overpromise, overspend, or idealize a relationship, and more is not always better",
+  },
+  "Venus|Saturn": {
+    support:
+      "you show love through reliability, and a commitment you keep matters more than a grand gesture with no follow-through",
+    friction:
+      "affection can feel blocked by duty or the belief that you have to earn warmth, so you may hold back or stay because leaving feels irresponsible",
+  },
+  "Venus|Uranus": {
+    support:
+      "you care in a way that leaves room for independence, and attraction works when both people can be themselves",
+    friction:
+      "closeness and freedom argue, so you may pull away when a relationship gets defined or keep things exciting so you never have to be steady",
+  },
+  "Venus|Neptune": {
+    support:
+      "you are romantic and empathetic, and you can offer real care when you also keep a clear sense of what you need",
+    friction:
+      "you can idealize someone, ignore a mismatch, or give past the point of fairness",
+  },
+  "Venus|Pluto": {
+    support:
+      "you want honesty and depth in love, and you can commit fully once trust is earned",
+    friction:
+      "attraction and control get mixed, so jealousy or testing someone can replace the simpler act of saying what you need",
+  },
+  "Mars|Jupiter": {
+    support:
+      "you have the energy to pursue a bigger goal, and confidence helps you start",
+    friction:
+      "you may take on too much, push too hard, or treat a risk as already won",
+  },
+  "Mars|Saturn": {
+    support:
+      "you can work steadily toward a hard goal, and you do not need constant excitement to keep going",
+    friction:
+      "the urge to act meets a brake, so you may feel blocked and angry at the delay, or so controlled that you never start",
+  },
+  "Mars|Uranus": {
+    support:
+      "you act quickly when something needs to change, and you are good at breaking a stuck pattern",
+    friction:
+      "impulse can run ahead of the goal, so you may rush a decision or pick a fight with a limit that was actually useful",
+  },
+  "Mars|Neptune": {
+    support:
+      "you act well when the goal means something, and a checked instinct can time the move better than force",
+    friction:
+      "drive and uncertainty undercut each other, so you may drift, act on an unchecked feeling, or get angry when a hope does not produce a result",
+  },
+  "Mars|Pluto": {
+    support:
+      "you have stamina, and you can pursue a difficult goal without quitting when it gets intense",
+    friction:
+      "you have huge drive and stamina, but you have to watch impatience or power struggles when things don't move on your timeline",
+  },
+  "Jupiter|Saturn": {
+    support:
+      "you can aim high and still build the structure that makes the goal real, because optimism and patience correct each other",
+    friction:
+      "expansion and caution take turns blocking each other, so you may swing from a big promise to a fear that nothing is ready",
+  },
+  "Jupiter|Uranus": {
+    support:
+      "you spot openings other people miss, and you are willing to try a plan that looks ahead",
+    friction:
+      "you may chase freedom or a lucky break and skip the work that would make it last",
+  },
+  "Jupiter|Neptune": {
+    support:
+      "your instincts help guide your plans, and you're good at spotting practical ways to bring creative ideas to life",
+    friction:
+      "big hopes and soft focus can inflate a plan, so you may believe in a vision before you have checked the facts, the cost, or who is actually helped",
+  },
+  "Jupiter|Pluto": {
+    support:
+      "you can grow through a serious commitment or a goal that requires real influence used carefully",
+    friction:
+      "ambition can turn into a need to win or to control how big the result is, and more power is not the same thing as a better plan",
+  },
+  "Saturn|Uranus": {
+    support:
+      "you can change a system without throwing away what still works, and a new idea lasts longer when you give it a structure",
+    friction:
+      "rules and freedom collide, so you may feel trapped by the plan you built or tear it up before it has had time to work",
+  },
+  "Saturn|Neptune": {
+    support:
+      "you can give a hope a schedule, a boundary, and a form other people can rely on",
+    friction:
+      "doubt and idealism wear on each other, so you may dismiss a real hope as unrealistic or avoid a responsibility because it feels meaningless",
+  },
+  "Saturn|Pluto": {
+    support:
+      "you can handle heavy responsibility and rebuild a structure that was being held up by fear or control",
+    friction:
+      "the pressure to stay in charge can become harsh or exhausting, and the work gets cleaner when you drop a rule that only exists to prevent loss",
+  },
+  "Uranus|Neptune": {
+    support:
+      "you can imagine a different future, and you are open to an idea that does not copy the usual script",
+    friction:
+      "restlessness and vagueness can leave you inspired but unanchored, and a change helps only when you can say what, specifically, is ending",
+  },
+  "Uranus|Pluto": {
+    support:
+      "you can make a deep change instead of a cosmetic one, especially when an old system has stopped being honest",
+    friction:
+      "the urge to overturn things can become compulsive, so you may force a transformation or feel that nothing counts unless it is extreme",
+  },
+  "Neptune|Pluto": {
+    support:
+      "you can face what is hidden with compassion and turn a private insight into a real change",
+    friction:
+      "intensity and escape can blur, so you may obsess over a feeling, idealize a crisis, or avoid a truth by making it mysterious",
+  },
+};
+
+function themeFor(
+  bodyA: string,
+  bodyB: string,
+): { support: string; friction: string } {
+  const written = PAIR_THEMES[pairKey(bodyA, bodyB)];
+  if (written) return written;
+  const governsA = BODY_GOVERNS[bodyA] ?? bodyA.toLowerCase();
+  const governsB = BODY_GOVERNS[bodyB] ?? bodyB.toLowerCase();
+  return {
+    support: `${governsA} can inform ${governsB}, and each one is easier to use when you let it do its own job`,
+    friction: `${governsA} and ${governsB} can get in each other's way when you try to satisfy both at the same moment without deciding which one leads`,
+  };
+}
+
+/** Plain, two-sentence descriptions of a planet in a sign. */
 const PLACEMENT_IN_SIGN: Record<string, Record<string, string>> = {
   Sun: {
     Aries:
-      "You shine by starting. Heat and a clean yes are how you remember who you are — when the room goes quiet, that same fire is the way back.",
+      "You are direct, decisive, and energized by starting things yourself. You prefer taking action and figuring things out in motion rather than waiting around or overplanning.",
     Taurus:
-      "You shine by staying. What you build slowly is the light other people can actually count on.",
+      "You are steady, practical, and most confident when your life has a solid base. You build identity through reliable habits, tangible results, and sticking with what you value.",
     Gemini:
-      "You shine in conversation. Two true answers are allowed — curiosity is how you stay yourself.",
+      "You are curious, quick, and energized by learning and conversation. You feel most like yourself when you can ask questions, share ideas, and keep more than one option open.",
     Cancer:
-      "You shine by taking care. Home, feeling, and the people you keep are the stage, not a side note.",
-    Leo: "You shine when you let yourself be seen. Warmth you give away comes back as a life that fits.",
+      "You are protective, emotionally aware, and motivated by taking care of the people you love. You feel most like yourself in familiar settings where loyalty and comfort come first.",
+    Leo: "You are warm, confident, and motivated by being recognized for what you actually contribute. You feel most like yourself when you can lead, create, or express yourself openly.",
     Virgo:
-      "You shine in the useful details. Making a thing work — quietly, well — is the light.",
+      "You are practical, observant, and motivated by doing useful work well. You feel most like yourself when you can improve a process, solve a concrete problem, or be relied on.",
     Libra:
-      "You shine by making it fair. Beauty and a second chair at the table are how you lead.",
+      "You are fair-minded, social, and motivated by cooperation. You feel most like yourself when a decision is balanced, respectful, and made with other people in mind.",
     Scorpio:
-      "You shine at depth. Honest loyalty is the light — you do not skim, and that is the gift.",
+      "You are private, focused, and motivated by commitments that go deeper than the surface. You feel most like yourself when you can be honest, loyal, and fully invested.",
     Sagittarius:
-      "You shine when the map gets bigger. Humor and a farther horizon keep you true.",
+      "You are candid, adventurous, and motivated by a bigger picture. You feel most like yourself when you can learn, travel, tell the truth, and keep your life from getting too narrow.",
     Capricorn:
-      "You shine in the long game. Work that lasts is how the world learns your name.",
+      "You are disciplined, ambitious, and motivated by long-term results. You feel most like yourself when you have a clear goal, a plan, and proof that your effort is paying off.",
     Aquarius:
-      "You shine by being original. A future you can stand in is the light — not a costume.",
+      "You are independent, inventive, and motivated by ideas that look ahead. You feel most like yourself when you can do things your own way and stay connected to people who respect that.",
     Pisces:
-      "You shine through kindness and vision. Soft seeing is not weak — it is how you find the door.",
+      "You are empathetic, imaginative, and motivated by meaning more than status. You feel most like yourself when you can help, create, or follow a feeling that has a practical outlet.",
   },
   Moon: {
     Aries:
-      "You settle when you can move. A fresh start calms you faster than sitting still ever will.",
+      "You react quickly and feel better once you can do something about what is bothering you. Sitting still with a problem tends to raise your stress, while a clear next step calms you down.",
     Taurus:
-      "You settle in the body. Food, rest, and something beautiful in reach are real medicine.",
+      "You feel safest with steady routines, good food, and a comfortable space you can count on. Sudden changes unsettle you, and you recharge by slowing down and sticking with what is familiar.",
     Gemini:
-      "You settle by talking it through. A live conversation is how the inner weather clears.",
+      "You process feelings by talking, reading, or turning them into a clear thought. You recharge through conversation and variety, and you get restless when you have to keep everything inside.",
     Cancer:
-      "You settle at home. Care given and received is the tide that brings you back to yourself.",
-    Leo: "You settle when you are warmly seen. Praise you can trust is not vanity — it is fuel.",
+      "You feel things deeply and recharge best in safe, familiar spaces with people you trust. Protecting your peace and taking care of your inner circle comes naturally to you.",
+    Leo: "You need warmth, appreciation, and a sense that the people close to you are glad you are there. You recharge when you can express yourself and feel genuinely seen, not managed.",
     Virgo:
-      "You settle when the small things work. Order is comfort; useful help is how you love yourself.",
+      "You feel better when the practical details of life are under control. Helping in a concrete way, tidying a problem, or following a useful routine is how you settle your nerves.",
     Libra:
-      "You settle in good company. Harmony in the room is how your body knows it is safe.",
+      "You are sensitive to tension between people and feel better when a situation is fair and peaceful. You recharge with pleasant company, and conflict you cannot resolve tends to stay on your mind.",
     Scorpio:
-      "You settle in honesty. One true bond is worth more than a crowd, and you already know that.",
+      "You feel things strongly and usually keep them private until you trust someone. You recharge through honesty and a few close bonds, and surface small talk does not settle you.",
     Sagittarius:
-      "You settle when there is room to roam. Meaning and a window open keep the inner life kind.",
+      "You need room, honesty, and a sense that life is still expanding. You recharge through movement, humor, learning, or a change of scene, and you feel trapped by heavy routines.",
     Capricorn:
-      "You settle when the plan is solid. Earned security is the quiet that lets you feel.",
+      "You manage feelings by getting practical and making a plan. You recharge when your responsibilities are handled and you have a quiet sense of being on top of things.",
     Aquarius:
-      "You settle among your people. Belonging that does not ask you to shrink is home.",
+      "You need space to process feelings in your own way, often by stepping back and looking at them clearly. You recharge with people who accept you as you are and do not demand a constant emotional performance.",
     Pisces:
-      "You settle in softness. Music, water, sleep, a little faith — that is how the moon in you rests.",
+      "You absorb other people's moods easily and need quiet time to sort out what is actually yours. You recharge through rest, music, time near water, or any gentle routine that lets you unplug.",
   },
   Mercury: {
     Aries:
-      "You think in first lines. Say it straight — the clean sentence is already the good idea.",
+      "You think fast and get straight to the point. You prefer honest, direct answers over long debates and trust your first read on a situation.",
     Taurus:
-      "You think in what lasts. Slow the sentence down and it becomes something people can use.",
+      "You think carefully and prefer ideas you can test in real life. You speak plainly, take your time, and trust conclusions that still hold after you have sat with them.",
     Gemini:
-      "You think in pairs. Two tabs open is not a flaw — it is how you find the connecting thread.",
+      "You think quickly, ask a lot of questions, and like connecting one idea to another. You communicate best when you can explore options out loud instead of locking in one answer too early.",
     Cancer:
-      "You think in feeling. Memory and care are data; trust them when you speak.",
-    Leo: "You think out loud with heart. A story told warmly teaches more than a lecture ever will.",
+      "You think through memory, mood, and how a choice will affect the people you care about. You communicate best when the conversation feels safe enough to be honest.",
+    Leo: "You think in clear stories and speak with confidence when the subject matters to you. You communicate best when you can be direct, warm, and specific about what you actually want.",
     Virgo:
-      "You think in edits. Precision is kindness — the right word saves everyone time.",
+      "You notice details other people skip and you like getting the facts straight. You communicate best when the point is specific, useful, and free of extra noise.",
     Libra:
-      "You think in both sides. Naming the fair middle is your native language.",
+      "You think by comparing both sides and looking for a fair middle. You communicate best in a calm back-and-forth where people can disagree without talking past each other.",
     Scorpio:
-      "You think underneath. The real question is the one under the question — you already hear it.",
+      "You look past the obvious answer and focus on what is actually going on. You communicate best when the talk is honest, and you have little patience for vague or evasive replies.",
     Sagittarius:
-      "You think in big pictures. A true sentence with humor in it can move a whole room.",
+      "You think in the big picture and say what you believe, sometimes before you soften it. You communicate best when you can be candid, ask why, and connect a detail to a larger point.",
     Capricorn:
-      "You think in plans. Structure is how your ideas survive contact with the week.",
+      "You think in steps, priorities, and what will still work next month. You communicate best when the conversation has a point and ends with a clear next action.",
     Aquarius:
-      "You think in futures. The odd idea is often the useful one — keep it.",
+      "You think independently and often see a different angle from the one everyone else is using. You communicate best when you can question the usual answer and explain the alternative clearly.",
     Pisces:
-      "You think in images. Metaphor and mood are intelligence — let them speak.",
+      "You pick up tone, context, and what people are not quite saying. You communicate best when you take a moment to put a feeling into plain words instead of assuming others already understand.",
   },
   Venus: {
     Aries:
-      "You love by going first. Direct warmth is attractive — the yes you offer is the gift.",
+      "You show interest directly and would rather say what you want than hint. Attraction grows when there is honesty and a clear response, and you lose interest when things stay vague.",
     Taurus:
-      "You love through the senses. Time, touch, and something well made are how devotion looks.",
+      "You value consistency, physical comfort, and loyalty you can count on over time. Attraction grows through reliability and shared everyday pleasures, and you are slow to trust sudden intensity.",
     Gemini:
-      "You love in conversation. A live mind across the table is romance and friendship at once.",
+      "You are drawn to people who are curious, funny, and easy to talk to. Attraction grows through conversation, and a relationship goes stale for you when the talk stops.",
     Cancer:
-      "You love by making a home. Care is the beauty — people feel it before they name it.",
-    Leo: "You love generously. Being adored and adoring back is not extra — it is the point.",
+      "You show love by taking care of people and making them feel safe. Emotional security matters more to you than grand gestures, and you need the care to be returned.",
+    Leo: "You are warm, generous, and you want affection to be obvious. You feel appreciated when someone is proud to be with you and responds to the effort you put in.",
     Virgo:
-      "You love in the useful gesture. The thing you fix, cook, or notice is the love letter.",
+      "You show love through practical help, noticing details, and making someone's day easier. You feel close when care is consistent, and empty compliments do not mean much to you.",
     Libra:
-      "You love in balance. Beauty, fairness, and a second voice in the room keep love alive.",
+      "You value fairness, courtesy, and a relationship that feels like a real partnership. Attraction grows when both people listen, share decisions, and keep the tone respectful.",
     Scorpio:
-      "You love all the way. Loyalty with depth is the treasure — you do not do halfway.",
+      "You want loyalty, honesty, and emotional depth, and you can tell when someone is holding back. Trust builds slowly for you, and once it is there you take the bond seriously.",
     Sagittarius:
-      "You love with a wide sky. Humor, travel, and a shared future keep the bond light and true.",
+      "You want honesty, humor, and enough freedom to keep growing inside a relationship. Attraction grows when you can be candid, and control makes you pull away.",
     Capricorn:
-      "You love for the long term. Commitment you can build on is the most romantic thing you know.",
-    Aquarius: "You love as an equal. Freedom inside the bond is how you stay.",
+      "You take love and commitment seriously and show care through reliability over time. You feel secure when plans are kept and the effort is mutual, and you are wary of drama without follow-through.",
+    Aquarius:
+      "You need friendship, independence, and respect for differences inside a relationship. Attraction grows when you can be yourself without being managed, and you value a partner who thinks for themselves.",
     Pisces:
-      "You love with the whole weather. Tenderness is not naive — it is how you choose.",
+      "You are empathetic, romantic, and generous with the people you care about. Emotional closeness matters more to you than status, though you need clear boundaries so you don't overgive.",
   },
   Mars: {
     Aries:
-      "You move by starting. Heat in the body is the green light — go while it is clean.",
+      "You act quickly once you know what you want, and waiting around drains you. You do your best work with a clear target and the freedom to start now.",
     Taurus:
-      "You move when it is worth it. Slow power lasts longer than a sprint, and you already know the pace.",
+      "You move steadily and prefer to finish what you start rather than chase every new idea. Your energy lasts when the goal is concrete and the pace is one you chose.",
     Gemini:
-      "You move through ideas. Two tactics, one afternoon — motion is mental first.",
+      "You put energy into ideas, messages, and trying more than one approach. You work best when the task stays interesting, and you stall when it is repetitive with no room to think.",
     Cancer:
-      "You move to protect. Action on behalf of who you love is your sharpest courage.",
-    Leo: "You move where you can be proud. Heart-forward effort is how the win actually feels like yours.",
+      "You act to protect the people and situations you care about. Your drive is strongest when the goal feels personal, and you pull back when a fight does not seem worth the emotional cost.",
+    Leo: "You put energy into goals you can be proud of, and you work harder when the effort is recognized. You do your best when you can lead a piece of the work instead of staying invisible.",
     Virgo:
-      "You move in precise steps. A clean system is fuel — the next right task is the fight worth having.",
+      "You aim your energy at fixing what is inefficient and getting the details right. You work best with a clear method, and a sloppy plan frustrates you faster than hard work does.",
     Libra:
-      "You move for fairness. Charm and a spine together — that is how you get the result.",
+      "You would rather act with someone than against them, but you will push when something is unfair. You work best when the goal is clear and the people involved are treated with respect.",
     Scorpio:
-      "You move with all of it. One true aim, held quietly, will outlast noise.",
+      "You focus hard once you commit, and you do not like quitting halfway. You work best with a meaningful goal, and secrecy or a power struggle around the work will pull your attention.",
     Sagittarius:
-      "You move toward the bigger map. Adventure is productive when it has a why.",
+      "You are motivated by a goal that feels bigger than the task in front of you. You work best with room to move and a reason you believe in, and being micromanaged shuts you down.",
     Capricorn:
-      "You move on a schedule that respects the mountain. Persistence is your form of fire.",
+      "You pace yourself and keep going after other people lose interest. You work best with a real deadline, a standard you respect, and visible progress over time.",
     Aquarius:
-      "You move differently on purpose. The unconventional strike is often the kind one.",
+      "You are motivated by doing it your own way and by a goal that feels original or useful to a group. You work best with independence, and a rigid rule without a reason makes you resist.",
     Pisces:
-      "You move with the tide. Inspired action beats forced action — wait for the true wave, then go.",
+      "You act from a feeling about what matters, and forced effort tends to stall you. You work best when the goal is meaningful and you have a little quiet time to find a real starting point.",
   },
   Jupiter: {
-    Aries: "You grow by leaping. A brave first step is luck wearing your face.",
+    Aries:
+      "You grow by taking the first step before the plan is perfect. Opportunities open when you act, and you learn more from trying than from waiting for certainty.",
     Taurus:
-      "You grow by keeping. Abundance that is real has weight — plant it.",
+      "You grow by building something stable and letting it compound. Opportunities tend to come through patience, practical skill, and resources you have taken care of.",
     Gemini:
-      "You grow by learning out loud. The next conversation is a bigger life.",
+      "You grow through conversations, classes, and following a question one step further. Opportunities show up when you stay curious and keep talking to people outside your usual circle.",
     Cancer:
-      "You grow through care. Family, chosen or blood, is a fortune you can actually live in.",
-    Leo: "You grow when you take the stage with warmth. Generosity multiplies.",
-    Virgo: "You grow in the craft. Mastery is luck you can repeat.",
-    Libra: "You grow with other people. A fair partnership is a wider world.",
+      "You grow through the people who feel like home and through taking care of a real base. Opportunities often come from family, close friends, or work that makes other people feel safe.",
+    Leo: "You grow when you share what you are good at and let people see it. Opportunities come from confidence, generosity, and being willing to take a visible role.",
+    Virgo:
+      "You grow by getting better at a useful skill and applying it carefully. Opportunities come from competence, preparation, and being the person who can actually do the job.",
+    Libra:
+      "You grow through partnerships and learning how to cooperate without disappearing. Opportunities often come from other people when the exchange is fair.",
     Scorpio:
-      "You grow at depth. Honest transformation is the windfall — not the surface win.",
+      "You grow by facing what is difficult and committing fully once you trust the path. Opportunities come from research, shared resources, and situations that require honesty.",
     Sagittarius:
-      "You grow by going farther. Faith, humor, and a bigger why are native here.",
-    Capricorn: "You grow on a timeline you respect. Built luck lasts.",
+      "You grow by studying, traveling, or following a belief into real experience. Opportunities open when you say yes to a bigger view and then do the work it requires.",
+    Capricorn:
+      "You grow through long-term goals, responsibility, and results you can point to. Opportunities come from reputation, planning, and staying with a hard task longer than is comfortable.",
     Aquarius:
-      "You grow with a future in mind. The community that fits you is the blessing.",
+      "You grow through new ideas, groups, and projects that look ahead. Opportunities come when you share an unconventional plan with people who can help build it.",
     Pisces:
-      "You grow through vision. Kindness and imagination open rooms money cannot.",
+      "You grow through imagination, compassion, and a well-tested instinct. Opportunities come when a creative or caring idea is paired with one simple practical step.",
   },
   Saturn: {
     Aries:
-      "You build by starting again with more skill. Courage plus a plan is the structure.",
-    Taurus: "You build what you can keep. Slow work is the dignity — it holds.",
+      "You build discipline by learning to start and also to finish, without rushing past the hard middle. Your confidence grows when you take responsibility for the first move and then follow a plan.",
+    Taurus:
+      "You build security through patience, budgets, and habits you can keep. The long-term payoff comes from not abandoning a solid plan just because progress feels slow.",
     Gemini:
-      "You build a mind you can trust. Practice the craft of saying it clearly.",
-    Cancer: "You build a home that stays. Boundaries are love with a backbone.",
-    Leo: "You build a reputation for warmth you can stand behind. Pride earned is allowed.",
+      "You build skill by organizing your thoughts and following through on what you say. Clear writing, study, and consistent communication are where the effort pays off.",
+    Cancer:
+      "You build stability by setting boundaries around home, family, and emotional care. The long-term payoff comes from protecting your private life without shutting people out completely.",
+    Leo: "You build confidence by doing work you can stand behind in public. Recognition lasts for you when it is tied to real effort, not just being noticed.",
     Virgo:
-      "You build systems that help. Discipline here looks like care, not punishment.",
+      "You build mastery through practice and improving the method. The long-term payoff comes from high standards that stay useful instead of turning into endless self-criticism.",
     Libra:
-      "You build fair agreements. Partnerships with terms are how beauty survives the week.",
+      "You build trust by keeping agreements and being fair when it would be easier to please everyone. The long-term payoff comes from clear terms in relationships and collaborations.",
     Scorpio:
-      "You build through honest work on the hard thing. Depth becomes mastery.",
+      "You build strength by facing a difficult truth and staying with a commitment after the easy part ends. The long-term payoff comes from self-control and honesty about shared power or money.",
     Sagittarius:
-      "You build a philosophy you can live. Belief with a practice is the mountain.",
+      "You build judgment by testing a belief against real experience and sticking with a course of study. The long-term payoff comes from a point of view you can explain and live by.",
     Capricorn:
-      "You build the long game in your own sign — this is home field. Time is on your side.",
+      "You build results through patience, responsibility, and standards you keep even when no one is watching. The long-term payoff comes from work that turns into a reputation you earned.",
     Aquarius:
-      "You build an original structure. The future needs your particular rules.",
+      "You build a future by committing to an original idea long enough to make it real. The long-term payoff comes from independence that still includes a structure and follow-through.",
     Pisces:
-      "You build a gentle container. Form that protects the dream is the real discipline.",
+      "You build limits around sensitivity so imagination and compassion have a schedule. The long-term payoff comes from rest, boundaries, and a practice that keeps you grounded.",
   },
   Uranus: {
     Aries:
-      "You break free by going first. The new move is yours to invent — start it.",
+      "You need the freedom to start something new without waiting for permission. Change works best for you when you act on a real idea, not only react against a rule.",
     Taurus:
-      "You break free by changing what you keep. A better comfort is still a revolution.",
+      "You need room to change how you handle money, comfort, and daily stability. You resist being locked into someone else's routine, and you update your life in practical steps.",
     Gemini:
-      "You break free in the idea. A surprising sentence can reroute the whole day.",
-    Cancer: "You break free in how you care. A new shape of home is allowed.",
-    Leo: "You break free on stage. Original heart is the lightning.",
+      "You need freedom in how you think, learn, and speak. You do your best work when you can question the usual explanation and try a different way of saying it.",
+    Cancer:
+      "You need freedom in how you define home and family. You are willing to change an old domestic pattern when it no longer feels honest or safe.",
+    Leo: "You need freedom to express yourself without performing a role someone else assigned. You change course when being seen starts to require hiding what you actually think.",
     Virgo:
-      "You break free in the method. A smarter system is liberation, not nitpicking.",
+      "You need freedom to improve the method instead of following a process that does not work. You change a routine when a clearer, more useful system becomes obvious.",
     Libra:
-      "You break free in relationship. Equality that actually feels equal is the future.",
+      "You need freedom and equal say inside relationships. You pull away from an arrangement that looks polite on the surface but is not actually fair.",
     Scorpio:
-      "You break free by telling the truth no one else will. That honesty is the upgrade.",
+      "You need freedom to tell the truth about trust, power, and what you will no longer hide. Change comes when you stop protecting a situation that is already over.",
     Sagittarius:
-      "You break free by leaving the small map. A bigger why is the shock that heals.",
+      "You need freedom to change a belief, a trip, or a course of study when a bigger truth shows up. You get restless when a plan is too small for what you have learned.",
     Capricorn:
-      "You break free inside the institution. New rules, same backbone — that is the gift.",
+      "You need freedom to update the rules of your career and public role. You respect structure, and you will rewrite it when the old ladder no longer fits the work.",
     Aquarius:
-      "You break free in your own sign. The future you picture is already trying to arrive.",
+      "You need independence, and you are comfortable standing apart from the usual plan. Change comes more easily when you can invent a better system and find people who want it too.",
     Pisces:
-      "You break free through a vision. Soft revolution still counts — it just looks like kindness.",
+      "You need freedom in your inner life and imagination. You change when an instinct is strong enough that staying in the old pattern stops making sense.",
   },
   Neptune: {
-    Aries: "You dream in motion. Inspired action is prayer with shoes on.",
+    Aries:
+      "You trust instincts that push you to act, and you picture a life you can start building now. That instinct is useful when you test it with one concrete step instead of only feeling inspired.",
     Taurus:
-      "You dream in the body. Beauty you can touch is the spiritual practice.",
-    Gemini: "You dream in language. The right image, spoken, opens a door.",
-    Cancer: "You dream of home. A kind room is a temple — make it.",
-    Leo: "You dream in color and heart. Creating is how you stay in contact with the unseen.",
+      "You sense value through comfort, beauty, and what feels solid in real life. Your imagination works best when you turn it into something you can see, use, or rely on.",
+    Gemini:
+      "You pick up ideas and stories quickly, sometimes before the facts are complete. Your instinct is useful when you write it down and check it against what was actually said.",
+    Cancer:
+      "You sense what the people close to you need, sometimes before they say it. That care stays healthy when you also ask what you yourself need.",
+    Leo: "You picture a life where your creativity is visible and meaningful. The instinct shows up in what you want to make, and it needs a real project so it does not stay a daydream.",
     Virgo:
-      "You dream in service. The small merciful task is the vision made real.",
+      "You notice small mismatches and quiet problems other people overlook. Your instinct is practical when you use it to improve a task, a schedule, or the way you take care of yourself.",
     Libra:
-      "You dream of harmony. Beauty that includes someone else is the art.",
+      "You sense the mood between people and can picture how a situation could be fairer. That instinct helps when you name what you notice instead of only smoothing it over.",
     Scorpio:
-      "You dream all the way down. Mysteries you face with love become medicine.",
+      "You sense what is being left out of a situation, and a surface explanation rarely satisfies you. Your instinct is strongest when you pair it with facts and do not assume the worst.",
     Sagittarius:
-      "You dream of a bigger faith. The road itself can be the answer.",
+      "You picture a bigger life and you are drawn to study, travel, and questions that widen your view. The instinct helps when you follow it with experience, not only hope.",
     Capricorn:
-      "You dream with a blueprint. Vision plus a schedule is how the fog becomes a building.",
+      "You picture goals that can become a real plan, and a vague dream frustrates you. Your instinct is useful when you give it a timeline, a budget, or a next step at work.",
     Aquarius:
-      "You dream of us. A kinder future is not abstract — it is the work.",
+      "You picture better systems and futures that do not copy the usual path. The instinct helps a group when you explain the idea in plain terms and test whether it works.",
     Pisces:
-      "You dream in your own sign. Soft seeing is the gift — give it a simple daily form.",
+      "You are highly receptive and often feel the mood of a situation before anyone explains it. Imagination is a strength when you give it a creative outlet and a boundary so you are not absorbing everything.",
   },
   Pluto: {
     Aries:
-      "You transform by starting over on purpose. The brave reset is how power returns.",
+      "You deal with power by taking the lead, and you are ready to start over when a situation has become false. The change sticks when you aim that intensity at a goal instead of at other people.",
     Taurus:
-      "You transform what you own and keep. A truer value system is the rebirth.",
+      "You deal with power through money, security, and what you refuse to give up. Deep change for you usually means revising what you own, earn, or treat as non-negotiable.",
     Gemini:
-      "You transform the story. The sentence you stop repeating is the new life.",
+      "You deal with power through information and the story you keep telling. Deep change starts when you stop repeating an explanation that no longer fits the facts.",
     Cancer:
-      "You transform the family pattern. Care that is chosen, not inherited, is the power.",
-    Leo: "You transform in the spotlight. Honest heart, shown, changes the room.",
-    Virgo: "You transform the process. A cleaner way of working is a new self.",
+      "You deal with power through family patterns and the need to feel safe. Deep change means choosing which habits of care to keep and which ones are only old fear.",
+    Leo: "You deal with power through pride, creativity, and how you want to be seen. Deep change means letting go of a role that gets attention but does not feel true.",
+    Virgo:
+      "You deal with power through work, health, and the need to get things right. Deep change means dropping a standard or habit that is controlling you more than it is helping.",
     Libra:
-      "You transform the terms of together. Fairness with teeth is love that lasts.",
+      "You deal with power inside partnerships and the wish to avoid open conflict. Deep change means telling the truth about what is unfair instead of keeping the peace at your own expense.",
     Scorpio:
-      "You transform in your own sign. Depth is not a crisis — it is the native skill.",
+      "You deal with trust, shared resources, and control with unusual intensity. Deep change comes when you stop trying to manage every outcome and deal directly with what is actually ending or beginning.",
     Sagittarius:
-      "You transform the meaning. A bigger why after a hard season is the gold.",
+      "You deal with power through beliefs and the meaning you attach to events. Deep change means updating a worldview that once protected you and now limits your choices.",
     Capricorn:
-      "You transform the structure. Power used cleanly is the rebuild.",
+      "You deal with power through status, responsibility, and control of the plan. Deep change means using authority cleanly and letting go of a structure that only exists to keep you in charge.",
     Aquarius:
-      "You transform the future in public. The system can change because you did.",
+      "You deal with power through groups, ideas, and the pressure to fit in or stand apart. Deep change means leaving a system or identity that no longer matches what you know.",
     Pisces:
-      "You transform through surrender that is still a choice. Soft power ends the old story kindly.",
+      "You deal with power by empathizing, avoiding, or softening a hard problem. Deep change means facing what you have been avoiding and choosing a boundary instead of disappearing.",
   },
+  Ascendant: {
+    Aries:
+      "People meet you as direct, energetic, and ready to start. You come across as someone who would rather act than wait for a perfect opening.",
+    Taurus:
+      "People meet you as calm, steady, and hard to rush. You come across as someone who values comfort, follow-through, and a practical pace.",
+    Gemini:
+      "People meet you as curious, talkative, and quick to engage. You come across as someone who wants the facts and the next question.",
+    Cancer:
+      "People meet you as warm, careful, and attentive to mood. You come across as someone who is protective and who notices whether a situation feels safe.",
+    Leo: "People meet you as warm, confident, and easy to notice. You come across as someone who is open with enthusiasm and expects a genuine response.",
+    Virgo:
+      "People meet you as observant, polite, and capable. You come across as someone who notices details and prefers a clear, useful conversation.",
+    Libra:
+      "People meet you as pleasant, fair, and socially aware. You come across as someone who wants the interaction to feel respectful on both sides.",
+    Scorpio:
+      "People meet you as focused, private, and hard to read at first. You come across as someone who pays close attention and does not waste warmth on small talk.",
+    Sagittarius:
+      "People meet you as candid, upbeat, and interested in the bigger point. You come across as someone who speaks freely and likes room to move.",
+    Capricorn:
+      "People meet you as composed, serious, and competent. You come across as someone who has a plan and does not need to fill every silence.",
+    Aquarius:
+      "People meet you as independent, friendly, and a little unexpected. You come across as someone who thinks for themselves and is not trying to match the room.",
+    Pisces:
+      "People meet you as gentle, receptive, and easy to talk to. You come across as someone who reads the mood before deciding how direct to be.",
+  },
+  Midheaven: {
+    Aries:
+      "In public and at work, you are seen as someone who starts things and takes the lead. Your reputation grows when you act decisively and own the result.",
+    Taurus:
+      "In public and at work, you are seen as reliable, practical, and hard to shake. Your reputation grows through consistent output and results people can count on.",
+    Gemini:
+      "In public and at work, you are seen as someone who can explain, connect, and adapt. Your reputation grows through writing, speaking, teaching, or handling information well.",
+    Cancer:
+      "In public and at work, you are seen as caring and attentive to what people need. Your reputation grows through work that supports others or builds a base people can trust.",
+    Leo: "In public and at work, you are seen as confident, creative, and willing to be visible. Your reputation grows when you lead with warmth and stand behind work you are proud of.",
+    Virgo:
+      "In public and at work, you are seen as skilled, precise, and useful. Your reputation grows through competence and fixing problems other people miss.",
+    Libra:
+      "In public and at work, you are seen as fair, collaborative, and good with people. Your reputation grows through partnership, design, negotiation, or any role that needs balance.",
+    Scorpio:
+      "In public and at work, you are seen as focused, strategic, and able to handle sensitive material. Your reputation grows when you take on work that requires trust, research, or a real change.",
+    Sagittarius:
+      "In public and at work, you are seen as candid and aimed at a bigger goal. Your reputation grows through teaching, publishing, travel, or work tied to a clear point of view.",
+    Capricorn:
+      "In public and at work, you are seen as disciplined, ambitious, and ready for responsibility. Your reputation grows through long-term results and standards you keep.",
+    Aquarius:
+      "In public and at work, you are seen as independent, inventive, and aimed at what comes next. Your reputation grows through original ideas, groups, or a path that does not copy the standard one.",
+    Pisces:
+      "In public and at work, you are seen as imaginative, empathetic, and hard to put in one category. Your reputation grows through creative or caring work that still has a clear result.",
+  },
+};
+
+const PLACEMENT_QUESTIONS: Record<string, string> = {
+  Sun: "Where in your life right now do you feel most like yourself?",
+  Moon: "What actually helps you recharge when your stress spikes?",
+  Mercury:
+    "What is one thing you've been overthinking that would be simpler to say plainly?",
+  Venus:
+    "What makes you feel genuinely appreciated in your closest relationships?",
+  Mars: "What goal deserves your energy right now instead of scattered effort?",
+  Jupiter: "Where would taking a calculated risk open up more room to grow?",
+  Saturn: "Which habit or boundary is paying off over the long run?",
+  Uranus: "Where are you outgrowing an old routine or expectation?",
+  Neptune:
+    "Where is your intuition pointing, and what practical step would test it?",
+  Pluto: "What are you ready to stop forcing or trying to control?",
+  Ascendant:
+    "What do people assume about you in the first minute, and does it match how you want to show up?",
+  Midheaven:
+    "What kind of work do you want to be known for over the next few years?",
 };
 
 export function explainPlacementFull(
@@ -908,7 +1474,9 @@ export function explainPlacementFull(
     summary: SIGN_SUMMARY[sign] ?? sign,
     detail: PLACEMENT_IN_SIGN[body]?.[sign] ?? explainPlacement(body, sign),
     keywords: SIGN_KEYWORDS[sign] ?? [],
-    question: `If ${body} in ${sign} ran the next decision, what would you stop negotiating?`,
+    question:
+      PLACEMENT_QUESTIONS[body] ??
+      `Where does your ${body.toLowerCase()} ask for a clearer choice right now?`,
   };
 }
 
@@ -917,8 +1485,8 @@ export function explainPlacement(body: string, sign: string): string {
   const written = PLACEMENT_IN_SIGN[body]?.[sign];
   if (written) return written;
   const domain = BODY_MEANINGS[body] ?? "a part of who you are";
-  const trait = SIGN_TRAITS[sign] ?? "";
-  return `${body} in ${sign} is ${domain} — ${trait}.`;
+  const trait = SIGN_TRAITS[sign] ?? sign.toLowerCase();
+  return `${body} in ${sign} describes ${domain}. Day to day, that looks like someone who is ${trait}.`;
 }
 
 export function explainHouse(house: number): string {
@@ -955,21 +1523,65 @@ export function explainAspectFull(
     summary: ASPECT_MEANINGS_FULL[key]?.nature ?? aspectKey,
     detail: explainAspectPair(bodyA, bodyB, aspectKey),
     keywords: ASPECT_KEYWORDS[key] ?? [],
-    question: `What gets easier when ${bodyA} and ${bodyB} stop splitting the ${key} and use it on purpose?`,
+    question: aspectQuestion(bodyA, bodyB, key),
   };
 }
 
-/** Pair-specific explanation — uplifting, named, house-voice. */
+function plainRole(body: string): string {
+  return (BODY_ROLES[body] ?? body).toLowerCase();
+}
+
+function aspectQuestion(bodyA: string, bodyB: string, key: string): string {
+  const roleA = plainRole(bodyA);
+  const roleB = plainRole(bodyB);
+  if (key === "square") {
+    return `When your ${roleA} and ${roleB} clash, how can you pause before reacting?`;
+  }
+  if (key === "opposition") {
+    return `How can you make room for both ${roleA} and ${roleB} instead of swinging from one extreme to the other?`;
+  }
+  if (key === "sextile" || key === "trine") {
+    return `Where can you lean on this natural link between ${roleA} and ${roleB} this week?`;
+  }
+  if (key === "conjunction") {
+    return `How are you channeling this combined focus on ${roleA} and ${roleB}?`;
+  }
+  if (key === "quincunx") {
+    return `What small adjustment helps your ${roleA} and ${roleB} stop working at cross-purposes?`;
+  }
+  return `How do your ${roleA} and ${roleB} show up in the same decision?`;
+}
+
+/** What two planets are doing at this angle, in everyday behavior. */
 export function explainAspectPair(
   bodyA: string,
   bodyB: string,
   aspectKey: string,
 ): string {
   const key = aspectKey.toLowerCase();
-  const meaning = ASPECT_MEANINGS_FULL[key];
-  if (!meaning) return "";
-  const verb = ASPECT_VERBS[key] ?? "works with";
-  const shortA = BODY_SHORT[bodyA] ?? bodyA.toLowerCase();
-  const shortB = BODY_SHORT[bodyB] ?? bodyB.toLowerCase();
-  return `Your ${bodyA} ${verb} your ${bodyB} — ${shortA} and ${shortB} in the same sentence. ${meaning.feel}`;
+  const governsA = BODY_GOVERNS[bodyA] ?? bodyA.toLowerCase();
+  const governsB = BODY_GOVERNS[bodyB] ?? bodyB.toLowerCase();
+  const intro = `${bodyA} governs ${governsA}, while ${bodyB} governs ${governsB}.`;
+  const { support, friction } = themeFor(bodyA, bodyB);
+  const angle = ASPECT_ANGLE_LABEL[key] ?? key;
+  if (key === "sextile") {
+    return `${intro} A ${angle.toLowerCase()} means these two parts of you cooperate easily: ${support}.`;
+  }
+  if (key === "trine") {
+    return `${intro} A ${angle.toLowerCase()} means they support each other with little effort: ${support}.`;
+  }
+  if (key === "square") {
+    return `${intro} A ${angle.toLowerCase()} creates real internal pressure between them—${friction}.`;
+  }
+  if (key === "opposition") {
+    return `${intro} A ${angle.toLowerCase()} pulls you in two directions: ${friction}. The workable move is to give both a place in the same decision instead of swinging from one extreme to the other.`;
+  }
+  if (key === "conjunction") {
+    return `${intro} A ${angle.toLowerCase()} blends them into one focus: ${support}.`;
+  }
+  if (key === "quincunx") {
+    const lead = friction.charAt(0).toUpperCase() + friction.slice(1);
+    return `${intro} A ${angle.toLowerCase()} means they do not share a natural method. ${lead}. A small adjustment in timing, priority, or boundaries helps them stop working at cross-purposes.`;
+  }
+  return intro;
 }
