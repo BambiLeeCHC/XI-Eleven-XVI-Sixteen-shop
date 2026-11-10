@@ -687,14 +687,6 @@ export function ProductPage() {
                 checkout.
               </p>
             </div>
-            <details className="pdp-fold">
-              <summary>Description</summary>
-              <p className="pdp-desc">
-                {product.description?.trim() ||
-                  "Cut and finished when you order it, in the colorway on this page."}{" "}
-                <Link to="/chart">True North is the same numbers, opened.</Link>
-              </p>
-            </details>
             <details className="pdp-fit">
               <summary>Fit guide</summary>
               <div className="pdp-fit-card">

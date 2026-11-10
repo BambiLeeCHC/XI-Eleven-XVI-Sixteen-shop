@@ -83,7 +83,7 @@
 }
 
 .pdp-gallery__dots {
-  display: none;
+  display: flex;
   justify-content: center;
   flex-wrap: wrap;
   gap: 7px;
@@ -177,28 +177,8 @@
   color: rgba(247, 240, 230, 0.82);
 }
 
-.pdp-desc a,
-.pdp-fold a {
+.pdp-desc a {
   color: var(--pdp-tint);
-}
-
-.pdp-fold {
-  display: none;
-}
-
-.pdp-fold summary {
-  cursor: pointer;
-  margin-top: 14px;
-  font-size: 11px;
-  font-weight: 800;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: rgba(247, 240, 230, 0.66);
-  list-style: none;
-}
-
-.pdp-fold summary::-webkit-details-marker {
-  display: none;
 }
 
 .pdp-buy {
@@ -355,7 +335,7 @@
 }
 
 .pdp-rail__arrows {
-  display: none;
+  display: flex;
   gap: 8px;
 }
 
@@ -448,83 +428,6 @@
   box-shadow: none;
 }
 
-@media (max-width: 1023px) {
-  .pdp {
-    width: calc(100% - 20px);
-    margin-bottom: 28px;
-    padding-top: 2px;
-  }
-
-  .pdp-crumb {
-    margin: 2px 0 8px;
-  }
-
-  .pdp-layout {
-    gap: 12px;
-  }
-
-  .pdp .pdp-gallery__stage {
-    width: 100%;
-    height: 300px;
-    aspect-ratio: auto;
-    max-height: none;
-    border-radius: 20px;
-  }
-
-  .pdp .pdp-gallery__thumbs,
-  .pdp-desc--desk {
-    display: none;
-  }
-
-  .pdp-gallery__dots,
-  .pdp-fold {
-    display: flex;
-  }
-
-  .pdp-fold {
-    display: block;
-  }
-
-  .pdp-kicker {
-    letter-spacing: 0.28em;
-  }
-
-  .pdp-title {
-    margin-top: 2px;
-    max-width: none;
-    font-size: 34px;
-  }
-
-  .pdp-price {
-    margin-top: 6px;
-    font-size: 26px;
-  }
-
-  .pdp-buy {
-    margin-top: 12px;
-    gap: 8px;
-  }
-
-  .pdp-summon {
-    min-height: 52px;
-    padding: 8px 10px 8px 14px;
-  }
-
-  .pdp-note {
-    margin: 0;
-    font-size: 11px;
-  }
-
-  .pdp-fit {
-    margin-top: 14px;
-    padding-top: 10px;
-  }
-
-  .pdp-more {
-    margin-top: 22px;
-  }
-}
-
 @media (min-width: 1024px) {
   .pdp {
     width: min(1180px, calc(100% - 80px));
@@ -555,15 +458,6 @@
 
   .pdp-buy {
     margin-top: 22px;
-  }
-
-  .pdp-gallery__dots,
-  .pdp-fold {
-    display: none;
-  }
-
-  .pdp-rail__arrows {
-    display: flex;
   }
 
   .pdp-card {
