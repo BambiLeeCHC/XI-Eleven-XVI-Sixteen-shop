@@ -580,37 +580,35 @@
 
 .holo-beam {
   position: absolute;
-  left: 50%;
+  left: 0;
+  right: 0;
   bottom: 0;
-  width: 72%;
   height: 100%;
-  transform: translateX(-50%) scaleY(1);
+  transform: scaleY(1);
   transform-origin: center bottom;
   pointer-events: none;
-  opacity: 0.92;
-  clip-path: polygon(42% 100%, 58% 100%, 100% 0, 0 0);
-  background:
-    linear-gradient(
-      90deg,
-      transparent 0%,
-      color-mix(in srgb, var(--holo-tint, #d8f0c4) 28%, transparent) 16%,
-      rgba(255, 255, 255, 0.78) 50%,
-      color-mix(in srgb, var(--holo-tint, #d8f0c4) 55%, #d7fff4) 82%,
-      transparent 100%
-    );
-  filter: blur(0.2px);
+  clip-path: polygon(44% 100%, 56% 100%, 100% 0, 0 0);
+  background: linear-gradient(
+    to top,
+    color-mix(in srgb, var(--holo-tint, #d8f0c4) 88%, white) 0%,
+    color-mix(in srgb, var(--holo-tint, #d8f0c4) 62%, transparent) 28%,
+    color-mix(in srgb, var(--holo-tint, #d8f0c4) 22%, transparent) 62%,
+    transparent 100%
+  );
+  -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 14%, #000 86%, transparent 100%);
+  mask-image: linear-gradient(90deg, transparent 0%, #000 14%, #000 86%, transparent 100%);
 }
 
 .holo-beam::before {
   content: "";
   position: absolute;
   left: 50%;
-  top: 0;
   bottom: 0;
-  width: 12px;
+  top: 18%;
+  width: 16%;
   transform: translateX(-50%);
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.95), transparent 78%);
-  filter: blur(4px);
+  background: linear-gradient(to top, rgba(255, 255, 255, 0.92), transparent 72%);
+  filter: blur(3px);
 }
 
 .holo-beam::after {
@@ -618,11 +616,39 @@
   position: absolute;
   inset: 0;
   background: repeating-linear-gradient(
-    180deg,
-    transparent 0 12px,
-    rgba(255, 255, 255, 0.34) 12px 14px
+    to top,
+    transparent 0 10px,
+    rgba(255, 255, 255, 0.28) 10px 12px
   );
-  animation: holo-scan 1.15s linear infinite;
+  animation: holo-scan 1.2s linear infinite;
+  -webkit-mask-image: linear-gradient(to top, #000 0%, transparent 78%);
+  mask-image: linear-gradient(to top, #000 0%, transparent 78%);
+}
+
+.holo-mote {
+  position: absolute;
+  left: 48%;
+  bottom: 6%;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: #fff;
+  opacity: 0.8;
+  animation: holo-mote 1.5s linear infinite;
+}
+
+.holo-mote--b {
+  left: 54%;
+  animation-delay: -0.55s;
+  animation-duration: 1.9s;
+}
+
+.holo-mote--c {
+  left: 43%;
+  width: 2px;
+  height: 2px;
+  animation-delay: -1s;
+  animation-duration: 1.3s;
 }
 
 .holo-projection {
@@ -649,24 +675,39 @@
 }
 
 .holo--rising .holo-beam {
-  animation: holo-beam-up 0.72s cubic-bezier(0.16, 0.84, 0.32, 1) both;
+  animation: holo-beam-up 0.52s cubic-bezier(0.16, 0.84, 0.28, 1) both;
 }
 
-.holo--falling .holo-beam {
-  animation: holo-beam-down 0.52s cubic-bezier(0.4, 0, 0.2, 1) both;
+.holo--open .holo-beam,
+.holo--fading .holo-beam {
+  transform: scaleY(1);
 }
 
-.holo--open .holo-beam {
-  transform: translateX(-50%) scaleY(1);
-  opacity: 0.92;
+.holo--retracting .holo-beam {
+  animation: holo-beam-down 0.48s cubic-bezier(0.45, 0, 0.2, 1) both;
 }
 
 .holo--rising .holo-projection {
-  animation: holo-in 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.18s both;
+  opacity: 0;
+  transform: scale(0.85);
+  filter: blur(8px);
+  pointer-events: none;
 }
 
-.holo--falling .holo-projection {
-  animation: holo-out 0.42s ease both;
+.holo--open .holo-projection {
+  animation: holo-in 0.42s ease both;
+}
+
+.holo--fading .holo-projection {
+  animation: holo-out 0.28s ease both;
+  pointer-events: none;
+}
+
+.holo--retracting .holo-projection {
+  opacity: 0;
+  transform: scale(0.85);
+  filter: blur(6px);
+  pointer-events: none;
 }
 
 .holo-hint {
@@ -715,24 +756,35 @@
 }
 
 @keyframes holo-beam-up {
-  from { transform: translateX(-50%) scaleY(0.02); opacity: 0; }
-  40% { opacity: 1; }
-  to { transform: translateX(-50%) scaleY(1); opacity: 0.92; }
+  from { transform: scaleY(0.04); }
+  to { transform: scaleY(1); }
 }
 
 @keyframes holo-beam-down {
-  from { transform: translateX(-50%) scaleY(1); opacity: 0.92; }
-  to { transform: translateX(-50%) scaleY(0.02); opacity: 0; }
+  from { transform: scaleY(1); }
+  to { transform: scaleY(0.04); }
 }
 
 @keyframes holo-in {
-  from { opacity: 0; transform: translateY(46px) scale(0.64); filter: blur(12px); }
-  to { opacity: 1; transform: none; filter: blur(0); }
+  0% { opacity: 0; transform: scale(0.85); filter: blur(8px); }
+  42% { opacity: 0.72; filter: blur(2px); }
+  58% { opacity: 0.22; filter: blur(1px); }
+  100% { opacity: 1; transform: scale(1); filter: blur(0); }
 }
 
 @keyframes holo-out {
-  from { opacity: 1; transform: none; filter: blur(0); }
-  to { opacity: 0; transform: translateY(58px) scale(0.56); filter: blur(10px); }
+  from { opacity: 1; transform: scale(1); filter: blur(0); }
+  to { opacity: 0; transform: scale(0.85); filter: blur(7px); }
+}
+
+@keyframes holo-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes holo-mote {
+  from { transform: translateY(0); opacity: 0.85; }
+  to { transform: translateY(-220px); opacity: 0; }
 }
 
 @keyframes holo-scan {
@@ -748,15 +800,21 @@
   .holo-beam,
   .holo-beam::before,
   .holo-beam::after,
-  .holo-glow {
+  .holo-glow,
+  .holo-mote {
     animation: none !important;
     display: none !important;
   }
 
-  .holo-projection {
-    animation: none !important;
-    opacity: 1 !important;
-    transform: none !important;
-    filter: none !important;
+  .holo--open .holo-projection {
+    animation: holo-fade 180ms ease both;
+    filter: none;
+    transform: none;
+  }
+
+  .holo--fading .holo-projection {
+    animation: holo-fade 160ms ease reverse both;
+    filter: none;
+    transform: none;
   }
 }
