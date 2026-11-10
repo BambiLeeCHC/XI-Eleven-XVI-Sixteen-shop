@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { nextEnabledIndex, ringStep } from "../lib/radialDial";
 
 export type DialOption = {
@@ -55,6 +55,21 @@ export function RadialVariantDial({
 }: Props) {
   const sizeRefs = useRef<Record<string, HTMLButtonElement | null>>({});
   const colorRefs = useRef<Record<string, HTMLButtonElement | null>>({});
+  const fitRef = useRef<HTMLDivElement>(null);
+  const [scale, setScale] = useState(1);
+
+  useEffect(() => {
+    const node = fitRef.current;
+    if (!node) return;
+    const measure = () => {
+      const width = node.getBoundingClientRect().width;
+      setScale(width > 0 ? Math.min(1, width / 320) : 1);
+    };
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, []);
   const size = sizes.find(option => option.id === sizeId);
   const color = colors.find(option => option.id === colorId);
   const open = Boolean(size) && colors.length > 0;
@@ -67,12 +82,14 @@ export function RadialVariantDial({
   return (
     <div className={`radial-dial${open ? " is-open" : ""}`}>
       <p className="radial-dial__title">Select a size</p>
+      <div className="radial-dial__fit" ref={fitRef}>
       <div
         className="radial-dial__stage"
         style={
           {
             "--size-step": `${sizeStep}deg`,
             "--color-step": `${colorStep}deg`,
+            "--dial-scale": scale,
           } as React.CSSProperties
         }
       >
@@ -172,6 +189,7 @@ export function RadialVariantDial({
             })}
           </div>
         ) : null}
+      </div>
       </div>
       <p className="radial-dial__status">
         {!size
