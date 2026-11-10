@@ -250,7 +250,7 @@
 /* After a size is chosen, that ring shrinks and color takes the outer ring. */
 .radial-dial__orbit--size,
 .radial-dial__orbit--color {
-  transition: inset 0.45s ease, opacity 0.45s ease;
+  transition: inset 0.45s ease, opacity 0.45s ease, border-color 0.28s ease, box-shadow 0.28s ease, background-color 0.28s ease;
 }
 
 .radial-dial:not(.is-color) .radial-dial__color-layer,
@@ -321,6 +321,8 @@
 
 @media (prefers-reduced-motion: reduce) {
   .radial-dial__back { animation: none; opacity: 1; }
+  .radial-dial__orbit--size,
+  .radial-dial__orbit--color { transition: none; }
   .radial-dial.is-color .radial-dial__tick--size,
   .radial-dial.is-color .radial-dial__tick--color { animation: none; }
   .radial-dial.is-color .radial-dial__tick--size { opacity: 0; }
@@ -328,4 +330,73 @@
     opacity: 1;
     --tick-r: 7.5rem;
   }
+}
+
+/* Hovered color owns the outer ring and the center preview. */
+.radial-dial__hub-copy {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15rem;
+  max-width: 100%;
+}
+
+.radial-dial__hub-photo {
+  position: absolute;
+  left: 50%;
+  top: 8%;
+  width: 76%;
+  height: 68%;
+  transform: translateX(-50%);
+  object-fit: contain;
+  z-index: 0;
+  pointer-events: none;
+  filter: drop-shadow(0 10px 12px rgba(0, 0, 0, 0.45));
+}
+
+.radial-dial.is-color.has-preview .radial-dial__hub {
+  inset: 22%;
+  justify-content: flex-end;
+  padding-bottom: 7%;
+  background:
+    radial-gradient(circle at 50% 42%, rgba(255, 255, 255, 0.08), rgba(8, 10, 14, 0.72) 72%);
+}
+
+.radial-dial.has-preview .radial-dial__hub-label {
+  font-size: 0.78rem;
+  padding: 0.1rem 0.45rem;
+  border-radius: 999px;
+  background: rgba(8, 10, 14, 0.55);
+}
+
+.radial-dial.has-preview .radial-dial__hub::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    180deg,
+    transparent 0 3px,
+    rgba(255, 255, 255, 0.07) 3px 4px
+  );
+  mix-blend-mode: screen;
+}
+
+.radial-dial.is-color.has-tint .radial-dial__orbit--color {
+  border-color: var(--dial-tint);
+  border-width: 7px;
+  background: var(--dial-tint);
+  background: color-mix(in srgb, var(--dial-tint) 55%, transparent);
+  box-shadow:
+    0 0 28px color-mix(in srgb, var(--dial-tint) 75%, transparent),
+    inset 0 0 18px color-mix(in srgb, var(--dial-tint) 40%, transparent);
+  -webkit-mask: radial-gradient(circle, transparent 56%, #000 68% 100%);
+  mask: radial-gradient(circle, transparent 56%, #000 68% 100%);
+}
+
+.radial-dial__tick--color.is-hot .radial-dial__swatch {
+  box-shadow: 0 0 0 3px var(--swatch), 0 0 16px var(--swatch);
 }

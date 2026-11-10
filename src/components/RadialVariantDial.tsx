@@ -15,7 +15,19 @@ type Props = {
   colorId: string;
   onSize: (id: string) => void;
   onColor: (id: string) => void;
+  /** Fine pointer click or keyboard confirms the color. Touch only previews. */
+  onCommit?: (colorId: string) => void;
+  /** Size ring, when this product has no color ring. */
+  onCommitSize?: (sizeId: string) => void;
+  previews?: Record<string, string | undefined>;
+  onPreviewId?: (id: string | null) => void;
+  titleId?: string;
 };
+
+function finePointer() {
+  if (typeof window === "undefined") return true;
+  return window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+}
 
 function move(
   event: React.KeyboardEvent,
@@ -42,7 +54,7 @@ function move(
   const option = options[next];
   if (!option) return;
   onPick(option.id);
-  refs.current[option.id]?.focus();
+  refs.current[option.id]?.focus({ preventScroll: true });
 }
 
 export function RadialVariantDial({
@@ -52,12 +64,23 @@ export function RadialVariantDial({
   colorId,
   onSize,
   onColor,
+  onCommit,
+  onCommitSize,
+  previews,
+  onPreviewId,
+  titleId,
 }: Props) {
   const sizeRefs = useRef<Record<string, HTMLButtonElement | null>>({});
   const colorRefs = useRef<Record<string, HTMLButtonElement | null>>({});
   const fitRef = useRef<HTMLDivElement>(null);
+  const previewCb = useRef(onPreviewId);
+  previewCb.current = onPreviewId;
   const [scale, setScale] = useState(1);
-  const [view, setView] = useState<"size" | "color">("size");
+  const [view, setView] = useState<"size" | "color">(
+    sizeId && colors.length > 0 ? "color" : "size",
+  );
+  const [hoveredId, setHoveredId] = useState<string | null>(null);
+  const [failedSrc, setFailedSrc] = useState<string | null>(null);
 
   useEffect(() => {
     const node = fitRef.current;
@@ -72,151 +95,236 @@ export function RadialVariantDial({
     return () => observer.disconnect();
   }, []);
   const size = sizes.find(option => option.id === sizeId);
-  const color = colors.find(option => option.id === colorId);
+  const colorFocused = view === "color" && colors.length > 0;
+  const shownId = hoveredId || colorId || "";
+  const shown = colors.find(option => option.id === shownId);
+  const previewSrc = shown ? previews?.[shown.id] : undefined;
+  const photo = previewSrc && previewSrc !== failedSrc ? previewSrc : "";
+  const tint = colorFocused && shown?.hex ? shown.hex : "";
   const open = Boolean(size) && colors.length > 0;
   const sizeStep = ringStep(sizes.length);
   const colorStep = ringStep(colors.length);
 
-  const hubLabel = color ? color.label : size ? size.label : "Size";
-  const hubKicker = color ? size?.label : size ? "Size" : "";
+  const hubLabel =
+    colorFocused && shown ? shown.label : size ? size.label : "Size";
+  const hubKicker =
+    colorFocused && shown ? (size?.label ?? "") : size ? "Size" : "";
+
+  useEffect(() => {
+    previewCb.current?.(colorFocused ? shownId || null : null);
+  }, [colorFocused, shownId]);
+
+  // Hover updates shownId and must not pull focus back onto the ring.
+  // biome-ignore lint/correctness/useExhaustiveDependencies: view change only
+  useEffect(() => {
+    const id = colorFocused
+      ? shownId || colors.find(option => option.available)?.id
+      : sizeId || sizes.find(option => option.available)?.id;
+    if (!id) return;
+    const node = (colorFocused ? colorRefs : sizeRefs).current[id];
+    node?.focus({ preventScroll: true });
+  }, [colorFocused]);
 
   const pickSize = (id: string) => {
     onSize(id);
-    if (colors.length > 0) setView("color");
+    if (colors.length > 0) {
+      setHoveredId(null);
+      setView("color");
+      return;
+    }
+    onCommitSize?.(id);
   };
 
-  const colorFocused = view === "color" && colors.length > 0;
+  const showPhoto = colorFocused && Boolean(photo);
 
   return (
-    <div className={`radial-dial${open ? " is-open" : ""}${colorFocused ? " is-color" : ""}`}>
-      <p className="radial-dial__title">{colorFocused ? "Select a color" : "Select a size"}</p>
+    <div
+      className={`radial-dial${open ? " is-open" : ""}${colorFocused ? " is-color" : ""}${showPhoto ? " has-preview" : ""}${tint ? " has-tint" : ""}`}
+      style={{ "--dial-tint": tint || "transparent" } as React.CSSProperties}
+    >
+      <p className="radial-dial__title" id={titleId}>
+        {colorFocused ? "Select a color" : "Select a size"}
+      </p>
       <div className="radial-dial__fit" ref={fitRef}>
-      {colorFocused ? (
-        <button
-          type="button"
-          className="radial-dial__back"
-          aria-label="Back to sizes"
-          onClick={() => setView("size")}
-        >
-          <span aria-hidden="true">←</span>
-        </button>
-      ) : null}
-      <div
-        className="radial-dial__stage"
-        style={
-          {
-            "--size-step": `${sizeStep}deg`,
-            "--color-step": `${colorStep}deg`,
-            "--dial-scale": scale,
-          } as React.CSSProperties
-        }
-      >
-        <div className="radial-dial__sheen" aria-hidden="true" />
-        <div className="radial-dial__orbit radial-dial__orbit--size" aria-hidden="true" />
-        {open ? (
-          <div className="radial-dial__color-layer">
-            <div className="radial-dial__orbit radial-dial__orbit--color" aria-hidden="true" />
-          </div>
+        {colorFocused ? (
+          <button
+            type="button"
+            className="radial-dial__back"
+            aria-label="Back to sizes"
+            onClick={() => setView("size")}
+          >
+            <span aria-hidden="true">←</span>
+          </button>
         ) : null}
-
         <div
-          className="radial-dial__hub"
-          aria-live="polite"
+          className="radial-dial__stage"
+          style={
+            {
+              "--size-step": `${sizeStep}deg`,
+              "--color-step": `${colorStep}deg`,
+              "--dial-scale": scale,
+            } as React.CSSProperties
+          }
         >
-          {hubKicker ? (
-            <span className="radial-dial__hub-kicker">{hubKicker}</span>
+          <div className="radial-dial__sheen" aria-hidden="true" />
+          <div
+            className="radial-dial__orbit radial-dial__orbit--size"
+            aria-hidden="true"
+          />
+          {open ? (
+            <div className="radial-dial__color-layer">
+              <div
+                className="radial-dial__orbit radial-dial__orbit--color"
+                aria-hidden="true"
+              />
+            </div>
           ) : null}
-          <span className="radial-dial__hub-label">{hubLabel}</span>
-          {color?.hex ? (
-            <span
-              className="radial-dial__hub-swatch"
-              style={{ background: color.hex }}
-              aria-hidden="true"
-            />
-          ) : null}
-        </div>
 
-        <div role="radiogroup" aria-label="Select a size">
-          {sizes.map((option, index) => {
-            const selected = option.id === sizeId;
-            return (
-              <button
-                key={option.id}
-                ref={node => {
-                  sizeRefs.current[option.id] = node;
-                }}
-                type="button"
-                role="radio"
-                aria-checked={selected}
-                aria-label={
-                  option.available
-                    ? `Size ${option.label}`
-                    : `Size ${option.label}, unavailable`
-                }
-                disabled={!option.available}
-                tabIndex={selected || (!sizeId && index === 0) ? 0 : -1}
-                className={`radial-dial__tick radial-dial__tick--size${selected ? " is-on" : ""}${option.available ? "" : " is-off"}`}
-                style={{ "--i": index } as React.CSSProperties}
-                onClick={() => option.available && pickSize(option.id)}
-                onKeyDown={event =>
-                  move(event, sizes, sizeId, pickSize, sizeRefs)
-                }
-              >
-                {option.label}
-              </button>
-            );
-          })}
-        </div>
+          <div className="radial-dial__hub" aria-live="polite">
+            {showPhoto ? (
+              <img
+                className="radial-dial__hub-photo"
+                src={photo}
+                alt=""
+                draggable={false}
+                onError={() => setFailedSrc(photo)}
+              />
+            ) : null}
+            <span className="radial-dial__hub-copy">
+              {hubKicker ? (
+                <span className="radial-dial__hub-kicker">{hubKicker}</span>
+              ) : null}
+              <span className="radial-dial__hub-label">{hubLabel}</span>
+            </span>
+          </div>
 
-        {open ? (
-          <div role="radiogroup" aria-label="Select a color">
-            {colors.map((option, index) => {
-              const selected = option.id === colorId;
+          <div
+            role="radiogroup"
+            aria-label="Select a size"
+            aria-hidden={colorFocused || undefined}
+          >
+            {sizes.map((option, index) => {
+              const selected = option.id === sizeId;
               return (
                 <button
                   key={option.id}
                   ref={node => {
-                    colorRefs.current[option.id] = node;
+                    sizeRefs.current[option.id] = node;
                   }}
                   type="button"
                   role="radio"
                   aria-checked={selected}
                   aria-label={
                     option.available
-                      ? `Color ${option.label}`
-                      : `Color ${option.label}, unavailable in this size`
+                      ? `Size ${option.label}`
+                      : `Size ${option.label}, unavailable`
                   }
                   disabled={!option.available}
-                  tabIndex={selected || (!colorId && index === 0) ? 0 : -1}
-                  className={`radial-dial__tick radial-dial__tick--color${selected ? " is-on" : ""}${option.available ? "" : " is-off"}`}
-                  style={
-                    {
-                      "--i": index,
-                      "--swatch": option.hex || "#8A847C",
-                    } as React.CSSProperties
+                  tabIndex={
+                    colorFocused
+                      ? -1
+                      : selected || (!sizeId && index === 0)
+                        ? 0
+                        : -1
                   }
-                  onClick={() => option.available && onColor(option.id)}
+                  className={`radial-dial__tick radial-dial__tick--size${selected ? " is-on" : ""}${option.available ? "" : " is-off"}`}
+                  style={{ "--i": index } as React.CSSProperties}
+                  onClick={() => option.available && pickSize(option.id)}
                   onKeyDown={event =>
-                    move(event, colors, colorId, onColor, colorRefs)
+                    move(event, sizes, sizeId, pickSize, sizeRefs)
                   }
                 >
-                  <span className="radial-dial__swatch" />
-                  <span className="radial-dial__color-name">{option.label}</span>
+                  {option.label}
                 </button>
               );
             })}
           </div>
-        ) : null}
-      </div>
+
+          {open ? (
+            <div
+              role="radiogroup"
+              aria-label="Select a color"
+              aria-hidden={!colorFocused || undefined}
+            >
+              {colors.map((option, index) => {
+                const selected = option.id === colorId;
+                const hot = option.id === shownId;
+                return (
+                  <button
+                    key={option.id}
+                    ref={node => {
+                      colorRefs.current[option.id] = node;
+                    }}
+                    type="button"
+                    role="radio"
+                    aria-checked={selected}
+                    aria-label={
+                      option.available
+                        ? `Color ${option.label}`
+                        : `Color ${option.label}, unavailable in this size`
+                    }
+                    disabled={!option.available}
+                    tabIndex={
+                      !colorFocused
+                        ? -1
+                        : selected || (!colorId && index === 0)
+                          ? 0
+                          : -1
+                    }
+                    className={`radial-dial__tick radial-dial__tick--color${selected ? " is-on" : ""}${hot ? " is-hot" : ""}${option.available ? "" : " is-off"}`}
+                    style={
+                      {
+                        "--i": index,
+                        "--swatch": option.hex || "#8A847C",
+                      } as React.CSSProperties
+                    }
+                    onPointerEnter={() => {
+                      if (!option.available) return;
+                      setHoveredId(option.id);
+                    }}
+                    onFocus={() => {
+                      if (!option.available) return;
+                      setHoveredId(option.id);
+                    }}
+                    onClick={event => {
+                      if (!option.available) return;
+                      setHoveredId(option.id);
+                      onColor(option.id);
+                      const keyboard = event.detail === 0;
+                      if (keyboard || finePointer()) onCommit?.(option.id);
+                    }}
+                    onKeyDown={event =>
+                      move(
+                        event,
+                        colors,
+                        shownId || colorId,
+                        id => {
+                          setHoveredId(id);
+                          onColor(id);
+                        },
+                        colorRefs,
+                      )
+                    }
+                  >
+                    <span className="radial-dial__swatch" />
+                    <span className="radial-dial__color-name">
+                      {option.label}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          ) : null}
+        </div>
       </div>
       <p className="radial-dial__status">
         {!size
           ? "Choose a size on the ring."
           : colors.length === 0
             ? `${size.label} selected.`
-            : !color
-              ? `${size.label} selected. Choose a color on the inner ring.`
-              : `${size.label} in ${color.label}.`}
+            : !shown
+              ? `${size.label} selected. Choose a color on the outer ring.`
+              : `${size.label} in ${shown.label}.`}
       </p>
     </div>
   );
