@@ -552,3 +552,120 @@ body {
     transition: none !important;
   }
 }
+
+
+/* Shop field: one crisp wash. The live sky stays on True North only. */
+body {
+  background: #0b0b0c;
+  background-image: none;
+  animation: none;
+}
+
+.shop-field {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(42% 32% at 88% 0%, rgba(216, 240, 196, 0.09), transparent 62%),
+    linear-gradient(115deg, #0b0b0c 0%, #141414 42%, #1a1916 68%, #0b0b0c 100%);
+  background-size: 100% 100%, 220% 220%;
+  animation: shop-wash 32s ease-in-out infinite;
+}
+
+.home-hero {
+  position: relative;
+  min-height: min(88vh, 820px);
+  overflow: hidden;
+  background: #0b0b0c;
+}
+
+.home-hero__photo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 42%;
+}
+
+.home-hero__shade {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, rgba(11, 11, 12, 0.72) 0%, rgba(11, 11, 12, 0.28) 48%, rgba(11, 11, 12, 0.12) 100%);
+}
+
+.home-hero__copy {
+  position: relative;
+  z-index: 1;
+  max-width: 720px;
+  padding: clamp(72px, 12vh, 120px) 28px 64px;
+}
+
+.home-hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 22px;
+}
+
+.home-strip {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  flex-wrap: wrap;
+  align-items: center;
+  padding: 22px 28px;
+  border-bottom: 1px solid rgba(247, 240, 230, 0.12);
+  background: rgba(11, 11, 12, 0.92);
+}
+
+.home-strip__colors,
+.home-strip__snaps,
+.home-hero__actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.home-strip__trust {
+  display: flex;
+  gap: 18px;
+  flex-wrap: wrap;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(247, 240, 230, 0.72);
+}
+
+.home-rooms {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+  padding: 12px;
+}
+
+.home-room {
+  padding: clamp(28px, 4vw, 48px);
+}
+
+@media (min-width: 800px) {
+  .home-rooms {
+    grid-template-columns: 1fr 1fr;
+    padding: 20px 28px 8px;
+  }
+}
+
+@keyframes shop-wash {
+  0% { background-position: 0 0, 0% 40%; }
+  50% { background-position: 0 0, 100% 60%; }
+  100% { background-position: 0 0, 0% 40%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shop-field { animation: none; }
+}
