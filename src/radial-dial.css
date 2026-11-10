@@ -1,7 +1,13 @@
 .radial-dial {
-  width: min(100%, 24rem);
+  width: min(100%, 320px);
   margin-inline: auto;
   color: #f7f0e6;
+}
+
+.radial-dial__fit {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1;
 }
 
 .radial-dial__title {
@@ -15,11 +21,13 @@
 }
 
 .radial-dial__stage {
-  position: relative;
-  width: min(100%, 22.5rem);
-  aspect-ratio: 1;
-  margin-inline: auto;
-  container-type: size;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 320px;
+  height: 320px;
+  transform: scale(var(--dial-scale, 1));
+  transform-origin: top left;
 }
 
 .radial-dial__sheen,
@@ -96,7 +104,7 @@
 .radial-dial__hub-label {
   font-family: "Fraunces", Georgia, serif;
   font-style: italic;
-  font-size: clamp(1.35rem, 8cqmin, 2rem);
+  font-size: 1.45rem;
   line-height: 1;
   max-width: 8ch;
   overflow-wrap: anywhere;
@@ -136,12 +144,12 @@
 
 .radial-dial__tick--size {
   --step: var(--size-step);
-  --tick-r: 38cqmin;
+  --tick-r: 7.5rem;
 }
 
 .radial-dial__tick--color {
   --step: var(--color-step);
-  --tick-r: 27cqmin;
+  --tick-r: 4.7rem;
   width: 3.1rem;
   height: 3.1rem;
   margin: -1.55rem 0 0 -1.55rem;
