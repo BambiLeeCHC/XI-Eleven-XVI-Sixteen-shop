@@ -31,28 +31,27 @@ function readBox(node: HTMLElement): Box {
   const vw = document.documentElement.clientWidth;
   const vh = window.innerHeight;
   const header = 76;
-  const desktop = window.matchMedia("(min-width: 980px)").matches;
-  const column = node.closest(".pdp-copy")?.getBoundingClientRect();
+  const desktop = window.matchMedia("(min-width: 1024px)").matches;
+  const copy = node.closest(".pdp-copy");
+  const title = copy?.querySelector(".pdp-title")?.getBoundingClientRect();
+  const column = copy?.getBoundingClientRect();
+  const centerX = rect.left + rect.width / 2;
+  const room = Math.max(48, Math.min(centerX - 8, vw - centerX - 8) * 2);
 
   if (!desktop) {
-    const size = Math.min(268, vw - 28, vh * 0.42);
-    const chrome = 96;
-    const left = Math.max(8, (vw - size) / 2);
-    const top = Math.max(header + 6, (vh - size - chrome) / 2);
+    const size = Math.min(268, vw - 24, vh * 0.42, room);
+    const top = Math.max(header + 6, (vh - size - 96) / 2);
     const height = Math.max(72, rect.top - top + 2);
-    return { top, left, size, height };
+    return { top, left: centerX - size / 2, size, height };
   }
 
-  const bounds = column ?? rect;
-  const size = Math.min(250, Math.max(220, bounds.width - 36));
-  const chrome = 78;
-  const minLeft = bounds.left + 4;
-  const maxLeft = Math.max(minLeft, bounds.right - size - 4);
-  const preferred = rect.left + rect.width / 2 - size / 2;
-  const left = Math.min(Math.max(preferred, minLeft), maxLeft);
-  const top = Math.max(header + 8, rect.top - size - chrome);
-  const height = Math.max(64, rect.top - top + 2);
-  return { top, left, size, height };
+  const titleTop = Math.max(header + 4, title?.top ?? header + 8);
+  const span = Math.max(180, rect.top - titleTop);
+  const columnWidth = column?.width ?? rect.width;
+  const size = Math.min(300, columnWidth - 4, room, Math.max(210, span * 0.58));
+  const top = titleTop;
+  const height = Math.max(72, rect.top - top + 2);
+  return { top, left: centerX - size / 2, size, height };
 }
 
 export function VariantHologram({

@@ -650,6 +650,11 @@ export function ProductPage() {
             <p className="pdp-kicker">{style}</p>
             <h1 className="pdp-title">{displayProductName(product.name)}</h1>
             <p className="pdp-price">{formatPrice(product.price)}</p>
+            <p className="pdp-desc pdp-desc--desk">
+              {product.description?.trim() ||
+                "Cut and finished when you order it, in the colorway on this page."}{" "}
+              <Link to="/chart">True North is the same numbers, opened.</Link>
+            </p>
             <div className="pdp-buy">
               {sizeOptions.length > 0 ? (
                 <VariantHologram
@@ -682,11 +687,6 @@ export function ProductPage() {
                 checkout.
               </p>
             </div>
-            <p className="pdp-desc pdp-desc--desk">
-              {product.description?.trim() ||
-                "Cut and finished when you order it, in the colorway on this page."}{" "}
-              <Link to="/chart">True North is the same numbers, opened.</Link>
-            </p>
             <details className="pdp-fold">
               <summary>Description</summary>
               <p className="pdp-desc">
