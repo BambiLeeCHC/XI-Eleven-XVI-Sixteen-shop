@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { DEFAULT_LANDING_CONTENT } from "../data/landingContent";
 import {
@@ -104,167 +104,153 @@ function highlightCopy(key: string): {
   }
 }
 
+
+const LENSES: { id: string; label: string; match: (key: string) => boolean }[] = [
+  { id: "all", label: "All", match: () => true },
+  { id: "women", label: "Women", match: key => ["D-Slip", "B-Lift", "L-Flow"].includes(key) },
+  { id: "men", label: "Men", match: key => key.startsWith("J-") || key.startsWith("S-") || key.startsWith("T-") },
+  { id: "dress", label: "Dress", match: key => key === "D-Slip" },
+  { id: "bra", label: "Bra", match: key => key === "B-Lift" },
+  { id: "legging", label: "Legging", match: key => key === "L-Flow" },
+  { id: "jersey", label: "Jersey", match: key => key === "J-Glitch" },
+  { id: "short", label: "Short", match: key => key.startsWith("S-Glitch") },
+  { id: "tee", label: "Tee", match: key => key.startsWith("T-Icon") },
+];
+
 export function ProductHighlight({
   products,
 }: {
   products: HighlightProduct[] | undefined;
 }) {
-  const groups = useMemo(
-    () => groupProductsByStyle(products ?? []),
-    [products],
-  );
-  const preferredKey =
-    groups.find(g => g.key === "B-Lift")?.key ?? groups[0]?.key ?? null;
+  const groups = useMemo(() => groupProductsByStyle(products ?? []), [products]);
+  const [lens, setLens] = useState("all");
   const [activeKey, setActiveKey] = useState<string | null>(null);
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [flash, setFlash] = useState(0);
 
-  const current =
-    groups.find(g => g.key === (activeKey ?? preferredKey)) ?? groups[0];
-  const selected =
-    current?.items.find(p => p._id === selectedId) ?? current?.items[0];
+  const visible = useMemo(() => {
+    const rule = LENSES.find(item => item.id === lens) ?? LENSES[0];
+    const next = groups.filter(group => rule.match(group.key));
+    return next.length ? next : groups;
+  }, [groups, lens]);
+
+  const current = visible.find(group => group.key === activeKey) ?? visible[0];
+  const selected = current?.items.find(item => item._id === selectedId) ?? current?.items[0];
+
+  useEffect(() => {
+    if (!current) return;
+    if (!visible.some(group => group.key === current.key)) {
+      setActiveKey(visible[0]?.key ?? null);
+      setSelectedId(visible[0]?.items[0]?._id ?? null);
+    }
+  }, [visible, current]);
 
   if (!current || !selected) return null;
 
   const copy = highlightCopy(current.key);
   const facts = [...copy.facts];
-  if (
-    current.items.length > 1 &&
-    !facts.some(line => line.toLowerCase().includes("color"))
-  ) {
-    facts.push(`${colorCountLabel(current.items.length)}.`);
+  if (current.items.length > 1 && !facts.some(line => line.toLowerCase().includes("color"))) {
+    facts.push(colorCountLabel(current.items.length));
   }
+  const index = visible.findIndex(group => group.key === current.key);
+
+  const choose = (key: string, id: string | null) => {
+    setActiveKey(key);
+    setSelectedId(id);
+    setFlash(value => value + 1);
+  };
 
   return (
-    <section
-      className="style-index style-index--short"
-      style={{ background: "var(--cream)", color: "#0B0B0C" }}
-    >
-      <aside
-        className="style-index__rail"
-        style={{
-          background: "var(--cream)",
-          borderRight: "4px solid var(--pist)",
-        }}
-      >
-        <p className="label-lock style-index__label" style={{ color: "#6b6358" }}>
-          Style index
+    <section className="fx-index" id="index">
+      <header className="fx-index__head">
+        <div>
+          <p className="label-lock">Fashion index</p>
+          <h2 className="clash fx-index__title">The cuts.</h2>
+        </div>
+        <p className="fx-index__count">
+          {String(index + 1).padStart(2, "0")} / {String(visible.length).padStart(2, "0")}
         </p>
-        {groups.map(group => {
-          const on = group.key === current.key;
-          const price = group.items[0]?.price;
-          return (
-            <button
-              type="button"
-              key={group.key}
-              onClick={() => {
-                setActiveKey(group.key);
-                setSelectedId(group.items[0]?._id ?? null);
-              }}
-              className={`style-index__item ${on ? "is-on" : ""}`}
-              style={{
-                color: on ? "#0B0B0C" : "#6b6358",
-                background: on ? "rgba(216,240,196,0.55)" : "transparent",
-              }}
-            >
-              <span
-                className="style-index__dot"
-                style={{ background: on ? "#0B0B0C" : "#c9bfb3" }}
-              />
-              <span className="clash style-index__name">{group.key}</span>
-              <span className="style-index__price">
-                {price ? formatPrice(price) : "—"}
-              </span>
-            </button>
-          );
-        })}
-      </aside>
+      </header>
 
-      <div className="style-index__frame">
-        <div
-          className="style-index__stage product-stage"
-          style={{ background: "var(--cream)" }}
-        >
+      <div className="fx-index__lenses" role="tablist" aria-label="Categories">
+        {LENSES.map(item => (
+          <button
+            key={item.id}
+            type="button"
+            role="tab"
+            aria-selected={lens === item.id}
+            className={lens === item.id ? "is-on" : undefined}
+            onClick={() => {
+              setLens(item.id);
+              setActiveKey(null);
+              setSelectedId(null);
+            }}
+          >
+            {item.label}
+          </button>
+        ))}
+      </div>
+
+      <div className="fx-index__body">
+        <aside className="fx-index__rail" aria-label="Styles">
+          {visible.map((group, i) => {
+            const on = group.key === current.key;
+            return (
+              <button
+                key={group.key}
+                type="button"
+                className={on ? "is-on" : undefined}
+                onClick={() => choose(group.key, group.items[0]?._id ?? null)}
+              >
+                <span>{String(i + 1).padStart(2, "0")}</span>
+                <strong>{group.key}</strong>
+                <em>{formatPrice(group.items[0]?.price)}</em>
+              </button>
+            );
+          })}
+        </aside>
+
+        <div className="fx-index__stage">
+          {flash > 0 ? <span key={flash} className="fx-index__flash" aria-hidden="true" /> : null}
           {selected.images?.[0] ? (
             <img
-              src={hiResProductImage(selected.images[0], 1600)}
+              src={hiResProductImage(selected.images[0], 1400)}
               alt={displayProductName(selected.name)}
-              className="product-stage__shot"
-              decoding="async"
             />
           ) : null}
-          <span className="product-stage__grain" aria-hidden="true" />
-        </div>
-
-        <div
-          className="style-index__sheet relative grid gap-5 md:grid-cols-[1.2fr_auto] items-end"
-          style={{
-            background: "var(--cream)",
-            color: "#0B0B0C",
-            border: "3px solid #0B0B0C",
-            padding: "18px 20px",
-          }}
-        >
-          <div>
-            <p className="label-lock mb-2" style={{ color: "#6b6358" }}>
-              {copy.eyebrow}
-            </p>
-            <p className="clash" style={{ fontSize: "clamp(36px, 5vw, 64px)" }}>
-              {current.key}
-            </p>
-            <p
-              className="serif-quiet mt-1"
-              style={{ fontSize: 22, textTransform: "none" }}
-            >
-              {copy.accent}
-            </p>
-            <ul className="mt-3 space-y-1">
-              {facts.slice(0, 4).map(line => (
-                <li key={line} className="serif-quiet text-[17px]">
-                  {line}
-                </li>
+          <div className="fx-index__sheet">
+            <p className="label-lock">{copy.eyebrow}</p>
+            <p className="clash fx-index__name">{current.key}</p>
+            <p className="serif-quiet fx-index__accent">{copy.accent}</p>
+            <ul>
+              {facts.slice(0, 3).map(line => (
+                <li key={line}>{line}</li>
               ))}
             </ul>
             {current.items.length > 1 ? (
-              <div className="mt-4">
-                <p className="label-lock mb-2" style={{ color: "#6b6358" }}>
-                  Select a colour
-                </p>
-                <div className="flex gap-2.5 flex-wrap">
-                  {current.items.map(item => {
-                    const color = colorFromName(item.name) || item.name;
-                    const on = item._id === selected._id;
-                    return (
-                      <button
-                        type="button"
-                        key={item._id}
-                        aria-label={color}
-                        className={`snap ${on ? "on" : ""}`}
-                        style={{
-                          background: snapHex(color),
-                          borderColor: "#0B0B0C",
-                        }}
-                        onClick={() => setSelectedId(item._id)}
-                      />
-                    );
-                  })}
-                </div>
+              <div className="fx-index__colors">
+                {current.items.map(item => {
+                  const color = colorFromName(item.name) || item.name;
+                  const on = item._id === selected._id;
+                  return (
+                    <button
+                      key={item._id}
+                      type="button"
+                      aria-label={color}
+                      className={`snap${on ? " on" : ""}`}
+                      style={{ background: snapHex(color) }}
+                      onClick={() => setSelectedId(item._id)}
+                    />
+                  );
+                })}
               </div>
             ) : null}
-          </div>
-          <div className="flex flex-col items-start md:items-end gap-3">
-            <p
-              className="clash"
-              style={{ fontSize: 42, letterSpacing: "-0.06em" }}
-            >
-              {formatPrice(selected.price)}
-            </p>
-            <Link
-              to={`/product/${selected._id}`}
-              className="cta-pist text-center"
-              style={{ boxShadow: "5px 5px 0 var(--blush)" }}
-            >
-              Shop {current.key}
-            </Link>
+            <div className="fx-index__buy">
+              <p className="clash">{formatPrice(selected.price)}</p>
+              <Link to={`/product/${selected._id}`} className="cta-pist">
+                Shop {current.key}
+              </Link>
+            </div>
           </div>
         </div>
       </div>
