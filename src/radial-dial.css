@@ -1,7 +1,13 @@
 .radial-dial {
-  width: min(100%, 24rem);
+  width: min(100%, 320px);
   margin-inline: auto;
   color: #f7f0e6;
+}
+
+.radial-dial__fit {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1;
 }
 
 .radial-dial__title {
@@ -15,11 +21,13 @@
 }
 
 .radial-dial__stage {
-  position: relative;
-  width: min(100%, 22.5rem);
-  aspect-ratio: 1;
-  margin-inline: auto;
-  container-type: size;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 320px;
+  height: 320px;
+  transform: scale(var(--dial-scale, 1));
+  transform-origin: top left;
 }
 
 .radial-dial__sheen,
@@ -96,7 +104,7 @@
 .radial-dial__hub-label {
   font-family: "Fraunces", Georgia, serif;
   font-style: italic;
-  font-size: clamp(1.35rem, 8cqmin, 2rem);
+  font-size: 1.45rem;
   line-height: 1;
   max-width: 8ch;
   overflow-wrap: anywhere;
@@ -136,12 +144,12 @@
 
 .radial-dial__tick--size {
   --step: var(--size-step);
-  --tick-r: 38cqmin;
+  --tick-r: 7.5rem;
 }
 
 .radial-dial__tick--color {
   --step: var(--color-step);
-  --tick-r: 27cqmin;
+  --tick-r: 4.7rem;
   width: 3.1rem;
   height: 3.1rem;
   margin: -1.55rem 0 0 -1.55rem;
@@ -236,5 +244,88 @@
   }
   to {
     opacity: 1;
+  }
+}
+
+/* After a size is chosen, that ring shrinks and color takes the outer ring. */
+.radial-dial__orbit--size,
+.radial-dial__orbit--color {
+  transition: inset 0.45s ease, opacity 0.45s ease;
+}
+
+.radial-dial:not(.is-color) .radial-dial__color-layer,
+.radial-dial:not(.is-color) .radial-dial__tick--color {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.radial-dial.is-color .radial-dial__orbit--size {
+  inset: 42%;
+  opacity: 0.3;
+}
+
+.radial-dial.is-color .radial-dial__tick--size {
+  pointer-events: none;
+  animation: dial-size-away 0.45s ease both;
+}
+
+.radial-dial.is-color .radial-dial__orbit--color {
+  inset: 6%;
+}
+
+.radial-dial.is-color .radial-dial__tick--color {
+  pointer-events: auto;
+  animation: dial-color-forward 0.5s ease both;
+}
+
+.radial-dial__back {
+  position: absolute;
+  z-index: 6;
+  left: 0;
+  top: 50%;
+  width: 44px;
+  height: 44px;
+  margin-top: -22px;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: #f7f0e6;
+  font-size: 22px;
+  cursor: pointer;
+  animation: dial-back-loop 1.6s ease-in-out infinite;
+}
+
+@keyframes dial-size-away {
+  from { opacity: 1; }
+  to {
+    opacity: 0;
+    transform: rotate(calc(var(--i) * var(--step, 60deg))) translateY(-2.2rem) rotate(calc(var(--i) * var(--step, 60deg) * -1));
+  }
+}
+
+@keyframes dial-color-forward {
+  from {
+    opacity: 0;
+    transform: rotate(calc(var(--i) * var(--step, 60deg))) translateY(-2rem) rotate(calc(var(--i) * var(--step, 60deg) * -1));
+  }
+  to {
+    opacity: 1;
+    transform: rotate(calc(var(--i) * var(--step, 60deg))) translateY(-7.5rem) rotate(calc(var(--i) * var(--step, 60deg) * -1));
+  }
+}
+
+@keyframes dial-back-loop {
+  0%, 100% { opacity: 0.28; }
+  50% { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .radial-dial__back { animation: none; opacity: 1; }
+  .radial-dial.is-color .radial-dial__tick--size,
+  .radial-dial.is-color .radial-dial__tick--color { animation: none; }
+  .radial-dial.is-color .radial-dial__tick--size { opacity: 0; }
+  .radial-dial.is-color .radial-dial__tick--color {
+    opacity: 1;
+    --tick-r: 7.5rem;
   }
 }
