@@ -448,7 +448,7 @@
   box-shadow: none;
 }
 
-@media (max-width: 979px) {
+@media (max-width: 1023px) {
   .pdp {
     width: calc(100% - 20px);
     margin-bottom: 28px;
@@ -525,7 +525,7 @@
   }
 }
 
-@media (min-width: 980px) {
+@media (min-width: 1024px) {
   .pdp {
     width: min(1180px, calc(100% - 80px));
     padding-top: 18px;
@@ -541,6 +541,20 @@
     position: sticky;
     top: 96px;
     padding-top: 8px;
+  }
+
+  .pdp-desc--desk,
+  .pdp-buy {
+    max-width: none;
+    width: 100%;
+  }
+
+  .pdp-desc--desk {
+    margin-top: 16px;
+  }
+
+  .pdp-buy {
+    margin-top: 22px;
   }
 
   .pdp-gallery__dots,
@@ -654,7 +668,13 @@
 .holo-projection {
   position: relative;
   z-index: 1;
+  width: 100%;
   pointer-events: auto;
+}
+
+.holo .radial-dial {
+  width: 100%;
+  margin-inline: 0;
 }
 
 .holo-glow {
