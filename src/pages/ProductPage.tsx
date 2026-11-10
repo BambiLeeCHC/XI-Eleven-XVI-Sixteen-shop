@@ -57,6 +57,7 @@ function Product360Viewer({
   const dragStartX = useRef(0);
   const dragStartIndex = useRef(0);
   const containerRef = useRef<HTMLDivElement>(null);
+  const gallerySwipe = useRef<{ x: number; y: number } | null>(null);
   const autoRotateInterval = useRef<ReturnType<typeof setInterval> | null>(
     null,
   );
@@ -130,12 +131,36 @@ function Product360Viewer({
   const onMouseUp = () => handleDragEnd();
   const onMouseLeave = () => handleDragEnd();
 
-  // Touch events
-  const onTouchStart = (e: React.TouchEvent) =>
-    handleDragStart(e.touches[0].clientX);
-  const onTouchMove = (e: React.TouchEvent) =>
-    handleDragMove(e.touches[0].clientX);
-  const onTouchEnd = () => handleDragEnd();
+  const onTouchStart = (e: React.TouchEvent) => {
+    if (is360Mode) {
+      handleDragStart(e.touches[0].clientX);
+      return;
+    }
+    gallerySwipe.current = {
+      x: e.touches[0].clientX,
+      y: e.touches[0].clientY,
+    };
+  };
+  const onTouchMove = (e: React.TouchEvent) => {
+    if (is360Mode) handleDragMove(e.touches[0].clientX);
+  };
+  const onTouchEnd = (e: React.TouchEvent) => {
+    if (is360Mode) {
+      handleDragEnd();
+      return;
+    }
+    const start = gallerySwipe.current;
+    gallerySwipe.current = null;
+    if (!start || images.length < 2) return;
+    const dx = e.changedTouches[0].clientX - start.x;
+    const dy = e.changedTouches[0].clientY - start.y;
+    if (Math.abs(dx) < 36 || Math.abs(dx) < Math.abs(dy)) return;
+    setCurrentIndex(index =>
+      dx < 0
+        ? (index + 1) % images.length
+        : (index - 1 + images.length) % images.length,
+    );
+  };
 
   const enter360 = () => {
     setIs360Mode(true);
@@ -259,6 +284,22 @@ function Product360Viewer({
           </button>
         )}
       </div>
+
+      {!is360Mode && images.length > 1 && (
+        <div className="pdp-gallery__dots" role="tablist" aria-label="Photos">
+          {images.map((_, i) => (
+            <button
+              type="button"
+              key={i}
+              role="tab"
+              aria-selected={i === currentIndex}
+              aria-label={`Photo ${i + 1}`}
+              className={i === currentIndex ? "is-on" : ""}
+              onClick={() => setCurrentIndex(i)}
+            />
+          ))}
+        </div>
+      )}
 
       {!is360Mode && (images.length > 1 || has360) && (
         <div className="pdp-gallery__thumbs">
@@ -609,14 +650,6 @@ export function ProductPage() {
             <p className="pdp-kicker">{style}</p>
             <h1 className="pdp-title">{displayProductName(product.name)}</h1>
             <p className="pdp-price">{formatPrice(product.price)}</p>
-            <p className="pdp-lead">
-              Made on demand.{" "}
-              <Link to="/chart">True North is the same numbers, opened.</Link>
-            </p>
-            <p className="pdp-desc">
-              {product.description?.trim() ||
-                "Cut and finished when you order it, in the colorway on this page."}
-            </p>
             <div className="pdp-buy">
               {sizeOptions.length > 0 ? (
                 <VariantHologram
@@ -645,10 +678,23 @@ export function ProductPage() {
                       : "Add to cart"}
               </button>
               <p className="pdp-note">
-                Estimated delivery {deliveryWindow}. Made on demand, with
-                tracked shipping calculated at checkout.
+                Estimated delivery {deliveryWindow}. Tracked shipping at
+                checkout.
               </p>
             </div>
+            <p className="pdp-desc pdp-desc--desk">
+              {product.description?.trim() ||
+                "Cut and finished when you order it, in the colorway on this page."}{" "}
+              <Link to="/chart">True North is the same numbers, opened.</Link>
+            </p>
+            <details className="pdp-fold">
+              <summary>Description</summary>
+              <p className="pdp-desc">
+                {product.description?.trim() ||
+                  "Cut and finished when you order it, in the colorway on this page."}{" "}
+                <Link to="/chart">True North is the same numbers, opened.</Link>
+              </p>
+            </details>
             <details className="pdp-fit">
               <summary>Fit guide</summary>
               <div className="pdp-fit-card">
