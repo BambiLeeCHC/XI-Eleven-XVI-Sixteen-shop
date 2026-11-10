@@ -869,3 +869,21 @@ body {
   .home-hero__flash, .fx-index__flash { animation: none; display: none; }
   .home-hero__photo { transition: none; }
 }
+
+
+/* Slideshow type sits in one column and does not run into the frame numbers. */
+.home-hero__copy .kicker-lock {
+  display: block;
+  max-width: 22ch;
+  line-height: 1.35;
+}
+.home-hero__copy .hero-title-lock {
+  font-size: clamp(34px, 7vw, 64px) !important;
+  line-height: 0.95 !important;
+  max-width: 11ch;
+  text-wrap: balance;
+}
+.home-hero__copy .hero-sub-lock {
+  max-width: 24ch;
+  margin-top: 10px;
+}
