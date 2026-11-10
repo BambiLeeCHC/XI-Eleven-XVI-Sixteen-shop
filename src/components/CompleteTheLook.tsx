@@ -1,7 +1,9 @@
+import { useRef } from "react";
 import { Link } from "react-router-dom";
 import { getProductPairings } from "../data/productPairings";
 import { api, useQuery } from "../lib/backend";
 import {
+  displayProductName,
   formatPrice,
   groupProductsByStyle,
   styleKeyFromName,
@@ -71,47 +73,89 @@ function Section({
   products: Product[];
   className?: string;
 }) {
+  const track = useRef<HTMLDivElement>(null);
+  const drag = useRef({ x: 0, left: 0, active: false });
+
+  const scrollByCard = (direction: number) => {
+    const node = track.current;
+    if (!node) return;
+    node.scrollBy({
+      left: direction * Math.min(280, node.clientWidth * 0.8),
+      behavior: "smooth",
+    });
+  };
+
   return (
-    <div className={className}>
-      <h2 className="label-lock mb-6" style={{ color: "var(--pist)" }}>
-        {title}
-      </h2>
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+    <section className={`pdp-rail ${className}`.trim()} aria-label={title}>
+      <div className="pdp-rail__head">
+        <h2>{title}</h2>
+        <div className="pdp-rail__arrows">
+          <button
+            type="button"
+            aria-label={`Previous in ${title}`}
+            onClick={() => scrollByCard(-1)}
+          >
+            ‹
+          </button>
+          <button
+            type="button"
+            aria-label={`Next in ${title}`}
+            onClick={() => scrollByCard(1)}
+          >
+            ›
+          </button>
+        </div>
+      </div>
+      <div
+        className="pdp-rail__track"
+        ref={track}
+        onPointerDown={event => {
+          if (event.pointerType === "touch" || !track.current) return;
+          drag.current = {
+            x: event.clientX,
+            left: track.current.scrollLeft,
+            active: true,
+          };
+          track.current.setPointerCapture(event.pointerId);
+        }}
+        onPointerMove={event => {
+          if (!drag.current.active || !track.current) return;
+          track.current.scrollLeft =
+            drag.current.left - (event.clientX - drag.current.x);
+        }}
+        onPointerUp={() => {
+          drag.current.active = false;
+        }}
+        onPointerCancel={() => {
+          drag.current.active = false;
+        }}
+      >
         {products.map(product => (
           <Link
             key={product._id}
             to={`/product/${product._id}`}
-            className="group block"
+            className="pdp-card"
           >
-            <div
-              className="aspect-[3/4] overflow-hidden mb-3 product-stage transition-transform group-hover:scale-[1.02]"
-              style={{
-                border: "1px solid rgba(247,240,230,0.16)",
-                background: "rgba(12,14,18,0.4)",
-                borderRadius: 22,
-              }}
-            >
-              {product.images[0] && (
+            <span className="pdp-card__photo">
+              {product.images[0] ? (
                 <img
-                  src={hiResProductImage(product.images[0], 800)}
-                  alt={product.name}
-                  className="w-full h-full object-contain"
-                  loading="lazy"
+                  src={hiResProductImage(product.images[0], 640)}
+                  alt=""
+                  draggable={false}
                 />
+              ) : (
+                <span aria-hidden="true">✦</span>
               )}
-            </div>
-            <p className="clash text-[22px] normal-case">
-              {styleKeyFromName(product.name)}
-            </p>
-            <p
-              className="serif-quiet text-[15px] mt-1"
-              style={{ color: "var(--mute)" }}
-            >
+            </span>
+            <span className="pdp-card__name">
+              {displayProductName(product.name)}
+            </span>
+            <span className="pdp-card__price">
               {formatPrice(product.price)}
-            </p>
+            </span>
           </Link>
         ))}
       </div>
-    </div>
+    </section>
   );
 }

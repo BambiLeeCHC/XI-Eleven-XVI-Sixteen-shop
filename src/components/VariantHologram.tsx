@@ -29,20 +29,29 @@ function reducedMotion() {
 function readBox(node: HTMLElement): Box {
   const rect = node.getBoundingClientRect();
   const vw = document.documentElement.clientWidth;
-  const header = 84;
-  const chrome = 112;
-  const room = Math.max(150, rect.top - header - 12);
-  const size = Math.min(
-    320,
-    Math.max(188, vw - 20),
-    Math.max(188, room - chrome),
-  );
-  const left = Math.min(
-    Math.max(rect.left + rect.width / 2 - size / 2, 8),
-    Math.max(8, vw - size - 8),
-  );
-  const top = Math.max(header, rect.top - size - chrome);
-  const height = Math.max(48, rect.top - top + 2);
+  const vh = window.innerHeight;
+  const header = 76;
+  const desktop = window.matchMedia("(min-width: 980px)").matches;
+  const column = node.closest(".pdp-copy")?.getBoundingClientRect();
+
+  if (!desktop) {
+    const size = Math.min(268, vw - 28, vh * 0.42);
+    const chrome = 96;
+    const left = Math.max(8, (vw - size) / 2);
+    const top = Math.max(header + 6, (vh - size - chrome) / 2);
+    const height = Math.max(72, rect.top - top + 2);
+    return { top, left, size, height };
+  }
+
+  const bounds = column ?? rect;
+  const size = Math.min(250, Math.max(220, bounds.width - 36));
+  const chrome = 78;
+  const minLeft = bounds.left + 4;
+  const maxLeft = Math.max(minLeft, bounds.right - size - 4);
+  const preferred = rect.left + rect.width / 2 - size / 2;
+  const left = Math.min(Math.max(preferred, minLeft), maxLeft);
+  const top = Math.max(header + 8, rect.top - size - chrome);
+  const height = Math.max(64, rect.top - top + 2);
   return { top, left, size, height };
 }
 
@@ -310,17 +319,19 @@ export function VariantHologram({
                     }}
                     onCommitSize={sizeId => beginClose({ sizeId, colorId: "" })}
                   />
-                  {colors.length > 0 ? (
+                  {colors.length > 0 && draftSize ? (
                     <p className="holo-hint">{hint}</p>
                   ) : null}
-                  <button
-                    type="button"
-                    className="holo-confirm"
-                    disabled={!canConfirm}
-                    onClick={confirm}
-                  >
-                    {confirmLabel}
-                  </button>
+                  {draftSize || colors.length === 0 ? (
+                    <button
+                      type="button"
+                      className="holo-confirm"
+                      disabled={!canConfirm}
+                      onClick={confirm}
+                    >
+                      {confirmLabel}
+                    </button>
+                  ) : null}
                 </div>
               </div>
             </div>,
