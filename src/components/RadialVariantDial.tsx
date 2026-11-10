@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { nextEnabledIndex, ringStep } from "../lib/radialDial";
 
 export type DialOption = {
@@ -55,6 +55,22 @@ export function RadialVariantDial({
 }: Props) {
   const sizeRefs = useRef<Record<string, HTMLButtonElement | null>>({});
   const colorRefs = useRef<Record<string, HTMLButtonElement | null>>({});
+  const fitRef = useRef<HTMLDivElement>(null);
+  const [scale, setScale] = useState(1);
+  const [view, setView] = useState<"size" | "color">("size");
+
+  useEffect(() => {
+    const node = fitRef.current;
+    if (!node) return;
+    const measure = () => {
+      const width = node.getBoundingClientRect().width;
+      setScale(width > 0 ? Math.min(1, width / 320) : 1);
+    };
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, []);
   const size = sizes.find(option => option.id === sizeId);
   const color = colors.find(option => option.id === colorId);
   const open = Boolean(size) && colors.length > 0;
@@ -64,15 +80,34 @@ export function RadialVariantDial({
   const hubLabel = color ? color.label : size ? size.label : "Size";
   const hubKicker = color ? size?.label : size ? "Size" : "";
 
+  const pickSize = (id: string) => {
+    onSize(id);
+    if (colors.length > 0) setView("color");
+  };
+
+  const colorFocused = view === "color" && colors.length > 0;
+
   return (
-    <div className={`radial-dial${open ? " is-open" : ""}`}>
-      <p className="radial-dial__title">Select a size</p>
+    <div className={`radial-dial${open ? " is-open" : ""}${colorFocused ? " is-color" : ""}`}>
+      <p className="radial-dial__title">{colorFocused ? "Select a color" : "Select a size"}</p>
+      <div className="radial-dial__fit" ref={fitRef}>
+      {colorFocused ? (
+        <button
+          type="button"
+          className="radial-dial__back"
+          aria-label="Back to sizes"
+          onClick={() => setView("size")}
+        >
+          <span aria-hidden="true">←</span>
+        </button>
+      ) : null}
       <div
         className="radial-dial__stage"
         style={
           {
             "--size-step": `${sizeStep}deg`,
             "--color-step": `${colorStep}deg`,
+            "--dial-scale": scale,
           } as React.CSSProperties
         }
       >
@@ -122,9 +157,9 @@ export function RadialVariantDial({
                 tabIndex={selected || (!sizeId && index === 0) ? 0 : -1}
                 className={`radial-dial__tick radial-dial__tick--size${selected ? " is-on" : ""}${option.available ? "" : " is-off"}`}
                 style={{ "--i": index } as React.CSSProperties}
-                onClick={() => option.available && onSize(option.id)}
+                onClick={() => option.available && pickSize(option.id)}
                 onKeyDown={event =>
-                  move(event, sizes, sizeId, onSize, sizeRefs)
+                  move(event, sizes, sizeId, pickSize, sizeRefs)
                 }
               >
                 {option.label}
@@ -172,6 +207,7 @@ export function RadialVariantDial({
             })}
           </div>
         ) : null}
+      </div>
       </div>
       <p className="radial-dial__status">
         {!size
