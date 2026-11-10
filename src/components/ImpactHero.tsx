@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import {
   CAMPAIGN_KICKER,
@@ -13,41 +14,119 @@ import {
 
 export type HeroColorItem = { _id: string; name: string };
 
+export type HeroFrame = {
+  src: string;
+  kicker: string;
+  title: string;
+  sub: string;
+  href: string;
+  cta: string;
+};
+
 export function ImpactHero({
   dslipHref,
   dslipPrice,
   dslipColors = [],
+  frames,
 }: {
   dslipHref: string;
   dslipPrice?: number;
   dslipColors?: HeroColorItem[];
   showDial?: boolean;
+  frames?: HeroFrame[];
 }) {
   const colorCount = dslipColors.length;
   const priceLabel = dslipPrice ? formatPrice(dslipPrice) : "$98";
+  const reel: HeroFrame[] = frames?.length
+    ? frames
+    : [{
+        src: IMPACT_HERO_URL,
+        kicker: CAMPAIGN_KICKER,
+        title: HERO_TITLE,
+        sub: HERO_SUB,
+        href: dslipHref,
+        cta: `Shop D-Slip · ${priceLabel}`,
+      }];
+  const [index, setIndex] = useState(0);
+  const [flash, setFlash] = useState(0);
+  const [reduced, setReduced] = useState(false);
+  const startX = useRef(0);
+  const frame = reel[index % reel.length];
+
+  useEffect(() => {
+    const media = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const apply = () => setReduced(media.matches);
+    apply();
+    media.addEventListener("change", apply);
+    return () => media.removeEventListener("change", apply);
+  }, []);
+
+  useEffect(() => {
+    if (reduced || reel.length < 2) return;
+    const timer = window.setInterval(() => {
+      setIndex(current => (current + 1) % reel.length);
+      setFlash(value => value + 1);
+    }, 4800);
+    return () => window.clearInterval(timer);
+  }, [reduced, reel.length]);
+
+  const go = (next: number) => {
+    setIndex((next + reel.length) % reel.length);
+    if (!reduced) setFlash(value => value + 1);
+  };
 
   return (
     <>
-      <section className="home-hero">
-        <img
-          src={IMPACT_HERO_URL}
-          alt="UNBOTHERED — The Impact"
-          className="home-hero__photo"
-        />
+      <section
+        className="home-hero"
+        onTouchStart={event => {
+          startX.current = event.changedTouches[0]?.clientX ?? 0;
+        }}
+        onTouchEnd={event => {
+          const dx = (event.changedTouches[0]?.clientX ?? 0) - startX.current;
+          if (dx > 48) go(index - 1);
+          if (dx < -48) go(index + 1);
+        }}
+      >
+        {reel.map((item, i) => (
+          <img
+            key={item.src + item.title}
+            src={item.src}
+            alt=""
+            className={`home-hero__photo${i === index % reel.length ? " is-on" : ""}`}
+          />
+        ))}
+        {flash > 0 ? <span key={flash} className="home-hero__flash" aria-hidden="true" /> : null}
         <div className="home-hero__shade" />
         <div className="home-hero__copy">
-          <span className="kicker-lock">{CAMPAIGN_KICKER}</span>
-          <h1 className="hero-title-lock">{HERO_TITLE}</h1>
-          <p className="hero-sub-lock">{HERO_SUB}</p>
+          <span className="kicker-lock">{frame.kicker}</span>
+          <h1 className="hero-title-lock">{frame.title}</h1>
+          <p className="hero-sub-lock">{frame.sub}</p>
           <div className="home-hero__actions">
-            <Link to={dslipHref} className="cta-pist">
-              Shop D-Slip · {priceLabel}
+            <Link to={frame.href} className="cta-pist">
+              {frame.cta}
             </Link>
             <Link to="/shop" className="cta-ghost">
               All styles
             </Link>
           </div>
         </div>
+        {reel.length > 1 ? (
+          <div className="home-hero__film" role="tablist" aria-label="Campaign frames">
+            {reel.map((item, i) => (
+              <button
+                key={item.title + i}
+                type="button"
+                role="tab"
+                aria-selected={i === index % reel.length}
+                className={i === index % reel.length ? "is-on" : undefined}
+                onClick={() => go(i)}
+              >
+                {String(i + 1).padStart(2, "0")}
+              </button>
+            ))}
+          </div>
+        ) : null}
       </section>
       <section className="home-strip">
         {colorCount > 0 ? (
