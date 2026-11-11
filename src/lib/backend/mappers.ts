@@ -28,6 +28,7 @@ export function mapProduct(row: Row | null | undefined) {
     sizes: row.sizes ?? [],
     printfulProductId: row.printful_product_id ?? undefined,
     printfulVariants: row.printful_variants ?? undefined,
+    familyId: row.family_id ?? undefined,
     stripeProductId: row.stripe_product_id ?? undefined,
     stripePriceId: row.stripe_price_id ?? undefined,
     isActive: row.is_active,

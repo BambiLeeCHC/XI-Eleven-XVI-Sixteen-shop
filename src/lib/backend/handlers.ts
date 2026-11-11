@@ -276,6 +276,22 @@ export const handlers: Record<string, Handler> = {
   "numerology.get": async () => callApi("/api/chart", { kind: "numerology" }),
   "geocode.search": async ({ q }: { q: string }) => callApi("/api/chart", { kind: "geocode-search", q }),
 
+  "families.list": async () => {
+    const { data, error } = await supabase
+      .from("product_families")
+      .select("id, slug, name, gender, style_key, sort_order")
+      .order("sort_order", { ascending: true });
+    if (error) return [];
+    return (data ?? []).map(row => ({
+      id: row.id,
+      slug: row.slug,
+      name: row.name,
+      gender: row.gender,
+      styleKey: row.style_key,
+      sortOrder: row.sort_order ?? 0,
+    }));
+  },
+
   "products.list": async ({ gender, category } = {}) => {
     let query = supabase.from("products").select("*").eq("is_active", true);
     if (gender) query = query.eq("gender", gender);

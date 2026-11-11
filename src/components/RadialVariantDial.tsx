@@ -26,6 +26,8 @@ type Props = {
   selectOnTap?: boolean;
   /** Ask the dial to show the size ring or the color ring. */
   focus?: "size" | "color";
+  /** Shop dial: color ring first, then a separate size step. */
+  colorFirst?: boolean;
 };
 
 function finePointer() {
@@ -75,6 +77,7 @@ export function RadialVariantDial({
   titleId,
   selectOnTap,
   focus,
+  colorFirst,
 }: Props) {
   const sizeRefs = useRef<Record<string, HTMLButtonElement | null>>({});
   const colorRefs = useRef<Record<string, HTMLButtonElement | null>>({});
@@ -83,7 +86,11 @@ export function RadialVariantDial({
   previewCb.current = onPreviewId;
   const [scale, setScale] = useState(1);
   const [view, setView] = useState<"size" | "color">(
-    sizeId && colors.length > 0 ? "color" : "size",
+    colorFirst && colors.length > 0
+      ? "color"
+      : sizeId && colors.length > 0
+        ? "color"
+        : "size",
   );
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const [failedSrc, setFailedSrc] = useState<string | null>(null);
@@ -107,12 +114,19 @@ export function RadialVariantDial({
   const previewSrc = shown ? previews?.[shown.id] : undefined;
   const photo = previewSrc && previewSrc !== failedSrc ? previewSrc : "";
   const tint = colorFocused && shown?.hex ? shown.hex : "";
-  const open = Boolean(size) && colors.length > 0;
+  const colorLead = Boolean(colorFirst) && colors.length > 0;
+  const open = colorLead || (Boolean(size) && colors.length > 0);
   const sizeStep = ringStep(sizes.length);
   const colorStep = ringStep(colors.length);
 
   const hubLabel =
-    colorFocused && shown ? shown.label : size ? size.label : "Size";
+    colorFocused && shown
+      ? shown.label
+      : size
+        ? size.label
+        : colorFirst
+          ? "Color"
+          : "Size";
   const hubKicker =
     colorFocused && shown ? (size?.label ?? "") : size ? "Size" : "";
 
@@ -156,7 +170,7 @@ export function RadialVariantDial({
         {colorFocused ? "Select a color" : "Select a size"}
       </p>
       <div className="radial-dial__fit" ref={fitRef}>
-        {colorFocused ? (
+        {colorFocused && !colorFirst ? (
           <button
             type="button"
             className="radial-dial__back"
@@ -227,7 +241,7 @@ export function RadialVariantDial({
                   aria-label={
                     option.available
                       ? `Size ${option.label}`
-                      : `Size ${option.label}, unavailable`
+                      : `Size ${option.label}, sold out`
                   }
                   disabled={!option.available}
                   tabIndex={
@@ -271,7 +285,7 @@ export function RadialVariantDial({
                     aria-label={
                       option.available
                         ? `Color ${option.label}`
-                        : `Color ${option.label}, unavailable in this size`
+                        : `Color ${option.label}, sold out`
                     }
                     disabled={!option.available}
                     tabIndex={
@@ -329,13 +343,25 @@ export function RadialVariantDial({
         </div>
       </div>
       <p className="radial-dial__status">
-        {!size
-          ? "Choose a size on the ring."
-          : colors.length === 0
-            ? `${size.label} selected.`
-            : !shown
-              ? `${size.label} selected. Choose a color on the outer ring.`
-              : `${size.label} in ${shown.label}.`}
+        {colorLead && !size
+          ? shown
+            ? shown.available
+              ? shown.label
+              : `${shown.label} is sold out.`
+            : colors.some(option => !option.available)
+              ? "Choose a color. Lined-through colors are sold out."
+              : "Choose a color on the ring."
+          : !size
+            ? sizes.some(option => !option.available)
+              ? "Choose a size. Lined-through sizes are sold out."
+              : "Choose a size on the ring."
+            : colors.length === 0
+              ? size.available
+                ? `${size.label} selected.`
+                : `${size.label} is sold out.`
+              : !shown
+                ? `${size.label} selected. Choose a color on the outer ring.`
+                : `${size.label} in ${shown.label}.`}
       </p>
     </div>
   );

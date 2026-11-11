@@ -7,6 +7,7 @@
  * Anything else would be silently undone on every sync.
  */
 
+import { loadPrintfulStock } from "./_lib/inventory.js";
 import {
   type ApiRequest,
   type ApiResponse,
@@ -113,8 +114,13 @@ function categorize(name: string): { category: string; gender: string } {
 }
 
 export default async function handler(req: ApiRequest, res: ApiResponse) {
+  if (req.method === "GET") {
+    const stock = await loadPrintfulStock();
+    res.setHeader("Cache-Control", "public, max-age=60");
+    return res.status(200).json(stock);
+  }
   if (req.method !== "POST") {
-    res.setHeader("Allow", "POST");
+    res.setHeader("Allow", "GET, POST");
     return res.status(405).json({ error: "Method not allowed" });
   }
 

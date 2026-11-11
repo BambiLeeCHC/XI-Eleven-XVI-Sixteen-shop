@@ -171,9 +171,11 @@
 
 .radial-dial__tick.is-off,
 .radial-dial__tick:disabled {
-  opacity: 0.32;
+  opacity: 0.4;
+  color: #8a847c;
   cursor: not-allowed;
   text-decoration: line-through;
+  text-decoration-thickness: 2px;
 }
 
 .radial-dial__swatch {

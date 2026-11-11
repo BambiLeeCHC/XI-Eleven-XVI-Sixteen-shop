@@ -11,7 +11,7 @@
   width: min(640px, 100%);
   display: grid;
   justify-items: center;
-  gap: 18px;
+  gap: 42px;
 }
 
 .dial-gender {
@@ -63,12 +63,144 @@
   place-items: center;
 }
 
+.dial-rim {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  --tint: #e4d4f4;
+}
+
+.dial-rim__ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 12px solid color-mix(in srgb, var(--tint) 62%, #f7f0e6);
+  box-shadow:
+    inset 0 0 0 1px rgba(247, 240, 230, 0.28),
+    0 0 32px color-mix(in srgb, var(--tint) 45%, transparent);
+  pointer-events: none;
+}
+
+.dial-rim.is-armed .dial-rim__ring {
+  border-color: #d8f0c4;
+  box-shadow:
+    inset 0 0 0 1px rgba(216, 240, 196, 0.8),
+    0 0 36px rgba(216, 240, 196, 0.45);
+}
+
+.dial-rim__photo {
+  position: absolute;
+  inset: 18%;
+  border: 0;
+  padding: 0;
+  border-radius: 50%;
+  overflow: hidden;
+  background: #0b0d12;
+  cursor: pointer;
+}
+
+.dial-rim__photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+  display: block;
+}
+
+.dial-rim.is-off .dial-rim__photo img {
+  filter: grayscale(0.55) brightness(0.72);
+  opacity: 0.55;
+}
+
+.dial-rim__arrow {
+  position: absolute;
+  top: 50%;
+  z-index: 3;
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  border: 1px solid rgba(247, 240, 230, 0.5);
+  background: rgba(8, 10, 14, 0.78);
+  color: #f7f0e6;
+  cursor: pointer;
+  backdrop-filter: blur(10px);
+}
+
+.dial-rim__arrow svg {
+  width: 22px;
+  height: 22px;
+}
+
+.dial-rim__arrow--prev {
+  left: 0;
+  transform: translate(-50%, -50%);
+}
+
+.dial-rim__arrow--next {
+  right: 0;
+  transform: translate(50%, -50%);
+}
+
+.dial-rim__name {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: visible;
+}
+
+.dial-rim__name text {
+  fill: #f7f0e6;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  font-family: inherit;
+  stroke: rgba(8, 10, 14, 0.9);
+  stroke-width: 0.7px;
+  paint-order: stroke fill;
+}
+
+.dial-rim__hint {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -34px;
+  margin: 0;
+  min-height: 1.2em;
+  text-align: center;
+  font-size: 13px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(247, 240, 230, 0.78);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .dial-rim__photo img {
+    animation: dial-rim-in 0.28s ease;
+  }
+}
+
+@keyframes dial-rim-in {
+  from { opacity: 0.35; }
+  to { opacity: 1; }
+}
+
 .dial-cat,
 .dial-piece,
 .dial-variant {
   position: relative;
   width: 100%;
   height: 100%;
+}
+
+.dial-variant .radial-dial__status {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -34px;
+  margin: 0;
 }
 
 .dial-cat__ring,
@@ -91,7 +223,7 @@
 }
 
 .dial-cat__hub {
-  inset: 30%;
+  inset: 28%;
   display: grid;
   place-items: center;
   text-align: center;
@@ -100,16 +232,21 @@
   backdrop-filter: blur(12px);
   font-family: Fraunces, Georgia, serif;
   font-style: italic;
-  font-size: 1.4rem;
+  font-size: clamp(1rem, 2.4vw, 1.35rem);
+  line-height: 1.15;
+  padding: 0.4rem;
 }
 
 .dial-cat__seg {
   position: absolute;
   left: 50%;
   top: 50%;
-  width: 6.4rem;
+  width: 7.4rem;
   min-height: 44px;
-  margin: -22px 0 0 -3.2rem;
+  margin: -22px 0 0 -3.7rem;
+  padding: 6px 8px;
+  line-height: 1.15;
+  white-space: normal;
   border: 0;
   border-radius: 999px;
   background: rgba(8, 10, 14, 0.55);
@@ -286,6 +423,16 @@
   max-width: 100%;
   max-height: 360px;
   object-fit: contain;
+}
+
+@media (max-width: 700px) {
+  .dial-sheet__photo {
+    min-height: 0;
+  }
+
+  .dial-sheet__photo img {
+    max-height: 168px;
+  }
 }
 
 .dial-sheet__kicker {
