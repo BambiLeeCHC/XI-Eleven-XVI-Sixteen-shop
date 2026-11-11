@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { GroupReadRoom } from "../components/north/GroupReadRoom";
 import { CompassRose } from "../components/north/CompassRose";
 import { SkyAvatar } from "../components/north/SkyAvatar";
 import { AvatarStudio } from "../components/north/AvatarStudio";
@@ -7,7 +8,6 @@ import { TarotCardArt } from "../components/north/TarotCardArt";
 import { TrueNorthAtmosphere } from "../components/journal/TrueNorthAtmosphere";
 import { SEO } from "../components/SEO";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "../components/ui/dialog";
-import { FULL_DECK } from "../data/fullDeck";
 import { PAGE_SEO } from "../data/seoMeta";
 import { api, useAuthActions, useQuery } from "../lib/backend";
 import { celestialPortraitSvg } from "../lib/celestialAvatar";
@@ -38,7 +38,6 @@ import {
 } from "../lib/northSocial";
 import { supabase } from "../lib/supabase";
 import { ChartHomePage } from "./chart/ChartHomePage";
-import { CirclePage } from "./chart/CirclePage";
 import DeepReadingPage from "./DeepReadingPage";
 import { NumbersPage } from "./chart/NumbersPage";
 import { ProfileEditor } from "./chart/ProfileEditor";
@@ -48,17 +47,6 @@ const SIGNS = ["Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo", "Libra", "
 
 function atHandle(handle: string) {
   return `@${handle.trim().replace(/^@+/, "")}`;
-}
-
-function drawCards(count: number) {
-  const copy = [...FULL_DECK];
-  const picked: string[] = [];
-  for (let i = 0; i < count && copy.length; i += 1) {
-    const index = Math.floor(Math.random() * copy.length);
-    const card = copy.splice(index, 1)[0];
-    if (card) picked.push(card.name);
-  }
-  return picked;
 }
 
 function portraitFor(name: string, handle: string, sign: string, youHandle: string, youSrc: string) {
@@ -144,7 +132,7 @@ function PostCard({
   return (
     <article className="tn-card north-post">
       <header className="north-post__who">
-        {post.kind === "tandem" ? (
+        {post.kind === "tandem" && !post.title.startsWith("Group Read") ? (
           <div className="tandem-lockup" aria-label={`You × ${post.author}`}>
             <SkyAvatar name="You" sign={post.sign} src={youSrc} size={42} />
             <span aria-hidden="true">×</span>
@@ -205,7 +193,6 @@ export function NorthSocialPage() {
   const [story, setStory] = useState<string | null>(null);
   const [note, setNote] = useState<Record<string, string>>({});
   const [friend, setFriend] = useState({ name: "", handle: "", sun: "Aries", moon: "Cancer", rising: "Libra" });
-  const [pull, setPull] = useState<string[]>([]);
   const [filter, setFilter] = useState<"all" | "posts" | "tandem" | "friends">("all");
   const [composerOpen, setComposerOpen] = useState(false);
   const [seatTab, setSeatTab] = useState<"seats" | "friends">("seats");
@@ -318,7 +305,6 @@ export function NorthSocialPage() {
       }), ...current.posts],
     }));
     setDraft("");
-    setPull([]);
   };
 
   const saveAvatar = (next: Pick<SpaceProfile, "photoUrl" | "aiAvatarUrl" | "avatarMode">) => {
@@ -354,9 +340,8 @@ export function NorthSocialPage() {
   };
 
   const goReading = (mode: ReadingMode) => {
-    if (mode === "deep") navigate("/chart/long-read");
-    else if (mode === "tandem") navigate("/chart/circle");
-    else navigate("/chart#readings");
+    if (mode === "group") navigate("/chart#group");
+    else navigate("/chart#tri-sky");
   };
 
   const patchSpace = (partial: Partial<SpaceProfile>) => {
@@ -396,18 +381,15 @@ export function NorthSocialPage() {
 
             <div className="tn-card north-composer">
               <button type="button" className="tn-inline" aria-expanded={composerOpen} onClick={() => setComposerOpen(open => !open)}>
-                {composerOpen ? "Close composer" : "Share a pull"}
+                {composerOpen ? "Close composer" : "Share a note"}
               </button>
               {composerOpen && (
-                <form onSubmit={event => { event.preventDefault(); publish(pull.length ? "A pull" : "A note", draft || pull.join(" · "), pull, pull.length ? "pull" : "bulletin"); }}>
+                <form onSubmit={event => { event.preventDefault(); publish("A note", draft, [], "bulletin"); }}>
                   <label className="tn-label" htmlFor="north-draft">Write a note</label>
-                  <textarea id="north-draft" className="tn-field tn-field--area" value={draft} onChange={event => setDraft(event.target.value)} placeholder="A note, a pull, or a tandem reading." rows={3} />
-                  {pull.length > 0 && <div className="north-cards">{pull.map(card => <TarotCardArt key={card} name={card} />)}</div>}
+                  <textarea id="north-draft" className="tn-field tn-field--area" value={draft} onChange={event => setDraft(event.target.value)} placeholder="A note for the feed." rows={3} />
                   <div className="tn-actions">
-                    <button type="button" className="cta-ghost tn-action" onClick={() => setPull(drawCards(1))}>1 card</button>
-                    <button type="button" className="cta-ghost tn-action" onClick={() => setPull(drawCards(3))}>3 cards</button>
-                    <button type="button" className="cta-ghost tn-action" onClick={() => publish(`You × ${rankedEight(state.top)[0]?.name ?? "a friend"}`, draft || "Logged a tandem reading.", pull, "tandem")}>Tandem</button>
                     <button type="submit" className="cta-pist tn-action">Post</button>
+                    <button type="button" className="cta-ghost tn-action" onClick={() => goReading("group")}>Group Read</button>
                   </div>
                 </form>
               )}
@@ -417,7 +399,7 @@ export function NorthSocialPage() {
               {([
                 ["all", "All"],
                 ["posts", "Posts & Pulls"],
-                ["tandem", "Tandem"],
+                ["tandem", "Group Reads"],
                 ["friends", "Find Friends"],
               ] as const).map(([id, label]) => (
                 <button key={id} type="button" role="tab" aria-selected={filter === id} className={filter === id ? "is-on" : ""} onClick={() => setFilter(id)}>
@@ -641,9 +623,8 @@ export function NorthSocialPage() {
           <section className="reading-room" aria-label="Readings">
             <div className="reading-switch" role="tablist" aria-label="Reading room">
               {([
-                ["quick", "Quick Pull"],
-                ["deep", "Deep Spread"],
-                ["tandem", "Live Tandem"],
+                ["tri", "Tri-Sky"],
+                ["group", "Group Read"],
               ] as const).map(([id, label]) => (
                 <button key={id} type="button" role="tab" aria-selected={view.reading === id} className={view.reading === id ? "is-on" : ""} onClick={() => goReading(id)}>
                   {label}
@@ -651,36 +632,33 @@ export function NorthSocialPage() {
               ))}
             </div>
 
-            {view.reading === "quick" && (
-              <form className="tn-card north-composer" onSubmit={event => { event.preventDefault(); publish(pull.length > 1 ? "Three-card pull" : "Quick pull", draft || pull.join(" · "), pull, pull.length > 1 ? "spread" : "pull"); }}>
-                <h2 className="north-post__title">Quick Pull</h2>
-                <label className="tn-label" htmlFor="quick-note">What are you asking?</label>
-                <textarea id="quick-note" className="tn-field tn-field--area" value={draft} onChange={event => setDraft(event.target.value)} rows={3} placeholder="One question, held lightly." />
-                {pull.length > 0 && <div className="north-cards">{pull.map(card => <TarotCardArt key={card} name={card} />)}</div>}
-                <div className="tn-actions">
-                  <button type="button" className="cta-ghost tn-action" onClick={() => setPull(drawCards(1))}>Pull 1</button>
-                  <button type="button" className="cta-ghost tn-action" onClick={() => setPull(drawCards(3))}>Pull 3</button>
-                  <button type="submit" className="cta-pist tn-action">Share to Feed</button>
-                </div>
-              </form>
-            )}
-
-            {view.reading === "deep" && (
+            {view.reading === "tri" && (
               <div className="sky-panel">
                 <div className="tn-actions">
-                  <button type="button" className="cta-pist tn-action" onClick={() => publish("Long Read", "Shared a seven-card deep spread from the reading room.", [], "spread")}>Share to Feed</button>
+                  <button type="button" className="cta-pist tn-action" onClick={() => publish("Tri-Sky", "Shared a Tri-Sky reading from the reading room.", [], "spread")}>Share Tri-Sky</button>
                 </div>
                 <DeepReadingPage embedded />
               </div>
             )}
 
-            {view.reading === "tandem" && (
-              <div className="sky-panel">
-                <div className="tn-actions">
-                  <button type="button" className="cta-pist tn-action" onClick={() => publish(`You × ${rankedEight(state.top)[0]?.name ?? "a friend"}`, draft || "Shared a live tandem.", [], "tandem")}>Share to Feed</button>
-                </div>
-                <CirclePage embedded />
-              </div>
+            {view.reading === "group" && (
+              <GroupReadRoom
+                you={{ id: "me", name: author, sun, moon, rising }}
+                friends={rankedEight(state.top)}
+                onPost={(title, body, bond) => {
+                  setState(current => ({
+                    ...current,
+                    posts: [createPost({
+                      author,
+                      handle: youHandle,
+                      sign: sun,
+                      kind: "tandem",
+                      title,
+                      body: `${body}\n\n${bond}`,
+                    }), ...current.posts],
+                  }));
+                }}
+              />
             )}
           </section>
         )}
@@ -741,7 +719,7 @@ export function NorthSocialPage() {
                 <SkyAvatar name={sheet.name} sign={sheet.sun} size={96} />
                 <p>{sheet.sun} · {sheet.moon} · {sheet.rising}</p>
                 <p>{sheet.vibe}</p>
-                <Link className="cta-pist tn-action" to="/chart/circle" onClick={() => setSheet(null)}>Open tandem</Link>
+                <Link className="cta-pist tn-action" to="/chart#group" onClick={() => setSheet(null)}>Open group read</Link>
               </div>
             </>
           )}

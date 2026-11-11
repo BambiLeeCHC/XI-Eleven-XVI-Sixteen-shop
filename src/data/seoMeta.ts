@@ -53,10 +53,10 @@ export const PAGE_SEO = {
         : "True North is the reading room of XI Eleven XVI Sixteen. Free natal chart with an account. Long Read: written tarot, $7/week.",
   },
   longRead: {
-    title: TRUE_NORTH_FREE_ACCESS ? "The Long Read" : "The Long Read — $7/week",
+    title: "Tri-Sky",
     description: TRUE_NORTH_FREE_ACCESS
-      ? "Three written tarot readings a day, based on what you tell us. Open with your True North account."
-      : "Three written tarot readings a day, based on what you tell us. $7 a week after a seven-day trial. Cancel anytime.",
+      ? "Tri-Sky · Morning, Tri-Sky · Noon, and Tri-Sky · Night. Three written readings a day, open with your True North account."
+      : "Tri-Sky · Morning, Tri-Sky · Noon, and Tri-Sky · Night. Three written readings a day. $7 a week after a seven-day trial.",
   },
   almanac: {
     title: "The Almanac — 11:16",

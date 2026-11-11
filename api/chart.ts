@@ -50,6 +50,7 @@ import { BODY_MEANINGS, explainAspect } from "../src/lib/astrologyMeanings.js";
 import { handleNorth } from "./_lib/north.js";
 import { handleAvatar } from "./_lib/avatar.js";
 import { assertTrueNorthOpen } from "./_lib/trueNorthGate.js";
+import { handleGroupRead } from "./_lib/groupRead.js";
 
 const NUMEROLOGY_SYSTEM_PROMPT = `You are the XI · XVI Reader, writing the numerology narrative for the XI Eleven XVI Sixteen (xixvi.shop) brand — the paid, higher-tier companion to the natal chart. Same voice as always: direct, poignant, specific — never a generic horoscope, never hedging ("may"/"could"), never false authority.
 
@@ -278,6 +279,7 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
       return await handleNatalProfile(req, res);
     }
     if (kind === "north") return await handleNorth(req, res);
+    if (kind === "group") return await handleGroupRead(req, res);
     if (kind === "natal" || kind === undefined) {
       return await handleNatalChart(req, res);
     }

@@ -86,7 +86,7 @@ export type SpaceProfile = {
 
 export type TrueNorthDestination = "feed" | "sky" | "readings";
 export type SkyPanel = "chart" | "numbers" | "constellation" | "posts";
-export type ReadingMode = "quick" | "deep" | "tandem";
+export type ReadingMode = "tri" | "group";
 
 export type SocialState = {
   posts: SocialPost[];
@@ -132,7 +132,7 @@ export type ProfileCategory = (typeof PROFILE_CATEGORIES)[number]["id"];
 export const FEED_FILTERS = [
   { id: "all", label: "All" },
   { id: "posts", label: "Posts & Pulls" },
-  { id: "tandem", label: "Tandem Readings" },
+  { id: "tandem", label: "Group Reads" },
 ] as const;
 
 export type FeedFilter = (typeof FEED_FILTERS)[number]["id"];
@@ -680,14 +680,19 @@ export function resolveTrueNorthView(pathname: string, hash = ""): {
   reading: ReadingMode;
 } {
   const h = hash.replace(/^#/, "");
-  if (pathname.startsWith("/chart/long-read") || h === "deep" || h === "long-read") {
-    return { destination: "readings", sky: skyFromHash(h), reading: "deep" };
+  if (
+    pathname.startsWith("/chart/long-read") ||
+    h === "deep" ||
+    h === "long-read" ||
+    h === "tri" ||
+    h === "tri-sky" ||
+    h === "readings" ||
+    h === "quick"
+  ) {
+    return { destination: "readings", sky: "chart", reading: "tri" };
   }
-  if (pathname.startsWith("/chart/circle") || h === "tandem") {
-    return { destination: "readings", sky: "chart", reading: "tandem" };
-  }
-  if (h === "readings" || h === "quick") {
-    return { destination: "readings", sky: "chart", reading: "quick" };
+  if (pathname.startsWith("/chart/circle") || h === "tandem" || h === "group") {
+    return { destination: "readings", sky: "chart", reading: "group" };
   }
   if (
     pathname.startsWith("/profile") ||
@@ -701,9 +706,9 @@ export function resolveTrueNorthView(pathname: string, hash = ""): {
     h === "details" ||
     h === "birth"
   ) {
-    return { destination: "sky", sky: skyFromHash(h), reading: "quick" };
+    return { destination: "sky", sky: skyFromHash(h), reading: "tri" };
   }
-  return { destination: "feed", sky: "chart", reading: "quick" };
+  return { destination: "feed", sky: "chart", reading: "tri" };
 }
 
 export function activeAvatarUrl(space: Partial<SpaceProfile> | null | undefined): string {

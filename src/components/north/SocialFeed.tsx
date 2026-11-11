@@ -49,7 +49,7 @@ function PostCard({
   return (
     <article className={`tn-card north-post${tandem ? " north-post--tandem" : ""}${post.kind === "bulletin" ? " north-post--bulletin" : ""}`}>
       <p className="label-lock">
-        {tandem ? "Tandem reading" : post.kind === "bulletin" ? "Collective Sky" : post.author}
+        {tandem ? (post.title.startsWith("Group Read") ? "Group Read" : "Tandem") : post.kind === "bulletin" ? "Collective Sky" : post.author}
         {post.kind !== "bulletin" ? ` · ${post.sign}` : ""}
       </p>
       <h2 className="clash north-post__title">{title}</h2>
@@ -64,7 +64,7 @@ function PostCard({
       )}
       {tandem && (
         <p className="tn-meta">
-          <Link to="/chart/circle" className="tn-inline">Open live tandem</Link>
+          <Link to="/chart#group" className="tn-inline">Open a group read</Link>
         </p>
       )}
       <div className="north-react">
@@ -220,29 +220,10 @@ export function PersonalComposer({
       />
       <div className="tn-actions">
         <button type="submit" className="cta-pist tn-action">Post note</button>
-        <button
-          type="button"
-          className="cta-ghost tn-action"
-          onClick={() => {
-            const cards = drawCards(1);
-            publish("pull", "Quick pull", cards[0] ? `${cards[0]}.` : "A one-card pull.", cards);
-          }}
-        >
-          Quick tarot pull
-        </button>
-        <button
-          type="button"
-          className="cta-ghost tn-action"
-          onClick={() => {
-            const cards = drawCards(3);
-            publish("spread", "Three-card spread", cards.join(" · "), cards);
-          }}
-        >
-          Three-card spread
-        </button>
+        <Link to="/chart#group" className="cta-ghost tn-action">Open group read</Link>
       </div>
       <div className="tandem-logger">
-        <p className="label-lock">Tandem reading</p>
+        <p className="label-lock">Group Read</p>
         <label className="tn-label" htmlFor="tandem-friend">With</label>
         <select
           id="tandem-friend"
@@ -272,19 +253,18 @@ export function PersonalComposer({
             disabled={!chosen || !reflection.trim()}
             onClick={() => {
               if (!chosen) return;
-              const cards = drawCards(2);
               publish(
                 "tandem",
-                `You × ${chosen.name}`,
+                `Tandem · You · ${chosen.name}`,
                 reflection.trim(),
-                cards,
+                [],
                 true,
               );
             }}
           >
-            Publish tandem reading
+            Post tandem note
           </button>
-          <Link to="/chart/circle" className="cta-ghost tn-action">Open live tandem</Link>
+          <Link to="/chart#group" className="cta-ghost tn-action">Open group read</Link>
         </div>
       </div>
     </form>

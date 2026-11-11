@@ -152,7 +152,7 @@ export const SIGN_GLYPH: Record<string, string> = {
 export const TRUE_NORTH_PAGES = [
   { id: "feed", path: "/chart", label: "Feed", glyph: "✦", blurb: "Notes, pulls, and the people you read with." },
   { id: "sky", path: "/chart#sky", label: MY_SKY_LABEL, glyph: "◎", blurb: "Your chart, your numbers, and your constellation." },
-  { id: "readings", path: "/chart#readings", label: "Readings", glyph: "♠", blurb: "A quick pull, a deep spread, or a live tandem." },
+  { id: "readings", path: "/chart#readings", label: "Readings", glyph: "♠", blurb: "Tri-Sky three times a day, or a group read with your constellation." },
 ] as const;
 
 export const TRUE_NORTH_FEATURES = [
