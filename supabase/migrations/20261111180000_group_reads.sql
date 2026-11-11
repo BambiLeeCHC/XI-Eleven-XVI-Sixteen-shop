@@ -11,9 +11,6 @@ create table if not exists public.group_reads (
     cardinality(participant_ids) between 2 and 8
   ),
   participant_names text[] not null,
-  question text check (question is null or char_length(question) <= 500),
-  connection text check (connection is null or char_length(connection) <= 80),
-  connection_note text check (connection_note is null or char_length(connection_note) <= 120),
   created_at timestamptz not null default now()
 );
 
