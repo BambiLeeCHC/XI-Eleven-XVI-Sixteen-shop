@@ -1,12 +1,22 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
+import {
+  Link,
+  useNavigate,
+  useParams,
+  useSearchParams,
+} from "react-router-dom";
 import { CompleteTheLook } from "../components/CompleteTheLook";
 import { ProductFitGuide } from "../components/ProductFitGuide";
+import type { DialOption } from "../components/RadialVariantDial";
 import {
   buildBreadcrumbJsonLd,
   buildProductJsonLd,
   SEO,
 } from "../components/SEO";
+import {
+  type HoloChoice,
+  VariantHologram,
+} from "../components/VariantHologram";
 import { getProductRotation } from "../data/productRotations";
 import { getProductSEO } from "../data/seoMeta";
 import { useSessionId } from "../hooks/useSessionId";
@@ -18,8 +28,8 @@ import {
   snapHex,
   styleKeyFromName,
 } from "../lib/brand";
+import { namedColorway, resolveColorwayArt } from "../lib/colorwayImage";
 import { hiResProductImage } from "../lib/productImage";
-import { RadialVariantDial } from "../components/RadialVariantDial";
 
 /** Extract just the size label from a variant name like "D-SLIP DRESS [BLACK] / XS" → "XS" */
 function cleanSizeLabel(size: string): string {
@@ -181,7 +191,9 @@ function Product360Viewer({
               type="button"
               className="pdp-gallery__nav pdp-gallery__nav--prev"
               aria-label="Previous photo"
-              onClick={() => setCurrentIndex((i) => (i - 1 + images.length) % images.length)}
+              onClick={() =>
+                setCurrentIndex(i => (i - 1 + images.length) % images.length)
+              }
             >
               ‹
             </button>
@@ -189,7 +201,7 @@ function Product360Viewer({
               type="button"
               className="pdp-gallery__nav pdp-gallery__nav--next"
               aria-label="Next photo"
-              onClick={() => setCurrentIndex((i) => (i + 1) % images.length)}
+              onClick={() => setCurrentIndex(i => (i + 1) % images.length)}
             >
               ›
             </button>
@@ -219,7 +231,12 @@ function Product360Viewer({
                 className="pdp-gallery__dial"
               />
             </div>
-            <button type="button" onClick={exit360} className="pdp-gallery__icon pdp-gallery__icon--tr" aria-label="Close 360">
+            <button
+              type="button"
+              onClick={exit360}
+              className="pdp-gallery__icon pdp-gallery__icon--tr"
+              aria-label="Close 360"
+            >
               ✕
             </button>
             <button
@@ -257,9 +274,12 @@ function Product360Viewer({
             </button>
           ))}
           {has360 && (
-            <button type="button" onClick={enter360} className="pdp-gallery__thumb pdp-gallery__thumb--360">
-              ↻
-              <span>360°</span>
+            <button
+              type="button"
+              onClick={enter360}
+              className="pdp-gallery__thumb pdp-gallery__thumb--360"
+            >
+              ↻<span>360°</span>
             </button>
           )}
         </div>
@@ -269,6 +289,53 @@ function Product360Viewer({
 }
 
 /* ─── Product Page ────────────────────────────────────────────────── */
+
+type Variant = {
+  id?: number;
+  size?: string;
+  name?: string;
+  color?: string | null;
+  is_ignored?: boolean;
+  availability_status?: string;
+};
+
+type CatalogProduct = {
+  _id: string;
+  name: string;
+  description?: string;
+  price?: number;
+  images?: string[];
+  rotationImages?: string[];
+  sizes?: string[];
+  category?: string;
+  printfulVariants?: Variant[];
+};
+
+function variantInStock(variant: Variant | undefined) {
+  return Boolean(
+    variant?.id &&
+      variant.is_ignored !== true &&
+      variant.availability_status !== "out_of_stock" &&
+      variant.availability_status !== "discontinued",
+  );
+}
+
+function variantFor(
+  variants: Variant[],
+  size: string,
+  color: string | undefined,
+  hasColorAxis: boolean,
+) {
+  return variants.find(variant => {
+    const variantSize = variant.size || variant.name?.split(" / ").pop();
+    if (cleanSizeLabel(variantSize || "") !== cleanSizeLabel(size))
+      return false;
+    if (!hasColorAxis) return true;
+    if (!color) return true;
+    return String(variant.color || "").toLowerCase() === color.toLowerCase();
+  });
+}
+
 export function ProductPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
@@ -276,30 +343,47 @@ export function ProductPage() {
   const product = useQuery(
     api.products.getById,
     id ? { productId: id as string } : "skip",
-  );
+  ) as CatalogProduct | null | undefined;
   const addToCart = useMutation(api.cart.addItem);
   const sessionId = useSessionId();
-  const allProducts = useQuery(api.products.list, {}) ?? [];
+  const catalog = (useQuery(api.products.list, {}) ?? []) as CatalogProduct[];
   const [selectedSize, setSelectedSize] = useState<string>(
     () => searchParams.get("size") || "",
   );
   const [selectedColor, setSelectedColor] = useState<string>("");
   const [added, setAdded] = useState(false);
-  const [activeTab, setActiveTab] = useState<"details" | "fit">("details");
+  const [announcement, setAnnouncement] = useState("");
+
+  const productId = product?._id;
+  useEffect(() => {
+    if (!productId) return;
+    setSelectedColor("");
+    setAdded(false);
+  }, [productId]);
 
   useEffect(() => {
+    if (!product?.sizes) return;
+    const sizes = product.sizes;
     const wanted = searchParams.get("size");
-    if (!wanted || !product?.sizes) return;
-    const match = (product.sizes as string[]).find(
-      size => cleanSizeLabel(size) === wanted || size === wanted,
-    );
-    if (match) setSelectedSize(match);
+    if (wanted) {
+      const match = sizes.find(
+        size => cleanSizeLabel(size) === wanted || size === wanted,
+      );
+      if (match) {
+        setSelectedSize(match);
+        return;
+      }
+    }
+    setSelectedSize(prev => (sizes.includes(prev) ? prev : ""));
   }, [product, searchParams]);
 
   if (product === undefined) {
     return (
       <div className="min-h-[80vh] flex items-center justify-center">
-        <div className="animate-pulse" style={{ color: "rgba(21,36,61,0.42)" }}>
+        <div
+          className="animate-pulse"
+          style={{ color: "rgba(247,240,230,0.55)" }}
+        >
           Loading...
         </div>
       </div>
@@ -309,227 +393,265 @@ export function ProductPage() {
   if (!product) {
     return (
       <div className="min-h-[80vh] flex items-center justify-center flex-col gap-4">
-        <p style={{ color: "rgba(21,36,61,0.65)" }}>Product not found.</p>
-        <Link
-          to="/shop"
-          className="text-[12px] tracking-wider uppercase"
-          style={{ color: "rgba(21,36,61,0.75)" }}
-        >
+        <p style={{ color: "rgba(247,240,230,0.72)" }}>Product not found.</p>
+        <Link to="/shop" className="text-[12px] tracking-wider uppercase">
           ← Back to Shop
         </Link>
       </div>
     );
   }
 
+  const variants = product.printfulVariants || [];
+  const colorNames: string[] = [];
+  for (const variant of variants) {
+    const color = variant?.color;
+    if (
+      color &&
+      !colorNames.some(
+        item => item.toLowerCase() === String(color).toLowerCase(),
+      )
+    ) {
+      colorNames.push(String(color));
+    }
+  }
+  const hasColorAxis = colorNames.length > 1;
+  const style = styleKeyFromName(product.name);
+  const siblings = catalog.filter(
+    item => styleKeyFromName(item.name) === style,
+  );
+  const pageColor = hasColorAxis ? selectedColor : colorFromName(product.name);
+  const pageTint = pageColor ? snapHex(pageColor) : "#D8F0C4";
+
+  const colorsForSize = (size: string): DialOption[] => {
+    if (hasColorAxis) {
+      return colorNames.map(color => ({
+        id: color,
+        label: color,
+        hex: snapHex(color),
+        available: size
+          ? variantInStock(variantFor(variants, size, color, true))
+          : true,
+      }));
+    }
+    if (siblings.length <= 1) return [];
+    return siblings.map(item => {
+      const label = colorFromName(item.name) || displayProductName(item.name);
+      return {
+        id: item._id,
+        label,
+        hex: snapHex(label),
+        available: !size
+          ? true
+          : (item.sizes || []).some(
+              entry => cleanSizeLabel(entry) === cleanSizeLabel(size),
+            ),
+      };
+    });
+  };
+
+  const artFor = (colorId: string) => {
+    if (hasColorAxis) {
+      const named = namedColorway(product.name, colorId);
+      const match = catalog.find(
+        item => item.name.toLowerCase() === named.toLowerCase(),
+      );
+      return resolveColorwayArt({
+        images: match?.images,
+        name: named,
+        fallback: product.images,
+      });
+    }
+    const sibling =
+      catalog.find(item => item._id === colorId) ||
+      (colorId === product._id ? product : undefined);
+    return resolveColorwayArt({
+      images: sibling?.images?.length
+        ? sibling.images
+        : colorId === product._id
+          ? product.images
+          : [],
+      name: sibling?.name || namedColorway(product.name, colorId),
+      fallback: product.images,
+    });
+  };
+
+  const galleryArt =
+    hasColorAxis && selectedColor
+      ? artFor(selectedColor)
+      : resolveColorwayArt({
+          images: product.images,
+          name: product.name,
+          fallback: product.images,
+        });
+  const galleryImages = galleryArt.images;
+
+  const sizeOptions: DialOption[] = (product.sizes || []).map(raw => ({
+    id: raw,
+    label: cleanSizeLabel(raw),
+    available: variantInStock(
+      variantFor(
+        variants,
+        raw,
+        hasColorAxis ? selectedColor : undefined,
+        hasColorAxis,
+      ),
+    ),
+  }));
+
+  const sizeLabel = selectedSize ? cleanSizeLabel(selectedSize) : "";
+  const valueLabel =
+    sizeLabel && pageColor
+      ? `${sizeLabel} · ${pageColor}`
+      : pageColor
+        ? `Size · ${pageColor}`
+        : sizeLabel
+          ? `${sizeLabel} · Color`
+          : "Choose";
+
+  const commit = (choice: HoloChoice) => {
+    const picked = colorsForSize(choice.sizeId).find(
+      color => color.id === choice.colorId,
+    );
+    const colorLabel =
+      picked?.label || (hasColorAxis ? choice.colorId : pageColor);
+    const nextSize = choice.sizeId ? cleanSizeLabel(choice.sizeId) : "";
+    if (nextSize || colorLabel) {
+      setAnnouncement(
+        colorLabel ? `${nextSize || "Size"} in ${colorLabel}` : nextSize,
+      );
+    }
+    if (hasColorAxis) {
+      setSelectedSize(choice.sizeId);
+      if (choice.colorId) setSelectedColor(choice.colorId);
+      return;
+    }
+    if (choice.colorId && choice.colorId !== product._id) {
+      const query = nextSize ? `?size=${encodeURIComponent(nextSize)}` : "";
+      navigate(`/product/${choice.colorId}${query}`);
+      return;
+    }
+    setSelectedSize(choice.sizeId);
+  };
+
   const handleAddToCart = async () => {
-    if (!selectedSize && product.sizes.length > 0) return;
-    // Products that carry several colourways in one listing (the tees) must not fall
-    // back to "whichever variant matched the size first" — that shipped the wrong colour.
-    if (colorOptions.length > 1 && !selectedColor) return;
+    if (!selectedSize && (product.sizes?.length || 0) > 0) return;
+    if (hasColorAxis && !selectedColor) return;
     await addToCart({
       sessionId,
       productId: product._id,
       size: selectedSize || "One Size",
-      color: colorOptions.length > 1 ? selectedColor : undefined,
+      color: hasColorAxis ? selectedColor : undefined,
       quantity: 1,
     });
     setAdded(true);
     setTimeout(() => setAdded(false), 2000);
   };
 
-  // Some products (both T-Icon tees) hold every colourway in a single listing.
-  const colorOptions: string[] = (() => {
-    const seen: string[] = [];
-    for (const variant of (product.printfulVariants || []) as any[]) {
-      const color = variant?.color;
-      if (
-        color &&
-        !seen.some(c => c.toLowerCase() === String(color).toLowerCase())
-      ) {
-        seen.push(String(color));
-      }
-    }
-    return seen;
-  })();
-  const hasColorAxis = colorOptions.length > 1;
-
-  const variantForSize = (size: string, color?: string) =>
-    (product.printfulVariants || []).find((variant: any) => {
-      const variantSize = variant.size || variant.name?.split(" / ").pop();
-      const sizeMatches =
-        cleanSizeLabel(variantSize || "") === cleanSizeLabel(size);
-      if (!sizeMatches) return false;
-      if (!hasColorAxis) return true;
-      const wanted = color ?? selectedColor;
-      if (!wanted) return true;
-      return String(variant.color || "").toLowerCase() === wanted.toLowerCase();
-    });
-  const isSizeAvailable = (size: string) => {
-    const variant = variantForSize(size);
-    return Boolean(
-      variant?.id &&
-        variant?.is_ignored !== true &&
-        variant?.availability_status !== "out_of_stock" &&
-        variant?.availability_status !== "discontinued",
-    );
-  };
   const deliveryStart = new Date();
   deliveryStart.setDate(deliveryStart.getDate() + 6);
   const deliveryEnd = new Date();
   deliveryEnd.setDate(deliveryEnd.getDate() + 12);
   const deliveryWindow = `${deliveryStart.toLocaleDateString("en-US", { month: "short", day: "numeric" })}–${deliveryEnd.toLocaleDateString("en-US", { month: "short", day: "numeric" })}`;
-
-  const productSeo = getProductSEO(product);
-  const productJsonLd = buildProductJsonLd(product);
-  const breadcrumbLd = buildBreadcrumbJsonLd([
-    { name: "Home", url: "/" },
-    { name: "Shop", url: "/shop" },
-    { name: product.name, url: `/product/${product._id}` },
-  ]);
+  const seoProduct = {
+    _id: product._id,
+    name: product.name,
+    description: product.description || "",
+    price: product.price || 0,
+    category: product.category || "",
+    images: product.images || [],
+    sizes: product.sizes || [],
+  };
+  const productSeo = getProductSEO(seoProduct);
+  const needsSize = (product.sizes?.length || 0) > 0 && !selectedSize;
+  const needsColor = hasColorAxis && !selectedColor;
 
   return (
     <>
       <SEO
         title={productSeo.title}
         description={productSeo.description}
-        image={product.images?.[0]}
+        image={galleryImages[0] || product.images?.[0]}
         url={`/product/${product._id}`}
         type="product"
-        jsonLd={[productJsonLd, breadcrumbLd]}
+        jsonLd={[
+          buildProductJsonLd(seoProduct),
+          buildBreadcrumbJsonLd([
+            { name: "Home", url: "/" },
+            { name: "Shop", url: "/shop" },
+            { name: product.name, url: `/product/${product._id}` },
+          ]),
+        ]}
       />
-      <div className="pdp">
-        <Link to="/shop" className="pdp-back">Shop</Link>
-        <div className="pdp-grid">
-          <div className="pdp-stage">
+      <article
+        className="pdp"
+        style={{ "--pdp-tint": pageTint } as React.CSSProperties}
+      >
+        <p className="pdp-sr" aria-live="polite">
+          {announcement}
+        </p>
+        <nav className="pdp-crumb">
+          <Link to="/shop">← Collection</Link>
+        </nav>
+        <div className="pdp-layout">
+          <div className="pdp-gallery-wrap">
             <Product360Viewer
-              images={product.images || []}
+              key={`${product._id}:${selectedColor}:${galleryImages[0] ?? ""}`}
+              images={galleryImages}
               rotationImages={
                 product.rotationImages?.length === 8
                   ? product.rotationImages
                   : getProductRotation(product.name)
               }
-              name={product.name}
+              name={displayProductName(product.name)}
             />
           </div>
-
-          <div className="pdp-buy">
-            <p className="label-lock">{displayProductName(product.name)}</p>
-            <p className="clash pdp-title">{styleKeyFromName(product.name)}</p>
-            <p className="serif-quiet text-xl mt-2">Made on demand. Made for one person.</p>
-            <p className="label-lock mt-3" style={{ color: "var(--pist)" }}>
-              11:16
+          <div className="pdp-copy">
+            <p className="pdp-kicker">{style}</p>
+            <h1 className="pdp-title">{displayProductName(product.name)}</h1>
+            <p className="pdp-price">{formatPrice(product.price)}</p>
+            <p className="pdp-lead">
+              Made on demand.{" "}
+              <Link to="/chart">True North is the same numbers, opened.</Link>
             </p>
-            <p className="serif-quiet text-[15px] mt-1" style={{ color: "rgba(247,240,230,0.72)" }}>
-              Same numbers as the name.{" "}
-              <Link to="/chart" style={{ textDecoration: "underline", color: "var(--pist)" }}>
-                True North is that cipher, opened.
-              </Link>
+            <p className="pdp-desc">
+              {product.description?.trim() ||
+                "Cut and finished when you order it, in the colorway on this page."}
             </p>
-            <p className="clash pdp-price">{formatPrice(product.price)}</p>
-
-            {product.sizes?.length > 0 && (
-              <div className="mt-6">
-                <RadialVariantDial
-                  sizes={(product.sizes as string[]).map(raw => ({
-                    id: raw,
-                    label: cleanSizeLabel(raw),
-                    available: isSizeAvailable(raw),
-                  }))}
-                  colors={(() => {
-                    const style = styleKeyFromName(product.name);
-                    const siblings = allProducts.filter(
-                      (item: any) => styleKeyFromName(item.name) === style,
-                    );
-                    const inStock = (variant: any) =>
-                      Boolean(
-                        variant?.id &&
-                          variant?.is_ignored !== true &&
-                          variant?.availability_status !== "out_of_stock" &&
-                          variant?.availability_status !== "discontinued",
-                      );
-                    if (hasColorAxis) {
-                      return colorOptions.map(color => ({
-                        id: color,
-                        label: color,
-                        hex: snapHex(color),
-                        available: selectedSize
-                          ? inStock(variantForSize(selectedSize, color))
-                          : true,
-                      }));
-                    }
-                    if (siblings.length > 1) {
-                      return siblings.map((item: any) => {
-                        const label =
-                          colorFromName(item.name) || displayProductName(item.name);
-                        return {
-                          id: item._id as string,
-                          label,
-                          hex: snapHex(label),
-                          available: !selectedSize
-                            ? true
-                            : (item.sizes || []).some(
-                                (size: string) =>
-                                  cleanSizeLabel(size) === cleanSizeLabel(selectedSize),
-                              ),
-                        };
-                      });
-                    }
-                    return [];
-                  })()}
-                  sizeId={selectedSize}
-                  colorId={hasColorAxis ? selectedColor : product._id}
-                  onSize={raw => {
-                    setSelectedSize(raw);
-                    if (!hasColorAxis || !selectedColor) return;
-                    const variant = variantForSize(raw, selectedColor);
-                    const stillThere = Boolean(
-                      variant?.id &&
-                        variant?.is_ignored !== true &&
-                        variant?.availability_status !== "out_of_stock" &&
-                        variant?.availability_status !== "discontinued",
-                    );
-                    if (!stillThere) setSelectedColor("");
-                  }}
-                  onColor={next => {
-                    if (hasColorAxis) {
-                      setSelectedColor(next);
-                      return;
-                    }
-                    if (next === product._id) return;
-                    const sizeLabel = selectedSize ? cleanSizeLabel(selectedSize) : "";
-                    navigate(
-                      `/product/${next}${sizeLabel ? `?size=${encodeURIComponent(sizeLabel)}` : ""}`,
-                    );
-                  }}
+            <div className="pdp-buy">
+              {sizeOptions.length > 0 ? (
+                <VariantHologram
+                  sizes={sizeOptions}
+                  colorsForSize={colorsForSize}
+                  committedSize={selectedSize}
+                  committedColor={hasColorAxis ? selectedColor : product._id}
+                  previewFor={colorId => artFor(colorId).images[0]}
+                  tint={pageTint}
+                  valueLabel={valueLabel}
+                  onCommit={commit}
                 />
-              </div>
-            )}
-
-            <div className="pdp-notes">
-              <div className="flex gap-2 mb-3">
-                <button
-                  type="button"
-                  className={`chip ${activeTab === "details" ? "on" : ""}`}
-                  onClick={() => setActiveTab("details")}
-                >
-                  Details
-                </button>
-                <button
-                  type="button"
-                  className={`chip pist ${activeTab === "fit" ? "on" : ""}`}
-                  onClick={() => setActiveTab("fit")}
-                >
-                  Fit guide
-                </button>
-              </div>
-              {activeTab === "details" ? (
-                <p
-                  className="text-[14px] leading-relaxed whitespace-pre-line"
-                  style={{ color: "rgba(247,240,230,0.7)" }}
-                >
-                  {product.description}
-                </p>
-              ) : (
+              ) : null}
+              <button
+                type="button"
+                onClick={handleAddToCart}
+                disabled={needsSize || needsColor}
+                className="cta-pist pdp-cart"
+              >
+                {added
+                  ? "Added to cart"
+                  : needsColor
+                    ? "Select a colour"
+                    : needsSize
+                      ? "Select a size"
+                      : "Add to cart"}
+              </button>
+              <p className="pdp-note">
+                Estimated delivery {deliveryWindow}. Made on demand, with
+                tracked shipping calculated at checkout.
+              </p>
+            </div>
+            <details className="pdp-fit">
+              <summary>Fit guide</summary>
+              <div className="pdp-fit-card">
                 <ProductFitGuide
                   product={{
                     name: product.name,
@@ -540,58 +662,28 @@ export function ProductPage() {
                   externalSize={
                     selectedSize ? cleanSizeLabel(selectedSize) : undefined
                   }
-                  onSizeSelect={s => {
+                  onSizeSelect={label => {
                     const match = product.sizes?.find(
-                      (x: string) => cleanSizeLabel(x) === s,
+                      size => cleanSizeLabel(size) === label,
                     );
                     if (match) setSelectedSize(match);
                   }}
-                  lightMode={false}
+                  lightMode
                 />
-              )}
-            </div>
-
-            <p
-              className="text-[10px] tracking-[0.13em] uppercase font-semibold"
-              style={{ color: "var(--pist)" }}
-            >
-              Estimated delivery {deliveryWindow}
-            </p>
-            <p
-              className="text-[10px] mt-1 mb-4"
-              style={{ color: "rgba(247,240,230,0.48)" }}
-            >
-              Includes 2–5 business days to make your piece plus standard
-              tracked shipping. Final options are calculated for your address at
-              checkout.
-            </p>
-
-            <button
-              type="button"
-              onClick={handleAddToCart}
-              disabled={
-                (product.sizes?.length > 0 && !selectedSize) ||
-                (hasColorAxis && !selectedColor)
-              }
-              className="cta-pist w-full text-center"
-            >
-              {added
-                ? "Added to cart"
-                : hasColorAxis && !selectedColor
-                  ? "Select a colour"
-                  : product.sizes?.length > 0 && !selectedSize
-                    ? "Select a size"
-                    : "Add to cart"}
-            </button>
-            <p className="serif-quiet mt-4 text-[15px] opacity-80">
-              Made on demand · Free shipping · Easy returns
-            </p>
+              </div>
+            </details>
           </div>
         </div>
-
-        {/* Complete the Look */}
-        <CompleteTheLook currentProduct={product} />
-      </div>
+        <CompleteTheLook
+          currentProduct={{
+            _id: product._id,
+            name: product.name,
+            price: product.price || 0,
+            images: product.images || [],
+            category: product.category || "",
+          }}
+        />
+      </article>
     </>
   );
 }

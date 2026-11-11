@@ -47,7 +47,7 @@ export function CompleteTheLook({
   if (setProducts.length === 0 && alsoLike.length === 0) return null;
 
   return (
-    <div className="mt-16 px-2 md:px-0">
+    <div className="pdp-more">
       {setProducts.length > 0 && (
         <Section title="Complete the Set" products={setProducts} />
       )}
@@ -85,7 +85,11 @@ function Section({
           >
             <div
               className="aspect-[3/4] overflow-hidden mb-3 product-stage transition-transform group-hover:scale-[1.02]"
-              style={{ border: "2px solid var(--cream)", background: "var(--cream)" }}
+              style={{
+                border: "1px solid rgba(247,240,230,0.16)",
+                background: "rgba(12,14,18,0.4)",
+                borderRadius: 22,
+              }}
             >
               {product.images[0] && (
                 <img

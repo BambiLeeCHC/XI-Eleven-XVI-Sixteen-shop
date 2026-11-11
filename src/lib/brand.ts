@@ -59,6 +59,19 @@ export function colorFromName(name: string): string {
 
 export function snapHex(color: string): string {
   const value = color.toLowerCase();
+  if (value.includes("black / white") || value.includes("black/white"))
+    return "#D5D5D5";
+  if (value.includes("navy / white") || value.includes("navy/white"))
+    return "#1B3A4B";
+  if (value.includes("french navy")) return "#16324F";
+  if (value.includes("dash white")) return "#F3F0E8";
+  if (value.includes("dash black")) return "#161616";
+  if (value.includes("heather")) return "#8D8D92";
+  if (value.includes("stone")) return "#C6B7A2";
+  if (value.includes("milky")) return "#243056";
+  if (value.includes("sherbet")) return "#F3A48A";
+  if (value.includes("rainbow")) return "#7A6AE8";
+  if (value.includes("pink lace")) return "#E4A9C4";
   if (value.includes("volt")) return "#C6F25A";
   if (value.includes("ice")) return "#CDE4F5";
   if (value.includes("peach")) return "#F4C4B0";
