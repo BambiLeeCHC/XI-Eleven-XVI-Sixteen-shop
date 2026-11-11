@@ -19,6 +19,7 @@ import {
   sendResendEmail,
   SUPPORT_FROM,
 } from "./_lib/resend.js";
+import { assertTrueNorthOpen } from "./_lib/trueNorthGate.js";
 
 interface SpreadCardInput {
   slot: string;
@@ -115,6 +116,7 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
   }
 
   try {
+    await assertTrueNorthOpen(req);
     const user = await currentUser(req);
     if (!user) throw new HttpError(401, "Please sign in first");
 

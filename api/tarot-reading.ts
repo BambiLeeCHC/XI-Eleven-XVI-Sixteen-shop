@@ -13,6 +13,7 @@ import {
   HttpError,
 } from "./_lib/server.js";
 import { generateWithGroq, type GroqFailure } from "./_lib/groq.js";
+import { assertTrueNorthOpen } from "./_lib/trueNorthGate.js";
 
 interface SpreadCardInput {
   position: string;
@@ -80,6 +81,7 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
   }
 
   try {
+    await assertTrueNorthOpen(req);
     const { spread, name, genderIdentity, sexualOrientation } =
       (req.body ?? {}) as {
         spread?: SpreadCardInput[];

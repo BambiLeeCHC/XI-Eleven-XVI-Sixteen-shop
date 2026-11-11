@@ -2,6 +2,7 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { StoreLayout } from "./components/StoreLayout";
+import { TrueNorthGate } from "./lib/trueNorthGate";
 import { Toaster } from "./components/ui/sonner";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import {
@@ -67,22 +68,22 @@ function App() {
               element={<Navigate to="/chart/long-read" replace />}
             />
             <Route path="/journal/:slug" element={<JournalPostPage />} />
-            <Route path="/chart" element={<NorthSocialPage />} />
+            <Route path="/chart" element={<TrueNorthGate><NorthSocialPage /></TrueNorthGate>} />
             <Route
               path="/chart/numbers"
-              element={<Navigate to="/chart#numbers" replace />}
+              element={<TrueNorthGate><Navigate to="/chart#numbers" replace /></TrueNorthGate>}
             />
             <Route
               path="/chart/almanac"
-              element={<Navigate to="/chart" replace />}
+              element={<TrueNorthGate><Navigate to="/chart" replace /></TrueNorthGate>}
             />
-            <Route path="/chart/circle" element={<NorthSocialPage />} />
-            <Route path="/chart/long-read" element={<NorthSocialPage />} />
+            <Route path="/chart/circle" element={<TrueNorthGate><NorthSocialPage /></TrueNorthGate>} />
+            <Route path="/chart/long-read" element={<TrueNorthGate><NorthSocialPage /></TrueNorthGate>} />
             <Route path="/welcome" element={<WelcomePage />} />
 
             {/* Protected routes */}
             <Route element={<ProtectedRoute />}>
-              <Route path="/profile" element={<ProfilePage />} />
+              <Route path="/profile" element={<TrueNorthGate><ProfilePage /></TrueNorthGate>} />
               <Route path="/orders" element={<OrdersPage />} />
               <Route path="/admin" element={<AdminPage />} />
             </Route>

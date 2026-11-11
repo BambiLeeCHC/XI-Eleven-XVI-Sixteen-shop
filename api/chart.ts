@@ -49,6 +49,7 @@ import { fullNumerologyProfile, NUMBER_MEANINGS } from "../src/lib/numerology.js
 import { BODY_MEANINGS, explainAspect } from "../src/lib/astrologyMeanings.js";
 import { handleNorth } from "./_lib/north.js";
 import { handleAvatar } from "./_lib/avatar.js";
+import { assertTrueNorthOpen } from "./_lib/trueNorthGate.js";
 
 const NUMEROLOGY_SYSTEM_PROMPT = `You are the XI · XVI Reader, writing the numerology narrative for the XI Eleven XVI Sixteen (xixvi.shop) brand — the paid, higher-tier companion to the natal chart. Same voice as always: direct, poignant, specific — never a generic horoscope, never hedging ("may"/"could"), never false authority.
 
@@ -246,6 +247,12 @@ function requestedAction(req: ApiRequest): string {
 }
 
 export default async function handler(req: ApiRequest, res: ApiResponse) {
+  try {
+    await assertTrueNorthOpen(req);
+  } catch (error) {
+    return fail(res, error);
+  }
+
   if (requestedAction(req) === "avatar") {
     return handleAvatar(req, res);
   }
