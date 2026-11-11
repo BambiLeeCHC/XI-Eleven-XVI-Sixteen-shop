@@ -163,13 +163,6 @@ function CardFace({ entry }: { entry: SpreadCard }) {
       <div className="jdeck-face__plate">
         <CardArt card={card} reversed={reversed} />
       </div>
-      <div className="jdeck-face__plaque">
-        <span className="jdeck-face__name">
-          {card.roman} · {card.name}
-          {reversed ? " · reversed" : ""}
-        </span>
-        <span className="jdeck-face__sub">{card.subtitle}</span>
-      </div>
     </div>
   );
 }
@@ -236,6 +229,10 @@ function SpreadCardSlot({
         </span>
         {!revealed && <span className="jdeck-card__tap">Tap to turn</span>}
       </button>
+      <p className="jdeck-slot__card">
+        {entry.card.name}
+        {entry.reversed ? " · reversed" : ""}
+      </p>
     </div>
   );
 }

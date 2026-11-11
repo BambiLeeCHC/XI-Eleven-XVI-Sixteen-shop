@@ -1,4 +1,6 @@
 import assert from "node:assert/strict";
+import { FULL_DECK } from "../src/data/fullDeck.js";
+import { tarotFaceFile, tarotFaceFileFromName } from "../src/lib/tarotFace.js";
 import {
   longReadEntitled,
   shouldStartPaidCheckout,
@@ -855,6 +857,24 @@ check("house parameters, jewel cards, and cartoon avatars stay inside the three-
   assert.match(portrait, /XI · XVI/);
   assert.match(portrait, /data-outfit="hoodie"/);
   assert.match(portrait, /xi-crest/);
+});
+
+check("every True North card has a branded face", () => {
+  const root = join(dirname(fileURLToPath(import.meta.url)), "..");
+  assert.equal(FULL_DECK.length, 78);
+  const stems = new Set<string>();
+  for (const card of FULL_DECK) {
+    const file = tarotFaceFile(card);
+    assert.ok(file, card.name);
+    stems.add(file);
+    assert.equal(existsSync(join(root, "public/tarot", `${file}.webp`)), true, file);
+    assert.equal(existsSync(join(root, "public/tarot/w480", `${file}.webp`)), true, file);
+  }
+  assert.equal(stems.size, 78);
+  assert.equal(tarotFaceFile({ number: 8, name: "Strength" }), "08-strength");
+  assert.equal(tarotFaceFile({ number: 11, name: "Justice" }), "11-justice");
+  assert.equal(tarotFaceFileFromName("The Wheel of Fortune"), "10-wheel-of-fortune");
+  assert.equal(tarotFaceFileFromName("Ace of Cups"), "ace-of-cups");
 });
 
 await Promise.all(pending);

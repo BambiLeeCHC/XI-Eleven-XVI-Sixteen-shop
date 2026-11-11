@@ -1,4 +1,6 @@
+import { useState } from "react";
 import type { ArcanaCard } from "../../data/arcana";
+import { TAROT_FACE_HEIGHT, TAROT_FACE_WIDTH, tarotFaceFile, tarotFaceSources } from "../../lib/tarotFace";
 
 const SHIELD = "/journal/shield-gold.png";
 const FIGURE = "/mannequin-women-v37.png";
@@ -225,7 +227,7 @@ function SceneBody({ scene, seed, roman }: { scene: Scene; seed: number; roman: 
   }
 }
 
-export function CardArt({ card, reversed = false }: { card: ArcanaCard; reversed?: boolean }) {
+function CardArtPlate({ card, reversed = false }: { card: ArcanaCard; reversed?: boolean }) {
   const scene = sceneOf(card);
   const seed = (card.number * 17) % 90;
   const id = `c${card.number}`;
@@ -270,12 +272,37 @@ export function CardArt({ card, reversed = false }: { card: ArcanaCard; reversed
   );
 }
 
+export function CardArt({ card, reversed = false }: { card: ArcanaCard; reversed?: boolean }) {
+  const file = tarotFaceFile(card);
+  const [plate, setPlate] = useState(!file);
+  if (!file || plate) return <CardArtPlate card={card} reversed={reversed} />;
+  const sources = tarotFaceSources(file);
+  return (
+    <img
+      className={`jdeck-art tn-card-face${reversed ? " is-reversed" : ""}`}
+      src={sources.thumb}
+      srcSet={`${sources.thumb} 480w, ${sources.full} 904w`}
+      sizes="(max-width: 640px) 46vw, 200px"
+      width={TAROT_FACE_WIDTH}
+      height={TAROT_FACE_HEIGHT}
+      alt={card.name}
+      loading="lazy"
+      decoding="async"
+      onError={() => setPlate(true)}
+    />
+  );
+}
+
 export function CardBack() {
   return (
-    <div className="jdeck-back">
-      <svg className="jdeck-back-art" viewBox="0 0 200 300" role="img" aria-label="XI·XVI card back">
-        <rect width="200" height="300" fill="#0f1b31" />
-        <rect x="9" y="9" width="182" height="282" rx="12" fill="none" stroke={GOLD} strokeWidth="1.2" opacity="0.8" />
+    <div className="jdeck-back" aria-hidden="true">
+      <svg className="jdeck-back-art" viewBox="0 0 904 1548" role="img" aria-label="True North card back">
+        <rect width="904" height="1548" fill="#13243e" />
+        <rect x="46" y="46" width="812" height="1456" fill="none" stroke="#e7d7a4" strokeWidth="3" />
+        <rect x="64" y="64" width="776" height="1420" fill="none" stroke="#b8923a" strokeWidth="10" />
+        <rect x="90" y="90" width="724" height="1368" fill="none" stroke="#e7d7a4" strokeWidth="2" />
+        <text x="452" y="300" textAnchor="middle" fill="#e7d7a4" fontFamily="'Playfair Display', Georgia, serif" fontSize="42" letterSpacing="14">XI · XVI</text>
+        <text x="452" y="1288" textAnchor="middle" fill="#c4a35a" fontFamily="Inter, system-ui, sans-serif" fontSize="26" letterSpacing="12">TRUE NORTH</text>
       </svg>
       <img className="jdeck-back__logo" src={SHIELD} alt="" />
     </div>
