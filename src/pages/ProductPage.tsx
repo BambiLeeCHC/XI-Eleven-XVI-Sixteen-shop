@@ -56,6 +56,7 @@ function Product360Viewer({
   const [is360Mode, setIs360Mode] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [isAutoRotating, setIsAutoRotating] = useState(false);
+  const [tilt, setTilt] = useState({ x: 0, y: 0 });
   const dragStartX = useRef(0);
   const dragStartIndex = useRef(0);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -176,17 +177,51 @@ function Product360Viewer({
     setIsAutoRotating(false);
   };
 
+  const count = images.length;
+  const cards =
+    count === 0
+      ? []
+      : images
+          .map((src, index) => {
+            let offset = index - currentIndex;
+            if (count > 1) {
+              if (offset > count / 2) offset -= count;
+              if (offset < -count / 2) offset += count;
+            }
+            return { src, index, offset };
+          })
+          .filter(card => Math.abs(card.offset) <= 2);
+
+  const scrub = (clientX: number, target: EventTarget | null) => {
+    if (is360Mode || count < 2) return;
+    if (target instanceof Element && target.closest("button")) return;
+    const rect = containerRef.current?.getBoundingClientRect();
+    if (!rect || rect.width === 0) return;
+    const ratio = (clientX - rect.left) / rect.width;
+    const next = Math.min(count - 1, Math.max(0, Math.floor(ratio * count)));
+    setCurrentIndex(next);
+  };
+
+  const lean = (clientX: number, clientY: number) => {
+    const rect = containerRef.current?.getBoundingClientRect();
+    if (!rect) return;
+    const px = (clientX - rect.left) / rect.width - 0.5;
+    const py = (clientY - rect.top) / rect.height - 0.5;
+    setTilt({ x: px * 16, y: -py * 9 });
+  };
+
   return (
     <div className="pdp-gallery">
+      {is360Mode ? (
       <div
         ref={containerRef}
         role="region"
-        aria-label={`${name} product gallery${has360 ? " with 360 degree view" : ""}`}
+        aria-label={`${name} product gallery with 360 degree view`}
         className="pdp-gallery__stage product-stage"
         style={{
-          cursor: is360Mode ? (isDragging ? "grabbing" : "grab") : "default",
+          cursor: isDragging ? "grabbing" : "grab",
           userSelect: "none",
-          touchAction: is360Mode ? "none" : "pan-y",
+          touchAction: "none",
         }}
         onMouseDown={onMouseDown}
         onMouseMove={onMouseMove}
@@ -201,7 +236,7 @@ function Product360Viewer({
             src={hiResProductImage(displayImage, 1800)}
             srcSet={`${hiResProductImage(displayImage, 900)} 900w, ${hiResProductImage(displayImage, 1800)} 1800w`}
             sizes="(min-width: 880px) 50vw, 100vw"
-            alt={is360Mode ? `${name}, angle ${currentIndex + 1} of 8` : name}
+            alt={`${name}, angle ${currentIndex + 1} of 8`}
             className="pdp-gallery__shot"
             draggable={false}
             decoding="async"
@@ -212,14 +247,107 @@ function Product360Viewer({
         )}
         <span className="product-stage__grain" aria-hidden="true" />
 
-        {!is360Mode && images.length > 1 && (
+        <div className="pdp-gallery__360-chip">
+          <span>{isAutoRotating ? "AUTO" : "DRAG TO ROTATE"}</span>
+        </div>
+        <div className="pdp-gallery__360-controls">
+          <input
+            type="range"
+            min="0"
+            max={angleImages.length - 1}
+            step="1"
+            value={currentIndex % angleImages.length}
+            aria-label={`Rotate ${name}`}
+            onChange={event => {
+              setCurrentIndex(Number(event.target.value));
+              setIsAutoRotating(false);
+            }}
+            onPointerDown={event => event.stopPropagation()}
+            onMouseDown={event => event.stopPropagation()}
+            onTouchStart={event => event.stopPropagation()}
+            className="pdp-gallery__dial"
+          />
+        </div>
+        <button
+          type="button"
+          onClick={exit360}
+          className="pdp-gallery__icon pdp-gallery__icon--tr"
+          aria-label="Close 360"
+        >
+          ✕
+        </button>
+        <button
+          type="button"
+          onClick={e => {
+            e.stopPropagation();
+            setIsAutoRotating(!isAutoRotating);
+          }}
+          className="pdp-gallery__icon pdp-gallery__icon--tl"
+          aria-label={isAutoRotating ? "Pause rotation" : "Play rotation"}
+        >
+          {isAutoRotating ? "⏸" : "▶"}
+        </button>
+      </div>
+      ) : (
+      <div
+        ref={containerRef}
+        className="pdp-flow"
+        role="region"
+        aria-label={`${name} photos`}
+        onMouseMove={event => {
+          lean(event.clientX, event.clientY);
+          scrub(event.clientX, event.target);
+        }}
+        onMouseLeave={() => setTilt({ x: 0, y: 0 })}
+        onTouchStart={onTouchStart}
+        onTouchEnd={onTouchEnd}
+      >
+        <div
+          className="pdp-flow__tilt"
+          style={{
+            transform: `rotateX(${tilt.y}deg) rotateY(${tilt.x}deg)`,
+          }}
+        >
+          <span className="pdp-flow__glow" aria-hidden="true" />
+          {cards.length === 0 ? (
+            <div className="pdp-gallery__empty">✦</div>
+          ) : (
+            cards.map(card => (
+              <button
+                key={card.index}
+                type="button"
+                className={`pdp-flow__card${card.offset === 0 ? " is-on" : ""}`}
+                style={{
+                  transform: `translateX(calc(-50% + ${card.offset * 48}%)) translateZ(${card.offset === 0 ? 80 : 16 - Math.abs(card.offset) * 72}px) rotateY(${card.offset * -34}deg)`,
+                  zIndex: 8 - Math.abs(card.offset),
+                  opacity: card.offset === 0 ? 1 : 0.78,
+                }}
+                aria-label={
+                  card.offset === 0
+                    ? `${name}, photo ${card.index + 1} of ${count}`
+                    : `Photo ${card.index + 1}`
+                }
+                aria-current={card.offset === 0 || undefined}
+                onClick={() => setCurrentIndex(card.index)}
+              >
+                <img
+                  src={hiResProductImage(card.src, card.offset === 0 ? 1400 : 700)}
+                  alt=""
+                  draggable={false}
+                  decoding="async"
+                />
+              </button>
+            ))
+          )}
+        </div>
+        {count > 1 && (
           <>
             <button
               type="button"
               className="pdp-gallery__nav pdp-gallery__nav--prev"
               aria-label="Previous photo"
               onClick={() =>
-                setCurrentIndex(i => (i - 1 + images.length) % images.length)
+                setCurrentIndex(i => (i - 1 + count) % count)
               }
             >
               ‹
@@ -228,64 +356,19 @@ function Product360Viewer({
               type="button"
               className="pdp-gallery__nav pdp-gallery__nav--next"
               aria-label="Next photo"
-              onClick={() => setCurrentIndex(i => (i + 1) % images.length)}
+              onClick={() => setCurrentIndex(i => (i + 1) % count)}
             >
               ›
             </button>
           </>
         )}
-
-        {is360Mode && (
-          <>
-            <div className="pdp-gallery__360-chip">
-              <span>{isAutoRotating ? "AUTO" : "DRAG TO ROTATE"}</span>
-            </div>
-            <div className="pdp-gallery__360-controls">
-              <input
-                type="range"
-                min="0"
-                max={angleImages.length - 1}
-                step="1"
-                value={currentIndex % angleImages.length}
-                aria-label={`Rotate ${name}`}
-                onChange={event => {
-                  setCurrentIndex(Number(event.target.value));
-                  setIsAutoRotating(false);
-                }}
-                onPointerDown={event => event.stopPropagation()}
-                onMouseDown={event => event.stopPropagation()}
-                onTouchStart={event => event.stopPropagation()}
-                className="pdp-gallery__dial"
-              />
-            </div>
-            <button
-              type="button"
-              onClick={exit360}
-              className="pdp-gallery__icon pdp-gallery__icon--tr"
-              aria-label="Close 360"
-            >
-              ✕
-            </button>
-            <button
-              type="button"
-              onClick={e => {
-                e.stopPropagation();
-                setIsAutoRotating(!isAutoRotating);
-              }}
-              className="pdp-gallery__icon pdp-gallery__icon--tl"
-              aria-label={isAutoRotating ? "Pause rotation" : "Play rotation"}
-            >
-              {isAutoRotating ? "⏸" : "▶"}
-            </button>
-          </>
-        )}
-
-        {!is360Mode && has360 && (
+        {has360 && (
           <button type="button" onClick={enter360} className="pdp-gallery__360">
             ↻ 360°
           </button>
         )}
       </div>
+      )}
 
       {!is360Mode && images.length > 1 && (
         <div className="pdp-gallery__dots" role="tablist" aria-label="Photos">
@@ -425,7 +508,7 @@ export function ProductPage() {
       <div className="min-h-[80vh] flex items-center justify-center">
         <div
           className="animate-pulse"
-          style={{ color: "rgba(247,240,230,0.55)" }}
+          style={{ color: "#111" }}
         >
           Loading...
         </div>
@@ -436,7 +519,7 @@ export function ProductPage() {
   if (!product) {
     return (
       <div className="min-h-[80vh] flex items-center justify-center flex-col gap-4">
-        <p style={{ color: "rgba(247,240,230,0.72)" }}>Product not found.</p>
+        <p style={{ color: "#111" }}>Product not found.</p>
         <Link to="/shop" className="text-[12px] tracking-wider uppercase">
           ← Back to Shop
         </Link>

@@ -43,18 +43,34 @@ export function flatMockup(
 ): FlatPick {
   const base = stem(name);
   const lower = name.toLowerCase();
-  // Dash flat2 files are phone screenshots. Use the pre-cropped leg print.
+  // These flat files include white canvas. Use a crop of the print only.
   if (lower.includes("l-flow") && lower.includes("dash")) {
     const swatch = lower.includes("white")
       ? "swatches/L-Flow_Leggings_Dash_White.png"
       : "swatches/L-Flow_Leggings_Dash_Black.png";
     return { url: `/mockups/${swatch}`, flat: true };
   }
+  if (lower.includes("l-flow") && lower.includes("onyx")) {
+    return { url: "/mockups/swatches/L-Flow_Leggings_Onyx.png", flat: true };
+  }
+  if (
+    lower.includes("s-glitch") &&
+    lower.includes("6.3") &&
+    !lower.includes("2.5")
+  ) {
+    if (lower.includes("black")) {
+      return {
+        url: "/mockups/swatches/S-Glitch_6.3_Shorts_Black.png",
+        flat: true,
+      };
+    }
+    if (lower.includes("ice")) {
+      return { url: "/mockups/swatches/S-Glitch_6.3_Shorts_Ice.png", flat: true };
+    }
+  }
   const aliases: Record<string, string[]> = {
     B_Lift_Sports_Bra_Dash: ["B-Lift_Sports_Bra_Dash_Black.png"],
     "B-Lift_Sports_Bra_Dash": ["B-Lift_Sports_Bra_Dash_Black.png"],
-    "L-Flow_Leggings_Onyx": ["L-Flow_Yoga_Leggings_Onyx_0.png"],
-    "L-Flow_Yoga_Leggings_Onyx": ["L-Flow_Yoga_Leggings_Onyx_0.png"],
     "L-Flow_Leggings_Ivory": ["L-Flow_Yoga_Leggings_Ivory_0.png"],
     "L-Flow_Yoga_Leggings_Ivory": ["L-Flow_Yoga_Leggings_Ivory_0.png"],
   };
