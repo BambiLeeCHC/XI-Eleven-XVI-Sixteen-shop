@@ -1,14 +1,7 @@
 import { useMemo, useState } from "react";
 import { CardArt } from "../journal/CardArt";
-import {
-  chartFromSigns,
-  composeGroupReading,
-  GROUP_BONDS,
-  promptIdeas,
-  TANDEM_BONDS,
-  type GroupPerson,
-  type ReadLens,
-} from "../../lib/groupSky";
+import { BoldParagraphs } from "../../pages/chart/shared";
+import { chartFromSigns, composeGroupReading, type GroupPerson } from "../../lib/groupSky";
 import type { TopFriend } from "../../lib/northSocial";
 
 type Seat = {
@@ -48,9 +41,6 @@ export function GroupReadRoom({
   const [posted, setPosted] = useState(false);
   const [error, setError] = useState("");
   const [question, setQuestion] = useState("");
-  const [connectionId, setConnectionId] = useState("friends");
-  const [otherText, setOtherText] = useState("");
-  const [leadId, setLeadId] = useState("");
 
   const toggle = (id: string) => {
     setPosted(false);
@@ -79,31 +69,19 @@ export function GroupReadRoom({
       ...(seat.gender ? { gender: seat.gender } : {}),
       ...(seat.orientation ? { orientation: seat.orientation } : {}),
     }));
-    const bond = (tandem ? TANDEM_BONDS : GROUP_BONDS).find(item => item.id === connectionId);
-    const lens: ReadLens = {
-      question,
-      connectionId,
-      connectionLabel: bond?.label ?? "Other",
-      otherText: connectionId === "other" ? otherText : "",
-      leadId,
-    };
-    setReading(composeGroupReading(people, new Date(), lens));
+    setReading(composeGroupReading(people, new Date(), { question }));
   };
 
   const count = picked.length;
   const tandem = count === 2;
   const label = tandem ? "Tandem" : "Group Read";
-  const bonds = tandem ? TANDEM_BONDS : GROUP_BONDS;
-  const ideas = promptIdeas(connectionId, tandem);
-  const directed = tandem && (connectionId === "parent-child" || connectionId.startsWith("mother") || connectionId.startsWith("father") || connectionId === "mentor");
-  const chosenSeats = seats.filter(seat => picked.includes(seat.id));
 
   return (
     <section className="tn-card group-read" aria-label="Group read">
       <p className="label-lock">My Constellation</p>
       <h2 className="north-post__title">Group Read</h2>
       <p className="serif-quiet tn-lede">
-        Two people stay a Tandem. Three to eight are a Group Read. Same chart math as Tri-Sky’s sky: full natal charts, cross-aspects, house overlays, and the group composite.
+        Two people are a Tandem. Three to eight are a Group Read. Same seven cards as Tri-Sky.
       </p>
       <ul className="group-read__people">
         {seats.map(seat => {
@@ -124,52 +102,15 @@ export function GroupReadRoom({
         })}
       </ul>
       <p className="group-read__count">{count} selected · {label}</p>
-      <label className="tn-label" htmlFor="group-connection">{tandem ? "Relationship" : "This group is"}</label>
-      <select
-        id="group-connection"
-        className="tn-field"
-        value={connectionId}
-        onChange={event => setConnectionId(event.target.value)}
-      >
-        {bonds.map(bond => (
-          <option key={bond.id} value={bond.id}>{bond.label}</option>
-        ))}
-      </select>
-      {connectionId === "other" ? (
-        <input
-          className="tn-field"
-          value={otherText}
-          onChange={event => setOtherText(event.target.value)}
-          placeholder={tandem ? "Name the relationship" : "Name the group"}
-          aria-label={tandem ? "Relationship in your words" : "Group in your words"}
-        />
-      ) : null}
-      {directed ? (
-        <>
-          <label className="tn-label" htmlFor="group-lead">{connectionId === "mentor" ? "Who is the mentor?" : "Who is the parent?"}</label>
-          <select id="group-lead" className="tn-field" value={leadId || chosenSeats[0]?.id || ""} onChange={event => setLeadId(event.target.value)}>
-            {chosenSeats.map(seat => (
-              <option key={seat.id} value={seat.id}>{seat.name}</option>
-            ))}
-          </select>
-        </>
-      ) : null}
-      <label className="tn-label" htmlFor="group-question">What do you want to know?</label>
+      <label className="tn-label" htmlFor="group-question">Before you draw — what's actually going on right now?</label>
       <textarea
         id="group-question"
         className="tn-field tn-field--area"
-        rows={2}
+        rows={3}
         value={question}
         onChange={event => setQuestion(event.target.value)}
-        placeholder="Optional, and it shapes every card."
+        placeholder='Optional. Same note Tri-Sky uses, for example "trying to decide whether to leave my job".'
       />
-      <div className="group-read__prompts">
-        {ideas.map(idea => (
-          <button key={idea} type="button" className={question === idea ? "is-on" : ""} onClick={() => setQuestion(idea)}>
-            {idea}
-          </button>
-        ))}
-      </div>
       {error ? <p className="tn-alert">{error}</p> : null}
       <div className="tn-actions">
         <button type="button" className="cta-pist tn-action" onClick={write}>
@@ -190,10 +131,9 @@ export function GroupReadRoom({
       </div>
       {reading ? (
         <article className="group-read__letter" aria-live="polite">
-          <p className="label-lock">{reading.connection}</p>
+          <p className="label-lock">{reading.kindLabel}</p>
           <h3>{reading.title}</h3>
-          {reading.question ? <p className="group-read__ask">You asked: {reading.question}</p> : null}
-          <div className="long-read-spread tn-spread group-read__spread" aria-label="Group spread">
+          <div className="long-read-spread tn-spread group-read__spread">
             {reading.cards.map(card => (
               <div key={card.slot} className="long-read-card">
                 <p className="long-read-slot-label label-lock">{card.slotName}</p>
@@ -205,21 +145,14 @@ export function GroupReadRoom({
               </div>
             ))}
           </div>
-          <p className="group-read__portrait">{reading.portrait}</p>
-          {reading.sections.map(section => (
-            <section key={section.heading} className="group-read__block">
-              <h4>{section.heading}</h4>
-              <p>{section.text}</p>
-            </section>
-          ))}
-          <details className="group-read__details">
-            <summary>Chart details</summary>
-            <ul>
-              {reading.details.map(line => (
-                <li key={line}>{line}</li>
-              ))}
-            </ul>
-          </details>
+          <div className="chart-profile-sections tn-letter__body">
+            <div className="chart-profile-section is-lede">
+              <p className="label-lock">Your reading</p>
+              <div className="chart-profile-section__body">
+                <BoldParagraphs text={reading.body} />
+              </div>
+            </div>
+          </div>
         </article>
       ) : null}
     </section>

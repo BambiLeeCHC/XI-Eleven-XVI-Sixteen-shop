@@ -381,7 +381,11 @@
   line-height: 1.15;
 }
 .group-read__spread { margin: 0.2rem 0 1.1rem; }
-.group-read .long-read-slot-label,
+.journal-page--truenorth .long-read-slot-label.label-lock,
+.group-read .long-read-slot-label.label-lock {
+  background: var(--pist);
+  color: #142010;
+}
 .group-read .long-read-card-name { color: #f6f1e8; }
 .group-read__portrait,
 .group-read__role p,
