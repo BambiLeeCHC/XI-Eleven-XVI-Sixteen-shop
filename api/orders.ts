@@ -7,6 +7,7 @@
  * dress for £1.
  */
 
+import { recordOrderFlag, reviewRecentOrders } from "./_lib/resellerWatch.js";
 import {
   type ApiRequest,
   type ApiResponse,
@@ -15,6 +16,7 @@ import {
   HttpError,
   supabaseAdmin,
 } from "./_lib/server.js";
+import { cartLimitHit } from "../src/lib/orderLimits.js";
 
 type ProductRow = {
   id: string;
@@ -144,6 +146,36 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
         taxRate = Number(data.rate);
         taxRegion = data.region;
       }
+    }
+
+    const limitLines = orderItems.map(item => ({
+      productId: item.productId,
+      productName: item.productName,
+      color: item.color,
+      size: item.size,
+      quantity: item.quantity,
+    }));
+    const cartHit = cartLimitHit(limitLines);
+    const watch = cartHit
+      ? null
+      : await reviewRecentOrders(admin, {
+          email,
+          user_id: user?.id ?? null,
+          session_id: sessionId,
+          items: limitLines,
+          shipping_address: shippingAddress,
+        });
+    const blocked = cartHit ?? watch?.hit ?? null;
+    if (blocked) {
+      await recordOrderFlag(admin, {
+        sessionId,
+        email,
+        userId: user?.id ?? null,
+        addressHash: watch?.hash,
+        reason: blocked.code,
+        details: { message: blocked.message, items: limitLines },
+      });
+      throw new HttpError(400, blocked.message);
     }
 
     const tax = Math.round(subtotal * taxRate);

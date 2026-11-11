@@ -1,33 +1,111 @@
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { SEO } from "../components/SEO";
 import { PAGE_SEO } from "../data/seoMeta";
 import { useSessionId } from "../hooks/useSessionId";
 import { api, useMutation, useQuery } from "../lib/backend";
-import { formatPrice, styleKeyFromName } from "../lib/brand";
+import { colorFromName, formatPrice, styleKeyFromName } from "../lib/brand";
+import { cleanSizeLabel, sizeChoices, type StockMap } from "../lib/dialShop";
+import { cartLimitHit, type LimitLine } from "../lib/orderLimits";
 import { hiResProductImage } from "../lib/productImage";
+import "../cart.css";
+
+type CartItem = {
+  _id: string;
+  productId: string;
+  size: string;
+  color?: string | null;
+  quantity: number;
+  product: {
+    name: string;
+    price: number;
+    images?: string[];
+    sizes?: string[];
+    printfulVariants?: Array<{
+      id?: number;
+      size?: string;
+      color?: string | null;
+      is_ignored?: boolean;
+      availability_status?: string;
+    }>;
+  };
+};
+
+function toLines(items: CartItem[]): LimitLine[] {
+  return items.map(item => ({
+    productId: item.productId,
+    color: item.color,
+    size: item.size,
+    quantity: item.quantity,
+  }));
+}
 
 export function CartPage() {
   const sessionId = useSessionId();
-  const cartItems = useQuery(api.cart.getItems, { sessionId }) ?? [];
+  const cartItems = (useQuery(api.cart.getItems, { sessionId }) ?? []) as CartItem[];
   const updateQuantity = useMutation(api.cart.updateQuantity);
+  const setSize = useMutation(api.cart.setSize);
   const removeItem = useMutation(api.cart.removeItem);
   const navigate = useNavigate();
+  const [stock, setStock] = useState<StockMap>(null);
+  const [note, setNote] = useState("");
+
+  useEffect(() => {
+    let live = true;
+    fetch("/api/printful-sync")
+      .then(response => (response.ok ? response.json() : null))
+      .then(body => {
+        if (live && body?.ok && body.variants) setStock(body.variants);
+      })
+      .catch(() => undefined);
+    return () => {
+      live = false;
+    };
+  }, []);
 
   const subtotal = cartItems.reduce(
-    (sum: number, item: any) => sum + item.product.price * item.quantity,
+    (sum, item) => sum + item.product.price * item.quantity,
     0,
   );
+  const bagHit = cartLimitHit(toLines(cartItems));
+
+  const changeQty = async (item: CartItem, quantity: number) => {
+    const next = cartItems.map(row =>
+      row._id === item._id ? { ...row, quantity } : row,
+    );
+    const hit = quantity > item.quantity ? cartLimitHit(toLines(next)) : null;
+    if (hit) {
+      setNote(hit.message);
+      return;
+    }
+    setNote("");
+    await updateQuantity({ itemId: item._id, quantity });
+  };
+
+  const changeSize = async (item: CartItem, size: string) => {
+    const next = cartItems.map(row =>
+      row._id === item._id ? { ...row, size } : row,
+    );
+    const hit = cartLimitHit(toLines(next));
+    if (hit) {
+      setNote(hit.message);
+      return;
+    }
+    setNote("");
+    await setSize({ itemId: item._id, size });
+  };
 
   if (cartItems.length === 0) {
     return (
-      <div className="min-h-[60vh] flex flex-col items-center justify-center px-6">
-        <h2 className="clash text-5xl mb-3">Your cart</h2>
-        <p className="serif-quiet text-xl mb-6">
-          Made on demand. Ships after we produce it.
-        </p>
-        <Link to="/shop" className="cta-pist">
-          Continue shopping
-        </Link>
+      <div className="cart-empty">
+        <div>
+          <p className="cart-kicker">Bag</p>
+          <h1>Your cart</h1>
+          <p className="cart-lede">Made on demand. Ships after we produce it.</p>
+          <Link to="/shop" className="cta-pist">
+            Continue shopping
+          </Link>
+        </div>
       </div>
     );
   }
@@ -40,126 +118,143 @@ export function CartPage() {
         url="/cart"
         noindex
       />
-      <section className="grid lg:grid-cols-[1.15fr_.85fr] min-h-[70vh]">
-        <div className="px-4 sm:px-8 py-8">
-          <p className="clash text-6xl">Your cart</p>
-          <p className="serif-quiet text-xl mt-3 mb-8">
-            Made on demand. Ships after we produce it.
-          </p>
-          {cartItems.map((item: any) => (
-            <div
-              key={item._id}
-              className="flex gap-5 py-5"
-              style={{ borderBottom: "1px solid rgba(247,240,230,0.16)" }}
-            >
-              <div className="w-28 h-36 overflow-hidden shrink-0" style={{ background: "var(--cream)" }}>
-                {item.product.images?.[0] ? (
-                  <img
-                    src={hiResProductImage(item.product.images[0], 480)}
-                    alt={item.product.name}
-                    className="w-full h-full object-contain"
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center">
-                    ✦
+      <section className="cart-page">
+        <p className="cart-kicker">Bag</p>
+        <h1>Your cart</h1>
+        <p className="cart-lede">Made on demand. Ships after we produce it.</p>
+        <div className="cart-layout">
+          <div>
+            {cartItems.map(item => {
+              const color = item.color || colorFromName(item.product.name);
+              const choices = sizeChoices(
+                item.product as never,
+                stock,
+                item.color || "",
+              ).filter(
+                choice =>
+                  choice.available ||
+                  cleanSizeLabel(choice.label) === cleanSizeLabel(item.size),
+              );
+              const plusHit = cartLimitHit(
+                toLines(
+                  cartItems.map(row =>
+                    row._id === item._id
+                      ? { ...row, quantity: row.quantity + 1 }
+                      : row,
+                  ),
+                ),
+              );
+              return (
+                <article key={item._id} className="cart-line">
+                  {item.product.images?.[0] ? (
+                    <img
+                      src={hiResProductImage(item.product.images[0], 480)}
+                      alt=""
+                    />
+                  ) : (
+                    <div className="cart-line__empty">✦</div>
+                  )}
+                  <div>
+                    <h2>
+                      <Link to={`/product/${item.productId}`}>
+                        {styleKeyFromName(item.product.name)}
+                      </Link>
+                    </h2>
+                    <p>
+                      {color || item.product.name} · {formatPrice(item.product.price)}
+                    </p>
+                    <div className="cart-line__controls">
+                      <label className="sr-only" htmlFor={`size-${item._id}`}>
+                        Size
+                      </label>
+                      <select
+                        id={`size-${item._id}`}
+                        value={cleanSizeLabel(item.size)}
+                        onChange={event => changeSize(item, event.target.value)}
+                      >
+                        {(choices.length
+                          ? choices
+                          : [{ id: item.size, label: cleanSizeLabel(item.size), available: true }]
+                        ).map(choice => (
+                          <option key={choice.id} value={choice.label}>
+                            {choice.label}
+                          </option>
+                        ))}
+                      </select>
+                      <div className="cart-qty">
+                        <button
+                          type="button"
+                          aria-label="Decrease quantity"
+                          onClick={() => changeQty(item, item.quantity - 1)}
+                        >
+                          −
+                        </button>
+                        <span>{item.quantity}</span>
+                        <button
+                          type="button"
+                          aria-label="Increase quantity"
+                          disabled={Boolean(plusHit)}
+                          onClick={() => changeQty(item, item.quantity + 1)}
+                        >
+                          +
+                        </button>
+                      </div>
+                      <button
+                        type="button"
+                        className="cart-remove"
+                        onClick={() => removeItem({ itemId: item._id })}
+                      >
+                        Remove
+                      </button>
+                    </div>
+                    {plusHit ? <p className="cart-note">{plusHit.message}</p> : null}
                   </div>
-                )}
-              </div>
-              <div className="flex-1 min-w-0">
-                <Link
-                  to={`/product/${item.productId}`}
-                  className="clash text-3xl"
-                >
-                  {styleKeyFromName(item.product.name)}
-                </Link>
-                <p className="serif-quiet">
-                  {item.product.name}
-                  {item.color ? ` · ${item.color}` : ""} · Size: {item.size}
-                </p>
-                <p className="mt-2 font-bold">
-                  {formatPrice(item.product.price)}
-                </p>
-                <div className="flex items-center gap-2.5 mt-3.5">
-                  <button
-                    type="button"
-                    onClick={() =>
-                      updateQuantity({
-                        itemId: item._id,
-                        quantity: item.quantity - 1,
-                      })
-                    }
-                  >
-                    <b className="w-9 h-9 border-2 border-[var(--cream)] inline-flex items-center justify-center font-extrabold">
-                      −
-                    </b>
-                  </button>
-                  <span className="w-7 text-center font-extrabold">
-                    {item.quantity}
-                  </span>
-                  <button
-                    type="button"
-                    onClick={() =>
-                      updateQuantity({
-                        itemId: item._id,
-                        quantity: item.quantity + 1,
-                      })
-                    }
-                  >
-                    <b className="w-9 h-9 border-2 border-[var(--cream)] inline-flex items-center justify-center font-extrabold">
-                      +
-                    </b>
-                  </button>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => removeItem({ itemId: item._id })}
-                  className="mt-3 text-[11px] tracking-[0.2em] uppercase font-bold"
-                  style={{ color: "var(--blush)" }}
-                >
-                  Remove
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
-        <aside
-          className="site-panel mx-4 sm:mx-8 mb-8 lg:mx-0 lg:mb-0"
-        >
-          <p className="clash text-4xl">Bag</p>
-          <div className="mt-8">
-            <div
-              className="flex justify-between py-3"
-              style={{ borderBottom: "1px solid #ddd" }}
-            >
+                </article>
+              );
+            })}
+            {note && !cartItems.some(item => {
+              const plusHit = cartLimitHit(
+                toLines(
+                  cartItems.map(row =>
+                    row._id === item._id
+                      ? { ...row, quantity: row.quantity + 1 }
+                      : row,
+                  ),
+                ),
+              );
+              return plusHit?.message === note;
+            }) ? (
+              <p className="cart-note">{note}</p>
+            ) : null}
+          </div>
+          <aside className="cart-summary">
+            <h2>Summary</h2>
+            <div>
               <span>Subtotal</span>
               <span>{formatPrice(subtotal)}</span>
             </div>
-            <div
-              className="flex justify-between py-3"
-              style={{ borderBottom: "1px solid #ddd" }}
-            >
+            <div>
               <span>Shipping</span>
               <span>Free</span>
             </div>
-            <div className="flex justify-between py-3 items-center">
-              <span className="font-bold">Total</span>
-              <span className="clash text-3xl">{formatPrice(subtotal)}</span>
+            <div>
+              <span>Total</span>
+              <strong>{formatPrice(subtotal)}</strong>
             </div>
-          </div>
-          <button
-            type="button"
-            onClick={() => navigate("/checkout")}
-            className="cta-pist-block mt-6"
-          >
-            Checkout
-          </button>
-          <p className="serif-quiet mt-4">
-            Secure checkout. Easy returns. Free shipping.
-          </p>
-          <Link to="/shop" className="serif-quiet mt-6 inline-block">
-            Continue shopping
-          </Link>
-        </aside>
+            {bagHit ? <p className="cart-note">{bagHit.message}</p> : null}
+            <button
+              type="button"
+              className="cta-pist-block"
+              disabled={Boolean(bagHit)}
+              onClick={() => navigate("/checkout")}
+            >
+              Checkout
+            </button>
+            <Link to="/shop" className="cart-lede">
+              Continue shopping
+            </Link>
+          </aside>
+        </div>
       </section>
     </>
   );

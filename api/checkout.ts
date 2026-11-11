@@ -7,6 +7,7 @@
  * payment webhook can both find the order again.
  */
 
+import { recordOrderFlag, reviewRecentOrders } from "./_lib/resellerWatch.js";
 import {
   type ApiRequest,
   type ApiResponse,
@@ -15,6 +16,7 @@ import {
   stripePost,
   supabaseAdmin,
 } from "./_lib/server.js";
+import { cartLimitHit } from "../src/lib/orderLimits.js";
 
 type OrderItem = {
   productName: string;
@@ -52,6 +54,37 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
     if (!order) throw new HttpError(404, "Order not found");
     if (order.status !== "pending") {
       throw new HttpError(409, "This order has already been paid");
+    }
+
+    const limitLines = ((order.items ?? []) as OrderItem[]).map(item => ({
+      productId: String((item as { productId?: string }).productId ?? item.productName),
+      color: item.color,
+      size: item.size,
+      quantity: item.quantity,
+    }));
+    const cartHit = cartLimitHit(limitLines);
+    const watch = cartHit
+      ? null
+      : await reviewRecentOrders(admin, {
+          id: order.id,
+          email: order.email,
+          user_id: order.user_id,
+          session_id: order.session_id,
+          items: limitLines,
+          shipping_address: order.shipping_address,
+        });
+    const blocked = cartHit ?? watch?.hit ?? null;
+    if (blocked) {
+      await recordOrderFlag(admin, {
+        orderId: order.id,
+        sessionId: order.session_id,
+        email: order.email,
+        userId: order.user_id,
+        addressHash: watch?.hash,
+        reason: blocked.code,
+        details: { message: blocked.message },
+      });
+      throw new HttpError(400, blocked.message);
     }
 
     const params: Record<string, string> = {

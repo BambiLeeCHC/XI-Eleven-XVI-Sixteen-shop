@@ -77,6 +77,7 @@ export const api = {
     getCount: ref("cart.getCount"),
     addItem: ref("cart.addItem"),
     updateQuantity: ref("cart.updateQuantity"),
+    setSize: ref("cart.setSize"),
     removeItem: ref("cart.removeItem"),
     clearCart: ref("cart.clearCart"),
   },

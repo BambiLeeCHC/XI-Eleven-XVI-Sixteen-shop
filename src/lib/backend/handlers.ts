@@ -2,6 +2,7 @@
  * Backend handlers — restored with admin paywall bypass and Long Read window param.
  */
 import { longReadEntitled, TRUE_NORTH_FREE_ACCESS } from "../freeAccess";
+import { cartLimitHit, type LimitLine } from "../orderLimits";
 import { parseNorthProfile } from "../northProfile";
 import { supabase } from "../supabase";
 import {
@@ -88,6 +89,36 @@ const SHIPPING_DEFAULTS: Record<string, string> = {
   fulfillment_max_days: "5",
   free_shipping_message: "✦ FREE standard shipping on every order ✦",
 };
+
+function toLimitLine(row: Row): LimitLine {
+  return {
+    productId: String(row.product_id ?? row.productId ?? ""),
+    color: row.color ?? null,
+    size: row.size ?? null,
+    quantity: Number(row.quantity) || 0,
+  };
+}
+
+function assertCart(lines: LimitLine[]) {
+  const hit = cartLimitHit(lines);
+  if (hit) throw new Error(hit.message);
+}
+
+function projectCart(
+  rows: Row[],
+  add: { productId: string; size: string; color: string | null; quantity: number },
+): LimitLine[] {
+  const next = rows.map(toLimitLine);
+  const index = next.findIndex(
+    line =>
+      line.productId === add.productId &&
+      (line.size ?? "") === add.size &&
+      (line.color ?? null) === add.color,
+  );
+  if (index >= 0) next[index] = { ...next[index], quantity: next[index].quantity + add.quantity };
+  else next.push(add);
+  return next;
+}
 
 export const handlers: Record<string, Handler> = {
   "auth.currentUser": async () => {
@@ -331,11 +362,29 @@ export const handlers: Record<string, Handler> = {
 
   "cart.addItem": async ({ sessionId, productId, size, color, quantity }) => {
     const userId = await currentUserId();
-    const existing = (
-      unwrap(await supabase.from("cart_items").select("*").eq("session_id", sessionId).eq("product_id", productId).eq("size", size)) as Row[]
-    ).find(row => (row.color ?? null) === (color ?? null));
+    const rows = unwrap(
+      await supabase.from("cart_items").select("*").eq("session_id", sessionId),
+    ) as Row[];
+    const next = projectCart(rows, {
+      productId,
+      size,
+      color: color ?? null,
+      quantity: Number(quantity) || 1,
+    });
+    assertCart(next);
+    const existing = rows.find(
+      row =>
+        row.product_id === productId &&
+        row.size === size &&
+        (row.color ?? null) === (color ?? null),
+    );
     if (existing) {
-      unwrap(await supabase.from("cart_items").update({ quantity: existing.quantity + quantity }).eq("id", existing.id));
+      unwrap(
+        await supabase
+          .from("cart_items")
+          .update({ quantity: existing.quantity + quantity })
+          .eq("id", existing.id),
+      );
     } else {
       unwrap(await supabase.from("cart_items").insert({
         session_id: sessionId, user_id: userId, product_id: productId, size, color: color ?? null, quantity,
@@ -345,8 +394,65 @@ export const handlers: Record<string, Handler> = {
   },
 
   "cart.updateQuantity": async ({ itemId, quantity }) => {
-    if (quantity <= 0) unwrap(await supabase.from("cart_items").delete().eq("id", itemId));
-    else unwrap(await supabase.from("cart_items").update({ quantity }).eq("id", itemId));
+    const row = unwrap(
+      await supabase.from("cart_items").select("*").eq("id", itemId).maybeSingle(),
+    ) as Row | null;
+    if (!row) return null;
+    if (quantity <= 0) {
+      unwrap(await supabase.from("cart_items").delete().eq("id", itemId));
+      return null;
+    }
+    const rows = unwrap(
+      await supabase.from("cart_items").select("*").eq("session_id", row.session_id),
+    ) as Row[];
+    assertCart(
+      rows.map(item =>
+        item.id === itemId
+          ? toLimitLine({ ...item, quantity })
+          : toLimitLine(item),
+      ),
+    );
+    unwrap(await supabase.from("cart_items").update({ quantity }).eq("id", itemId));
+    return null;
+  },
+
+  "cart.setSize": async ({ itemId, size }) => {
+    const row = unwrap(
+      await supabase.from("cart_items").select("*").eq("id", itemId).maybeSingle(),
+    ) as Row | null;
+    if (!row || !size) return null;
+    const rows = unwrap(
+      await supabase.from("cart_items").select("*").eq("session_id", row.session_id),
+    ) as Row[];
+    const twin = rows.find(
+      item =>
+        item.id !== row.id &&
+        item.product_id === row.product_id &&
+        item.size === size &&
+        (item.color ?? null) === (row.color ?? null),
+    );
+    const next = rows
+      .filter(item => item.id !== row.id && item.id !== twin?.id)
+      .map(toLimitLine);
+    next.push(
+      toLimitLine({
+        ...row,
+        size,
+        quantity: row.quantity + (twin?.quantity ?? 0),
+      }),
+    );
+    assertCart(next);
+    if (twin) {
+      unwrap(await supabase.from("cart_items").delete().eq("id", row.id));
+      unwrap(
+        await supabase
+          .from("cart_items")
+          .update({ quantity: row.quantity + twin.quantity })
+          .eq("id", twin.id),
+      );
+    } else {
+      unwrap(await supabase.from("cart_items").update({ size }).eq("id", itemId));
+    }
     return null;
   },
 
