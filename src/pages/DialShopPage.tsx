@@ -1,8 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { Link, useLocation, useNavigate, useSearchParams } from "react-router-dom";
+import { DialAtmosphere } from "../components/DialAtmosphere";
+import { DialSliceRing } from "../components/DialSliceRing";
 import { DialRimCarousel } from "../components/DialRimCarousel";
 import { RadialVariantDial } from "../components/RadialVariantDial";
-import { SEO } from "../components/SEO";
+import { buildOrganizationJsonLd, buildWebSiteJsonLd, SEO } from "../components/SEO";
+import { PAGE_SEO } from "../data/seoMeta";
 import { useSessionId } from "../hooks/useSessionId";
 import { api, useAuthStatus, useMutation, useQuery } from "../lib/backend";
 import {
@@ -20,6 +23,8 @@ import {
   type StockMap,
   blackOptionIndex,
   blackProduct,
+  categoriesFor,
+  categoryBySlug,
   colorNames,
   colorwayOptions,
   familiesFor,
@@ -32,12 +37,15 @@ import {
   splitColorId,
   writeLocalFavorites,
 } from "../lib/dialShop";
+import { playConfirm, playPower, playPreview, playTick } from "../lib/dialSound";
 import { hiResProductImage } from "../lib/productImage";
 
 type Crumb = { id: string; label: string; apply: () => void };
 
 export function DialShopPage() {
   const navigate = useNavigate();
+  const { pathname } = useLocation();
+  const landing = pathname === "/" || pathname === "/dial";
   const [params] = useSearchParams();
   const sessionId = useSessionId();
   const { isAuthenticated } = useAuthStatus();
@@ -58,6 +66,7 @@ export function DialShopPage() {
   const menuLock = useRef(false);
 
   const gender = parseGender(params.get("g"));
+  const category = params.get("c") || "";
   const family = params.get("f") || "";
   const productId = params.get("p") || "";
   const size = params.get("size") || "";
@@ -66,9 +75,17 @@ export function DialShopPage() {
   const sheet = params.get("sheet") === "1";
 
   useEffect(() => {
+    if (family !== "all") return;
+    go(
+      { f: "", p: "", color: "", size: "", step: "families", sheet: false },
+      true,
+    );
+  }, [family]);
+
+  useEffect(() => {
     if (!params.get("g")) {
       navigate(
-        { pathname: "/dial", search: "g=all&step=families" },
+        { pathname: "/dial", search: "g=all&step=categories" },
         { replace: true },
       );
     }
@@ -91,6 +108,7 @@ export function DialShopPage() {
   const go = (
     next: {
       g?: DialGender;
+      c?: string;
       f?: string;
       p?: string;
       size?: string;
@@ -102,12 +120,14 @@ export function DialShopPage() {
   ) => {
     const query = new URLSearchParams();
     query.set("g", next.g ?? gender);
+    const pickedCategory = next.c === undefined ? category : next.c;
     const pickedFamily = next.f === undefined ? family : next.f;
     const piece = next.p === undefined ? productId : next.p;
     const picked = next.size === undefined ? size : next.size;
     const tone = next.color === undefined ? colorParam : next.color;
     const nextStep = next.step ?? step;
     const open = next.sheet === undefined ? sheet : next.sheet;
+    if (pickedCategory) query.set("c", pickedCategory);
     if (pickedFamily) query.set("f", pickedFamily);
     if (piece) query.set("p", piece);
     if (picked) query.set("size", picked);
@@ -117,7 +137,12 @@ export function DialShopPage() {
     navigate({ pathname: "/dial", search: query.toString() }, { replace });
   };
 
-  const families = familiesFor(gender, remoteFamilies);
+  const categories = categoriesFor(gender, remoteFamilies);
+  const categoryName =
+    category === "all"
+      ? "All"
+      : categoryBySlug(category, gender, remoteFamilies)?.name || category;
+  const families = familiesFor(gender, category, remoteFamilies);
   const familySlides = useMemo(
     () =>
       families.map(item => {
@@ -183,7 +208,24 @@ export function DialShopPage() {
     return parsed.productId === productId && (!parsed.color || parsed.color === colorParam);
   });
   const familyName =
-    family === "all" ? "All" : familyBySlug(family, remoteFamilies)?.name || family;
+    familyBySlug(family, remoteFamilies)?.name || family;
+
+  const chooseColor = (id: string, advance: boolean) => {
+    const parsed = splitColorId(id);
+    const product = catalog.find(entry => entry._id === parsed.productId);
+    const option = colors.find(item => item.id === id);
+    go(
+      {
+        p: parsed.productId,
+        color:
+          parsed.color || colorFromName(product?.name || "") || option?.label || "",
+        size: "",
+        step: advance ? "size" : "color",
+        sheet: false,
+      },
+      !advance,
+    );
+  };
 
   const previewFor = (id: string) => {
     const parsed = splitColorId(id);
@@ -209,7 +251,13 @@ export function DialShopPage() {
       go({ step: "families", p: "", color: "", size: "", sheet: false });
       return;
     }
-    if (family) go({ f: "", p: "", color: "", size: "", step: "families" });
+    if (step === "families") {
+      go({ step: "categories", f: "", p: "", color: "", size: "", sheet: false });
+      return;
+    }
+    if (category) {
+      go({ c: "", f: "", p: "", color: "", size: "", step: "categories" });
+    }
   };
 
   const crumbs: Crumb[] = [
@@ -218,15 +266,31 @@ export function DialShopPage() {
       label: `Gender: ${gender === "all" ? "All" : gender === "women" ? "Women" : "Men"}`,
       apply: () =>
         go({
+          c: "",
           f: "",
           p: "",
           color: "",
           size: "",
-          step: "families",
+          step: "categories",
           sheet: false,
         }),
     },
   ];
+  if (category) {
+    crumbs.push({
+      id: "category",
+      label: `Category: ${categoryName}`,
+      apply: () =>
+        go({
+          f: "",
+          p: "",
+          color: "",
+          size: "",
+          step: "categories",
+          sheet: false,
+        }),
+    });
+  }
   if (family) {
     crumbs.push({
       id: "family",
@@ -305,12 +369,18 @@ export function DialShopPage() {
   };
 
   return (
-    <div className="dial-shop">
+    <div className={`dial-shop${landing ? " is-landing" : ""}`}>
       <SEO
-        title="Shop the dial"
-        description="Choose a gender, a family, a color, then a size. The XIXVI dial."
-        url="/dial"
+        title={landing ? "XI Eleven XVI Sixteen" : "Shop the dial"}
+        description={PAGE_SEO.home.description}
+        url={pathname === "/dial" ? "/dial" : "/"}
+        jsonLd={
+          landing
+            ? [buildOrganizationJsonLd(), buildWebSiteJsonLd()]
+            : undefined
+        }
       />
+      <DialAtmosphere cue={`${step}-${category}-${family}`} burst={sheet}>
       <div className="dial-shop__stage">
         <div className="dial-gender" role="radiogroup" aria-label="Clothing">
           <span
@@ -341,11 +411,12 @@ export function DialShopPage() {
               onClick={() =>
                 go({
                   g: id,
+                  c: "",
                   f: "",
                   p: "",
                   color: "",
                   size: "",
-                  step: "families",
+                  step: "categories",
                   sheet: false,
                 })
               }
@@ -355,7 +426,42 @@ export function DialShopPage() {
           ))}
         </div>
 
-        <div className="dial-orbit" key={`${gender}-${family}-${step}-${productId}`}>
+        <div className="dial-orbit" key={`${gender}-${category}-${family}-${step}-${productId}`}>
+          {step === "categories" ? (
+            <CategoryRing
+              items={categories.map(item => ({
+                id: item.slug,
+                label: item.name,
+              }))}
+              activeId={category}
+              onPreview={id =>
+                go(
+                  {
+                    c: id,
+                    f: "",
+                    p: "",
+                    color: "",
+                    size: "",
+                    step: "categories",
+                    sheet: false,
+                  },
+                  true,
+                )
+              }
+              onConfirm={id =>
+                go({
+                  c: id,
+                  f: "",
+                  p: "",
+                  color: "",
+                  size: "",
+                  step: "families",
+                  sheet: false,
+                })
+              }
+            />
+          ) : null}
+
           {step === "families" && familySlides.length > 0 ? (
             <DialRimCarousel
               slides={familySlides}
@@ -374,7 +480,8 @@ export function DialShopPage() {
                   true,
                 )
               }
-              onConfirm={slide =>
+              onConfirm={slide => {
+                playConfirm();
                 go({
                   f: slide.id,
                   p: "",
@@ -382,8 +489,8 @@ export function DialShopPage() {
                   size: "",
                   step: "color",
                   sheet: false,
-                })
-              }
+                });
+              }}
             />
           ) : null}
 
@@ -392,57 +499,35 @@ export function DialShopPage() {
           ) : null}
 
           {step === "color" && colors.length > 0 ? (
-            <DialRimCarousel
-              slides={colors.map(item => {
-                const image = previewFor(item.id);
-                return {
-                  id: item.id,
-                  label: item.label,
-                  image: image ? hiResProductImage(image, 900) : undefined,
-                  tint: item.hex,
-                  available: item.available,
-                };
-              })}
-              index={colorIndex}
-              label="Colors"
-              onIndex={next => {
-                const item = colors[next];
-                if (!item) return;
-                const parsed = splitColorId(item.id);
-                const product = catalog.find(
-                  entry => entry._id === parsed.productId,
-                );
-                go(
-                  {
-                    p: parsed.productId,
-                    color:
-                      parsed.color ||
-                      colorFromName(product?.name || "") ||
-                      item.label,
-                    size: "",
-                    step: "color",
-                    sheet: false,
-                  },
-                  true,
-                );
-              }}
-              onConfirm={slide => {
-                const parsed = splitColorId(slide.id);
-                const product = catalog.find(
-                  entry => entry._id === parsed.productId,
-                );
-                go({
-                  p: parsed.productId,
-                  color:
-                    parsed.color ||
-                    colorFromName(product?.name || "") ||
-                    slide.label,
-                  size: "",
-                  step: "size",
-                  sheet: false,
-                });
-              }}
-            />
+            <div className="dial-variant">
+              <RadialVariantDial
+                sizes={[]}
+                colors={colors}
+                sizeId=""
+                colorId={colorFocus?.id || ""}
+                focus="color"
+                colorFirst
+                confirmTwice
+                previews={Object.fromEntries(
+                  colors.map(item => {
+                    const image = previewFor(item.id);
+                    return [
+                      item.id,
+                      image ? hiResProductImage(image, 900) : undefined,
+                    ];
+                  }),
+                )}
+                onSize={() => undefined}
+                onColor={id => {
+                  playPreview();
+                  chooseColor(id, false);
+                }}
+                onCommit={id => {
+                  playConfirm();
+                  chooseColor(id, true);
+                }}
+              />
+            </div>
           ) : null}
 
           {step === "size" && chosen ? (
@@ -459,6 +544,8 @@ export function DialShopPage() {
                 onCommitSize={id => {
                   const option = sizes.find(item => item.id === id);
                   if (!option?.available) return;
+                  playConfirm();
+                  playPower();
                   go({ size: id, step: "size", sheet: true });
                 }}
               />
@@ -515,6 +602,8 @@ export function DialShopPage() {
           ) : null}
         </div>
       </div>
+      </DialAtmosphere>
+      {landing ? <DialTail /> : null}
 
       {sheet && chosen ? (
         <div
@@ -590,5 +679,76 @@ export function DialShopPage() {
         </div>
       ) : null}
     </div>
+  );
+}
+
+function DialTail() {
+  return (
+    <section className="dial-tail">
+      <ol className="dial-tail__steps">
+        {[
+          ["01", "Select", "Style. Color. Size."],
+          ["02", "Produce", "Made when you order it."],
+          ["03", "Receive", "Shipped to you."],
+        ].map(([num, title, copy]) => (
+          <li key={num}>
+            <p>{num}</p>
+            <h2>{title}</h2>
+            <p>{copy}</p>
+          </li>
+        ))}
+      </ol>
+      <div className="dial-tail__rooms">
+        <Link to="/journal" className="dial-tail__room">
+          <p>Editorial</p>
+          <h2>Journal</h2>
+          <span>Read</span>
+        </Link>
+        <Link to="/chart" className="dial-tail__room">
+          <p>The long read</p>
+          <h2>True North</h2>
+          <span>Open</span>
+        </Link>
+      </div>
+    </section>
+  );
+}
+
+function CategoryRing({
+  items,
+  activeId,
+  onPreview,
+  onConfirm,
+}: {
+  items: Array<{ id: string; label: string }>;
+  activeId: string;
+  onPreview: (id: string) => void;
+  onConfirm: (id: string) => void;
+}) {
+  const [hot, setHot] = useState<string | null>(activeId || null);
+  const shown = hot || activeId;
+  const label = items.find(item => item.id === shown)?.label || "Category";
+  return (
+    <DialSliceRing
+      slices={items.map(item => ({ id: item.id, label: item.label, available: true }))}
+      activeId={activeId}
+      hotId={hot}
+      ariaLabel="Categories"
+      onHot={id => {
+        setHot(id);
+        playTick();
+      }}
+      onSelect={id => {
+        if (id === activeId) {
+          playConfirm();
+          onConfirm(id);
+        } else {
+          playPreview();
+          onPreview(id);
+        }
+      }}
+    >
+      <p className="dial-slices__name">{label}</p>
+    </DialSliceRing>
   );
 }

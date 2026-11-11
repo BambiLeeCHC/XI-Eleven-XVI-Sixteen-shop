@@ -1,3 +1,106 @@
+.dial-slices {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.dial-slices svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.dial-slice {
+  cursor: pointer;
+  stroke: rgba(247, 240, 230, 0.28);
+  stroke-width: 0.6;
+  transition: fill 0.2s ease, filter 0.2s ease;
+}
+
+.dial-slice.is-color {
+  stroke: rgba(8, 10, 14, 0.35);
+}
+
+.dial-slice.is-hot,
+.dial-slice.is-on,
+.dial-slice:focus-visible {
+  filter: drop-shadow(0 0 5px var(--slice));
+  stroke: #f7f0e6;
+  stroke-width: 1.1;
+}
+
+.dial-slice.is-off {
+  opacity: 0.42;
+  cursor: not-allowed;
+  filter: none;
+}
+
+.dial-slice__label {
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  font-family: inherit;
+}
+
+.dial-slices__aura {
+  opacity: 0.9;
+  filter: drop-shadow(0 0 8px var(--dial-tint));
+  animation: dial-ring-glow 2.6s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.dial-slices__hub {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 52%;
+  height: 52%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  background: rgba(11, 11, 12, 0.78);
+  pointer-events: none;
+}
+
+.dial-slices__hub .radial-dial__hub-go,
+.dial-slices__hub button {
+  pointer-events: auto;
+}
+
+.dial-slices__photo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.dial-slices__name {
+  position: relative;
+  z-index: 1;
+  margin: 0;
+  padding: 0 0.7rem;
+  font-family: Fraunces, Georgia, serif;
+  font-style: italic;
+  font-size: clamp(1rem, 3vw, 1.45rem);
+  line-height: 1.15;
+  color: #f7f0e6;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dial-slice {
+    transition: none;
+  }
+  .dial-slices__aura {
+    animation: none;
+  }
+}
+
 .radial-dial {
   width: min(100%, 320px);
   margin-inline: auto;
@@ -332,6 +435,9 @@
     opacity: 1;
     --tick-r: 7.5rem;
   }
+  .radial-dial.is-color.has-tint .radial-dial__orbit--color {
+    animation: none;
+  }
 }
 
 /* Hovered color owns the outer ring and the center preview. */
@@ -347,23 +453,32 @@
 
 .radial-dial__hub-photo {
   position: absolute;
-  left: 50%;
-  top: 8%;
-  width: 76%;
-  height: 68%;
-  transform: translateX(-50%);
-  object-fit: contain;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
   z-index: 0;
   pointer-events: none;
-  filter: drop-shadow(0 10px 12px rgba(0, 0, 0, 0.45));
+}
+
+.radial-dial__hub-go {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  cursor: pointer;
+  pointer-events: auto;
 }
 
 .radial-dial.is-color.has-preview .radial-dial__hub {
-  inset: 22%;
+  inset: 26%;
+  overflow: hidden;
   justify-content: flex-end;
-  padding-bottom: 7%;
-  background:
-    radial-gradient(circle at 50% 42%, rgba(255, 255, 255, 0.08), rgba(8, 10, 14, 0.72) 72%);
+  padding-bottom: 8%;
+  background: #0b0d12;
 }
 
 .radial-dial.has-preview .radial-dial__hub-label {
@@ -395,8 +510,20 @@
   box-shadow:
     0 0 28px color-mix(in srgb, var(--dial-tint) 75%, transparent),
     inset 0 0 18px color-mix(in srgb, var(--dial-tint) 40%, transparent);
+  filter: drop-shadow(0 0 10px var(--dial-tint));
   -webkit-mask: radial-gradient(circle, transparent 56%, #000 68% 100%);
   mask: radial-gradient(circle, transparent 56%, #000 68% 100%);
+  animation: dial-ring-glow 2.6s ease-in-out infinite;
+}
+
+@keyframes dial-ring-glow {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 8px var(--dial-tint));
+  }
+  50% {
+    filter: drop-shadow(0 0 22px var(--dial-tint));
+  }
 }
 
 .radial-dial__tick--color.is-hot .radial-dial__swatch {
