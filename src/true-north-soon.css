@@ -1,0 +1,145 @@
+.tn-soon {
+  min-height: calc(100vh - 72px);
+  display: grid;
+  place-items: center;
+  padding: 48px 20px 72px;
+  background: #fff;
+  color: #111;
+}
+
+.tn-soon__stage {
+  position: relative;
+  width: min(560px, 100%);
+  padding: 48px 28px 40px;
+  text-align: center;
+  border: 1px solid #111;
+  background: #fff;
+  perspective: 800px;
+}
+
+.tn-soon__glow {
+  position: absolute;
+  left: 50%;
+  top: 42px;
+  width: 140px;
+  height: 140px;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(17, 17, 17, 0.16), transparent 68%);
+  filter: blur(6px);
+  animation: tn-soon-pulse 4.8s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.tn-soon__mark {
+  position: relative;
+  width: 72px;
+  height: auto;
+  margin: 0 auto 18px;
+  animation: tn-soon-tilt 7s ease-in-out infinite;
+}
+
+.tn-soon__kicker {
+  margin: 0;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+}
+
+.tn-soon h1 {
+  margin: 10px 0 0;
+  font-family: Fraunces, Georgia, serif;
+  font-style: italic;
+  font-weight: 500;
+  font-size: clamp(48px, 8vw, 72px);
+  letter-spacing: -0.03em;
+  line-height: 0.95;
+}
+
+.tn-soon__line {
+  margin: 16px 0 0;
+  font-size: 16px;
+  color: #333;
+}
+
+.tn-soon__form {
+  margin-top: 28px;
+  text-align: left;
+}
+
+.tn-soon__form label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+
+.tn-soon__form div {
+  display: flex;
+  gap: 8px;
+}
+
+.tn-soon__form input {
+  flex: 1;
+  min-width: 0;
+  height: 46px;
+  padding: 0 14px;
+  border: 1px solid #111;
+  background: #fff;
+  color: #111;
+  font-size: 15px;
+}
+
+.tn-soon__form button {
+  height: 46px;
+  padding: 0 16px;
+  border: 1px solid #111;
+  background: #111;
+  color: #fff;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.tn-soon__note {
+  margin: 12px 0 0;
+  font-size: 14px;
+}
+
+@keyframes tn-soon-pulse {
+  0%,
+  100% { opacity: 0.45; transform: translateX(-50%) scale(0.92); }
+  50% { opacity: 1; transform: translateX(-50%) scale(1.08); }
+}
+
+@keyframes tn-soon-tilt {
+  0%,
+  100% { transform: rotateY(-8deg) translateZ(0); }
+  50% { transform: rotateY(8deg) translateZ(12px); }
+}
+
+@media (max-width: 700px) {
+  .tn-soon {
+    padding: 28px 16px 48px;
+  }
+
+  .tn-soon__stage {
+    padding: 36px 18px 28px;
+  }
+
+  .tn-soon__form div {
+    flex-direction: column;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tn-soon__glow,
+  .tn-soon__mark {
+    animation: none;
+  }
+}

@@ -37,6 +37,7 @@ import {
   stripePost,
   supabaseAdmin,
 } from "./_lib/server.js";
+import { assertTrueNorthOpen } from "./_lib/trueNorthGate.js";
 
 const QUESTION_PRICE_CENTS = 299;
 const NUMEROLOGY_UNLOCK_PRICE_CENTS = 1999;
@@ -262,6 +263,7 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
   }
 
   try {
+    await assertTrueNorthOpen(req);
     const { kind } = (req.body ?? {}) as { kind?: string };
     if (kind === "question") return await handleQuestionCheckout(req, res);
     if (kind === "subscribe") return await handleSubscribeCheckout(req, res);
