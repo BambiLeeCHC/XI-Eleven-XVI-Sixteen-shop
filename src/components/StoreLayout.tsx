@@ -13,13 +13,15 @@ export function StoreLayout() {
   const north = northPath && access.allowed;
   const dial = pathname === "/" || pathname === "/dial";
   const piece = pathname.startsWith("/product/");
+  const admin = pathname === "/admin" || pathname.startsWith("/admin/");
   const plain =
     pathname === "/shop" ||
     pathname === "/cart" ||
+    admin ||
     (skyPath && !access.allowed);
 
   return (
-    <div className={`store-shell flex flex-col min-h-screen${north ? " is-north" : " is-shop"}${dial ? " is-dial" : ""}${piece ? " is-pdp" : ""}${plain ? " is-plain" : ""}`}>
+    <div className={`store-shell flex flex-col min-h-screen${north ? " is-north" : " is-shop"}${dial ? " is-dial" : ""}${piece ? " is-pdp" : ""}${plain ? " is-plain" : ""}${admin ? " is-admin" : ""}`}>
       {north ? <LiveSky /> : dial || piece || plain ? null : <div className="shop-field" aria-hidden="true" />}
       <StoreHeader />
       <main className="store-main flex-1">

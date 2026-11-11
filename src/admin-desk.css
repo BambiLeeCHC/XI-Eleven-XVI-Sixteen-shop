@@ -1,0 +1,137 @@
+/* Admin desk. The shop wash is a fixed opaque layer, so /admin opts out of it
+   in StoreLayout. These rules repaint the old dark desk onto the white field. */
+
+.store-shell.is-admin,
+body:has(.store-shell.is-admin),
+.store-shell.is-admin .store-main {
+  background: #fff;
+  color: #111;
+}
+
+.store-shell.is-admin .store-main {
+  position: relative;
+  z-index: 1;
+}
+
+.admin-desk {
+  background: #fff;
+  color: #111;
+  width: 100%;
+}
+
+.admin-desk > aside {
+  background: #fff;
+  color: #111;
+  border-right: 1px solid #111;
+}
+
+.admin-desk [class*="text-white"] {
+  color: #111;
+}
+
+.admin-desk [class*="bg-[#0"],
+.admin-desk [class*="bg-[#1"] {
+  background-color: #fff;
+}
+
+.admin-desk [class*="bg-white/"] {
+  background-color: #f6f6f4;
+}
+
+.admin-desk [class*="border-white"] {
+  border-color: rgba(17, 17, 17, 0.18);
+}
+
+.admin-desk [class*="rounded-lg"][class*="border"],
+.admin-desk [class*="rounded-xl"][class*="border"],
+.admin-desk [class*="rounded-md"][class*="border"] {
+  background-color: #fff;
+  border-color: #111;
+}
+
+.admin-desk input,
+.admin-desk select,
+.admin-desk textarea {
+  background: #fff;
+  color: #111;
+  border: 1px solid #111;
+}
+
+.admin-desk input::placeholder,
+.admin-desk textarea::placeholder {
+  color: #666;
+}
+
+.admin-desk option {
+  background: #fff;
+  color: #111;
+}
+
+.admin-desk aside button.is-on,
+.admin-desk aside button.is-on [class*="text-white"] {
+  background: #111;
+  color: #fff;
+}
+
+.admin-desk .text-green-400,
+.admin-desk [class*="text-green-"] {
+  color: #0b7a45;
+}
+
+.admin-desk [class*="text-red-"] {
+  color: #b42318;
+}
+
+.admin-desk [class*="text-amber-"] {
+  color: #8a5a00;
+}
+
+.admin-desk [class*="text-purple-"] {
+  color: #6d28d9;
+}
+
+.admin-desk [class*="overflow-x-auto"],
+.admin-desk .overflow-x-auto {
+  max-width: 100%;
+}
+
+.admin-desk table {
+  color: #111;
+}
+
+.admin-desk [class*="overflow-hidden"] {
+  overflow-x: auto;
+}
+
+.admin-desk button[class*="bg-amber"],
+.admin-desk .admin-solid {
+  background: #111;
+  color: #fff;
+  border-color: #111;
+}
+
+@media (max-width: 860px) {
+  .admin-desk {
+    flex-direction: column;
+  }
+
+  .admin-desk > aside {
+    width: 100%;
+    min-height: 0;
+    border-right: 0;
+    border-bottom: 1px solid #111;
+  }
+
+  .admin-desk > aside nav {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 6px;
+    overflow-x: auto;
+  }
+
+  .admin-desk > aside nav button {
+    width: auto;
+    flex: 0 0 auto;
+    white-space: nowrap;
+  }
+}
