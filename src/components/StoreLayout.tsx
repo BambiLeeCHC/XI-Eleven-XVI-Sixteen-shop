@@ -13,7 +13,10 @@ export function StoreLayout() {
   const north = northPath && access.allowed;
   const dial = pathname === "/" || pathname === "/dial";
   const piece = pathname.startsWith("/product/");
-  const plain = pathname === "/shop" || (skyPath && !access.allowed);
+  const plain =
+    pathname === "/shop" ||
+    pathname === "/cart" ||
+    (skyPath && !access.allowed);
 
   return (
     <div className={`store-shell flex flex-col min-h-screen${north ? " is-north" : " is-shop"}${dial ? " is-dial" : ""}${piece ? " is-pdp" : ""}${plain ? " is-plain" : ""}`}>

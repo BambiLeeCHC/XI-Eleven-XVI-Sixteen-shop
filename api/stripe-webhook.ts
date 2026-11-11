@@ -172,6 +172,32 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
           } catch (error) {
             console.error("Printful submission failed", error);
           }
+          try {
+            const { data: placed } = await admin
+              .from("orders")
+              .select("id, email, user_id, session_id, items, shipping_address")
+              .eq("id", orderId)
+              .maybeSingle();
+            if (placed) {
+              const { recordOrderFlag, reviewRecentOrders } = await import(
+                "./_lib/resellerWatch.js"
+              );
+              const watch = await reviewRecentOrders(admin, placed);
+              if (watch.hit) {
+                await recordOrderFlag(admin, {
+                  orderId: placed.id,
+                  sessionId: placed.session_id,
+                  email: placed.email,
+                  userId: placed.user_id,
+                  addressHash: watch.hash,
+                  reason: watch.hit.code,
+                  details: { message: watch.hit.message, at: "webhook" },
+                });
+              }
+            }
+          } catch (error) {
+            console.error("Order flag check failed", error);
+          }
         }
       }
     }
