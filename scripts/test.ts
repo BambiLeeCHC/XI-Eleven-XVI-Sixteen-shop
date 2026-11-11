@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { FULL_DECK } from "../src/data/fullDeck.js";
-import { tarotFaceFile, tarotFaceFileFromName } from "../src/lib/tarotFace.js";
+import { tarotBackForIndex, tarotFaceFile, tarotFaceFileFromName } from "../src/lib/tarotFace.js";
 import {
   longReadEntitled,
   shouldStartPaidCheckout,
@@ -875,6 +875,16 @@ check("every True North card has a branded face", () => {
   assert.equal(tarotFaceFile({ number: 11, name: "Justice" }), "11-justice");
   assert.equal(tarotFaceFileFromName("The Wheel of Fortune"), "10-wheel-of-fortune");
   assert.equal(tarotFaceFileFromName("Ace of Cups"), "ace-of-cups");
+  assert.equal(tarotBackForIndex(0).id, "x1");
+  assert.equal(tarotBackForIndex(1).id, "x2");
+  assert.equal(tarotBackForIndex(2).id, "x3");
+  assert.equal(tarotBackForIndex(3).id, "x1");
+  assert.equal(tarotBackForIndex(-1).id, "x3");
+  for (const back of [0, 1, 2].map(tarotBackForIndex)) {
+    assert.equal(existsSync(join(root, "public/tarot/backs", `${back.file}.webp`)), true, back.file);
+  }
+  const journal = readFileSync(join(root, "src/pages/JournalPostPage.tsx"), "utf8");
+  assert.doesNotMatch(journal, /DrawThree|The Draw|house deck/);
 });
 
 await Promise.all(pending);

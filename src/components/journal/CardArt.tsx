@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import type { ArcanaCard } from "../../data/arcana";
-import { TAROT_FACE_HEIGHT, TAROT_FACE_WIDTH, tarotFaceFile, tarotFaceSources } from "../../lib/tarotFace";
+import { TAROT_FACE_HEIGHT, TAROT_FACE_WIDTH, tarotBackForIndex, tarotFaceFile, tarotFaceSources } from "../../lib/tarotFace";
 
 const SHIELD = "/journal/shield-gold.png";
 const FIGURE = "/mannequin-women-v37.png";
@@ -293,18 +293,56 @@ export function CardArt({ card, reversed = false }: { card: ArcanaCard; reversed
   );
 }
 
-export function CardBack() {
+export function CardBack({ index = 0 }: { index?: number }) {
+  const back = tarotBackForIndex(index);
   return (
-    <div className="jdeck-back" aria-hidden="true">
-      <svg className="jdeck-back-art" viewBox="0 0 904 1548" role="img" aria-label="True North card back">
-        <rect width="904" height="1548" fill="#13243e" />
-        <rect x="46" y="46" width="812" height="1456" fill="none" stroke="#e7d7a4" strokeWidth="3" />
-        <rect x="64" y="64" width="776" height="1420" fill="none" stroke="#b8923a" strokeWidth="10" />
-        <rect x="90" y="90" width="724" height="1368" fill="none" stroke="#e7d7a4" strokeWidth="2" />
-        <text x="452" y="300" textAnchor="middle" fill="#e7d7a4" fontFamily="'Playfair Display', Georgia, serif" fontSize="42" letterSpacing="14">XI · XVI</text>
-        <text x="452" y="1288" textAnchor="middle" fill="#c4a35a" fontFamily="Inter, system-ui, sans-serif" fontSize="26" letterSpacing="12">TRUE NORTH</text>
-      </svg>
-      <img className="jdeck-back__logo" src={SHIELD} alt="" />
+    <div className="jdeck-back">
+      <img
+        className="jdeck-back__img"
+        src={`/tarot/backs/${back.file}.webp`}
+        alt=""
+        width={back.width}
+        height={back.height}
+        decoding="async"
+      />
     </div>
+  );
+}
+
+/** Short flip. The back is chosen by spread position and stays put across renders. */
+export function FlipCard({
+  index,
+  open,
+  onOpen,
+  label,
+  children,
+}: {
+  index: number;
+  open: boolean;
+  onOpen: () => void;
+  label: string;
+  children: ReactNode;
+}) {
+  return (
+    <button
+      type="button"
+      className={`jdeck-card tn-flip${open ? " is-open" : ""}`}
+      onClick={() => {
+        if (!open) onOpen();
+      }}
+      aria-pressed={open}
+      aria-label={open ? label : `Turn ${label}`}
+    >
+      <span className="jdeck-card__inner">
+        <span className="jdeck-card__side jdeck-card__side--back">
+          <CardBack index={index} />
+        </span>
+        <span className="jdeck-card__side jdeck-card__side--front">
+          <span className="jdeck-face">
+            <span className="jdeck-face__plate">{open ? children : null}</span>
+          </span>
+        </span>
+      </span>
+    </button>
   );
 }

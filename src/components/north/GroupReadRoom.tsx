@@ -1,5 +1,5 @@
-import { useMemo, useState } from "react";
-import { CardArt } from "../journal/CardArt";
+import { useEffect, useMemo, useState } from "react";
+import { CardArt, FlipCard } from "../journal/CardArt";
 import {
   chartFromSigns,
   composeGroupReading,
@@ -45,6 +45,20 @@ export function GroupReadRoom({
   const seats = useMemo(() => [you, ...friends.filter(friend => friend.name !== "Open seat")], [friends, you]);
   const [picked, setPicked] = useState<string[]>(() => seats.slice(0, 4).map(seat => seat.id));
   const [reading, setReading] = useState<ReturnType<typeof composeGroupReading> | null>(null);
+  const [openSlots, setOpenSlots] = useState<string[]>([]);
+  const spreadKey = reading?.cards.map(card => `${card.slot}:${card.card.number}`).join("|") ?? "";
+  useEffect(() => {
+    setOpenSlots([]);
+  }, [spreadKey]);
+  const revealSlot = (slot: string) => {
+    setOpenSlots(current => current.includes(slot) ? current : [...current, slot]);
+  };
+  const revealAll = () => {
+    (reading?.cards ?? []).forEach((card, index) => {
+      window.setTimeout(() => revealSlot(card.slot), index * 90);
+    });
+  };
+  const spreadOpen = Boolean(reading?.cards.length) && (reading?.cards ?? []).every(card => openSlots.includes(card.slot));
   const [posted, setPosted] = useState(false);
   const [error, setError] = useState("");
   const [question, setQuestion] = useState("");
@@ -193,18 +207,27 @@ export function GroupReadRoom({
           <p className="label-lock">{reading.connection}</p>
           <h3>{reading.title}</h3>
           {reading.question ? <p className="group-read__ask">You asked: {reading.question}</p> : null}
-          <div className="long-read-spread tn-spread group-read__spread" aria-label="Group spread">
-            {reading.cards.map(card => (
-              <div key={card.slot} className="long-read-card">
-                <p className="long-read-slot-label label-lock">{card.slotName}</p>
-                <CardArt card={card.card} reversed={card.reversed} />
-                <p className="long-read-card-name">
-                  {card.card.name}
-                  {card.reversed ? " (rev.)" : ""}
-                </p>
-              </div>
-            ))}
+          <div className="long-read-spread tn-spread group-read__spread">
+            {reading.cards.map((card, index) => {
+              const open = openSlots.includes(card.slot);
+              return (
+                <div key={card.slot} className="long-read-card">
+                  <p className="long-read-slot-label label-lock">{card.slotName}</p>
+                  <FlipCard index={index} open={open} onOpen={() => revealSlot(card.slot)} label={card.slotName}>
+                    <CardArt card={card.card} reversed={card.reversed} />
+                  </FlipCard>
+                  <p className="long-read-card-name">
+                    {open ? `${card.card.name}${card.reversed ? " (rev.)" : ""}` : "Face down"}
+                  </p>
+                </div>
+              );
+            })}
           </div>
+          {!spreadOpen ? (
+            <button type="button" className="cta-pist tn-turn" onClick={revealAll}>Turn the cards</button>
+          ) : null}
+          {spreadOpen ? (
+            <>
           <p className="group-read__portrait">{reading.portrait}</p>
           {reading.sections.map(section => (
             <section key={section.heading} className="group-read__block">
@@ -220,6 +243,8 @@ export function GroupReadRoom({
               ))}
             </ul>
           </details>
+            </>
+          ) : null}
         </article>
       ) : null}
     </section>

@@ -640,6 +640,7 @@ body {
   .long-read-spread { gap: 1rem 0.75rem; }
   .long-read-card .jdeck-art,
   .long-read-card svg { max-width: 140px; }
+  .long-read-card .tn-flip { width: min(100%, 140px); }
 }
 
 
@@ -2145,12 +2146,29 @@ img.tn-card-face.is-reversed { transform: rotate(180deg); }
 .journal-article { max-width: 58rem; margin-inline: auto; }
 .journal-prose ul, .journal-prose ol, .journal-prose blockquote { overflow: hidden; }
 
-/* Card back: the real logo file sits over the engraved plate. */
-.jdeck-back { position: absolute; inset: 0; }
-.jdeck-back__logo {
-  position: absolute; left: 50%; top: 50%;
-  width: 28%; transform: translate(-50%, -50%);
-  filter: drop-shadow(0 8px 16px rgba(6,12,26,.55));
+/* Heirloom backs share the face frame. Cover crops the narrower art; native size is the ceiling. */
+.jdeck-back {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background: #13243e;
+}
+.jdeck-back__img {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 100%;
+  height: 100%;
+  max-width: 428px;
+  max-height: 781px;
+  transform: translate(-50%, -50%);
+  object-fit: cover;
+  object-position: center;
+}
+.long-read-card .tn-flip { width: min(100%, 168px); }
+.tn-turn {
+  margin: 0.85rem 0 0;
+  width: 100%;
 }
 .jdeck-face__roman { display: none; }
 .jdeck-read__meaning {

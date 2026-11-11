@@ -63,3 +63,16 @@ export function tarotFaceSources(file: string) {
     thumb: `/tarot/w480/${file}.webp`,
   };
 }
+
+/** Heirloom backs. Index 0, 1, 2 repeat for every card in a spread. */
+export const TAROT_BACKS = [
+  { id: "x1", name: "Celestial Baroque", file: "x1-celestial-baroque", width: 426, height: 781 },
+  { id: "x2", name: "Pearl Filigree", file: "x2-pearl-filigree", width: 428, height: 781 },
+  { id: "x3", name: "Stained Glass", file: "x3-stained-glass", width: 427, height: 781 },
+] as const;
+
+export function tarotBackForIndex(index: number) {
+  const count = TAROT_BACKS.length;
+  const slot = ((index % count) + count) % count;
+  return TAROT_BACKS[slot];
+}

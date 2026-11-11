@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { CardArt } from "../components/journal/CardArt";
+import { CardArt, FlipCard } from "../components/journal/CardArt";
 import { SectionBoundary } from "../components/journal/SectionBoundary";
 import { TrueNorthAtmosphere } from "../components/journal/TrueNorthAtmosphere";
 import { buildLongReadOfferJsonLd, SEO } from "../components/SEO";
@@ -11,7 +11,7 @@ import {
 import { PAGE_SEO } from "../data/seoMeta";
 import { api, useAction, useAuthStatus, useQuery } from "../lib/backend";
 import { TRUE_NORTH_FREE_ACCESS } from "../lib/freeAccess";
-import { DEEP_SPREAD, drawDeepSpread, type SpreadCard } from "../lib/ritual";
+import { drawDeepSpread, type SpreadCard } from "../lib/ritual";
 import {
   BoldParagraphs,
   HouseDressing,
@@ -181,6 +181,20 @@ export default function DeepReadingPage({ embedded = false }: { embedded?: boole
   const selectedSaved = todayByWindow[selectedWindow];
   const selectedLocal = localByWindow[selectedWindow];
   const displaySpread = selectedLocal?.spread ?? selectedSaved?.spread ?? null;
+  const spreadKey = displaySpread?.map(card => `${card.slot}:${card.card.number}:${card.reversed ? "r" : "u"}`).join("|") ?? "";
+  const [openSlots, setOpenSlots] = useState<string[]>([]);
+  useEffect(() => {
+    setOpenSlots([]);
+  }, [spreadKey]);
+  const revealSlot = (slot: string) => {
+    setOpenSlots(current => current.includes(slot) ? current : [...current, slot]);
+  };
+  const revealAll = () => {
+    (displaySpread ?? []).forEach((card, index) => {
+      window.setTimeout(() => revealSlot(card.slot), index * 90);
+    });
+  };
+  const spreadOpen = Boolean(displaySpread?.length) && (displaySpread ?? []).every(card => openSlots.includes(card.slot));
   const displayReading =
     selectedLocal?.reading ?? selectedSaved?.reading ?? null;
   const hasReading = Boolean(displayReading && displaySpread);
@@ -493,20 +507,35 @@ export default function DeepReadingPage({ embedded = false }: { embedded?: boole
                 <>
                   <SectionBoundary fallbackLabel="Couldn't display your cards just now — the reading below is still yours.">
                     <div className="long-read-spread tn-spread">
-                      {displaySpread?.map(s => (
-                        <div key={s.slot} className="long-read-card">
-                          <p className="long-read-slot-label label-lock">
-                            {s.slotName}
-                          </p>
-                          <CardArt card={s.card} reversed={s.reversed} />
-                          <p className="long-read-card-name">
-                            {s.card.name}
-                            {s.reversed ? " (rev.)" : ""}
-                          </p>
-                        </div>
-                      ))}
+                      {displaySpread?.map((s, index) => {
+                        const open = openSlots.includes(s.slot);
+                        return (
+                          <div key={s.slot} className="long-read-card">
+                            <p className="long-read-slot-label label-lock">
+                              {s.slotName}
+                            </p>
+                            <FlipCard
+                              index={index}
+                              open={open}
+                              onOpen={() => revealSlot(s.slot)}
+                              label={s.slotName}
+                            >
+                              <CardArt card={s.card} reversed={s.reversed} />
+                            </FlipCard>
+                            <p className="long-read-card-name">
+                              {open ? `${s.card.name}${s.reversed ? " (rev.)" : ""}` : "Face down"}
+                            </p>
+                          </div>
+                        );
+                      })}
                     </div>
+                    {!spreadOpen ? (
+                      <button type="button" className="cta-pist tn-turn" onClick={revealAll}>
+                        Turn the cards
+                      </button>
+                    ) : null}
                   </SectionBoundary>
+                  {spreadOpen ? (
                   <SectionBoundary fallbackLabel="Couldn't display the reading text just now — it's saved to your account either way.">
                     <div className="chart-profile-sections tn-letter__body">
                       <div className="chart-profile-section is-lede">
@@ -517,6 +546,7 @@ export default function DeepReadingPage({ embedded = false }: { embedded?: boole
                       </div>
                     </div>
                   </SectionBoundary>
+                  ) : null}
                   {isAdmin && selectedState === "done" && (
                     <button
                       type="button"
@@ -542,14 +572,6 @@ export default function DeepReadingPage({ embedded = false }: { embedded?: boole
           className="serif-quiet"
           style={{ textAlign: "center", marginTop: "0.5rem", color: "#F4EFE6" }}
         >
-          Prefer the free five-card draw?{" "}
-          <Link
-            to="/journal"
-            style={{ textDecoration: "underline", color: "#D8F0C4" }}
-          >
-            Open The Journal →
-          </Link>
-          {" · "}
           <Link
             to="/shop"
             style={{ textDecoration: "underline", color: "#D8F0C4" }}
