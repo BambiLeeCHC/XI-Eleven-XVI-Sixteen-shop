@@ -344,9 +344,10 @@ check("a group read names every person and a real aspect", () => {
   assert.equal(reading.kindLabel, "Group Read");
   assert.match(reading.title, /Group Read/);
   for (const [name] of signs) assert.match(reading.body, new RegExp(name));
-  assert.match(reading.body, /Where you magnetize/);
-  assert.match(reading.body, /Breakthrough/);
-  assert.doesNotMatch(reading.body, /where you spark|friction|challenge|tension/i);
+  assert.match(reading.body, /In The Room of this/);
+  assert.match(reading.body, /the Long Read opens on/);
+  assert.match(reading.body, /The throughline is already in your favor/);
+  assert.doesNotMatch(reading.body, /work you share|shared figure in the sky|where you spark/i);
   assert.equal(reading.cards[0]?.slotName, "The Room");
   assert.equal(reading.cards.filter(card => card.slot.startsWith("role-")).length, 4);
   assert.equal(reading.cards.at(-1)?.slotName, "The Move");
@@ -389,6 +390,7 @@ check("a group read names every person and a real aspect", () => {
     { question: "How do we grow closer?", connectionId: "couple", connectionLabel: "Couple / Partners" },
   );
   assert.match(asked.body, /How do we grow closer/);
+  assert.match(asked.body, /In the Shared heart of this/);
   assert.equal(asked.cards[0]?.slotName, "Shared heart");
   assert.equal(asked.connection, "Couple / Partners");
   const couple = composeGroupReading(
@@ -399,8 +401,7 @@ check("a group read names every person and a real aspect", () => {
     new Date("2026-11-11T16:00:00Z"),
     { question: "How do we grow closer?", connectionId: "couple", connectionLabel: "Couple / Partners" },
   );
-  assert.match(couple.body, /on your own terms/);
-  assert.match(couple.body, /she stays/);
+  assert.match(couple.body, /she\/her/);
   assert.doesNotMatch(couple.body, /lesbian|gay|queer|husband|wife/i);
   assert.equal(tandem.cards.some(card => card.slotName === "Momentum"), true);
   assert.equal(tandem.cards.at(-1)?.slotName, "Next step");

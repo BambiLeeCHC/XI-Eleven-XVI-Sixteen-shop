@@ -13,6 +13,7 @@ import {
   signAtLongitude,
 } from "./chartGeometry.js";
 import { dayKey, drawSeededSpread, type SpreadCard } from "./ritual.js";
+import { fallbackLongRead } from "./longRead.js";
 
 const ASPECTS = [
   ...MAJOR_ASPECTS,
@@ -773,12 +774,12 @@ export function composeGroupReading(people: GroupPerson[], now = new Date(), len
     return bits.length ? `${person.name}: ${bits.join("; ")}` : "";
   }).filter(Boolean).join("\n");
   const title = `${kindLabel} · ${frame.label} · ${names.join(" · ")}`;
-  const body = [
-    frame.ask ? `Question: ${frame.ask}` : "",
-    frame.label,
-    portrait,
-    ...sections.map(section => `${section.heading}. ${section.text}`),
-  ].filter(Boolean).join("\n\n");
+  const who = people.map(person => {
+    const voice = pronounsFor(person);
+    return voice.sub === "they" ? person.name : `${person.name} (${voice.sub}/${voice.obj})`;
+  }).join(" and ");
+  const situation = frame.ask || `what you are building as ${frame.label.toLowerCase()}`;
+  const body = fallbackLongRead(`${who}, ${frame.label.toLowerCase()}`, situation, cards);
   return {
     title,
     kindLabel,

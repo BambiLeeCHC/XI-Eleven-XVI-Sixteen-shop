@@ -12,6 +12,7 @@ import { PAGE_SEO } from "../data/seoMeta";
 import { api, useAction, useAuthStatus, useQuery } from "../lib/backend";
 import { TRUE_NORTH_FREE_ACCESS } from "../lib/freeAccess";
 import { DEEP_SPREAD, drawDeepSpread, type SpreadCard } from "../lib/ritual";
+import { fallbackLongRead } from "../lib/longRead";
 import {
   BoldParagraphs,
   HouseDressing,
@@ -86,14 +87,7 @@ interface SavedDeepReading {
 const LONG_READ_ORIGIN = "/chart/long-read";
 
 function fallbackReading(spread: SpreadCard[], situation: string) {
-  const sit = situation || "what you are carrying today";
-  const cards = spread
-    .map(s => {
-      const meaning = s.reversed ? s.card.reversed : s.card.upright;
-      return `In the ${s.slotName} of this, **${s.card.name}**${s.reversed ? " (reversed)" : ""} speaks to ${sit}. ${meaning}`;
-    })
-    .join("\n\n");
-  return `Tri-Sky opens on ${sit}.\n\n${cards}\n\nThe throughline is already in your favor. Take one concrete step tonight that matches the Best Move card.`;
+  return fallbackLongRead("friend", situation, spread);
 }
 
 function isPaywallError(message: string) {

@@ -4,6 +4,7 @@
  */
 
 import { composeGroupReading, type GroupPerson, type GroupReading } from "../../src/lib/groupSky.js";
+import { buildLongReadPrompt, LONG_READ_SYSTEM_PROMPT } from "../../src/lib/longRead.js";
 import { generateWithGroq } from "./groq.js";
 import { computeNatalChart, geocodeLocation } from "./natalChart.js";
 import {
@@ -48,61 +49,24 @@ async function chartFor(row: BirthRow): Promise<GroupPerson["chart"] | null> {
   };
 }
 
-const VOICE = `You are the XI · XVI reader. Every reading is a tarot pull, interpreted through the charts as a lens. Magnetic, specific, poignant, and always uplifting.
-
-Tone, non-negotiable:
-- Positive, forward, best-case. Strengths, growth, mending, progress.
-- Never write friction, challenge, tension, warning, doom, or a section called "where you spark".
-- Reversed cards and hard cards (Tower, Ten of Swords, Death, the Devil) are breakthroughs and invitations to move. Never warnings.
-- Squares and oppositions are growth edges that push the people forward. Never problems.
-- The close is an empowering directive.
-- Use the pronouns given. If none are given, use they/them and the person's name.
-- Never write husband, wife, or assumed masculine/feminine roles.
-- A private identity note may be included so you can affirm chosen family, visibility, or building a life on their own terms. Never print the orientation or gender label itself in the reading.
-
-Use only the facts given. Do not invent a placement, a person, a card, or an aspect. No degree numbers. No orbs.
-
-Write exactly the headings you are given, each as "## Heading", and nothing else.
-## Portrait
-Two or three sentences. Open on the core card by name. Say what these people are together, at their best.
-Then one "## " section for every heading listed after Portrait, in that order, each a short paragraph that names the card and weaves one real placement.`;
-
-function section(text: string, heading: string) {
-  const match = text.match(new RegExp(`##\\s*${heading}\\s*([\\s\\S]*?)(?=\\n##\\s|$)`, "i"));
-  return match?.[1]?.trim() ?? "";
-}
-
-function voiced(base: GroupReading, text: string): GroupReading | null {
-  const portrait = section(text, "Portrait");
-  if (!portrait) return null;
-  const sections = base.sections.map(item => {
-    const body = section(text, item.heading);
-    return { heading: item.heading, text: body || item.text };
-  });
-  if (sections.some(item => !item.text)) return null;
-  const magnetize = sections.find(item => item.heading === "Where you magnetize")?.text ?? base.magnetize;
-  const breakthrough = sections.find(item => item.heading === "Breakthrough")?.text ?? base.breakthrough;
-  const directive = sections.find(item => /move|next step/i.test(item.heading))?.text ?? base.directive;
-  const next = { ...base, portrait, sections, magnetize, breakthrough, directive };
-  next.body = [portrait, ...sections.map(item => `${item.heading}. ${item.text}`)].join("\n\n");
-  return next;
-}
-
 async function voiceGroupReading(reading: GroupReading): Promise<GroupReading> {
-  const facts = [
-    `Title: ${reading.title}`,
-    `Kind: ${reading.kindLabel}`,
-    `People, in order: ${reading.roles.map(role => role.name).join(", ")}`,
-    `Section headings after Portrait, in order: ${reading.sections.map(item => item.heading).join(" | ")}`,
-    "Cards, in order:",
-    ...reading.cards.map(card => `${card.slotName}: ${card.card.name}${card.reversed ? " reversed" : ""}. ${card.reversed ? card.card.reversed : card.card.upright}`),
-    "Chart facts (for the lens only — do not recite degrees):",
-    ...reading.details,
-    reading.privateNote ? `Private context, never quote these labels:\n${reading.privateNote}` : "",
-  ].join("\n");
-  const result = await generateWithGroq(VOICE, facts, 1800);
+  const situation = reading.question
+    ? `They asked: "${reading.question}". They are ${reading.connection}.`
+    : `They are ${reading.connection}.`;
+  const result = await generateWithGroq(
+    LONG_READ_SYSTEM_PROMPT,
+    buildLongReadPrompt(
+      reading.cards,
+      reading.roles.map(role => role.name).filter(Boolean).join(" and ") || reading.title,
+      situation,
+      undefined,
+      undefined,
+      [reading.privateNote, ...reading.details].filter(Boolean).join("\n"),
+    ),
+    5000,
+  );
   if (!result.success) return reading;
-  return voiced(reading, result.text) ?? reading;
+  return { ...reading, body: result.text };
 }
 
 export async function handleGroupRead(req: ApiRequest, res: ApiResponse) {

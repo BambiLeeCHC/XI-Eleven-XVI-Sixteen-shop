@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import { CardArt } from "../journal/CardArt";
+import { BoldParagraphs } from "../../pages/chart/shared";
 import {
   chartFromSigns,
   composeGroupReading,
@@ -205,13 +206,14 @@ export function GroupReadRoom({
               </div>
             ))}
           </div>
-          <p className="group-read__portrait">{reading.portrait}</p>
-          {reading.sections.map(section => (
-            <section key={section.heading} className="group-read__block">
-              <h4>{section.heading}</h4>
-              <p>{section.text}</p>
-            </section>
-          ))}
+          <div className="chart-profile-sections tn-letter__body">
+            <div className="chart-profile-section is-lede">
+              <p className="label-lock">Your reading</p>
+              <div className="chart-profile-section__body">
+                <BoldParagraphs text={reading.body} />
+              </div>
+            </div>
+          </div>
           <details className="group-read__details">
             <summary>Chart details</summary>
             <ul>
