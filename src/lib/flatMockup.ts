@@ -42,13 +42,21 @@ export function flatMockup(
   images: Array<string | null | undefined> | null | undefined,
 ): FlatPick {
   const base = stem(name);
+  const lower = name.toLowerCase();
+  // Dash flat2 files are phone screenshots. Use the pre-cropped leg print.
+  if (lower.includes("l-flow") && lower.includes("dash")) {
+    const swatch = lower.includes("white")
+      ? "swatches/L-Flow_Leggings_Dash_White.png"
+      : "swatches/L-Flow_Leggings_Dash_Black.png";
+    return { url: `/mockups/${swatch}`, flat: true };
+  }
   const aliases: Record<string, string[]> = {
     B_Lift_Sports_Bra_Dash: ["B-Lift_Sports_Bra_Dash_Black.png"],
     "B-Lift_Sports_Bra_Dash": ["B-Lift_Sports_Bra_Dash_Black.png"],
-    "L-Flow_Leggings_Dash": [
-      "L-Flow_Leggings_Dash_Black.png",
-      "L-Flow_Leggings_Dash_Black_flat2.png",
-    ],
+    "L-Flow_Leggings_Onyx": ["L-Flow_Yoga_Leggings_Onyx_0.png"],
+    "L-Flow_Yoga_Leggings_Onyx": ["L-Flow_Yoga_Leggings_Onyx_0.png"],
+    "L-Flow_Leggings_Ivory": ["L-Flow_Yoga_Leggings_Ivory_0.png"],
+    "L-Flow_Yoga_Leggings_Ivory": ["L-Flow_Yoga_Leggings_Ivory_0.png"],
   };
   const named = [
     ...(aliases[base] ?? []),

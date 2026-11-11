@@ -48,6 +48,8 @@ export const FLAT_MOCKUP_FILES = new Set<string>([
   "J-Glitch_Jersey_White_1.png",
   "J-Glitch_Jersey_White_2.png",
   "J-Glitch_Jersey_White_3.png",
+  "swatches/L-Flow_Leggings_Dash_Black.png",
+  "swatches/L-Flow_Leggings_Dash_White.png",
   "L-Flow_Leggings_Dash_Black_flat2.png",
   "L-Flow_Leggings_Dash_Black.png",
   "L-Flow_Leggings_Dash_White_detail.png",
