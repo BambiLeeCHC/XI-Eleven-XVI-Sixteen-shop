@@ -317,6 +317,7 @@ export function RadialVariantDial({
           ) : null}
         </div>
       </div>
+      </div>
       <p className="radial-dial__status">
         {!size
           ? "Choose a size on the ring."
