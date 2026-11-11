@@ -31,8 +31,7 @@ export function StoreHeader() {
     };
   }, [mobileOpen]);
 
-  const womenOn = location.pathname === "/women";
-  const menOn = location.pathname === "/men";
+  const shopOn = location.pathname === "/shop";
   const aboutOn = location.pathname.startsWith("/about");
   const journalOn = location.pathname.startsWith("/journal");
   const tnOn = location.pathname.startsWith("/chart");
@@ -51,21 +50,8 @@ export function StoreHeader() {
           </Link>
 
           <nav className="site-nav" aria-label="Primary">
-            <Link to="/women" className={womenOn ? "is-on" : undefined}>
-              Women
-            </Link>
-            <Link to="/men" className={menOn ? "is-on" : undefined}>
-              Men
-            </Link>
-            <Link
-              to="/"
-              className={
-                location.pathname === "/" || location.pathname === "/dial"
-                  ? "is-on"
-                  : undefined
-              }
-            >
-              Dial
+            <Link to="/shop" className={shopOn ? "is-on" : undefined}>
+              Shop all
             </Link>
             <Link to="/about" className={aboutOn ? "is-on" : undefined}>
               About
@@ -152,10 +138,7 @@ export function StoreHeader() {
               </button>
             </div>
             <nav className="site-drawer__nav" aria-label="Menu">
-              <MobileNavLink to="/women" label="Women" />
-              <MobileNavLink to="/men" label="Men" />
               <MobileNavLink to="/shop" label="Shop all" />
-              <MobileNavLink to="/" label="Dial" />
               <MobileNavLink to="/about" label="About" />
               <MobileNavLink to="/journal" label="Journal" />
               <MobileNavLink to="/chart" label="True North" />

@@ -10,16 +10,10 @@ export function StoreFooter() {
             <img src={CREST_URL} alt="" className="h-10 w-auto" />
             <span className="shop-mark">xixvi.shop</span>
           </div>
-          <p
-            className="serif-quiet text-[16px]"
-            style={{ color: "rgba(247,240,230,0.75)" }}
-          >
+          <p className="serif-quiet text-[16px] guest-footer__lede">
             XI Eleven XVI Sixteen. Made when you order it.
           </p>
-          <p
-            className="text-[11px] mt-4"
-            style={{ color: "rgba(247,240,230,0.4)" }}
-          >
+          <p className="text-[11px] mt-4 guest-footer__fine">
             XI Eleven XVI Sixteen L.L.C.
             <br />
             Florida, USA
@@ -27,7 +21,7 @@ export function StoreFooter() {
         </div>
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-10">
           <div className="flex flex-col gap-2 serif-quiet text-[16px]">
-            <Link to="/shop">Shop</Link>
+            <Link to="/shop">Shop all</Link>
             <Link to="/journal">Journal</Link>
             <Link to="/chart">True North</Link>
             <Link to="/about">About</Link>
@@ -52,15 +46,9 @@ export function StoreFooter() {
           </div>
         </div>
       </div>
-      <div
-        className="flex justify-between items-center px-7 py-5"
-        style={{ borderTop: "1px solid rgba(247,240,230,0.12)" }}
-      >
+      <div className="guest-footer__bar flex justify-between items-center px-7 py-5">
         <span className="shop-mark text-[16px]">xixvi.shop</span>
-        <span
-          className="serif-quiet text-[14px]"
-          style={{ color: "rgba(247,240,230,0.55)" }}
-        >
+        <span className="serif-quiet text-[14px] guest-footer__fine">
           © 2026 XI Eleven XVI Sixteen L.L.C.
         </span>
       </div>
