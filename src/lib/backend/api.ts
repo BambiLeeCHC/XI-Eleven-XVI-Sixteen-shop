@@ -69,6 +69,9 @@ export const api = {
     getById: ref("products.getById"),
     getCount: ref("products.getCount"),
   },
+  families: {
+    list: ref("families.list"),
+  },
   cart: {
     getItems: ref("cart.getItems"),
     getCount: ref("cart.getCount"),
