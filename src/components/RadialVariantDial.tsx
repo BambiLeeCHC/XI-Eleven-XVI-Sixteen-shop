@@ -22,6 +22,10 @@ type Props = {
   previews?: Record<string, string | undefined>;
   onPreviewId?: (id: string | null) => void;
   titleId?: string;
+  /** When set, a tap selects the color the same way a click does. */
+  selectOnTap?: boolean;
+  /** Ask the dial to show the size ring or the color ring. */
+  focus?: "size" | "color";
 };
 
 function finePointer() {
@@ -69,6 +73,8 @@ export function RadialVariantDial({
   previews,
   onPreviewId,
   titleId,
+  selectOnTap,
+  focus,
 }: Props) {
   const sizeRefs = useRef<Record<string, HTMLButtonElement | null>>({});
   const colorRefs = useRef<Record<string, HTMLButtonElement | null>>({});
@@ -113,6 +119,10 @@ export function RadialVariantDial({
   useEffect(() => {
     previewCb.current?.(colorFocused ? shownId || null : null);
   }, [colorFocused, shownId]);
+
+  useEffect(() => {
+    if (focus) setView(focus);
+  }, [focus]);
 
   // Hover updates shownId and must not pull focus back onto the ring.
   // biome-ignore lint/correctness/useExhaustiveDependencies: view change only
@@ -291,7 +301,8 @@ export function RadialVariantDial({
                       setHoveredId(option.id);
                       onColor(option.id);
                       const keyboard = event.detail === 0;
-                      if (keyboard || finePointer()) onCommit?.(option.id);
+                      if (selectOnTap || keyboard || finePointer())
+                        onCommit?.(option.id);
                     }}
                     onKeyDown={event =>
                       move(

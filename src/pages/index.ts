@@ -1,26 +1,32 @@
-export { HomePage } from "./HomePage";
-export { ShopPage } from "./ShopPage";
-export { CategoryPage } from "./CategoryPage";
-export { ProductPage } from "./ProductPage";
-export { CartPage } from "./CartPage";
-export { CheckoutPage } from "./CheckoutPage";
-export { LoginPage, SignupPage } from "./AuthPages";
-export { ResetPasswordPage } from "./ResetPasswordPage";
-export { ProfilePage } from "./ProfilePage";
-export { OrdersPage } from "./OrdersPage";
-export { PrivacyPage, TermsPage, ShippingPolicyPage, ReturnsPage } from "./LegalPages";
-export { SizeGuidePage } from "./SizeGuidePage";
 export { AboutPage } from "./AboutPage";
-export { ContactPage } from "./ContactPage";
 export { default as AdminPage } from "./AdminPage";
-export { default as FavoritesPage } from "./FavoritesPage";
-export { JournalPage } from "./JournalPage";
-export { JournalPostPage } from "./JournalPostPage";
-export { default as DeepReadingPage } from "./DeepReadingPage";
-export { ChartHomePage } from "./chart/ChartHomePage";
-export { NorthSocialPage } from "./NorthSocialPage";
-export { NumbersPage } from "./chart/NumbersPage";
+export { LoginPage, SignupPage } from "./AuthPages";
+export { CartPage } from "./CartPage";
+export { CategoryPage } from "./CategoryPage";
+export { CheckoutPage } from "./CheckoutPage";
+export { ContactPage } from "./ContactPage";
 export { AlmanacTNPage } from "./chart/AlmanacTNPage";
+export { ChartHomePage } from "./chart/ChartHomePage";
 export { CirclePage } from "./chart/CirclePage";
 export { LongReadPromoPage } from "./chart/LongReadPromoPage";
+export { NumbersPage } from "./chart/NumbersPage";
+export { default as DeepReadingPage } from "./DeepReadingPage";
+export { DialShopPage } from "./DialShopPage";
+export { default as FavoritesPage } from "./FavoritesPage";
+export { HomePage } from "./HomePage";
+export { JournalPage } from "./JournalPage";
+export { JournalPostPage } from "./JournalPostPage";
+export {
+  PrivacyPage,
+  ReturnsPage,
+  ShippingPolicyPage,
+  TermsPage,
+} from "./LegalPages";
+export { NorthSocialPage } from "./NorthSocialPage";
+export { OrdersPage } from "./OrdersPage";
+export { ProductPage } from "./ProductPage";
+export { ProfilePage } from "./ProfilePage";
+export { ResetPasswordPage } from "./ResetPasswordPage";
+export { ShopPage } from "./ShopPage";
+export { SizeGuidePage } from "./SizeGuidePage";
 export { WelcomePage } from "./WelcomePage";

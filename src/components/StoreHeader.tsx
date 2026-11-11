@@ -51,30 +51,65 @@ export function StoreHeader() {
           </Link>
 
           <nav className="site-nav" aria-label="Primary">
-            <Link to="/women" className={womenOn ? "is-on" : undefined}>Women</Link>
-            <Link to="/men" className={menOn ? "is-on" : undefined}>Men</Link>
-            <Link to="/about" className={aboutOn ? "is-on" : undefined}>About</Link>
-            <Link to="/journal" className={journalOn ? "is-on" : undefined}>Journal</Link>
-            <Link to="/chart" className={tnOn ? "is-on" : undefined}>True North</Link>
+            <Link to="/women" className={womenOn ? "is-on" : undefined}>
+              Women
+            </Link>
+            <Link to="/men" className={menOn ? "is-on" : undefined}>
+              Men
+            </Link>
+            <Link
+              to="/dial"
+              className={location.pathname === "/dial" ? "is-on" : undefined}
+            >
+              Dial
+            </Link>
+            <Link to="/about" className={aboutOn ? "is-on" : undefined}>
+              About
+            </Link>
+            <Link to="/journal" className={journalOn ? "is-on" : undefined}>
+              Journal
+            </Link>
+            <Link to="/chart" className={tnOn ? "is-on" : undefined}>
+              True North
+            </Link>
           </nav>
 
           <div className="site-tools">
-            <button type="button" className="site-icon" aria-label="Search" onClick={() => setSearchOpen(true)}>
+            <button
+              type="button"
+              className="site-icon"
+              aria-label="Search"
+              onClick={() => setSearchOpen(true)}
+            >
               <Search size={16} />
             </button>
-            <Link to="/favorites" className="site-icon site-icon--desk" aria-label="Favorites">
+            <Link
+              to="/favorites"
+              className="site-icon site-icon--desk"
+              aria-label="Favorites"
+            >
               <Heart size={16} />
               {favCount > 0 ? <span>{padCount(favCount)}</span> : null}
             </Link>
             {isAuthenticated ? (
-              <Link to="/profile" className="site-icon site-icon--desk">Account</Link>
+              <Link to="/profile" className="site-icon site-icon--desk">
+                Account
+              </Link>
             ) : (
-              <Link to="/login" className="site-icon site-icon--desk">Sign in</Link>
+              <Link to="/login" className="site-icon site-icon--desk">
+                Sign in
+              </Link>
             )}
             {isAdmin ? (
-              <Link to="/admin" className="site-icon site-icon--desk">Admin</Link>
+              <Link to="/admin" className="site-icon site-icon--desk">
+                Admin
+              </Link>
             ) : null}
-            <Link to="/cart" className="site-cart" aria-label={`Cart, ${cartCount} items`}>
+            <Link
+              to="/cart"
+              className="site-cart"
+              aria-label={`Cart, ${cartCount} items`}
+            >
               Cart {padCount(cartCount)}
             </Link>
             <button
@@ -116,6 +151,7 @@ export function StoreHeader() {
               <MobileNavLink to="/women" label="Women" />
               <MobileNavLink to="/men" label="Men" />
               <MobileNavLink to="/shop" label="Shop all" />
+              <MobileNavLink to="/dial" label="Dial" />
               <MobileNavLink to="/about" label="About" />
               <MobileNavLink to="/journal" label="Journal" />
               <MobileNavLink to="/chart" label="True North" />
@@ -161,10 +197,7 @@ function MobileNavLink({
   badge?: number;
 }) {
   return (
-    <Link
-      to={to}
-      className="site-drawer__link"
-    >
+    <Link to={to} className="site-drawer__link">
       <span>{label}</span>
       {badge ? (
         <span className="site-count">{String(badge).padStart(2, "0")}</span>

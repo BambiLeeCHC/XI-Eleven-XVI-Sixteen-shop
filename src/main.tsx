@@ -12,6 +12,7 @@ import "./tn-glass.css";
 import "./site-glass.css";
 import "./radial-dial.css";
 import "./pdp-glass.css";
+import "./dial-shop.css";
 import "./live-sky.css";
 import "./north-social.css";
 
