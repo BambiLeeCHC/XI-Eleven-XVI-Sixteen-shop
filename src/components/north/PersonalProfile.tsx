@@ -156,9 +156,9 @@ function ConstellationSeat({
           <button type="button" className="cta-ghost tn-action" onClick={() => onMove(1)} disabled={index === 7} aria-label={`Move ${person.name} down`}>
             Move down
           </button>
-          <button type="button" className="cta-pist tn-action" onClick={onTandem} aria-label={`Tandem with ${person.name}`}>
-            Tandem
-          </button>
+          <Link to="/chart#group" className="cta-pist tn-action" onClick={onTandem} aria-label={`Group read with ${person.name}`}>
+            Group Read
+          </Link>
         </div>
       )}
     </li>
@@ -355,7 +355,7 @@ export function PersonalProfile({
                 + Add Friend
               </button>
             )}
-            <Link to="/chart/circle" className="tn-inline">Open live tandem</Link>
+            <Link to="/chart#group" className="tn-inline">Open a group read</Link>
           </div>
         </div>
       )}

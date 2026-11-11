@@ -31,21 +31,21 @@ const WINDOWS: Array<{
 }> = [
   {
     id: "morning",
-    label: "Morning",
+    label: "Tri-Sky · Morning",
     hours: "12:00 AM – 11:59 AM",
     blurb:
       "Orient the day — what's already solid under you and what's working in your favor.",
   },
   {
     id: "midday",
-    label: "Midday",
+    label: "Tri-Sky · Noon",
     hours: "12:00 PM – 4:59 PM",
     blurb:
       "Align mid-course — the best move available and the gift you haven't fully claimed yet.",
   },
   {
     id: "evening",
-    label: "Evening",
+    label: "Tri-Sky · Night",
     hours: "5:00 PM – 11:59 PM",
     blurb:
       "Integrate the day — the best-case path from here and where your real advantage sits.",
@@ -93,7 +93,7 @@ function fallbackReading(spread: SpreadCard[], situation: string) {
       return `In the ${s.slotName} of this, **${s.card.name}**${s.reversed ? " (reversed)" : ""} speaks to ${sit}. ${meaning}`;
     })
     .join("\n\n");
-  return `The Long Read opens on ${sit}.\n\n${cards}\n\nThe throughline is already in your favor. Take one concrete step tonight that matches the Best Move card.`;
+  return `Tri-Sky opens on ${sit}.\n\n${cards}\n\nThe throughline is already in your favor. Take one concrete step tonight that matches the Best Move card.`;
 }
 
 function isPaywallError(message: string) {
@@ -125,9 +125,6 @@ export default function DeepReadingPage({ embedded = false }: { embedded?: boole
   );
   const startTrialAction = useAction(api.subscription.startTrial);
   const drawAction = useAction(api.deepReadings.draw);
-  const questionCheckoutAction = useAction(api.readingQuestions.checkout);
-  const askAction = useAction(api.readingQuestions.ask);
-
   const [now] = useState(() => new Date());
   const active = useMemo(() => activeDailyWindow(now), [now]);
   const [selectedWindow, setSelectedWindow] = useState<DailyWindow>(active);
@@ -142,10 +139,7 @@ export default function DeepReadingPage({ embedded = false }: { embedded?: boole
   const [drawing, setDrawing] = useState(false);
   const [subscribingTier, setSubscribingTier] =
     useState<SubscriptionTier | null>(null);
-  const [question, setQuestion] = useState("");
-  const [askingQuestion, setAskingQuestion] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [followUp, setFollowUp] = useState<string | null>(null);
   const [blockedByApi, setBlockedByApi] = useState(false);
 
   const isAdmin =
@@ -272,47 +266,7 @@ export default function DeepReadingPage({ embedded = false }: { embedded?: boole
     }
   };
 
-  const askQuestion = async () => {
-    if (!question.trim() || !displayReading) return;
-    setAskingQuestion(true);
-    setError(null);
-    const readingContext = {
-      spread: displaySpread,
-      reading: displayReading,
-      window: selectedWindow,
-    };
-    try {
-      if (openAccess) {
-        const result = await askAction({
-          question: question.trim(),
-          readingContext,
-        });
-        if (result?.answer) {
-          setFollowUp(result.answer as string);
-          setQuestion("");
-        } else {
-          setError(result?.error || "Couldn't write that follow-up.");
-        }
-        return;
-      }
-      const result = await questionCheckoutAction({
-        question: question.trim(),
-        readingContext,
-        successUrl: `${window.location.origin}${LONG_READ_ORIGIN}`,
-        cancelUrl: `${window.location.origin}${LONG_READ_ORIGIN}`,
-      });
-      if (result?.url) window.location.href = result.url;
-      else setError(result?.error || "Couldn't start checkout — try again.");
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "Something went wrong.");
-    } finally {
-      setAskingQuestion(false);
-    }
-  };
-
   useEffect(() => {
-    setQuestion("");
-    setFollowUp(null);
     setError(null);
   }, [selectedWindow]);
 
@@ -329,19 +283,29 @@ export default function DeepReadingPage({ embedded = false }: { embedded?: boole
   };
 
   if ((authLoading || entitlementLoading) && embedded) {
-    return <p className="serif-quiet tn-opening">Opening your Long Read…</p>;
+    return <p className="serif-quiet tn-opening">Opening Tri-Sky…</p>;
   }
 
   if (!authLoading && !entitlementLoading && !isAuthenticated && embedded) {
     return (
-      <div className="tn-card tn-invite-card">
-        <p className="label-lock">{openAccess ? "Readings, open" : "Readings · 3 free each week"}</p>
-        <p className="serif-quiet tn-invite-card__copy">
-          {openAccess
-            ? "Sign in to draw the Long Read. It is open with your account."
-            : "Sign in to draw the seven-card spread."}
-        </p>
-        <Link to="/login" className="tn-inline">Sign in</Link>
+      <div className="tn-longread">
+        <div className="tn-windows" role="tablist" aria-label="Tri-Sky windows">
+          {WINDOWS.map(w => (
+            <div key={w.id} className="tn-window" role="tab" aria-selected={w.id === active}>
+              <span className="label-lock">{w.hours}</span>
+              <span className="clash tn-window__title">{w.label}</span>
+            </div>
+          ))}
+        </div>
+        <div className="tn-card tn-invite-card">
+          <p className="label-lock">{openAccess ? "Readings, open" : "Readings · 3 free each week"}</p>
+          <p className="serif-quiet tn-invite-card__copy">
+            {openAccess
+              ? "Sign in to draw Tri-Sky. It is open with your account."
+              : "Sign in to draw the seven-card spread."}
+          </p>
+          <Link to="/login" className="tn-inline">Sign in</Link>
+        </div>
       </div>
     );
   }
@@ -358,7 +322,7 @@ export default function DeepReadingPage({ embedded = false }: { embedded?: boole
             jsonLd={longReadJsonLd}
           />
           <TrueNorthHero sunSign={sunSign} />
-          <p className="serif-quiet tn-opening">Opening your Long Read…</p>
+          <p className="serif-quiet tn-opening">Opening Tri-Sky…</p>
         </div>
       </div>
     );
@@ -385,7 +349,7 @@ export default function DeepReadingPage({ embedded = false }: { embedded?: boole
                 </p>
                 <p className="serif-quiet tn-invite-card__copy">
                   {openAccess
-                    ? "Sign in to draw the Long Read. It is open with your account. Existing memberships stay on file."
+                    ? "Sign in to draw Tri-Sky. Morning, noon, and night. It is open with your account."
                     : "Readings live apart from your chart. Three a week are included. Unlimited is $3.99 a week."}
                 </p>
               </div>
@@ -408,14 +372,14 @@ export default function DeepReadingPage({ embedded = false }: { embedded?: boole
         />
         {!embedded && <TrueNorthHero sunSign={sunSign} />}
         <SectionHeading
-          wordA="The"
-          wordB="Long Read"
-          ariaLabel="The Long Read"
+          wordA="Tri-Sky"
+          wordB="Daily"
+          ariaLabel="Tri-Sky"
         />
         <div className="tn-card tn-lede-card">
           <p className="serif-quiet tn-lede">
             {openAccess
-              ? "The Long Read is open with your account. Morning, midday, and evening. No charge is started from this page."
+              ? "Tri-Sky is open with your account. Morning, noon, and night. No charge is started from this page."
               : "Three readings a week are included with your profile. Unlimited is $3.99 a week."}
           </p>
         </div>
@@ -451,7 +415,7 @@ export default function DeepReadingPage({ embedded = false }: { embedded?: boole
             <div
               className="tn-windows"
               role="tablist"
-              aria-label="Daily Long Read windows"
+              aria-label="Tri-Sky windows"
             >
               {WINDOWS.map(w => {
                 const state = stateFor(w.id);
@@ -488,8 +452,8 @@ export default function DeepReadingPage({ embedded = false }: { embedded?: boole
               </div>
               {selectedState === "locked" && (
                 <p className="serif-quiet tn-lede">
-                  This window opens later today. You can still review Morning or
-                  Midday once you've drawn them.
+                  This window opens later today. You can still review Tri-Sky · Morning
+                  or Tri-Sky · Noon once you've drawn them.
                 </p>
               )}
               {selectedState === "open" && !hasReading && (
@@ -521,7 +485,7 @@ export default function DeepReadingPage({ embedded = false }: { embedded?: boole
                   >
                     {drawing
                       ? "Drawing…"
-                      : `Draw the ${selectedMeta.label} Long Read ✦`}
+                      : `Draw ${selectedMeta.label}`}
                   </button>
                 </>
               )}
@@ -568,41 +532,6 @@ export default function DeepReadingPage({ embedded = false }: { embedded?: boole
                       {drawing ? "Drawing…" : "Admin · redraw this window"}
                     </button>
                   )}
-                  <div className="tn-followup tn-stack">
-                    <p className="label-lock">
-                      {openAccess
-                        ? "Ask a follow-up"
-                        : "Ask a follow-up — $2.99"}
-                    </p>
-                    <textarea
-                      value={question}
-                      onChange={e => setQuestion(e.target.value)}
-                      rows={3}
-                      placeholder="What do you want to know more about?"
-                      className="tn-field"
-                    />
-                    <button
-                      type="button"
-                      onClick={askQuestion}
-                      disabled={askingQuestion || !question.trim()}
-                      className="cta-pist tn-action"
-                      style={{
-                        opacity: askingQuestion || !question.trim() ? 0.5 : 1,
-                      }}
-                    >
-                      {askingQuestion
-                        ? "Writing…"
-                        : openAccess
-                          ? "Ask"
-                          : "Ask — $2.99"}
-                    </button>
-                    {followUp && (
-                      <div className="tn-letter__body">
-                        <p className="label-lock">Follow-up</p>
-                        <BoldParagraphs text={followUp} />
-                      </div>
-                    )}
-                  </div>
                 </>
               )}
             </div>

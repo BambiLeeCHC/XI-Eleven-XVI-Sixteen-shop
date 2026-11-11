@@ -212,6 +212,16 @@ export function computeNatalChart(
       retrograde: Boolean(cel.isRetrograde),
     };
   });
+  const points = horoscope.CelestialPoints ?? {};
+  for (const [key, label] of [
+    ["northnode", "North Node"],
+    ["southnode", "South Node"],
+  ] as const) {
+    const cel = points[key];
+    const longitude = Number(cel?.ChartPosition?.Ecliptic?.DecimalDegrees);
+    if (!Number.isFinite(longitude)) continue;
+    rawBodies.push({ body: label, longitude, retrograde: false });
+  }
 
   const rawHouses = horoscope.Houses ?? horoscope._houses ?? [];
   const orderedCusps = (rawHouses as any[])

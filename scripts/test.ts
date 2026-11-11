@@ -52,6 +52,7 @@ import { celestialPortraitSvg, ELEMENT_AURA, styleLabel } from "../src/lib/celes
 import { parseAvatarRequest } from "../api/_lib/avatar.ts";
 import { localHour, paletteForHour, skyAt } from "../src/lib/skyMode.js";
 import { nextEnabledIndex, ringStep, wrapIndex } from "../src/lib/radialDial.js";
+import { chartFromSigns, composeGroupReading } from "../src/lib/groupSky.js";
 import {
   canAnswerSession,
   canCloseSession,
@@ -325,6 +326,36 @@ check(
   },
 );
 
+check("a group read names every person and a real aspect", () => {
+  const signs = [
+    ["Nova", "Leo", "Aries", "Sagittarius"],
+    ["Ivo", "Scorpio", "Pisces", "Cancer"],
+    ["Maren", "Libra", "Gemini", "Aquarius"],
+    ["Sol", "Aries", "Leo", "Sagittarius"],
+  ] as const;
+  const reading = composeGroupReading(
+    signs.map(([name, sun, moon, rising]) => ({
+      id: name,
+      name,
+      chart: chartFromSigns({ sun, moon, rising }),
+    })),
+    new Date("2026-11-11T16:00:00Z"),
+  );
+  assert.equal(reading.kindLabel, "Group Read");
+  assert.match(reading.title, /Group Read/);
+  for (const [name] of signs) assert.match(reading.body, new RegExp(name));
+  assert.match(reading.body, /Sun/);
+  assert.match(reading.body, /orb/);
+  const tandem = composeGroupReading(
+    signs.slice(0, 2).map(([name, sun, moon, rising]) => ({
+      id: name,
+      name,
+      chart: chartFromSigns({ sun, moon, rising }),
+    })),
+  );
+  assert.equal(tandem.kindLabel, "Tandem");
+});
+
 check("the size dial spaces six sizes evenly and skips unavailable colors", () => {
   assert.equal(ringStep(6), 60);
   assert.equal(ringStep(0), 0);
@@ -378,7 +409,7 @@ check("My Sky holds Chart, Numbers, and My Constellation", () => {
   );
   assert.deepEqual(
     FEED_FILTERS.map(item => item.label),
-    ["All", "Posts & Pulls", "Tandem Readings"],
+    ["All", "Posts & Pulls", "Group Reads"],
   );
   assert.equal(circleViewFromHash("#numbers"), "sky");
   assert.equal(circleViewFromHash("#constellation"), "sky");
@@ -621,12 +652,12 @@ check("True North is a three-room shell and avatars upgrade cleanly", () => {
   assert.match(shared, /label: "Feed"/);
   assert.match(shared, /label: "Readings"/);
   assert.match(shared, /MY_SKY_LABEL/);
-  assert.match(app, /path="\/chart\/almanac" element={<Navigate to="\/chart" replace \/>}/);
-  assert.match(app, /path="\/chart\/numbers" element={<Navigate to="\/chart#numbers" replace \/>}/);
+  assert.match(app, /path="\/chart\/almanac"[\s\S]*Navigate to="\/chart" replace/);
+  assert.match(app, /path="\/chart\/numbers"[\s\S]*Navigate to="\/chart#numbers" replace/);
   assert.equal(page.split("<TrueNorthNav").length - 1, 1);
-  assert.match(page, /Quick Pull/);
-  assert.match(page, /Deep Spread/);
-  assert.match(page, /Live Tandem/);
+  assert.match(page, /Tri-Sky/);
+  assert.match(page, /Group Read/);
+  assert.equal(page.includes("Quick Pull"), false);
   assert.match(page, /Find Friends/);
   assert.match(page, /AI Avatar/);
   assert.equal(/Almanac/.test(page), false);
@@ -635,8 +666,9 @@ check("True North is a three-room shell and avatars upgrade cleanly", () => {
   assert.equal(resolveTrueNorthView("/chart", "#numbers").sky, "numbers");
   assert.equal(resolveTrueNorthView("/profile", "#constellation").destination, "sky");
   assert.equal(resolveTrueNorthView("/profile", "#constellation").sky, "constellation");
-  assert.equal(resolveTrueNorthView("/chart/long-read", "").reading, "deep");
-  assert.equal(resolveTrueNorthView("/chart/circle", "").reading, "tandem");
+  assert.equal(resolveTrueNorthView("/chart/long-read", "").reading, "tri");
+  assert.equal(resolveTrueNorthView("/chart/circle", "").reading, "group");
+  assert.equal(resolveTrueNorthView("/chart", "#quick").reading, "tri");
   assert.equal(resolveTrueNorthView("/chart#readings".split("#")[0] ?? "", "#readings").destination, "readings");
 
   const upgraded = upgradeSocialState({
@@ -736,7 +768,11 @@ check("house parameters, jewel cards, and cartoon avatars stay inside the three-
   assert.equal(square?.signB, "Cancer");
   const preview = buildPreviewNatalChart({ sun: "Leo", moon: "Pisces", rising: "Scorpio" });
   assert.equal(preview.ascendant, "Scorpio");
-  assert.equal(preview.placements.length, 10);
+  assert.equal(preview.placements.length, 12);
+  const north = preview.placements.find(item => item.body === "North Node");
+  const south = preview.placements.find(item => item.body === "South Node");
+  assert.ok(north && south);
+  assert.equal(Math.round(angularSeparation(north.degree, south.degree)), 180);
   const shared = readFileSync(join(root, "src/pages/chart/shared.tsx"), "utf8");
   const chart = readFileSync(join(root, "src/pages/chart/ChartHomePage.tsx"), "utf8");
   const numbers = readFileSync(join(root, "src/pages/chart/NumbersPage.tsx"), "utf8");

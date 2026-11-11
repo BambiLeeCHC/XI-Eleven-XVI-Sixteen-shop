@@ -234,6 +234,8 @@ const PREVIEW_OFFSETS: {
   { name: "Uranus", from: "sun", add: 96 },
   { name: "Neptune", from: "moon", add: 124 },
   { name: "Pluto", from: "rising", add: 210 },
+  { name: "North Node", from: "rising", add: 40 },
+  { name: "South Node", from: "rising", add: 220 },
 ];
 
 /** Equal-house preview from Sun, Moon, and rising — same builder as the server. */

@@ -233,7 +233,7 @@ export function JournalTrueNorthRooms() {
       </article>
       <article className="site-panel home-room">
         <p className="label-lock" style={{ color: "var(--pist)" }}>
-          The Long Read
+          Tri-Sky
         </p>
         <h2
           className="clash mt-3"
@@ -242,8 +242,8 @@ export function JournalTrueNorthRooms() {
           True North
         </h2>
         <p className="serif-quiet text-[22px] mt-3 max-w-md">
-          Three written readings a day — morning, midday, night — pulled
-          against the week you are actually in.
+          Tri-Sky · Morning, Tri-Sky · Noon, and Tri-Sky · Night — three
+          written readings a day, pulled against the week you are actually in.
         </p>
         <div className="flex flex-wrap gap-3 items-center mt-8">
           <Link to="/chart" className="cta-pist">

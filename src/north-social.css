@@ -328,6 +328,40 @@
   border-radius: 999px;
   background: rgba(8, 10, 14, 0.55);
 }
+.group-read__people {
+  list-style: none;
+  margin: 0.8rem 0 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 0.45rem;
+}
+.group-read__people button {
+  width: 100%;
+  min-height: 64px;
+  text-align: left;
+  border-radius: 16px;
+  border: 1px solid rgba(247, 240, 230, 0.28);
+  background: rgba(8, 10, 14, 0.45);
+  color: #f6f1e8;
+  padding: 0.55rem 0.7rem;
+  cursor: pointer;
+}
+.group-read__people button.is-on {
+  background: #f6f1e8;
+  color: #111;
+  border-color: #f6f1e8;
+}
+.group-read__people strong,
+.group-read__people span { display: block; }
+.group-read__people span { font-size: 11px; letter-spacing: 0.04em; margin-top: 0.2rem; }
+.group-read__count { margin: 0.7rem 0; font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase; }
+.group-read__letter {
+  margin-top: 1rem;
+  white-space: pre-wrap;
+  color: #f6f1e8;
+}
+.group-read__letter h3 { margin: 0.3rem 0 0.6rem; font-size: 1.35rem; }
 .reading-room,
 .sky-panel,
 .personal-feed { display: grid; gap: 0.8rem; }
