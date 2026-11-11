@@ -5,29 +5,30 @@ import { StoreLayout } from "./components/StoreLayout";
 import { Toaster } from "./components/ui/sonner";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import {
-  HomePage,
-  ShopPage,
-  ProductPage,
-  CartPage,
-  CheckoutPage,
-  LoginPage,
-  SignupPage,
-  ResetPasswordPage,
-  ProfilePage,
-  OrdersPage,
-  PrivacyPage,
-  TermsPage,
-  ShippingPolicyPage,
-  ReturnsPage,
-  SizeGuidePage,
   AboutPage,
-  ContactPage,
   AdminPage,
+  CartPage,
+  CategoryPage,
+  CheckoutPage,
+  ContactPage,
+  DialShopPage,
   FavoritesPage,
+  HomePage,
   JournalPage,
   JournalPostPage,
-  CategoryPage,
+  LoginPage,
   NorthSocialPage,
+  OrdersPage,
+  PrivacyPage,
+  ProductPage,
+  ProfilePage,
+  ResetPasswordPage,
+  ReturnsPage,
+  ShippingPolicyPage,
+  ShopPage,
+  SignupPage,
+  SizeGuidePage,
+  TermsPage,
   WelcomePage,
 } from "./pages";
 
@@ -41,6 +42,7 @@ function App() {
             {/* Public routes */}
             <Route path="/" element={<HomePage />} />
             <Route path="/shop" element={<ShopPage />} />
+            <Route path="/dial" element={<DialShopPage />} />
             <Route path="/women" element={<CategoryPage gender="women" />} />
             <Route path="/men" element={<CategoryPage gender="men" />} />
             <Route path="/product/:id" element={<ProductPage />} />
@@ -59,11 +61,20 @@ function App() {
             <Route path="/favorites" element={<FavoritesPage />} />
             <Route path="/journal" element={<JournalPage />} />
             {/* Long Read lives in True North nav; keep old journal URL as alias */}
-            <Route path="/journal/deep-reading" element={<Navigate to="/chart/long-read" replace />} />
+            <Route
+              path="/journal/deep-reading"
+              element={<Navigate to="/chart/long-read" replace />}
+            />
             <Route path="/journal/:slug" element={<JournalPostPage />} />
             <Route path="/chart" element={<NorthSocialPage />} />
-            <Route path="/chart/numbers" element={<Navigate to="/chart#numbers" replace />} />
-            <Route path="/chart/almanac" element={<Navigate to="/chart" replace />} />
+            <Route
+              path="/chart/numbers"
+              element={<Navigate to="/chart#numbers" replace />}
+            />
+            <Route
+              path="/chart/almanac"
+              element={<Navigate to="/chart" replace />}
+            />
             <Route path="/chart/circle" element={<NorthSocialPage />} />
             <Route path="/chart/long-read" element={<NorthSocialPage />} />
             <Route path="/welcome" element={<WelcomePage />} />

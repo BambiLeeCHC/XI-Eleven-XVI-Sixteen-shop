@@ -7,6 +7,7 @@ import {
   ProcessSteps,
 } from "../components/ImpactHero";
 import { ProductHighlight } from "../components/ProductHighlight";
+import { RadialVariantDial } from "../components/RadialVariantDial";
 import { buildBreadcrumbJsonLd, SEO } from "../components/SEO";
 import { PAGE_SEO } from "../data/seoMeta";
 import { api, useQuery } from "../lib/backend";
@@ -20,7 +21,6 @@ import {
   styleKeyFromName,
 } from "../lib/brand";
 import { hiResProductImage } from "../lib/productImage";
-import { RadialVariantDial } from "../components/RadialVariantDial";
 
 export function ShopPage() {
   const [searchParams] = useSearchParams();
@@ -98,6 +98,9 @@ export function ShopPage() {
         dslipColors={dslipColors}
       />
       <PistachioTicker />
+      <p className="dial-shop-entry">
+        <Link to="/dial">Shop with the dial</Link>
+      </p>
 
       <section id="women" className="style-index">
         <aside
@@ -153,7 +156,10 @@ export function ShopPage() {
           </p>
         </aside>
 
-        <div className="style-index__frame" style={{ background: "var(--cream)" }}>
+        <div
+          className="style-index__frame"
+          style={{ background: "var(--cream)" }}
+        >
           <div className="style-index__stage product-stage">
             {sku?.images?.[0] ? (
               <img
@@ -217,13 +223,15 @@ export function ShopPage() {
                     available: (current?.items || []).some((item: any) =>
                       (item.sizes || ["XS", "S", "M", "L", "XL"]).some(
                         (raw: string) =>
-                          (String(raw).split("/").pop()?.trim() || raw) === label,
+                          (String(raw).split("/").pop()?.trim() || raw) ===
+                          label,
                       ),
                     ),
                   }));
                 })()}
                 colors={(current?.items || []).map((item: any) => {
-                  const label = colorFromName(item.name) || displayProductName(item.name);
+                  const label =
+                    colorFromName(item.name) || displayProductName(item.name);
                   const wanted = size
                     ? String(size).split("/").pop()?.trim() || size
                     : "";
@@ -231,7 +239,8 @@ export function ShopPage() {
                     ? true
                     : (item.sizes || ["XS", "S", "M", "L", "XL"]).some(
                         (raw: string) =>
-                          (String(raw).split("/").pop()?.trim() || raw) === wanted,
+                          (String(raw).split("/").pop()?.trim() || raw) ===
+                          wanted,
                       );
                   return {
                     id: item._id as string,
@@ -245,7 +254,9 @@ export function ShopPage() {
                 onSize={setSize}
                 onColor={next => {
                   setSkuId(next);
-                  const item = current?.items.find((entry: any) => entry._id === next);
+                  const item = current?.items.find(
+                    (entry: any) => entry._id === next,
+                  );
                   const wanted = size
                     ? String(size).split("/").pop()?.trim() || size
                     : "";
@@ -254,7 +265,8 @@ export function ShopPage() {
                     item &&
                     !(item.sizes || []).some(
                       (raw: string) =>
-                        (String(raw).split("/").pop()?.trim() || raw) === wanted,
+                        (String(raw).split("/").pop()?.trim() || raw) ===
+                        wanted,
                     )
                   ) {
                     setSize("");

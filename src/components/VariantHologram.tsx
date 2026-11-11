@@ -2,7 +2,7 @@ import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { type DialOption, RadialVariantDial } from "./RadialVariantDial";
 
-type Phase = "closed" | "rising" | "open" | "falling";
+type Phase = "closed" | "rising" | "open" | "fading" | "retracting";
 
 export type HoloChoice = { sizeId: string; colorId: string };
 
@@ -29,21 +29,18 @@ function reducedMotion() {
 function readBox(node: HTMLElement): Box {
   const rect = node.getBoundingClientRect();
   const vw = document.documentElement.clientWidth;
-  const header = 84;
-  const chrome = 112;
-  const room = Math.max(150, rect.top - header - 12);
-  const size = Math.min(
-    320,
-    Math.max(188, vw - 20),
-    Math.max(188, room - chrome),
-  );
-  const left = Math.min(
-    Math.max(rect.left + rect.width / 2 - size / 2, 8),
-    Math.max(8, vw - size - 8),
-  );
-  const top = Math.max(header, rect.top - size - chrome);
-  const height = Math.max(48, rect.top - top + 2);
-  return { top, left, size, height };
+  const header = 76;
+  const copy = node.closest(".pdp-copy");
+  const title = copy?.querySelector(".pdp-title")?.getBoundingClientRect();
+  const column = copy?.getBoundingClientRect();
+  const centerX = rect.left + rect.width / 2;
+  const room = Math.max(120, Math.min(centerX - 8, vw - centerX - 8) * 2);
+  const titleTop = Math.max(header + 4, title?.top ?? header + 8);
+  const span = Math.max(180, rect.top - titleTop);
+  const columnWidth = column?.width ?? rect.width;
+  const size = Math.min(300, columnWidth - 4, room, Math.max(200, span * 0.58));
+  const height = Math.max(72, rect.top - titleTop + 2);
+  return { top: titleTop, left: centerX - size / 2, size, height };
 }
 
 export function VariantHologram({
@@ -97,14 +94,24 @@ export function VariantHologram({
   applyRef.current = applyClose;
 
   const beginClose = (choice: HoloChoice | null) => {
-    if (phaseRef.current === "closed" || phaseRef.current === "falling") return;
+    const current = phaseRef.current;
+    if (
+      current === "closed" ||
+      current === "fading" ||
+      current === "retracting"
+    )
+      return;
     pending.current = choice;
     if (reducedMotion()) {
-      applyRef.current();
+      settled.current = false;
+      setPhase("fading");
+      window.setTimeout(() => {
+        if (phaseRef.current === "fading") applyRef.current();
+      }, 180);
       return;
     }
     settled.current = false;
-    setPhase("falling");
+    setPhase(current === "rising" ? "retracting" : "fading");
   };
   const closeRef = useRef(beginClose);
   closeRef.current = beginClose;
@@ -146,11 +153,14 @@ export function VariantHologram({
   }, [visible, place]);
 
   useEffect(() => {
-    if (phase !== "rising" && phase !== "falling") return;
-    const ms = phase === "rising" ? 1200 : 900;
+    if (phase !== "rising" && phase !== "fading" && phase !== "retracting")
+      return;
+    const ms = phase === "rising" ? 780 : phase === "fading" ? 420 : 720;
     const timer = window.setTimeout(() => {
       if (phaseRef.current === "rising") setPhase("open");
-      if (phaseRef.current === "falling") applyRef.current();
+      if (phaseRef.current === "fading" && !reducedMotion())
+        setPhase("retracting");
+      if (phaseRef.current === "retracting") applyRef.current();
     }, ms);
     return () => window.clearTimeout(timer);
   }, [phase]);
@@ -281,12 +291,27 @@ export function VariantHologram({
                       setPhase("open");
                     if (
                       event.animationName === "holo-beam-down" &&
-                      phaseRef.current === "falling"
+                      phaseRef.current === "retracting"
                     )
                       applyRef.current();
                   }}
-                />
-                <div className="holo-projection">
+                >
+                  <span className="holo-mote" />
+                  <span className="holo-mote holo-mote--b" />
+                  <span className="holo-mote holo-mote--c" />
+                </div>
+                <div
+                  className="holo-projection"
+                  onAnimationEnd={event => {
+                    if (event.target !== event.currentTarget) return;
+                    if (
+                      event.animationName === "holo-out" &&
+                      phaseRef.current === "fading" &&
+                      !reducedMotion()
+                    )
+                      setPhase("retracting");
+                  }}
+                >
                   <div className="holo-glow" aria-hidden="true" />
                   <RadialVariantDial
                     sizes={sizes}
@@ -310,17 +335,19 @@ export function VariantHologram({
                     }}
                     onCommitSize={sizeId => beginClose({ sizeId, colorId: "" })}
                   />
-                  {colors.length > 0 ? (
+                  {colors.length > 0 && draftSize ? (
                     <p className="holo-hint">{hint}</p>
                   ) : null}
-                  <button
-                    type="button"
-                    className="holo-confirm"
-                    disabled={!canConfirm}
-                    onClick={confirm}
-                  >
-                    {confirmLabel}
-                  </button>
+                  {draftSize || colors.length === 0 ? (
+                    <button
+                      type="button"
+                      className="holo-confirm"
+                      disabled={!canConfirm}
+                      onClick={confirm}
+                    >
+                      {confirmLabel}
+                    </button>
+                  ) : null}
                 </div>
               </div>
             </div>,
