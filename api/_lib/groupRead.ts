@@ -1,6 +1,6 @@
 /**
- * Server group read. Same chart math as a natal chart, then the group
- * synastry layer. Stays inside /api/chart so the project stays at 12 functions.
+ * Server tandem and group reads. Same Tri-Sky writer as a morning read.
+ * Stays inside /api/chart so the project stays at 12 functions.
  */
 
 import { composeGroupReading, type GroupPerson, type GroupReading } from "../../src/lib/groupSky.js";
@@ -23,6 +23,7 @@ type BirthRow = {
   birth_location: string | null;
   birth_lat: number | string | null;
   birth_lng: number | string | null;
+  gender_identity: string | null;
 };
 
 async function chartFor(row: BirthRow): Promise<GroupPerson["chart"] | null> {
@@ -50,9 +51,7 @@ async function chartFor(row: BirthRow): Promise<GroupPerson["chart"] | null> {
 }
 
 async function voiceGroupReading(reading: GroupReading): Promise<GroupReading> {
-  const situation = reading.question
-    ? `They asked: "${reading.question}". They are ${reading.connection}.`
-    : `They are ${reading.connection}.`;
+  const situation = reading.question.trim() || "not specified";
   const result = await generateWithGroq(
     LONG_READ_SYSTEM_PROMPT,
     buildLongReadPrompt(
@@ -61,7 +60,7 @@ async function voiceGroupReading(reading: GroupReading): Promise<GroupReading> {
       situation,
       undefined,
       undefined,
-      [reading.privateNote, ...reading.details].filter(Boolean).join("\n"),
+      reading.privateNote,
     ),
     5000,
   );
@@ -106,7 +105,7 @@ export async function handleGroupRead(req: ApiRequest, res: ApiResponse) {
 
   const { data: rows, error } = await admin
     .from("profiles")
-    .select("id, name, birth_date, birth_time, birth_location, birth_lat, birth_lng")
+    .select("id, name, birth_date, birth_time, birth_location, birth_lat, birth_lng, gender_identity")
     .in("id", ids);
   if (error) throw new HttpError(500, "Couldn't load charts for this group.");
 
@@ -120,6 +119,7 @@ export async function handleGroupRead(req: ApiRequest, res: ApiResponse) {
       id: row.id,
       name: row.name?.trim() || "Unnamed",
       chart,
+      gender: row.gender_identity ?? undefined,
     });
   }
   if (people.length < 2) {
@@ -128,17 +128,9 @@ export async function handleGroupRead(req: ApiRequest, res: ApiResponse) {
 
   const body = (req.body ?? {}) as {
     question?: string;
-    connectionId?: string;
-    connectionLabel?: string;
-    otherText?: string;
-    leadId?: string;
   };
   const reading = await voiceGroupReading(composeGroupReading(people, new Date(), {
     question: body.question,
-    connectionId: body.connectionId,
-    connectionLabel: body.connectionLabel,
-    otherText: body.otherText,
-    leadId: body.leadId,
   }));
   let saved = false;
   const insert = await admin.from("group_reads").insert({
@@ -148,8 +140,8 @@ export async function handleGroupRead(req: ApiRequest, res: ApiResponse) {
     participant_ids: people.map(person => person.id),
     participant_names: people.map(person => person.name),
     question: reading.question || null,
-    connection: reading.connection || null,
-    connection_note: body.otherText?.trim() || null,
+    connection: null,
+    connection_note: null,
   });
   if (!insert.error) saved = true;
 

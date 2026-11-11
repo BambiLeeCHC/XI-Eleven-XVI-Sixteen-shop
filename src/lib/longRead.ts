@@ -1,7 +1,7 @@
 /**
- * The Tri-Sky writer. Group and tandem reads call these same functions.
- * The system prompt is the Long Read prompt. A group only changes the
- * situation, the spread positions, and an optional chart note.
+ * The Tri-Sky writer. Tandem and group reads call these same functions
+ * with the same seven-card spread. A group only changes who the reading
+ * is for, the optional situation, and an optional chart note.
  */
 
 export type LongReadCard = {

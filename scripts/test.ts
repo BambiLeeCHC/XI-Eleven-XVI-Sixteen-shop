@@ -341,17 +341,16 @@ check("a group read names every person and a real aspect", () => {
     })),
     new Date("2026-11-11T16:00:00Z"),
   );
+  const slots = ["Root", "Quiet Support", "For You", "Best Move", "Untapped Gift", "Best Case", "Your Advantage"];
   assert.equal(reading.kindLabel, "Group Read");
   assert.match(reading.title, /Group Read/);
   for (const [name] of signs) assert.match(reading.body, new RegExp(name));
-  assert.match(reading.body, /In The Room of this/);
+  assert.match(reading.body, /In the Root of this/);
   assert.match(reading.body, /the Long Read opens on/);
   assert.match(reading.body, /The throughline is already in your favor/);
-  assert.doesNotMatch(reading.body, /work you share|shared figure in the sky|where you spark/i);
-  assert.equal(reading.cards[0]?.slotName, "The Room");
-  assert.equal(reading.cards.filter(card => card.slot.startsWith("role-")).length, 4);
-  assert.equal(reading.cards.at(-1)?.slotName, "The Move");
-  assert.equal(reading.cards.some(card => card.slotName === "Breakthrough"), true);
+  assert.doesNotMatch(reading.body, /work you share|shared figure in the sky|where you spark|The Room|Breakthrough|Shared heart/i);
+  assert.deepEqual(reading.cards.map(card => card.slotName), slots);
+  assert.equal(reading.cards.length, 7);
   assert.equal(new Set(reading.cards.map(card => card.card.name)).size, reading.cards.length);
   const again = composeGroupReading(
     signs.map(([name, sun, moon, rising]) => ({
@@ -362,10 +361,10 @@ check("a group read names every person and a real aspect", () => {
     new Date("2026-11-11T16:00:00Z"),
   );
   assert.deepEqual(again.cards.map(card => card.card.name), reading.cards.map(card => card.card.name));
-  assert.doesNotMatch(reading.body, /orb /);
-  assert.doesNotMatch(reading.details.join("\n"), /Grand trine:.*Node/);
-  assert.ok(reading.details.some(line => /orb /.test(line)));
-  assert.ok(reading.portrait.includes(reading.cards[0]?.card.name ?? ""));
+  assert.doesNotMatch(reading.body, /orb |lesbian|gay|queer/i);
+  assert.equal(reading.details.length, 0);
+  assert.match(reading.privateNote, /Sun Leo/);
+  assert.doesNotMatch(reading.privateNote, /lesbian|gay|queer/i);
   const sameSky = { sun: "Leo", moon: "Aries", rising: "Sagittarius" };
   const novaSun = chartFromSigns({ ...sameSky, seed: "nova" }).placements.find(item => item.body === "Sun");
   const solSun = chartFromSigns({ ...sameSky, seed: "sol" }).placements.find(item => item.body === "Sun");
@@ -378,8 +377,7 @@ check("a group read names every person and a real aspect", () => {
     })),
   );
   assert.equal(tandem.kindLabel, "Tandem");
-  assert.equal(tandem.cards.length, 9);
-  assert.equal(tandem.cards[0]?.slotName, "Shared Core");
+  assert.deepEqual(tandem.cards.map(card => card.slotName), slots);
   const asked = composeGroupReading(
     signs.slice(0, 2).map(([name, sun, moon, rising]) => ({
       id: name,
@@ -387,25 +385,26 @@ check("a group read names every person and a real aspect", () => {
       chart: chartFromSigns({ sun, moon, rising, seed: name }),
     })),
     new Date("2026-11-11T16:00:00Z"),
-    { question: "How do we grow closer?", connectionId: "couple", connectionLabel: "Couple / Partners" },
+    { question: "How do we grow closer?" },
   );
   assert.match(asked.body, /How do we grow closer/);
-  assert.match(asked.body, /In the Shared heart of this/);
-  assert.equal(asked.cards[0]?.slotName, "Shared heart");
-  assert.equal(asked.connection, "Couple / Partners");
+  assert.match(asked.body, /In the Root of this/);
+  assert.equal(asked.cards[0]?.slotName, "Root");
+  assert.equal(asked.connection, "");
+  assert.doesNotMatch(asked.body, /Couple|Partners|Shared heart/);
   const couple = composeGroupReading(
     [
       { id: "avery", name: "Avery", chart: chartFromSigns({ sun: "Aries", moon: "Cancer", rising: "Libra", seed: "avery" }), pronouns: "she/her", gender: "woman", orientation: "lesbian" },
       { id: "nova", name: "Nova", chart: chartFromSigns({ sun: "Leo", moon: "Aries", rising: "Sagittarius", seed: "nova" }), pronouns: "she/her", gender: "woman", orientation: "lesbian" },
     ],
     new Date("2026-11-11T16:00:00Z"),
-    { question: "How do we grow closer?", connectionId: "couple", connectionLabel: "Couple / Partners" },
+    { question: "How do we grow closer?" },
   );
   assert.match(couple.body, /she\/her/);
   assert.doesNotMatch(couple.body, /lesbian|gay|queer|husband|wife/i);
-  assert.equal(tandem.cards.some(card => card.slotName === "Momentum"), true);
-  assert.equal(tandem.cards.at(-1)?.slotName, "Next step");
-  assert.match(tandem.body, /gift/i);
+  assert.doesNotMatch(couple.privateNote, /lesbian|gay|queer/i);
+  assert.equal(tandem.cards.at(-1)?.slotName, "Your Advantage");
+  assert.match(tandem.body, /Best Move/);
   assert.doesNotMatch(tandem.body, /where you spark|friction|challenge|tension/i);
 });
 
