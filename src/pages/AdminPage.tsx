@@ -157,7 +157,7 @@ function Sidebar({
               onClick={() => onSelect(item.id)}
               className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-md text-[13px] transition-all ${
                 isActive
-                  ? "bg-white/[0.08] text-white"
+                  ? "is-on bg-white/[0.08] text-white"
                   : "text-white/40 hover:text-white/70 hover:bg-white/[0.04]"
               }`}
             >
@@ -341,24 +341,24 @@ function DashboardTab() {
           {revenueData.length > 0 ? (
             <ResponsiveContainer width="100%" height={240}>
               <BarChart data={revenueData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
+                <CartesianGrid strokeDasharray="3 3" stroke="rgba(17,17,17,0.12)" />
                 <XAxis
                   dataKey="date"
-                  tick={{ fontSize: 10, fill: "rgba(255,255,255,0.3)" }}
-                  axisLine={{ stroke: "rgba(255,255,255,0.06)" }}
+                  tick={{ fontSize: 10, fill: "#111" }}
+                  axisLine={{ stroke: "rgba(17,17,17,0.2)" }}
                 />
                 <YAxis
-                  tick={{ fontSize: 10, fill: "rgba(255,255,255,0.3)" }}
-                  axisLine={{ stroke: "rgba(255,255,255,0.06)" }}
+                  tick={{ fontSize: 10, fill: "#111" }}
+                  axisLine={{ stroke: "rgba(17,17,17,0.2)" }}
                   tickFormatter={(v) => `$${v}`}
                 />
                 <Tooltip
                   contentStyle={{
-                    background: "#1a1a1a",
-                    border: "1px solid rgba(255,255,255,0.1)",
+                    background: "#fff",
+                    border: "1px solid #111",
                     borderRadius: 8,
                     fontSize: 12,
-                    color: "#fff",
+                    color: "#111",
                   }}
                   formatter={(value: number) => [`$${value.toFixed(2)}`, "Revenue"]}
                 />
@@ -400,11 +400,11 @@ function DashboardTab() {
                   </Pie>
                   <Tooltip
                     contentStyle={{
-                      background: "#1a1a1a",
-                      border: "1px solid rgba(255,255,255,0.1)",
+                      background: "#fff",
+                      border: "1px solid #111",
                       borderRadius: 8,
                       fontSize: 12,
-                      color: "#fff",
+                      color: "#111",
                     }}
                     formatter={(value: number) => `$${value.toFixed(2)}`}
                   />
@@ -2022,7 +2022,7 @@ function ShippingTab() {
       <h2 className="text-xl text-white font-semibold mb-6">Shipping & Fulfillment</h2>
 
       {/* Settings Card */}
-      <div className="p-6 mb-8 rounded-xl" style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)" }}>
+      <div className="p-6 mb-8 rounded-xl" style={{ background: "#fff", border: "1px solid #111" }}>
         <h3 className="text-sm text-white/70 uppercase tracking-wider mb-5">Shipping Settings</h3>
 
         <div className="space-y-4">
@@ -2035,7 +2035,7 @@ function ShippingTab() {
             <button
               onClick={() => setFreeStandard(!freeStandard)}
               className="transition-colors"
-              style={{ color: freeStandard ? "#10b981" : "rgba(255,255,255,0.3)" }}
+              style={{ color: freeStandard ? "#0b7a45" : "#666" }}
             >
               {freeStandard ? <ToggleRight size={28} /> : <ToggleLeft size={28} />}
             </button>
@@ -2050,7 +2050,7 @@ function ShippingTab() {
             <button
               onClick={() => setShowExpedited(!showExpedited)}
               className="transition-colors"
-              style={{ color: showExpedited ? "#10b981" : "rgba(255,255,255,0.3)" }}
+              style={{ color: showExpedited ? "#0b7a45" : "#666" }}
             >
               {showExpedited ? <ToggleRight size={28} /> : <ToggleLeft size={28} />}
             </button>
@@ -2068,7 +2068,7 @@ function ShippingTab() {
                 value={fulfillMin}
                 onChange={(e) => setFulfillMin(e.target.value)}
                 className="w-14 text-center text-sm rounded-lg py-1.5"
-                style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", color: "white" }}
+                style={{ background: "#fff", border: "1px solid #111", color: "#111" }}
               />
               <span className="text-white/30 text-xs">to</span>
               <input
@@ -2076,7 +2076,7 @@ function ShippingTab() {
                 value={fulfillMax}
                 onChange={(e) => setFulfillMax(e.target.value)}
                 className="w-14 text-center text-sm rounded-lg py-1.5"
-                style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", color: "white" }}
+                style={{ background: "#fff", border: "1px solid #111", color: "#111" }}
               />
             </div>
           </div>
@@ -2084,7 +2084,7 @@ function ShippingTab() {
 
         <button
           onClick={handleSave}
-          className="mt-6 px-6 py-2.5 text-xs tracking-wider uppercase font-bold text-white rounded-lg transition-all"
+          className="admin-solid mt-6 px-6 py-2.5 text-xs tracking-wider uppercase font-bold rounded-lg transition-all"
           style={{
             background: saved
               ? "linear-gradient(135deg, #10b981, #059669)"
@@ -2096,7 +2096,7 @@ function ShippingTab() {
       </div>
 
       {/* Active Orders / Fulfillment Tracker */}
-      <div className="p-6 rounded-xl" style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)" }}>
+      <div className="p-6 rounded-xl" style={{ background: "#fff", border: "1px solid #111" }}>
         <h3 className="text-sm text-white/70 uppercase tracking-wider mb-5">
           Order Fulfillment ({activeOrders.length} active)
         </h3>
@@ -2108,7 +2108,7 @@ function ShippingTab() {
             {activeOrders.slice(0, 20).map((order: any) => {
               const currentStageIdx = FULFILLMENT_STAGES.findIndex(s => s.key === order.fulfillmentStage);
               return (
-                <div key={order._id} className="p-4 rounded-lg" style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.04)" }}>
+                <div key={order._id} className="p-4 rounded-lg" style={{ background: "#fff", border: "1px solid #111" }}>
                   <div className="flex items-center justify-between mb-3">
                     <div>
                       <span className="text-xs text-white/40 font-mono">#{order._id.slice(-8)}</span>
@@ -2129,7 +2129,7 @@ function ShippingTab() {
                         style={{
                           background: i <= currentStageIdx
                             ? stage.color
-                            : "rgba(255,255,255,0.06)",
+                            : "rgba(17,17,17,0.16)",
                         }}
                       />
                     ))}
@@ -2311,8 +2311,8 @@ function TaxTab() {
                 onChange={(e) => setNewType(e.target.value as any)}
                 className="w-full bg-white/[0.04] border border-white/[0.08] rounded px-2 py-1.5 text-xs text-white/70"
               >
-                <option value="us_state" style={{ background: "#111" }}>US State</option>
-                <option value="country" style={{ background: "#111" }}>Country</option>
+                <option value="us_state" style={{ background: "#fff", color: "#111" }}>US State</option>
+                <option value="country" style={{ background: "#fff", color: "#111" }}>Country</option>
               </select>
             </div>
             <div>
@@ -2530,7 +2530,7 @@ function TaxTab() {
 
 function LoadingState() {
   return (
-    <div className="flex items-center justify-center h-64 bg-[#0e0a0f] -mx-4 sm:-mx-6 lg:-mx-8 -mt-4">
+    <div className="flex items-center justify-center h-64">
       <div className="text-center">
         <div className="text-xl mb-2 animate-pulse">✦</div>
         <p className="text-[11px] tracking-wider uppercase text-white/20">
@@ -2552,7 +2552,7 @@ export default function AdminPage() {
   if (isAdmin === undefined) return <LoadingState />;
   if (!isAdmin) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#0e0a0f] -mx-4 sm:-mx-6 lg:-mx-8 -mt-4">
+      <div className="admin-desk admin-desk--gate min-h-[60vh] flex items-center justify-center">
         <div className="text-center">
           <XCircle className="w-12 h-12 text-red-400/40 mx-auto mb-3" />
           <h1 className="text-lg font-medium text-white/70">Access Denied</h1>
@@ -2599,7 +2599,7 @@ export default function AdminPage() {
   };
 
   return (
-    <div className="flex min-h-screen -mx-4 sm:-mx-6 lg:-mx-8 -mt-4 bg-[#0e0a0f] text-[#f5ede6]">
+    <div className="admin-desk flex min-h-[70vh]">
       <Sidebar active={activeTab} onSelect={setActiveTab} />
       <main className="flex-1 p-6 overflow-y-auto">{renderTab()}</main>
     </div>
