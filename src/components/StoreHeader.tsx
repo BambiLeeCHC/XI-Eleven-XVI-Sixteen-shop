@@ -58,8 +58,12 @@ export function StoreHeader() {
               Men
             </Link>
             <Link
-              to="/dial"
-              className={location.pathname === "/dial" ? "is-on" : undefined}
+              to="/"
+              className={
+                location.pathname === "/" || location.pathname === "/dial"
+                  ? "is-on"
+                  : undefined
+              }
             >
               Dial
             </Link>
@@ -151,7 +155,7 @@ export function StoreHeader() {
               <MobileNavLink to="/women" label="Women" />
               <MobileNavLink to="/men" label="Men" />
               <MobileNavLink to="/shop" label="Shop all" />
-              <MobileNavLink to="/dial" label="Dial" />
+              <MobileNavLink to="/" label="Dial" />
               <MobileNavLink to="/about" label="About" />
               <MobileNavLink to="/journal" label="Journal" />
               <MobileNavLink to="/chart" label="True North" />

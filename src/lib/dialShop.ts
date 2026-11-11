@@ -11,21 +11,29 @@ import { colorFromName, snapHex, styleKeyFromName } from "./brand";
  */
 
 export type DialGender = "women" | "men" | "all";
-export type DialStep = "families" | "color" | "size";
+export type DialStep = "categories" | "families" | "color" | "size";
 
 export type FamilyRecord = {
   id?: string;
   slug: string;
   name: string;
+  category: string;
   gender: "women" | "men";
   styleKey: string;
   sortOrder?: number;
+};
+
+export type DialCategory = {
+  slug: string;
+  name: string;
+  gender: DialGender;
 };
 
 export const FAMILY_DEFS: FamilyRecord[] = [
   {
     slug: "b-lift",
     name: "B-Lift Sports Bra",
+    category: "Sports bras",
     gender: "women",
     styleKey: "B-Lift",
     sortOrder: 10,
@@ -33,6 +41,7 @@ export const FAMILY_DEFS: FamilyRecord[] = [
   {
     slug: "l-flow",
     name: "L-Flow Leggings",
+    category: "Leggings",
     gender: "women",
     styleKey: "L-Flow",
     sortOrder: 20,
@@ -40,6 +49,7 @@ export const FAMILY_DEFS: FamilyRecord[] = [
   {
     slug: "d-slip",
     name: "D-Slip Dress",
+    category: "Dresses",
     gender: "women",
     styleKey: "D-Slip",
     sortOrder: 30,
@@ -47,6 +57,7 @@ export const FAMILY_DEFS: FamilyRecord[] = [
   {
     slug: "s-glitch-2-5",
     name: 'S-Glitch 2.5" Shorts',
+    category: "Shorts",
     gender: "men",
     styleKey: "S-Glitch 2.5",
     sortOrder: 40,
@@ -54,6 +65,7 @@ export const FAMILY_DEFS: FamilyRecord[] = [
   {
     slug: "s-glitch-6-3",
     name: 'S-Glitch 6.3" Shorts',
+    category: "Shorts",
     gender: "men",
     styleKey: "S-Glitch 6.3",
     sortOrder: 50,
@@ -61,6 +73,7 @@ export const FAMILY_DEFS: FamilyRecord[] = [
   {
     slug: "t-icon-oversized",
     name: "T-Icon Oversized Tee",
+    category: "T-shirts",
     gender: "men",
     styleKey: "T-Icon Oversized",
     sortOrder: 60,
@@ -68,6 +81,7 @@ export const FAMILY_DEFS: FamilyRecord[] = [
   {
     slug: "t-icon-tie-dye",
     name: "T-Icon Tie-Dye Tee",
+    category: "T-shirts",
     gender: "men",
     styleKey: "T-Icon Tie-Dye",
     sortOrder: 70,
@@ -75,6 +89,7 @@ export const FAMILY_DEFS: FamilyRecord[] = [
   {
     slug: "t-icon",
     name: "T-Icon Tee",
+    category: "T-shirts",
     gender: "men",
     styleKey: "T-Icon",
     sortOrder: 80,
@@ -82,6 +97,7 @@ export const FAMILY_DEFS: FamilyRecord[] = [
   {
     slug: "j-glitch",
     name: "J-Glitch Jersey",
+    category: "Jerseys",
     gender: "men",
     styleKey: "J-Glitch",
     sortOrder: 90,
@@ -119,14 +135,33 @@ export function parseGender(value: string | null): DialGender {
 }
 
 export function parseStep(value: string | null): DialStep {
-  if (value === "families" || value === "color" || value === "size")
+  if (
+    value === "categories" ||
+    value === "families" ||
+    value === "color" ||
+    value === "size"
+  )
     return value;
-  if (value === "categories" || value === "pieces") return "families";
-  return "families";
+  if (value === "pieces") return "families";
+  return "categories";
+}
+
+export function categorySlug(name: string) {
+  return name
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
 }
 
 export function familySource(remote: FamilyRecord[] | undefined) {
-  return remote && remote.length > 0 ? remote : FAMILY_DEFS;
+  const rows = remote && remote.length > 0 ? remote : FAMILY_DEFS;
+  return rows.map(row => ({
+    ...row,
+    category:
+      row.category ||
+      FAMILY_DEFS.find(item => item.styleKey === row.styleKey)?.category ||
+      "Other",
+  }));
 }
 
 export function productGender(product: DialProduct): "women" | "men" | "all" {
@@ -136,11 +171,57 @@ export function productGender(product: DialProduct): "women" | "men" | "all" {
   return FAMILY_DEFS.find(item => item.styleKey === key)?.gender ?? "all";
 }
 
-export function familiesFor(gender: DialGender, remote: FamilyRecord[] | undefined) {
-  const specific = familySource(remote)
+export function categoriesFor(
+  gender: DialGender,
+  remote: FamilyRecord[] | undefined,
+): DialCategory[] {
+  const seen = new Map<string, DialCategory & { sortOrder: number }>();
+  for (const family of familySource(remote)) {
+    if (gender !== "all" && family.gender !== gender) continue;
+    const slug = categorySlug(family.category);
+    if (!slug) continue;
+    const order = family.sortOrder ?? 0;
+    const current = seen.get(slug);
+    if (current && current.sortOrder <= order) continue;
+    seen.set(slug, {
+      slug,
+      name: family.category,
+      gender: family.gender,
+      sortOrder: order,
+    });
+  }
+  const specific = [...seen.values()]
+    .sort((a, b) => a.sortOrder - b.sortOrder)
+    .map(({ slug, name, gender: itemGender }) => ({
+      slug,
+      name,
+      gender: itemGender,
+    }));
+  return [...specific, { slug: "all", name: "All", gender }];
+}
+
+export function categoryBySlug(
+  slug: string,
+  gender: DialGender,
+  remote: FamilyRecord[] | undefined,
+) {
+  return categoriesFor(gender, remote).find(item => item.slug === slug);
+}
+
+export function familiesFor(
+  gender: DialGender,
+  category: string,
+  remote: FamilyRecord[] | undefined,
+) {
+  return familySource(remote)
     .filter(item => gender === "all" || item.gender === gender)
+    .filter(
+      item =>
+        !category ||
+        category === "all" ||
+        categorySlug(item.category) === category,
+    )
     .sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0));
-  return [...specific, { slug: "all", name: "All", gender, styleKey: "" }];
 }
 
 function colorWord(name: string, word: string) {
@@ -180,7 +261,7 @@ export function productsInFamily(
   const family = familyBySlug(familySlug, remote);
   return products.filter(product => {
     if (gender !== "all" && productGender(product) !== gender) return false;
-    if (!familySlug || familySlug === "all") return true;
+    if (!familySlug || familySlug === "all") return false;
     if (family?.id && product.familyId) return product.familyId === family.id;
     return family ? styleKeyFromName(product.name) === family.styleKey : false;
   });

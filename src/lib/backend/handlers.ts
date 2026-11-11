@@ -279,13 +279,14 @@ export const handlers: Record<string, Handler> = {
   "families.list": async () => {
     const { data, error } = await supabase
       .from("product_families")
-      .select("id, slug, name, gender, style_key, sort_order")
+      .select("id, slug, name, category, gender, style_key, sort_order")
       .order("sort_order", { ascending: true });
     if (error) return [];
     return (data ?? []).map(row => ({
       id: row.id,
       slug: row.slug,
       name: row.name,
+      category: row.category || "",
       gender: row.gender,
       styleKey: row.style_key,
       sortOrder: row.sort_order ?? 0,

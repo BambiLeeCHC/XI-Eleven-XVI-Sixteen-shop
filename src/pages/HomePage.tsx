@@ -72,7 +72,7 @@ export function HomePage() {
     <>
       <SEO
         description={PAGE_SEO.home.description}
-        url="/"
+        url="/home"
         jsonLd={[buildOrganizationJsonLd(), buildWebSiteJsonLd()]}
       />
       <ImpactHero

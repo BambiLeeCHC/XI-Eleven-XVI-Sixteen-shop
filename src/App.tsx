@@ -40,9 +40,10 @@ function App() {
         <Routes>
           <Route element={<StoreLayout />}>
             {/* Public routes */}
-            <Route path="/" element={<HomePage />} />
-            <Route path="/shop" element={<ShopPage />} />
+            <Route path="/" element={<DialShopPage />} />
             <Route path="/dial" element={<DialShopPage />} />
+            <Route path="/home" element={<HomePage />} />
+            <Route path="/shop" element={<ShopPage />} />
             <Route path="/women" element={<CategoryPage gender="women" />} />
             <Route path="/men" element={<CategoryPage gender="men" />} />
             <Route path="/product/:id" element={<ProductPage />} />
