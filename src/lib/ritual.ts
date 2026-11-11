@@ -6,9 +6,9 @@
  * zones without any backend state. Same date → same card, worldwide.
  */
 
-import { ARCANA, type ArcanaCard } from "../data/arcana";
-import { FULL_DECK } from "../data/fullDeck";
-import { DAILY_CODES, type DailyCode } from "../data/dailyCodes";
+import { ARCANA, type ArcanaCard } from "../data/arcana.js";
+import { FULL_DECK } from "../data/fullDeck.js";
+import { DAILY_CODES, type DailyCode } from "../data/dailyCodes.js";
 
 export function dayKey(d: Date = new Date()): string {
   const y = d.getFullYear();
@@ -222,6 +222,28 @@ export const DEEP_SPREAD: SpreadType = {
     { slot: "power", slotName: "Your Advantage", slotQuestion: "Where your real advantage in this sits" },
   ],
 };
+
+/** Same deck and collision walk as a daily pull, keyed so a group and a day always redraw the same cards. */
+export function drawSeededSpread(
+  slots: Array<{ slot: SpreadSlot; slotName: string; slotQuestion: string }>,
+  seed: string,
+): SpreadCard[] {
+  const deck = FULL_DECK;
+  const used = new Set<number>();
+  return slots.map(({ slot, slotName, slotQuestion }) => {
+    let idx = hash(`${slot}:${seed}`) % deck.length;
+    let guard = 0;
+    while (used.has(idx) && guard++ < deck.length) idx = (idx + 5) % deck.length;
+    used.add(idx);
+    return {
+      slot,
+      slotName,
+      slotQuestion,
+      card: deck[idx],
+      reversed: hash(`${slot}-o:${seed}`) % 100 < 28,
+    };
+  });
+}
 
 export function drawDeepSpread(): SpreadCard[] {
   const deck = FULL_DECK;

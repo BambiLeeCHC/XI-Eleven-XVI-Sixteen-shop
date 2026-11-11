@@ -379,7 +379,7 @@ export default function DeepReadingPage({ embedded = false }: { embedded?: boole
         <div className="tn-card tn-lede-card">
           <p className="serif-quiet tn-lede">
             {openAccess
-              ? "Tri-Sky is open with your account. Morning, noon, and night. No charge is started from this page."
+              ? "Tri-Sky is open with your account. Morning, noon, and night, each written for the best case in front of you. No charge is started from this page."
               : "Three readings a week are included with your profile. Unlimited is $3.99 a week."}
           </p>
         </div>

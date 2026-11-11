@@ -243,14 +243,18 @@ export function buildPreviewNatalChart(signs: {
   sun: string;
   moon: string;
   rising: string;
+  /** Degree inside the sign. Defaults keep the shop preview stable. */
+  sunDegree?: number;
+  moonDegree?: number;
+  risingDegree?: number;
 }) {
-  const risingDegree = longitudeOfSign(signs.rising, 15);
+  const risingDegree = longitudeOfSign(signs.rising, signs.risingDegree ?? 15);
   const cusps = Array.from({ length: 12 }, (_, index) =>
     normalizeLongitude(risingDegree + index * 30),
   );
   const anchors = {
-    sun: longitudeOfSign(signs.sun, 0),
-    moon: longitudeOfSign(signs.moon, 0),
+    sun: longitudeOfSign(signs.sun, signs.sunDegree ?? 0),
+    moon: longitudeOfSign(signs.moon, signs.moonDegree ?? 0),
     rising: risingDegree,
   };
   const built = buildChartFromLongitudes({
