@@ -1,15 +1,15 @@
 import { useMemo } from "react";
-import { Link } from "react-router-dom";
+import { ColorwayCard, MockupChip } from "../components/ColorwayCard";
 import { buildBreadcrumbJsonLd, SEO } from "../components/SEO";
 import { PAGE_SEO } from "../data/seoMeta";
 import { api, useQuery } from "../lib/backend";
 import {
-  colorCountLabel,
   colorFromName,
   formatPrice,
   groupProductsByStyle,
   snapHex,
 } from "../lib/brand";
+import { flatMockup } from "../lib/flatMockup";
 
 type Gender = "women" | "men";
 
@@ -76,68 +76,40 @@ export function CategoryPage({ gender }: { gender: Gender }) {
         ) : groups.length === 0 ? (
           <p className="serif-quiet">No looks in this filter.</p>
         ) : (
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {groups.map(group => {
-              const hero = group.items[0];
-              return (
-                <article
-                  key={group.key}
-                  className="flex flex-col bg-neutral-900"
-                >
-                  <Link
-                    to={`/product/${hero._id}`}
-                    className="flex items-center justify-center p-4"
-                  >
-                    {hero.images?.[0] ? (
-                      <img
-                        src={hero.images[0]}
-                        alt={group.key}
-                        className="max-h-[340px] w-full object-contain"
-                      />
-                    ) : null}
-                  </Link>
-                  <div
-                    className="relative mx-4 mb-4"
-                    style={{
-                      background: "#0B0B0C",
-                      border: "2px solid var(--cream)",
-                      padding: "14px 16px",
-                    }}
-                  >
-                    <Link to={`/product/${hero._id}`}>
-                      <p className="clash text-[32px]">{group.key}</p>
-                      <p className="serif-quiet mt-1 text-[15px]">
-                        {formatPrice(hero.price)}
-                        {group.items.length > 1
-                          ? ` · ${colorCountLabel(group.items.length)}`
-                          : ""}
-                      </p>
-                    </Link>
-                    <p
-                      className="label-lock mt-3 mb-2"
-                      style={{ color: accent }}
-                    >
-                      Select a colour
-                    </p>
-                    <div className="flex gap-2.5 flex-wrap">
-                      {group.items.map(item => {
-                        const color = colorFromName(item.name) || item.name;
-                        return (
-                          <Link
-                            key={item._id}
-                            to={`/product/${item._id}`}
-                            aria-label={color}
-                            className="snap"
-                            style={{ background: snapHex(color) }}
-                          />
-                        );
-                      })}
-                    </div>
-                  </div>
-                </article>
-              );
-            })}
+          <>
+          <div className="look-grid">
+            {groups.flatMap(group =>
+              group.items.map(item => {
+                const color = colorFromName(item.name) || item.name;
+                return (
+                  <ColorwayCard
+                    key={item._id}
+                    href={`/product/${item._id}`}
+                    name={`${group.key}${color ? ` · ${color}` : ""}`}
+                    price={formatPrice(item.price)}
+                    images={item.images || []}
+                  />
+                );
+              }),
+            )}
           </div>
+          <div className="look-chip-row">
+            {groups.flatMap(group =>
+              group.items.map(item => {
+                const color = colorFromName(item.name) || item.name;
+                return (
+                  <MockupChip
+                    key={item._id}
+                    href={`/product/${item._id}`}
+                    label={color}
+                    image={flatMockup(item.name, item.images).url || item.images?.[0]}
+                    glow={snapHex(color)}
+                  />
+                );
+              }),
+            )}
+          </div>
+          </>
         )}
       </section>
     </>

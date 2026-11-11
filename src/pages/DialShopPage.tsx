@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useLocation, useNavigate, useSearchParams } from "react-router-dom";
+import { ColorwayGallery } from "../components/ColorwayCard";
 import { DialAtmosphere } from "../components/DialAtmosphere";
 import { DialSliceRing } from "../components/DialSliceRing";
 import { DialRimCarousel } from "../components/DialRimCarousel";
@@ -628,14 +629,10 @@ export function DialShopPage() {
               ×
             </button>
             <div className="dial-sheet__photo">
-              {chosen.images?.[0] ? (
-                <img
-                  src={hiResProductImage(chosen.images[0], 1200)}
-                  alt={displayProductName(chosen.name)}
-                />
-              ) : (
-                <span>✦</span>
-              )}
+              <ColorwayGallery
+                images={chosen.images || []}
+                label={displayProductName(chosen.name)}
+              />
             </div>
             <div className="dial-sheet__copy">
               <p className="dial-sheet__kicker">

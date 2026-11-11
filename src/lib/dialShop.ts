@@ -1,5 +1,7 @@
 import type { DialOption } from "../components/RadialVariantDial";
 import { colorFromName, snapHex, styleKeyFromName } from "./brand";
+import { flatMockup } from "./flatMockup";
+import { swatchFocus } from "./swatchFocus";
 
 /**
  * Dial families.
@@ -336,22 +338,28 @@ export function colorwayOptions(
     if (names.length > 1) {
       for (const color of names) {
         const sizes = sizeChoices(product, stock, color);
+        const picked = flatMockup(product.name, product.images);
         options.push({
           id: `${product._id}::${color}`,
           label: color,
           hex: snapHex(color),
           available: sizes.some(item => item.available),
+          mockup: picked.url,
+          focus: swatchFocus(product.name),
         });
       }
       continue;
     }
     const label = colorFromName(product.name) || product.name;
     const sizes = sizeChoices(product, stock);
+    const picked = flatMockup(product.name, product.images);
     options.push({
       id: product._id,
       label,
       hex: snapHex(label),
       available: sizes.length === 0 ? true : sizes.some(item => item.available),
+      mockup: picked.url,
+      focus: swatchFocus(product.name),
     });
   }
   return options;

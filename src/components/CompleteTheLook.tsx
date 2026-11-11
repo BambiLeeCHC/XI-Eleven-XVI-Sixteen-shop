@@ -1,5 +1,4 @@
 import { useRef } from "react";
-import { Link } from "react-router-dom";
 import { getProductPairings } from "../data/productPairings";
 import { api, useQuery } from "../lib/backend";
 import {
@@ -8,7 +7,7 @@ import {
   groupProductsByStyle,
   styleKeyFromName,
 } from "../lib/brand";
-import { hiResProductImage } from "../lib/productImage";
+import { ColorwayCard } from "./ColorwayCard";
 
 interface Product {
   _id: string;
@@ -131,29 +130,13 @@ function Section({
         }}
       >
         {products.map(product => (
-          <Link
+          <ColorwayCard
             key={product._id}
-            to={`/product/${product._id}`}
-            className="pdp-card"
-          >
-            <span className="pdp-card__photo">
-              {product.images[0] ? (
-                <img
-                  src={hiResProductImage(product.images[0], 640)}
-                  alt=""
-                  draggable={false}
-                />
-              ) : (
-                <span aria-hidden="true">✦</span>
-              )}
-            </span>
-            <span className="pdp-card__name">
-              {displayProductName(product.name)}
-            </span>
-            <span className="pdp-card__price">
-              {formatPrice(product.price)}
-            </span>
-          </Link>
+            href={`/product/${product._id}`}
+            name={displayProductName(product.name)}
+            price={formatPrice(product.price)}
+            images={product.images || []}
+          />
         ))}
       </div>
     </section>

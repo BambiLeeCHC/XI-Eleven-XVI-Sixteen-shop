@@ -29,6 +29,8 @@ import {
   styleKeyFromName,
 } from "../lib/brand";
 import { namedColorway, resolveColorwayArt } from "../lib/colorwayImage";
+import { flatMockup } from "../lib/flatMockup";
+import { swatchFocus } from "../lib/swatchFocus";
 import { hiResProductImage } from "../lib/productImage";
 
 /** Extract just the size label from a variant name like "D-SLIP DRESS [BLACK] / XS" → "XS" */
@@ -469,6 +471,8 @@ export function ProductPage() {
         id: color,
         label: color,
         hex: snapHex(color),
+        mockup: flatMockup(product.name, product.images).url,
+        focus: swatchFocus(product.name),
         available: size
           ? variantInStock(variantFor(variants, size, color, true))
           : true,
@@ -481,6 +485,8 @@ export function ProductPage() {
         id: item._id,
         label,
         hex: snapHex(label),
+        mockup: flatMockup(item.name, item.images).url,
+        focus: swatchFocus(item.name),
         available: !size
           ? true
           : (item.sizes || []).some(
