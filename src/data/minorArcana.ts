@@ -4,7 +4,7 @@
  * can draw from the full 78-card deck.
  */
 
-import type { ArcanaCard } from "./arcana";
+import type { ArcanaCard } from "./arcana.js";
 
 export const MINOR_ARCANA: ArcanaCard[] = [
   { number: 22, roman: "A", name: "Ace of Wands", subtitle: "the pure seed of the suit — a beginning with real force behind it", glyph: "❘", element: "Fire", reduction: 4, keywords: ["will", "action", "ace"], meaning: "A clear creative or willful beginning is available — take it while the spark is hot.", actions: ["Act on the plainest next step this card points to.", "Name what this suit is asking of you today, in one sentence."], upright: "A clear creative or willful beginning is available — take it while the spark is hot.", reversed: "A false start, or energy spent on the wrong fire.", ritual: "Do one concrete thing this card is asking for.", material: "Full deck plate — wands suit.", colorway: ["#c45c26", "#f5c97a"] },

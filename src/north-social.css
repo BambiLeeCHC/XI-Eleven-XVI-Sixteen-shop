@@ -356,12 +356,74 @@
 .group-read__people span { display: block; }
 .group-read__people span { font-size: 11px; letter-spacing: 0.04em; margin-top: 0.2rem; }
 .group-read__count { margin: 0.7rem 0; font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase; }
-.group-read__letter {
-  margin-top: 1rem;
-  white-space: pre-wrap;
+.group-read__prompts { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0.45rem 0 0.8rem; }
+.group-read__prompts button {
+  border-radius: 999px;
+  border: 1px solid rgba(247, 240, 230, 0.28);
+  background: transparent;
   color: #f6f1e8;
+  min-height: 36px;
+  padding: 0.25rem 0.7rem;
+  cursor: pointer;
+  text-align: left;
 }
-.group-read__letter h3 { margin: 0.3rem 0 0.6rem; font-size: 1.35rem; }
+.group-read__prompts button.is-on { background: #f6f1e8; color: #111; }
+.group-read__ask { margin: 0 0 0.8rem; font-size: 1.05rem; line-height: 1.45; }
+.group-read__letter {
+  margin-top: 1.25rem;
+  color: #f6f1e8;
+  display: grid;
+  gap: 0.15rem;
+}
+.group-read__letter h3 {
+  margin: 0.2rem 0 0.8rem;
+  font-size: clamp(1.35rem, 3vw, 1.8rem);
+  line-height: 1.15;
+}
+.group-read__spread { margin: 0.2rem 0 1.1rem; }
+.group-read .long-read-slot-label,
+.group-read .long-read-card-name { color: #f6f1e8; }
+.group-read__portrait,
+.group-read__role p,
+.group-read__block p {
+  margin: 0;
+  line-height: 1.55;
+  font-size: 1.02rem;
+}
+.group-read__portrait { margin-bottom: 0.4rem; }
+.group-read__role,
+.group-read__block {
+  margin-top: 1.1rem;
+  padding-top: 0.85rem;
+  border-top: 1px solid rgba(247, 240, 230, 0.18);
+}
+.group-read__role h4,
+.group-read__block h4 {
+  margin: 0 0 0.4rem;
+  font-size: 0.78rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #d8f0c4;
+}
+.group-read__details {
+  margin-top: 1.2rem;
+  border-top: 1px solid rgba(247, 240, 230, 0.18);
+  padding-top: 0.7rem;
+}
+.group-read__details summary {
+  cursor: pointer;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  color: #d8f0c4;
+}
+.group-read__details ul {
+  margin: 0.7rem 0 0;
+  padding-left: 1.1rem;
+  color: rgba(246, 241, 232, 0.82);
+  font-size: 0.92rem;
+  line-height: 1.45;
+}
 .reading-room,
 .sky-panel,
 .personal-feed { display: grid; gap: 0.8rem; }
