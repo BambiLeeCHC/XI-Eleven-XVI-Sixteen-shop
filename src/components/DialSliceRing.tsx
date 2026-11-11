@@ -10,10 +10,10 @@ export type DialSlice = {
   /** Product mockup. The slice shows a zoomed crop of the print. */
   image?: string;
   /** Focal point in the mockup, 0–1, and how far to zoom. */
-  focus?: { x: number; y: number; zoom: number };
+  focus?: { x: number; y: number; zoom: number; cover?: boolean };
 };
 
-function mockupWindow(focus?: { x: number; y: number; zoom: number }) {
+function mockupWindow(focus?: { x: number; y: number; zoom: number; cover?: boolean }) {
   const zoom = focus?.zoom ?? 3.4;
   const x = focus?.x ?? 0.5;
   const y = focus?.y ?? 0.52;
@@ -146,6 +146,9 @@ export function DialSliceRing({
                 width="1"
                 height="1"
                 viewBox={mockupWindow(slice.focus)}
+                preserveAspectRatio={
+                  slice.focus?.cover ? "xMidYMid slice" : undefined
+                }
               >
                 <image
                   href={slice.image}

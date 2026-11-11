@@ -137,7 +137,11 @@ export function MockupChip({
       style={{
         backgroundColor: glow,
         backgroundImage: image ? `url(${image})` : undefined,
-        backgroundSize: image ? `${focus.zoom * 100}%` : undefined,
+        backgroundSize: image
+          ? focus.cover
+            ? "cover"
+            : `${focus.zoom * 100}%`
+          : undefined,
         backgroundPosition: image
           ? `${focus.x * 100}% ${focus.y * 100}%`
           : undefined,

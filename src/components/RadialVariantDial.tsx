@@ -9,7 +9,7 @@ export type DialOption = {
   hex?: string;
   /** Flat product mockup used to fill a color slice. */
   mockup?: string;
-  focus?: { x: number; y: number; zoom: number };
+  focus?: { x: number; y: number; zoom: number; cover?: boolean };
 };
 
 type Props = {

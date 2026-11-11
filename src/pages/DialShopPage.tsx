@@ -1,11 +1,12 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useLocation, useNavigate, useSearchParams } from "react-router-dom";
-import { ColorwayGallery } from "../components/ColorwayCard";
 import { DialAtmosphere } from "../components/DialAtmosphere";
 import { DialSliceRing } from "../components/DialSliceRing";
 import { DialRimCarousel } from "../components/DialRimCarousel";
+import { ProductCoverflow } from "../components/ProductCoverflow";
 import { RadialVariantDial } from "../components/RadialVariantDial";
 import { buildOrganizationJsonLd, buildWebSiteJsonLd, SEO } from "../components/SEO";
+import { getProductRotation } from "../data/productRotations";
 import { PAGE_SEO } from "../data/seoMeta";
 import { useSessionId } from "../hooks/useSessionId";
 import { api, useAuthStatus, useMutation, useQuery } from "../lib/backend";
@@ -629,9 +630,17 @@ export function DialShopPage() {
               ×
             </button>
             <div className="dial-sheet__photo">
-              <ColorwayGallery
-                images={chosen.images || []}
-                label={displayProductName(chosen.name)}
+              <ProductCoverflow
+                key={`${chosen._id}:${colorParam}`}
+                images={
+                  resolveColorwayArt({
+                    images: chosen.images,
+                    name: chosen.name,
+                    fallback: chosen.images,
+                  }).images
+                }
+                rotationImages={getProductRotation(chosen.name)}
+                name={displayProductName(chosen.name)}
               />
             </div>
             <div className="dial-sheet__copy">
