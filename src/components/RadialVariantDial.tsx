@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { swatchFocus } from "../lib/swatchFocus";
 import { DialSliceRing } from "./DialSliceRing";
 
 export type DialOption = {
@@ -6,6 +7,9 @@ export type DialOption = {
   label: string;
   available: boolean;
   hex?: string;
+  /** Flat product mockup used to fill a color slice. */
+  mockup?: string;
+  focus?: { x: number; y: number; zoom: number };
 };
 
 type Props = {
@@ -137,6 +141,12 @@ export function RadialVariantDial({
               label: option.label,
               available: option.available,
               fill: colorFocused ? option.hex : undefined,
+              image: colorFocused
+                ? option.mockup || previews?.[option.id]
+                : undefined,
+              focus: colorFocused
+                ? option.focus || swatchFocus(option.label)
+                : undefined,
             }))}
             activeId={colorFocused ? colorId : sizeId}
             hotId={colorFocused ? hoveredId : null}

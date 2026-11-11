@@ -5,8 +5,23 @@ export type DialSlice = {
   id: string;
   label: string;
   available?: boolean;
+  /** Glow color. */
   fill?: string;
+  /** Product mockup. The slice shows a zoomed crop of the print. */
+  image?: string;
+  /** Focal point in the mockup, 0–1, and how far to zoom. */
+  focus?: { x: number; y: number; zoom: number };
 };
+
+function mockupWindow(focus?: { x: number; y: number; zoom: number }) {
+  const zoom = focus?.zoom ?? 3.4;
+  const x = focus?.x ?? 0.5;
+  const y = focus?.y ?? 0.52;
+  const size = 100 / zoom;
+  const vx = Math.min(100 - size, Math.max(0, x * 100 - size / 2));
+  const vy = Math.min(100 - size, Math.max(0, y * 100 - size / 2));
+  return `${vx} ${vy} ${size} ${size}`;
+}
 
 const CX = 100;
 const CY = 100;
@@ -122,6 +137,27 @@ export function DialSliceRing({
               strokeWidth="2.2"
             />
           </pattern>
+          {slices.map(slice =>
+            slice.image ? (
+              <pattern
+                key={slice.id}
+                id={`mock-${rawId}-${slice.id.replace(/[^a-zA-Z0-9]/g, "")}`}
+                patternUnits="objectBoundingBox"
+                width="1"
+                height="1"
+                viewBox={mockupWindow(slice.focus)}
+              >
+                <image
+                  href={slice.image}
+                  x="0"
+                  y="0"
+                  width="100"
+                  height="100"
+                  preserveAspectRatio="xMidYMid slice"
+                />
+              </pattern>
+            ) : null,
+          )}
         </defs>
         {tint ? (
           <circle
@@ -157,9 +193,13 @@ export function DialSliceRing({
                   refs.current[slice.id] = node;
                 }}
                 d={sector(start, end, outer)}
-                className={`dial-slice${hot ? " is-hot" : ""}${active ? " is-on" : ""}${sold ? " is-off" : ""}${slice.fill ? " is-color" : ""}`}
+                className={`dial-slice${hot ? " is-hot" : ""}${active ? " is-on" : ""}${sold ? " is-off" : ""}${slice.fill ? " is-color" : ""}${slice.image ? " has-photo" : ""}`}
                 style={{ "--slice": slice.fill || "#d8f0c4" } as CSSProperties}
-                fill={slice.fill || "rgba(247,240,230,0.16)"}
+                fill={
+                  slice.image
+                    ? `url(#mock-${rawId}-${slice.id.replace(/[^a-zA-Z0-9]/g, "")})`
+                    : slice.fill || "rgba(247,240,230,0.16)"
+                }
                 tabIndex={sold ? -1 : active || (!activeId && index === 0) ? 0 : -1}
                 role="radio"
                 aria-checked={active}

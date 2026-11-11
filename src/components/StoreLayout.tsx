@@ -8,10 +8,11 @@ export function StoreLayout() {
   const { pathname } = useLocation();
   const north = pathname === "/chart" || pathname.startsWith("/chart/");
   const dial = pathname === "/" || pathname === "/dial";
+  const piece = pathname.startsWith("/product/");
 
   return (
-    <div className={`store-shell flex flex-col min-h-screen${north ? " is-north" : " is-shop"}${dial ? " is-dial" : ""}`}>
-      {north ? <LiveSky /> : dial ? null : <div className="shop-field" aria-hidden="true" />}
+    <div className={`store-shell flex flex-col min-h-screen${north ? " is-north" : " is-shop"}${dial ? " is-dial" : ""}${piece ? " is-pdp" : ""}`}>
+      {north ? <LiveSky /> : dial || piece ? null : <div className="shop-field" aria-hidden="true" />}
       <StoreHeader />
       <main className="store-main flex-1">
         <Outlet />

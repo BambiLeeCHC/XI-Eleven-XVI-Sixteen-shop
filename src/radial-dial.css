@@ -22,6 +22,15 @@
   stroke: rgba(8, 10, 14, 0.35);
 }
 
+.dial-slice.has-photo {
+  filter: drop-shadow(0 0 7px var(--slice));
+}
+
+.dial-slice.has-photo.is-hot,
+.dial-slice.has-photo.is-on {
+  filter: drop-shadow(0 0 16px var(--slice)) drop-shadow(0 8px 14px rgba(17, 17, 17, 0.18));
+}
+
 .dial-slice.is-hot,
 .dial-slice.is-on,
 .dial-slice:focus-visible {
