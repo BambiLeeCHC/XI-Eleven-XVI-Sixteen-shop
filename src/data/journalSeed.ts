@@ -55,13 +55,11 @@ export const WELCOME_POST = {
 
 <h2>What this Journal is for</h2>
 
-<p>This is the room where the brand thinks out loud. Three things live here, and they run on the same clock you do:</p>
+<p>This is the room where the brand thinks out loud. The hour and the Daily Code live here. Readings live in True North.</p>
 
 <p><strong>The hour.</strong> 11:16 is the house clock — two daily checkpoints, the moon overhead, and the number that governs each date. Time, treated as a design material instead of a countdown to a sale.</p>
 
 <p><strong>The Daily Code.</strong> One line, every day, on sustainability and self-possession. Not a platitude. A directive small enough to actually execute before noon.</p>
-
-<p><strong>The Draw.</strong> A house deck of twenty-two plates, written and drawn in-house as a language of self-empowerment and material honesty. XVI is The Tower for a reason. Three cards a day — The Signal, The Work, The Tower — read as prompts, not prophecy.</p>
 
 <figure class="journal-figure journal-figure--cutout journal-figure--right">
   <img src="/mannequin-women-v37.png" alt="The house sky mannequin in the gold XI·XVI monogram slip dress." loading="lazy" />

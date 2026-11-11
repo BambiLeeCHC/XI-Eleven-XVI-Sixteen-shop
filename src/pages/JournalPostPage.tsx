@@ -4,12 +4,11 @@ import { SEO } from "../components/SEO";
 import { ShareRow } from "../components/journal/ShareRow";
 import { DockPanel, DockTab } from "../components/journal/DockPanel";
 import { ElevenSixteenStrip } from "../components/journal/Almanac";
-import { DrawThree } from "../components/journal/DrawThree";
 import { JournalSky } from "../components/journal/JournalSky";
 import { DailyCode } from "../components/journal/DailyCode";
 import { usePostBySlug, usePublishedPosts } from "../lib/journalData";
 
-type Dock = "draw" | "code" | null;
+type Dock = "code" | null;
 
 export function JournalPostPage() {
   const { slug = "" } = useParams();
@@ -126,15 +125,11 @@ export function JournalPostPage() {
         </article>
 
         <div className="journal-rail journal-rail--right">
-          <DockTab label="The Draw" glyph="✧" accent="#c48dff" active={dock === "draw"} onClick={() => toggle("draw")} />
           <DockTab label="Daily Code" glyph="✦" accent="#f5c97a" active={dock === "code"} onClick={() => toggle("code")} />
         </div>
       </div>
       </div>
 
-      <DockPanel open={dock === "draw"} onClose={() => setDock(null)} title="The Draw" eyebrow="Three cards · the house deck" side="right" size="wide" accent="#c48dff">
-        <DrawThree />
-      </DockPanel>
       <DockPanel open={dock === "code"} onClose={() => setDock(null)} title="The Daily Code" eyebrow="Sustainability & self-empowerment" side="right" accent="#f5c97a">
         <DailyCode />
       </DockPanel>
