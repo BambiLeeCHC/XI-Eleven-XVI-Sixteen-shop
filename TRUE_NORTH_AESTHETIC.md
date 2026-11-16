@@ -21,6 +21,15 @@ Direction taken from the **True North by XI XVI** tarot deck (print edition).
 4. **Cream is voice** — all primary reading text stays cream for maximum readability on navy.
 5. **Simplify the path** — fewer competing accents, larger touch targets, clearer section titles, less visual noise.
 
+## Signature move: Foil Flash
+
+The single interaction that should feel special every time a card is revealed (solo draw, tandem, feed post).
+
+- Short, sharp foil shimmer + light refraction across the card face (~850ms).
+- Implemented on `.tarot-plate.is-foil-flash` via `src/components/north/TarotCardArt.tsx` + `src/north-social.css`.
+- Respects `prefers-reduced-motion`.
+- Keep it restrained. One clean signature, not constant sparkle.
+
 ## Layout goals
 
 - Generous vertical rhythm (1–1.25rem gaps between cards).
@@ -30,7 +39,7 @@ Direction taken from the **True North by XI XVI** tarot deck (print edition).
 
 ## What changed in this pass
 
-- Active / selected states moved from soft green (`#d8f0c4`) → gold.
-- Glass surfaces deepened toward navy.
-- Landing CTAs and feature glyphs updated to gold language.
+- Active / selected states moved from soft green (`#d8f0c4`) → gold (`#C9A84C`).
+- Glass surfaces deepened toward navy (`#0a1424`).
+- Foil Flash signature added to card reveals.
 - Spacing and border radii tightened for a calmer, more card-like feel.
