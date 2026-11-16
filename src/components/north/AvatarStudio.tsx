@@ -106,14 +106,14 @@ export function AvatarStudio({
   const saveCharacter = () => {
     commit(
       { photoUrl, aiAvatarUrl: cartoon, avatarMode: "ai" },
-      "XI · XVI character saved to My Sky.",
+      "Deck character saved to My Sky.",
     );
   };
 
   const onFile = async (file: File | undefined) => {
     if (!file) return;
     setBusy(true);
-    setNote("Cartoonizing your photo…");
+    setNote("Rendering you into the True North deck…");
     try {
       const photo = await resizeImageFile(file);
       const image = await new Promise<HTMLImageElement>((resolve, reject) => {
@@ -131,7 +131,7 @@ export function AvatarStudio({
       setMode("photo");
       commit(
         { photoUrl: photo, aiAvatarUrl: painted, avatarMode: "ai" },
-        "Photo cartoonized in the XI · XVI frame.",
+        "Your photo is now a True North deck character.",
       );
     } catch (error) {
       setNote(
@@ -144,11 +144,11 @@ export function AvatarStudio({
 
   const generate = async () => {
     if (!photoUrl) {
-      setNote("Upload a photo to generate an AI cartoon.");
+      setNote("Upload a photo to become a deck character.");
       return;
     }
     setBusy(true);
-    setNote("Drawing your XI · XVI cartoon…");
+    setNote("Drawing you in the house style…");
     try {
       const response = await fetch("/api/avatar", {
         method: "POST",
@@ -171,12 +171,12 @@ export function AvatarStudio({
       if (data?.success && data.imageDataUrl?.startsWith("data:image/")) {
         commit(
           { photoUrl, aiAvatarUrl: data.imageDataUrl, avatarMode: "ai" },
-          "AI cartoon avatar saved.",
+          "Deck character saved.",
         );
       } else {
         commit(
           { photoUrl, aiAvatarUrl: cartoon, avatarMode: "ai" },
-          "The house model was quiet, so the XI · XVI character was saved.",
+          "The house model was quiet — saved the XI · XVI character instead.",
         );
       }
     } catch {
@@ -200,9 +200,10 @@ export function AvatarStudio({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="avatar-studio">
         <DialogHeader>
-          <DialogTitle>XI · XVI Avatar</DialogTitle>
+          <DialogTitle>Become a True North Card</DialogTitle>
           <DialogDescription>
-            Draw a house character, or cartoonize a photo into the same crest.
+            Upload your photo and step into the same style as the house deck —
+            or build a character from the crest.
           </DialogDescription>
         </DialogHeader>
 
@@ -218,7 +219,7 @@ export function AvatarStudio({
             className={mode === "character" ? "is-on" : ""}
             onClick={() => setMode("character")}
           >
-            Cartoon Character
+            Build Character
           </button>
           <button
             type="button"
@@ -227,14 +228,14 @@ export function AvatarStudio({
             className={mode === "photo" ? "is-on" : ""}
             onClick={() => setMode("photo")}
           >
-            Cartoonize Photo
+            Photo → Deck
           </button>
         </div>
 
         <img
           className="avatar-studio__preview"
           src={preview}
-          alt="XI · XVI cartoon avatar preview"
+          alt="True North deck character preview"
         />
 
         <div
@@ -301,7 +302,7 @@ export function AvatarStudio({
             className="cta-pist tn-action"
             onClick={saveCharacter}
           >
-            Save XI · XVI Avatar
+            Save Deck Character
           </button>
         ) : (
           <>
@@ -323,7 +324,7 @@ export function AvatarStudio({
               disabled={busy || !photoUrl}
               onClick={() => void generate()}
             >
-              {busy ? "Drawing…" : "Generate AI Cartoon Avatar"}
+              {busy ? "Drawing…" : "Become a Deck Character"}
             </button>
             {photoUrl && (
               <div className="avatar-studio__compare">
@@ -337,7 +338,7 @@ export function AvatarStudio({
                         aiAvatarUrl: aiAvatarUrl || cartoon,
                         avatarMode: "ai",
                       },
-                      "Showing your cartoon avatar.",
+                      "Showing your deck character.",
                     )
                   }
                 >
@@ -347,7 +348,7 @@ export function AvatarStudio({
                     src={aiAvatarUrl || cartoon}
                     size={84}
                   />
-                  <span>Cartoon Avatar</span>
+                  <span>Deck Character</span>
                 </button>
                 <button
                   type="button"
