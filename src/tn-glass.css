@@ -1,14 +1,19 @@
-/* True North liquid glass. Scoped so the shop chrome stays as it is.
-   Dark translucent surfaces, cream type, solid buttons for contrast. */
+/* True North liquid glass — aligned to the True North by XI XVI tarot deck.
+   Deep navy surfaces, cream type, refined gold accents. Scoped so shop chrome stays untouched. */
 
 .journal-page--truenorth {
   color: #f7f0e6;
+  --tn-navy: #0a1424;
+  --tn-surface: rgba(10, 20, 36, 0.78);
+  --tn-gold: #c9a84c;
+  --tn-gold-soft: #e8d5a3;
+  --tn-pearl: rgba(247, 240, 230, 0.22);
 }
 
 .journal-page--truenorth .tn-shell {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 1.15rem;
   width: min(100%, 72rem);
   padding-left: max(1rem, env(safe-area-inset-left));
   padding-right: max(1rem, env(safe-area-inset-right));
@@ -23,13 +28,15 @@
 .journal-page--truenorth .tn-numbers-wrap,
 .journal-page--truenorth .tn-destination,
 .journal-page--truenorth .long-read-lock-card {
-  background: rgba(12, 14, 18, 0.72);
+  background: var(--tn-surface);
   color: #f7f0e6;
-  border: 1px solid rgba(247, 240, 230, 0.22);
-  border-radius: 22px;
-  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.28);
-  backdrop-filter: blur(22px) saturate(1.25);
-  -webkit-backdrop-filter: blur(22px) saturate(1.25);
+  border: 1px solid var(--tn-pearl);
+  border-radius: 20px;
+  box-shadow:
+    0 18px 50px rgba(0, 0, 0, 0.32),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(22px) saturate(1.2);
+  -webkit-backdrop-filter: blur(22px) saturate(1.2);
 }
 
 .journal-page--truenorth .tn-card .label-lock,
@@ -39,7 +46,7 @@
 .journal-page--truenorth .tn-salon .label-lock,
 .journal-page--truenorth .chart-section-heading__kicker,
 .journal-page--truenorth .tn-number__label {
-  color: #d8f0c4;
+  color: var(--tn-gold-soft);
 }
 
 .journal-page--truenorth .tn-card .chart-section-heading__title,
@@ -61,7 +68,7 @@
 }
 
 .journal-page--truenorth .tn-inline {
-  color: #d8f0c4;
+  color: var(--tn-gold-soft);
 }
 
 .journal-page--truenorth .tn-alert {
@@ -88,7 +95,7 @@
   min-height: 44px;
   border-radius: 999px;
   border: 1px solid rgba(247, 240, 230, 0.28);
-  background: rgba(12, 14, 18, 0.55);
+  background: rgba(10, 20, 36, 0.55);
   color: #f7f0e6;
   box-shadow: none;
   letter-spacing: 0.04em;
@@ -98,10 +105,10 @@
 }
 
 .journal-page--truenorth .tn-rail__item.is-active {
-  background: #d8f0c4;
-  color: #142010;
-  border-color: #d8f0c4;
-  box-shadow: none;
+  background: var(--tn-gold);
+  color: #0a1424;
+  border-color: var(--tn-gold);
+  box-shadow: 0 0 20px rgba(201, 168, 76, 0.28);
 }
 
 .journal-page--truenorth .tn-hero__title,
@@ -148,8 +155,8 @@
   height: 56px;
   flex: 0 0 56px;
   border-radius: 18px;
-  color: #142010;
-  background: rgba(216, 240, 196, 0.92);
+  color: #0a1424;
+  background: var(--tn-gold);
 }
 
 .tn-profile__who {
@@ -182,7 +189,7 @@
   z-index: 4;
   padding: 0.35rem;
   border-radius: 16px;
-  background: rgba(8, 9, 12, 0.72);
+  background: rgba(8, 12, 20, 0.78);
   backdrop-filter: blur(16px);
   border: 1px solid rgba(247, 240, 230, 0.16);
 }
@@ -206,8 +213,8 @@
 }
 
 .tn-profile__tab.is-on {
-  background: #d8f0c4;
-  color: #142010;
+  background: var(--tn-gold);
+  color: #0a1424;
 }
 
 .tn-profile__panel,
@@ -229,7 +236,7 @@
 .tn-label {
   display: block;
   margin-top: 0.35rem;
-  color: #d8f0c4;
+  color: var(--tn-gold-soft);
   font-size: 11px;
   letter-spacing: 0.16em;
   text-transform: uppercase;
@@ -242,8 +249,8 @@
   margin-top: 0.35rem;
   padding: 0.75rem 0.9rem;
   border-radius: 14px;
-  border: 1px solid rgba(247, 240, 230, 0.32);
-  background: rgba(247, 240, 230, 0.06);
+  border: 1px solid rgba(247, 240, 230, 0.28);
+  background: rgba(247, 240, 230, 0.05);
   color: #f7f0e6;
   color-scheme: dark;
   font-size: 16px;
@@ -256,13 +263,16 @@
 
 .journal-page--truenorth .cta-ghost {
   color: #f7f0e6;
-  border-color: rgba(247, 240, 230, 0.45);
+  border-color: rgba(247, 240, 230, 0.4);
   border-radius: 999px;
 }
 
 .journal-page--truenorth .cta-pist {
   border-radius: 999px;
   box-shadow: none;
+  background: var(--tn-gold);
+  color: #0a1424;
+  border-color: var(--tn-gold);
 }
 
 .journal-page--truenorth .tn-field--area {
@@ -302,9 +312,9 @@
 }
 
 .tn-choice__item.is-on {
-  background: #d8f0c4;
-  color: #142010;
-  border-color: #d8f0c4;
+  background: var(--tn-gold);
+  color: #0a1424;
+  border-color: var(--tn-gold);
 }
 
 .tn-action {
@@ -381,31 +391,31 @@
   color: #f7f4ec;
   border: 1px solid var(--house-border);
   border-radius: 16px;
-  box-shadow: inset 3px 0 0 var(--house-accent), inset 0 1px 0 rgba(255, 255, 255, 0.18), 0 12px 28px rgba(0, 0, 0, 0.22);
+  box-shadow: inset 3px 0 0 var(--house-accent), inset 0 1px 0 rgba(255, 255, 255, 0.12), 0 12px 28px rgba(0, 0, 0, 0.24);
 }
 .journal-page--truenorth .tn-house--fire {
   --house-accent: #F5B971;
-  --house-surface: linear-gradient(135deg, rgba(245, 185, 113, 0.16), rgba(20, 15, 24, 0.82));
-  --house-border: rgba(245, 185, 113, 0.42);
-  --house-tint: rgba(245, 185, 113, 0.2);
+  --house-surface: linear-gradient(135deg, rgba(245, 185, 113, 0.14), rgba(12, 16, 28, 0.88));
+  --house-border: rgba(245, 185, 113, 0.4);
+  --house-tint: rgba(245, 185, 113, 0.18);
 }
 .journal-page--truenorth .tn-house--earth {
   --house-accent: #8CE0B1;
-  --house-surface: linear-gradient(135deg, rgba(140, 224, 177, 0.16), rgba(14, 22, 20, 0.82));
-  --house-border: rgba(140, 224, 177, 0.42);
-  --house-tint: rgba(140, 224, 177, 0.2);
+  --house-surface: linear-gradient(135deg, rgba(140, 224, 177, 0.14), rgba(10, 20, 22, 0.88));
+  --house-border: rgba(140, 224, 177, 0.4);
+  --house-tint: rgba(140, 224, 177, 0.18);
 }
 .journal-page--truenorth .tn-house--air {
   --house-accent: #8CCBFF;
-  --house-surface: linear-gradient(135deg, rgba(140, 203, 255, 0.16), rgba(14, 19, 30, 0.82));
-  --house-border: rgba(140, 203, 255, 0.42);
-  --house-tint: rgba(140, 203, 255, 0.2);
+  --house-surface: linear-gradient(135deg, rgba(140, 203, 255, 0.14), rgba(10, 16, 28, 0.88));
+  --house-border: rgba(140, 203, 255, 0.4);
+  --house-tint: rgba(140, 203, 255, 0.18);
 }
 .journal-page--truenorth .tn-house--water {
   --house-accent: #C7A6FF;
-  --house-surface: linear-gradient(135deg, rgba(199, 166, 255, 0.17), rgba(20, 15, 32, 0.82));
-  --house-border: rgba(199, 166, 255, 0.44);
-  --house-tint: rgba(199, 166, 255, 0.22);
+  --house-surface: linear-gradient(135deg, rgba(199, 166, 255, 0.15), rgba(14, 12, 28, 0.88));
+  --house-border: rgba(199, 166, 255, 0.42);
+  --house-tint: rgba(199, 166, 255, 0.2);
 }
 
 .journal-page--truenorth .tn-house__head {
@@ -443,7 +453,7 @@
 }
 
 .journal-page--truenorth .tn-number {
-  background: rgba(247, 240, 230, 0.08);
+  background: rgba(247, 240, 230, 0.06);
   color: #f7f0e6;
   border-radius: 16px;
   box-shadow: none;
@@ -461,7 +471,7 @@
 }
 
 .journal-page--truenorth .long-read-card {
-  background: rgba(247, 240, 230, 0.08);
+  background: rgba(247, 240, 230, 0.06);
   color: #f7f0e6;
   border-radius: 16px;
   box-shadow: none;
@@ -478,12 +488,12 @@
 }
 
 .journal-page--truenorth .chart-profile-section {
-  border-top-color: rgba(247, 240, 230, 0.16);
+  border-top-color: rgba(247, 240, 230, 0.14);
 }
 
 @media (min-width: 720px) {
   .journal-page--truenorth .tn-shell {
-    gap: 1.15rem;
+    gap: 1.25rem;
   }
 
   .tn-profile__head {
@@ -543,7 +553,7 @@
   .journal-page--truenorth .tn-card,
   .journal-page--truenorth .tn-rail__item,
   .journal-page--truenorth .tn-profile__tab {
-    transition: transform 0.25s ease, background-color 0.25s ease, border-color 0.25s ease;
+    transition: transform 0.25s ease, background-color 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
   }
 
   .journal-page--truenorth .tn-card {
@@ -581,7 +591,7 @@
   margin: 0 0 0.85rem;
   padding: 0.3rem;
   border-radius: 16px;
-  background: rgba(8, 9, 12, 0.72);
+  background: rgba(8, 12, 20, 0.78);
   border: 1px solid rgba(247, 240, 230, 0.16);
   position: sticky;
   top: 0.35rem;
@@ -604,8 +614,8 @@
 }
 
 .tn-subtabs button.is-on {
-  background: #d8f0c4;
-  color: #142010;
+  background: var(--tn-gold);
+  color: #0a1424;
 }
 
 .tn-profile__tabs--quad {
@@ -634,8 +644,8 @@
   height: 76px;
   border-radius: 50%;
   overflow: hidden;
-  border: 1px solid rgba(199, 166, 255, 0.55);
-  box-shadow: 0 0 0 4px rgba(13, 16, 23, 0.65);
+  border: 1px solid rgba(201, 168, 76, 0.55);
+  box-shadow: 0 0 0 4px rgba(10, 20, 36, 0.65);
 }
 
 .my-sky-head__avatar img,
