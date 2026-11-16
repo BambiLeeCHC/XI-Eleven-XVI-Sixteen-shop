@@ -1,25 +1,5 @@
 import { useEffect, useState } from "react";
-
-const BACKS = [
-  {
-    id: "x1",
-    src: "/deck-backs/celestial-baroque.jpg",
-    label: "Back X1 · Celestial Baroque",
-    short: "Celestial Baroque",
-  },
-  {
-    id: "x2",
-    src: "/deck-backs/pearl-filigree.jpg",
-    label: "Back X2 · Pearl Filigree",
-    short: "Pearl Filigree",
-  },
-  {
-    id: "x3",
-    src: "/deck-backs/stained-glass.jpg",
-    label: "Back X3 · Stained Glass",
-    short: "Stained Glass",
-  },
-] as const;
+import { HEIRLOOM_BACKS } from "../../data/heirloomBacksData";
 
 /**
  * Full carousel of the three True North heirloom card backs.
@@ -32,12 +12,12 @@ export function HeirloomBacksCarousel() {
   useEffect(() => {
     if (paused) return;
     const id = window.setInterval(() => {
-      setIndex(i => (i + 1) % BACKS.length);
+      setIndex(i => (i + 1) % HEIRLOOM_BACKS.length);
     }, 4200);
     return () => window.clearInterval(id);
   }, [paused]);
 
-  const active = BACKS[index];
+  const active = HEIRLOOM_BACKS[index];
 
   return (
     <section
@@ -50,7 +30,7 @@ export function HeirloomBacksCarousel() {
       onBlurCapture={() => setPaused(false)}
     >
       <div className="heirloom-carousel__stage">
-        {BACKS.map((back, i) => (
+        {HEIRLOOM_BACKS.map((back, i) => (
           <figure
             key={back.id}
             className={`heirloom-carousel__slide${i === index ? " is-active" : ""}`}
@@ -68,7 +48,7 @@ export function HeirloomBacksCarousel() {
       </div>
 
       <div className="heirloom-carousel__dots" role="tablist" aria-label="Choose a card back">
-        {BACKS.map((back, i) => (
+        {HEIRLOOM_BACKS.map((back, i) => (
           <button
             key={back.id}
             type="button"
@@ -85,7 +65,7 @@ export function HeirloomBacksCarousel() {
         type="button"
         className="heirloom-carousel__nav heirloom-carousel__nav--prev"
         aria-label="Previous card back"
-        onClick={() => setIndex(i => (i + BACKS.length - 1) % BACKS.length)}
+        onClick={() => setIndex(i => (i + HEIRLOOM_BACKS.length - 1) % HEIRLOOM_BACKS.length)}
       >
         ‹
       </button>
@@ -93,7 +73,7 @@ export function HeirloomBacksCarousel() {
         type="button"
         className="heirloom-carousel__nav heirloom-carousel__nav--next"
         aria-label="Next card back"
-        onClick={() => setIndex(i => (i + 1) % BACKS.length)}
+        onClick={() => setIndex(i => (i + 1) % HEIRLOOM_BACKS.length)}
       >
         ›
       </button>
