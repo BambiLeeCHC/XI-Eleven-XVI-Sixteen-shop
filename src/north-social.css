@@ -22,27 +22,61 @@
 .north-post__title { margin: 0.2rem 0; font-size: clamp(1.6rem, 4vw, 2.4rem); color: #f6f1e8; }
 .north-cards { margin-top: 0.6rem; }
 
-/* ── House deck card unit + Foil Flash signature ── */
+/* ── Deck crest (replaces old compass) ── */
+.tn-crest {
+  flex: none;
+  filter: drop-shadow(0 2px 8px rgba(201, 168, 76, 0.35));
+}
+
+/* ── House deck card unit + Foil Flash + arched gold frame ── */
 .tarot-plate {
   position: relative;
-  width: 7.2rem;
-  min-height: 11rem;
-  border-radius: 14px;
-  border: 1px solid rgba(201, 168, 76, 0.45);
+  width: 7.6rem;
+  min-height: 11.6rem;
+  border-radius: 12px 12px 10px 10px;
+  border: none;
   background:
-    linear-gradient(165deg, rgba(201, 168, 76, 0.12) 0%, transparent 42%),
-    linear-gradient(180deg, rgba(10, 20, 36, 0.92), rgba(8, 10, 14, 0.98));
+    radial-gradient(120% 80% at 50% 0%, rgba(201, 168, 76, 0.14), transparent 55%),
+    linear-gradient(180deg, #0f1c32 0%, #0a1424 100%);
   color: #F7F0E6;
-  padding: 0.6rem;
+  padding: 1.35rem 0.55rem 0.7rem;
   overflow: hidden;
   box-shadow:
-    inset 0 1px 0 rgba(247, 240, 230, 0.12),
-    0 8px 24px rgba(0, 0, 0, 0.35);
+    0 0 0 1px rgba(201, 168, 76, 0.35),
+    0 10px 28px rgba(0, 0, 0, 0.4);
 }
+.tarot-plate__arch {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 2;
+}
+.tarot-plate__crest {
+  position: absolute;
+  top: 0.35rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+  line-height: 1;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 0.55rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: #C9A84C;
+  text-shadow: 0 0 8px rgba(201, 168, 76, 0.45);
+}
+.tarot-plate__crest span:first-child { font-size: 0.62rem; }
 .tarot-plate__foil {
   pointer-events: none;
   position: absolute;
   inset: -20%;
+  z-index: 4;
   background: linear-gradient(
     115deg,
     transparent 30%,
@@ -58,17 +92,9 @@
   animation: foil-flash 0.85s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 @keyframes foil-flash {
-  0% {
-    opacity: 0;
-    transform: translateX(-55%) skewX(-12deg);
-  }
-  35% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0;
-    transform: translateX(55%) skewX(-12deg);
-  }
+  0% { opacity: 0; transform: translateX(-55%) skewX(-12deg); }
+  35% { opacity: 1; }
+  100% { opacity: 0; transform: translateX(55%) skewX(-12deg); }
 }
 @media (prefers-reduced-motion: reduce) {
   .tarot-plate.is-foil-flash .tarot-plate__foil {
@@ -76,14 +102,54 @@
     opacity: 0.35;
   }
 }
-.tarot-plate__face { position: relative; z-index: 1; display: flex; flex-direction: column; gap: 0.3rem; height: 100%; }
-.tarot-plate strong { font-size: 0.95rem; }
-.tarot-plate svg { margin-top: auto; height: 3rem; color: #C9A84C; }
+.tarot-plate__face {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  height: 100%;
+  text-align: center;
+  justify-content: center;
+}
+.tarot-plate__roman {
+  margin: 0;
+  font-size: 0.62rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #C9A84C;
+  opacity: 0.9;
+}
+.tarot-plate__name {
+  font-size: 0.88rem;
+  font-weight: 650;
+  line-height: 1.15;
+  color: #F7F0E6;
+}
+.tarot-plate__tone {
+  font-size: 0.68rem;
+  letter-spacing: 0.06em;
+  color: rgba(247, 240, 230, 0.55);
+}
+
+/* ── Heirloom back surfaces (Celestial Baroque / Pearl Filigree language) ── */
+.tn-card,
+.north-post,
+.north-composer,
+.constellation__seat,
+.my-sky {
+  border: 1px solid rgba(201, 168, 76, 0.28);
+  background:
+    radial-gradient(80% 60% at 50% 0%, rgba(201, 168, 76, 0.08), transparent 55%),
+    linear-gradient(180deg, rgba(15, 28, 50, 0.92), rgba(10, 20, 36, 0.96));
+  box-shadow:
+    inset 0 1px 0 rgba(232, 213, 163, 0.08),
+    0 12px 32px rgba(0, 0, 0, 0.28);
+}
 
 .natal-wheel { width: min(100%, 28rem); height: auto; }
 .natal-wheel__sign, .natal-wheel__body { fill: #f6f1e8; font-size: 9px; }
 .story-modal { position: fixed; inset: 0; z-index: 40; background: rgba(0,0,0,0.62); display: grid; place-items: center; padding: 1rem; }
-.tn-compass { animation: compass-spin 48s linear infinite; }
 .north-space { display: grid; gap: 1rem; }
 .my-sky__name { margin: 0.15rem 0 0; color: #f6f1e8; font-size: 1.05rem; font-weight: 700; }
 .constellation {
@@ -102,9 +168,6 @@
   min-width: 0;
   padding: 0.85rem 0.8rem 0.75rem;
   border-radius: 18px;
-  border: 1px solid rgba(247, 240, 230, 0.22);
-  background: rgba(10, 20, 36, 0.55);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 12px 28px rgba(0, 0, 0, 0.22);
   backdrop-filter: blur(16px) saturate(1.2);
   -webkit-backdrop-filter: blur(16px) saturate(1.2);
   color: #f7f0e6;
@@ -308,7 +371,7 @@
   font-size: clamp(1.35rem, 3vw, 1.8rem);
   font-weight: 560;
 }
-.north-post { padding: 1.15rem 1.2rem 1.2rem; }
+.north-post { padding: 1.15rem 1.2rem 1.2rem; border-radius: 18px; }
 .north-comments { list-style: none; margin: 0.8rem 0; padding: 0; display: grid; gap: 0.55rem; }
 .north-comments li span { min-width: 0; }
 .find-friends summary,
@@ -329,7 +392,7 @@
   cursor: pointer;
 }
 .constellation__open { display: grid; justify-items: start; gap: 0.12rem; }
-.my-sky { display: grid; gap: 0.45rem; padding: 0.7rem 0.9rem 0.65rem; }
+.my-sky { display: grid; gap: 0.45rem; padding: 0.7rem 0.9rem 0.65rem; border-radius: 18px; }
 .my-sky__top { display: flex; gap: 0.75rem; align-items: center; }
 .my-sky__name { margin: 0; color: #C9A84C; font-size: 0.68rem; letter-spacing: 0.14em; text-transform: uppercase; }
 .my-sky__person { margin: 0; color: #f7f0e6; font-size: 1.35rem; font-weight: 650; line-height: 1; }
@@ -493,7 +556,7 @@
 .avatar-studio {
   background: #0a1424;
   color: #f6f1e8;
-  border-color: rgba(247, 240, 230, 0.16);
+  border-color: rgba(201, 168, 76, 0.28);
   max-height: min(92vh, 880px);
   overflow: auto;
 }
@@ -545,5 +608,3 @@
 @media (min-width: 960px) {
   .constellation { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 }
-@media (prefers-reduced-motion: reduce) { .tn-compass { animation: none; } }
-@keyframes compass-spin { to { transform: rotate(360deg); } }
