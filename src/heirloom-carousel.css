@@ -1,0 +1,157 @@
+/* Heirloom card-back carousel — first surface of True North */
+.heirloom-carousel {
+  position: relative;
+  display: grid;
+  gap: 0.85rem;
+  justify-items: center;
+  padding: 1rem 0.75rem 1.15rem;
+  border-radius: 22px;
+  border: 1px solid rgba(201, 168, 76, 0.35);
+  background:
+    radial-gradient(90% 60% at 50% 0%, rgba(201, 168, 76, 0.14), transparent 55%),
+    linear-gradient(180deg, rgba(12, 22, 40, 0.96), rgba(8, 14, 26, 0.98));
+  box-shadow:
+    inset 0 1px 0 rgba(240, 224, 176, 0.1),
+    0 18px 40px rgba(0, 0, 0, 0.35);
+  overflow: hidden;
+}
+
+.heirloom-carousel__stage {
+  position: relative;
+  width: min(100%, 17.5rem);
+  aspect-ratio: 280 / 550;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow:
+    0 0 0 1px rgba(201, 168, 76, 0.45),
+    0 0 0 4px rgba(10, 20, 36, 0.85),
+    0 16px 36px rgba(0, 0, 0, 0.45);
+  background: #0a1424;
+}
+
+.heirloom-carousel__slide {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  opacity: 0;
+  transform: scale(1.04);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+  pointer-events: none;
+}
+
+.heirloom-carousel__slide.is-active {
+  opacity: 1;
+  transform: scale(1);
+  pointer-events: auto;
+  z-index: 1;
+}
+
+.heirloom-carousel__slide img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+}
+
+.heirloom-carousel__foil {
+  pointer-events: none;
+  position: absolute;
+  inset: -40%;
+  z-index: 3;
+  background: linear-gradient(
+    118deg,
+    transparent 30%,
+    rgba(255, 248, 220, 0.08) 42%,
+    rgba(201, 168, 76, 0.55) 50%,
+    rgba(255, 248, 220, 0.12) 58%,
+    transparent 70%
+  );
+  opacity: 0;
+  animation: heirloom-foil 5.5s ease-in-out infinite;
+  mix-blend-mode: screen;
+}
+
+@keyframes heirloom-foil {
+  0%, 55%, 100% { opacity: 0; transform: translateX(-50%) skewX(-12deg); }
+  62% { opacity: 0.9; }
+  78% { opacity: 0; transform: translateX(55%) skewX(-12deg); }
+}
+
+.heirloom-carousel__meta {
+  text-align: center;
+  display: grid;
+  gap: 0.2rem;
+}
+
+.heirloom-carousel__kicker {
+  margin: 0;
+  color: #C9A84C;
+  font-size: 0.68rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.heirloom-carousel__label {
+  margin: 0;
+  color: #f7f0e6;
+  font-size: 1.05rem;
+  font-weight: 650;
+  letter-spacing: 0.02em;
+}
+
+.heirloom-carousel__dots {
+  display: flex;
+  gap: 0.45rem;
+  justify-content: center;
+}
+
+.heirloom-carousel__dots button {
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 999px;
+  border: 1px solid rgba(201, 168, 76, 0.55);
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+}
+
+.heirloom-carousel__dots button.is-on {
+  background: #C9A84C;
+  box-shadow: 0 0 12px rgba(201, 168, 76, 0.45);
+}
+
+.heirloom-carousel__nav {
+  position: absolute;
+  top: 42%;
+  transform: translateY(-50%);
+  width: 2.2rem;
+  height: 2.2rem;
+  border-radius: 999px;
+  border: 1px solid rgba(201, 168, 76, 0.4);
+  background: rgba(10, 20, 36, 0.72);
+  color: #E8D5A3;
+  font-size: 1.35rem;
+  line-height: 1;
+  cursor: pointer;
+  z-index: 4;
+}
+
+.heirloom-carousel__nav--prev { left: 0.55rem; }
+.heirloom-carousel__nav--next { right: 0.55rem; }
+
+.heirloom-carousel__nav:hover {
+  border-color: #C9A84C;
+  box-shadow: 0 0 16px rgba(201, 168, 76, 0.28);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .heirloom-carousel__slide { transition: none; }
+  .heirloom-carousel__foil { animation: none; opacity: 0.25; transform: none; }
+}
+
+@media (min-width: 720px) {
+  .heirloom-carousel__stage {
+    width: min(100%, 20rem);
+  }
+}

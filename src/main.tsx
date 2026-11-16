@@ -15,6 +15,7 @@ import "./pdp-glass.css";
 import "./dial-shop.css";
 import "./live-sky.css";
 import "./north-social.css";
+import "./heirloom-carousel.css";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
