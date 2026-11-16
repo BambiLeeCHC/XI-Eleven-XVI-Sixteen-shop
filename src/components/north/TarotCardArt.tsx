@@ -1,3 +1,5 @@
+import { useEffect, useState } from "react";
+
 const SUIT: Record<string, string> = {
   Wands: "Fire",
   Cups: "Water",
@@ -9,15 +11,31 @@ export function TarotCardArt({
   name,
   roman = "",
   reversed = false,
+  flash = true,
 }: {
   name: string;
   roman?: string;
   reversed?: boolean;
+  /** Play the signature foil flash on mount. Default true. */
+  flash?: boolean;
 }) {
   const suit = Object.keys(SUIT).find(key => name.includes(key)) ?? "Major";
   const tone = SUIT[suit] ?? "Aether";
+  const [shimmer, setShimmer] = useState(flash);
+
+  useEffect(() => {
+    if (!flash) return;
+    setShimmer(true);
+    const id = window.setTimeout(() => setShimmer(false), 900);
+    return () => window.clearTimeout(id);
+  }, [flash, name]);
+
   return (
-    <article className={`tarot-plate${reversed ? " is-reversed" : ""}`} aria-label={`${name}${reversed ? ", reversed" : ""}`}>
+    <article
+      className={`tarot-plate${reversed ? " is-reversed" : ""}${shimmer ? " is-foil-flash" : ""}`}
+      aria-label={`${name}${reversed ? ", reversed" : ""}`}
+    >
+      <div className="tarot-plate__foil" aria-hidden="true" />
       <div className="tarot-plate__face">
         <p>{roman || suit}</p>
         <strong>{name}</strong>
