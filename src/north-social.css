@@ -652,3 +652,61 @@
 @media (min-width: 960px) {
   .constellation { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 }
+
+.north-sweep {
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  background: linear-gradient(
+    115deg,
+    transparent 36%,
+    rgba(255, 248, 220, 0.08) 46%,
+    rgba(201, 168, 76, 0.42) 50%,
+    rgba(255, 248, 220, 0.1) 54%,
+    transparent 64%
+  );
+  mix-blend-mode: screen;
+  animation: north-sweep 700ms cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+@keyframes north-sweep {
+  from { transform: translateX(-70%); opacity: 0; }
+  20% { opacity: 1; }
+  to { transform: translateX(70%); opacity: 0; }
+}
+
+.north-dock {
+  position: sticky;
+  bottom: 0.75rem;
+  z-index: 24;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.3rem;
+  margin: 0.4rem auto 0.85rem;
+  width: min(100% - 1.25rem, 32rem);
+  padding: 0.35rem;
+  border-radius: 999px;
+  border: 1px solid rgba(201, 168, 76, 0.45);
+  background: rgba(10, 20, 36, 0.92);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(240, 224, 176, 0.16);
+  backdrop-filter: blur(14px);
+}
+.north-dock a {
+  min-height: 44px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  color: #f6f1e8;
+  text-decoration: none;
+  font-size: 0.78rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.north-dock a.is-on {
+  background: #C9A84C;
+  color: #0a1424;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .north-sweep { animation: none; display: none; }
+}

@@ -6,7 +6,8 @@ import { SkyAvatar } from "../components/north/SkyAvatar";
 import { AvatarStudio } from "../components/north/AvatarStudio";
 import { TarotCardArt } from "../components/north/TarotCardArt";
 import { HeirloomBacksCarousel } from "../components/north/HeirloomBacksCarousel";
-import { ConstellationSeat, PostCard, atHandle, portraitFor, SIGNS } from "../components/north/NorthSocialPieces";
+import { ConstellationSeat, PostCard, atHandle } from "../components/north/NorthSocialPieces";
+import { drawCards } from "../components/north/SocialFeed";
 import { TrueNorthAtmosphere } from "../components/journal/TrueNorthAtmosphere";
 import { SEO } from "../components/SEO";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "../components/ui/dialog";
@@ -19,17 +20,14 @@ import {
   moveTop,
   MY_CONSTELLATION_LABEL,
   MY_SKY_LABEL,
-  NORTH_SOCIAL_SKY_TAB,
   NORTH_SOCIAL_STORAGE_KEY,
   promoteTop,
   rankedEight,
-  REACTION_LABEL,
   resolveTrueNorthView,
   syncNorthAvatar,
   toggleReaction,
   upgradeSocialState,
   upsertFriend,
-  type ReactionKey,
   type ReadingMode,
   type SkyPanel,
   type SocialPost,
@@ -43,6 +41,13 @@ import DeepReadingPage from "./DeepReadingPage";
 import { NumbersPage } from "./chart/NumbersPage";
 import { ProfileEditor } from "./chart/ProfileEditor";
 import { TrueNorthNav, type NatalChartResult, type NumerologyResult } from "./chart/shared";
+
+const SKY_TABS = [
+  { id: "chart", label: "Chart" },
+  { id: "numbers", label: "Numbers" },
+  { id: "constellation", label: MY_CONSTELLATION_LABEL },
+  { id: "posts", label: "Posts" },
+] as const;
 
 export function NorthSocialPage() {
   const location = useLocation();
@@ -60,11 +65,10 @@ export function NorthSocialPage() {
   const [friend, setFriend] = useState({ name: "", handle: "", sun: "Aries", moon: "Cancer", rising: "Libra" });
   const [filter, setFilter] = useState<"all" | "posts" | "tandem" | "friends">("all");
   const [composerOpen, setComposerOpen] = useState(false);
-  const [seatTab, setSeatTab] = useState<"seats" | "friends">("seats");
   const [studio, setStudio] = useState(false);
   const [editor, setEditor] = useState(false);
   const [sheet, setSheet] = useState<TopFriend | null>(null);
-  const [chip, setChip] = useState<"mood" | "anthem" | "altar" | null>(null);
+  const [flashKey, setFlashKey] = useState(0);
   const greeted = useRef(false);
 
   useEffect(() => {
@@ -105,6 +109,10 @@ export function NorthSocialPage() {
     const hash = location.hash.replace("#", "");
     if (hash === "profile" || hash === "details" || hash === "birth") setEditor(true);
   }, [location.hash]);
+
+  useEffect(() => {
+    setFlashKey(key => key + 1);
+  }, [view.destination, view.reading]);
 
   useEffect(() => {
     if (!ready || !user) return;
@@ -209,12 +217,9 @@ export function NorthSocialPage() {
     else navigate("/chart#tri-sky");
   };
 
-  const patchSpace = (partial: Partial<SpaceProfile>) => {
-    setState(current => ({ ...current, space: { ...current.space, ...partial } }));
-  };
-
   return (
     <div className="journal-page journal-page--truenorth north-social">
+      <span key={flashKey} className="north-sweep" aria-hidden="true" />
       <TrueNorthAtmosphere />
       <div className="journal-stack tn-shell">
         <SEO title={PAGE_SEO.chart.title} description={PAGE_SEO.chart.description} url="/chart" />
@@ -255,7 +260,8 @@ export function NorthSocialPage() {
                   <textarea id="north-draft" className="tn-field tn-field--area" value={draft} onChange={event => setDraft(event.target.value)} placeholder="A note for the feed." rows={3} />
                   <div className="tn-actions">
                     <button type="submit" className="cta-pist tn-action">Post</button>
-                    <button type="button" className="cta-ghost tn-action" onClick={() => goReading("group")}>Group Read</button>
+                    <button type="button" className="cta-ghost tn-action" onClick={() => publish("A pull", draft || "Three cards from the house deck.", drawCards(3), "pull")}>Pull three</button>
+                    <button type="button" className="cta-ghost tn-action" onClick={() => goReading("group")}>Tandem</button>
                   </div>
                 </form>
               )}
@@ -335,7 +341,7 @@ export function NorthSocialPage() {
               <div className="tn-actions">
                 <button type="button" className="cta-ghost tn-action" onClick={() => setStudio(true)}>Avatar</button>
                 <button type="button" className="cta-ghost tn-action" onClick={() => setEditor(true)}>Profile</button>
-                <button type="button" className="cta-pist tn-action" onClick={() => goReading("group")}>Group Read</button>
+                <button type="button" className="cta-pist tn-action" onClick={() => goReading("group")}>Tandem</button>
               </div>
               <ul className="sky-pills">
                 <li>{sun} sun</li>
@@ -347,13 +353,13 @@ export function NorthSocialPage() {
 
             <div className="sky-tabrow">
               <div className="tn-profile__tabs" role="tablist">
-                {NORTH_SOCIAL_SKY_TAB.map(tab => (
+                {SKY_TABS.map(tab => (
                   <button
                     key={tab.id}
                     type="button"
                     role="tab"
-                    className={view.skyPanel === tab.id ? "tn-profile__tab is-on" : "tn-profile__tab"}
-                    onClick={() => goSky(tab.id as SkyPanel)}
+                    className={view.sky === tab.id ? "tn-profile__tab is-on" : "tn-profile__tab"}
+                    onClick={() => goSky(tab.id)}
                   >
                     {tab.label}
                   </button>
@@ -361,9 +367,9 @@ export function NorthSocialPage() {
               </div>
             </div>
 
-            {view.skyPanel === "chart" && <ChartHomePage />}
-            {view.skyPanel === "numbers" && <NumbersPage />}
-            {view.skyPanel === "constellation" && (
+            {view.sky === "chart" && <ChartHomePage />}
+            {view.sky === "numbers" && <NumbersPage />}
+            {view.sky === "constellation" && (
               <section className="tn-card">
                 <h2 className="north-post__title">{MY_CONSTELLATION_LABEL}</h2>
                 <ul className="constellation">
@@ -372,15 +378,15 @@ export function NorthSocialPage() {
                       key={person.id}
                       person={person}
                       index={index}
-                      onPromote={() => setState(current => ({ ...current, top: promoteTop(current.top, person.id) }))}
-                      onMove={direction => setState(current => ({ ...current, top: moveTop(current.top, person.id, direction) }))}
+                      onPromote={() => setState(current => ({ ...current, top: promoteTop(current.top, index) }))}
+                      onMove={direction => setState(current => ({ ...current, top: moveTop(current.top, index, direction) }))}
                       onOpen={() => setSheet(person)}
                     />
                   ))}
                 </ul>
               </section>
             )}
-            {view.skyPanel === "posts" && (
+            {view.sky === "posts" && (
               <div className="personal-feed">
                 {personal.map(post => (
                   <PostCard
@@ -407,12 +413,57 @@ export function NorthSocialPage() {
           </section>
         )}
 
-        {view.destination === "reading" && (
+        {view.destination === "readings" && (
           <section className="reading-room">
-            {view.readingMode === "group" ? <GroupReadRoom /> : <DeepReadingPage />}
+            <div className="reading-switch" role="tablist" aria-label="Reading">
+              <button type="button" role="tab" aria-selected={view.reading === "tri"} className={view.reading === "tri" ? "is-on" : ""} onClick={() => goReading("tri")}>Tri-Sky</button>
+              <button type="button" role="tab" aria-selected={view.reading === "group"} className={view.reading === "group" ? "is-on" : ""} onClick={() => goReading("group")}>Tandem</button>
+            </div>
+            {view.reading === "group" ? (
+              <GroupReadRoom
+                you={{ id: "me", name: author, sun, moon, rising }}
+                friends={rankedEight(state.top)}
+                onPost={(title, body, bond) => {
+                  const post = {
+                    ...createPost({ author, handle: youHandle, sign: sun, kind: "tandem", title, body }),
+                    bond,
+                  };
+                  setState(current => ({ ...current, posts: [post, ...current.posts] }));
+                  navigate("/chart");
+                }}
+              />
+            ) : (
+              <DeepReadingPage />
+            )}
           </section>
         )}
       </div>
+
+      <nav className="north-dock" aria-label="True North places">
+        <Link to="/chart" className={view.destination === "feed" ? "is-on" : ""}>Feed</Link>
+        <Link to="/chart#sky" className={view.destination === "sky" ? "is-on" : ""}>My Sky</Link>
+        <Link to="/chart#tri-sky" className={view.destination === "readings" && view.reading === "tri" ? "is-on" : ""}>Tri-Sky</Link>
+        <Link to="/chart#group" className={view.destination === "readings" && view.reading === "group" ? "is-on" : ""}>Tandem</Link>
+      </nav>
+
+      <Dialog open={Boolean(storyPost)} onOpenChange={open => { if (!open) setStory(null); }}>
+        <DialogContent className="avatar-studio">
+          {storyPost ? (
+            <>
+              <DialogHeader>
+                <DialogTitle>{storyPost.author}</DialogTitle>
+                <DialogDescription>{storyPost.title}</DialogDescription>
+              </DialogHeader>
+              <p className="serif-quiet tn-lede">{storyPost.body}</p>
+              {storyPost.cards.length > 0 ? (
+                <div className="north-cards">
+                  {storyPost.cards.map(card => <TarotCardArt key={card} name={card} />)}
+                </div>
+              ) : null}
+            </>
+          ) : null}
+        </DialogContent>
+      </Dialog>
 
       <Dialog open={studio} onOpenChange={setStudio}>
         <DialogContent className="avatar-studio">
