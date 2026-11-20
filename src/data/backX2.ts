@@ -3,5 +3,5 @@ export const BACK_X2 = {
   id: "x2-pearl-filigree",
   label: "Pearl Filigree",
   short: "Pearl Filigree",
-  src: "/deck/backs/pearl-filigree.png",
+  src: "/tarot/backs/x2-pearl-filigree.webp",
 } as const;
