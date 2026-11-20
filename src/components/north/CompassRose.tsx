@@ -1,20 +1,97 @@
-export function CompassRose({ size = 88 }: { size?: number }) {
+/**
+ * XI · XVI crest — matched to the shield on every True North print card.
+ * Compact gold shield, dark fill, XI over XVI, thin divider.
+ */
+export function CompassRose({ size = 72 }: { size?: number }) {
+  const h = Math.round(size * 1.15);
   return (
-    <svg className="tn-compass" width={size} height={size} viewBox="0 0 100 100" aria-hidden="true">
-      <circle cx="50" cy="50" r="46" fill="none" stroke="rgba(228,212,244,0.8)" strokeWidth="1.2" />
-      <circle cx="50" cy="50" r="34" fill="none" stroke="rgba(216,240,196,0.7)" strokeWidth="1" />
-      <circle cx="50" cy="50" r="6" fill="#d8f0c4" />
-      <path d="M50 8 L54 46 L50 42 L46 46 Z" fill="#f6f1e8" />
-      <path d="M50 92 L46 54 L50 58 L54 54 Z" fill="rgba(228,212,244,0.8)" />
-      <path d="M16 54 Q28 50 40 46" fill="none" stroke="#f4efe6" strokeWidth="1.4" />
-      {Array.from({ length: 12 }, (_, i) => {
-        const a = (i / 12) * Math.PI * 2 - Math.PI / 2;
-        const x1 = 50 + Math.cos(a) * 40;
-        const y1 = 50 + Math.sin(a) * 40;
-        const x2 = 50 + Math.cos(a) * 45;
-        const y2 = 50 + Math.sin(a) * 45;
-        return <line key={i} x1={x1} y1={y1} x2={x2} y2={y2} stroke="rgba(247,240,230,0.7)" strokeWidth="1" />;
-      })}
+    <svg
+      className="tn-crest"
+      width={size}
+      height={h}
+      viewBox="0 0 64 74"
+      aria-hidden="true"
+    >
+      <defs>
+        <linearGradient id="tn-crest-gold" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stopColor="#F0E0B0" />
+          <stop offset="35%" stopColor="#D4AF55" />
+          <stop offset="70%" stopColor="#C9A84C" />
+          <stop offset="100%" stopColor="#9A7A30" />
+        </linearGradient>
+        <linearGradient id="tn-crest-fill" x1="50%" y1="0%" x2="50%" y2="100%">
+          <stop offset="0%" stopColor="#121c30" />
+          <stop offset="100%" stopColor="#0a1424" />
+        </linearGradient>
+      </defs>
+
+      {/* Outer shield — proportions match the print crest */}
+      <path
+        d="M32 2.5
+           C44 2.5 56 6 58 10
+           L58 38
+           C58 52 46 64 32 70.5
+           C18 64 6 52 6 38
+           L6 10
+           C8 6 20 2.5 32 2.5Z"
+        fill="url(#tn-crest-fill)"
+        stroke="url(#tn-crest-gold)"
+        strokeWidth="2"
+      />
+
+      {/* Inner edge */}
+      <path
+        d="M32 7
+           C42 7 52 10 53.5 13
+           L53.5 38
+           C53.5 50 43 60 32 65.5
+           C21 60 10.5 50 10.5 38
+           L10.5 13
+           C12 10 22 7 32 7Z"
+        fill="none"
+        stroke="url(#tn-crest-gold)"
+        strokeWidth="0.7"
+        opacity="0.5"
+      />
+
+      {/* XI */}
+      <text
+        x="32"
+        y="32"
+        textAnchor="middle"
+        fill="url(#tn-crest-gold)"
+        fontFamily="Georgia, 'Times New Roman', serif"
+        fontSize="15"
+        fontWeight="700"
+        letterSpacing="0.08em"
+      >
+        XI
+      </text>
+
+      {/* Divider */}
+      <line
+        x1="18"
+        y1="37"
+        x2="46"
+        y2="37"
+        stroke="url(#tn-crest-gold)"
+        strokeWidth="1"
+        opacity="0.9"
+      />
+
+      {/* XVI */}
+      <text
+        x="32"
+        y="54"
+        textAnchor="middle"
+        fill="url(#tn-crest-gold)"
+        fontFamily="Georgia, 'Times New Roman', serif"
+        fontSize="13"
+        fontWeight="700"
+        letterSpacing="0.1em"
+      >
+        XVI
+      </text>
     </svg>
   );
 }
