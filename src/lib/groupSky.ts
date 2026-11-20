@@ -1,9 +1,11 @@
 /**
  * Group / Tandem sky helpers for GroupReadRoom.
- * Minimal working surface: types, bonds, chart stub, and composeGroupReading.
+ * Voice: direct, clear, action-first. Unite the room. Move people forward.
+ * Structure: overview of the dynamic, then how each person plays in.
  */
 import { FULL_DECK } from "../data/fullDeck.js";
 import type { ArcanaCard } from "../data/arcana.js";
+import { ELEMENT_LINE, MODE_LINE } from "./groupReadVoice.js";
 
 export type GroupPerson = {
   id: string;
@@ -67,6 +69,41 @@ export const TANDEM_BONDS = [
   { id: "other", label: "Other" },
 ] as const;
 
+const FIRE = new Set(["Aries", "Leo", "Sagittarius"]);
+const EARTH = new Set(["Taurus", "Virgo", "Capricorn"]);
+const AIR = new Set(["Gemini", "Libra", "Aquarius"]);
+const WATER = new Set(["Cancer", "Scorpio", "Pisces"]);
+const CARDINAL = new Set(["Aries", "Cancer", "Libra", "Capricorn"]);
+const FIXED = new Set(["Taurus", "Leo", "Scorpio", "Aquarius"]);
+
+function elementOf(sign: string): "fire" | "earth" | "air" | "water" {
+  if (FIRE.has(sign)) return "fire";
+  if (EARTH.has(sign)) return "earth";
+  if (AIR.has(sign)) return "air";
+  return "water";
+}
+
+function modeOf(sign: string): "cardinal" | "fixed" | "mutable" {
+  if (CARDINAL.has(sign)) return "cardinal";
+  if (FIXED.has(sign)) return "fixed";
+  return "mutable";
+}
+
+function roleLine(person: GroupPerson): string {
+  const el = elementOf(person.chart.sun);
+  const mode = modeOf(person.chart.sun);
+  const elText = ELEMENT_LINE[el];
+  const modeText = MODE_LINE[mode];
+  const moon = person.chart.moon;
+  const rising = person.chart.rising;
+  return (
+    `${person.name} holds the ${person.chart.sun} seat in this room. ${elText} ` +
+    `${modeText} ` +
+    `Moon in ${moon} shows what they need in order to stay in the work; rising in ${rising} is how the group meets them. ` +
+    `Use ${person.name} for what they already do well — do not ask them to become someone else.`
+  );
+}
+
 export function chartFromSigns(input: {
   sun: string;
   moon: string;
@@ -90,7 +127,11 @@ export function promptIdeas(connectionId: string, tandem: boolean): string[] {
         "What strength are we underusing together?",
       ];
     }
-    if (connectionId.includes("parent") || connectionId.includes("mother") || connectionId.includes("father")) {
+    if (
+      connectionId.includes("parent") ||
+      connectionId.includes("mother") ||
+      connectionId.includes("father")
+    ) {
       return [
         "What does support look like right now?",
         "Where can we meet without force?",
@@ -139,6 +180,69 @@ function pickCards(seed: string, count: number): GroupCard[] {
   return out;
 }
 
+function cardCall(card: GroupCard): string {
+  const name = card.card.name;
+  const rev = card.reversed ? " (reversed)" : "";
+  const upright =
+    (card.card.upright || "")
+      .trim()
+      .split(/(?<=\.)\s/)[0]
+      ?.trim() || "Act on what is already clear.";
+  if (card.reversed) {
+    return `${card.slotName} — ${name}${rev}. The lesson is the same, only sooner. ${upright} Do not wait for perfect conditions.`;
+  }
+  return `${card.slotName} — ${name}. ${upright}`;
+}
+
+function overview(
+  people: GroupPerson[],
+  tandem: boolean,
+  connection: string,
+  question: string,
+  cards: GroupCard[],
+): string {
+  const names = people.map(p => p.name);
+  const who = tandem
+    ? `${names[0]} and ${names[1]}`
+    : names.length <= 3
+      ? names.join(", ")
+      : `${names.slice(0, 2).join(", ")} and ${names.length - 2} others`;
+
+  const root = cards.find(c => c.slot === "root");
+  const move = cards.find(c => c.slot === "move");
+  const gift = cards.find(c => c.slot === "gift");
+
+  const rootBit = root
+    ? `The root of this reading is ${root.card.name}${root.reversed ? " reversed" : ""} — that is the ground you are standing on.`
+    : "The charts and cards agree: this room has enough strength to move.";
+  const moveBit = move
+    ? ` The best move on the table is ${move.card.name}${move.reversed ? " reversed" : ""}. Treat it as an instruction, not a suggestion.`
+    : "";
+  const giftBit = gift
+    ? ` Your untapped gift is ${gift.card.name}${gift.reversed ? " reversed" : ""} — name it out loud and put someone in charge of using it.`
+    : "";
+
+  const ask = question
+    ? ` You asked: “${question}.” Answer it with one decision the whole group can own today.`
+    : " Make one shared decision today — concrete, dated, and owned by name.";
+
+  if (tandem) {
+    return (
+      `${who} are in this as a pair (${connection}). ` +
+      `${rootBit}${moveBit}${giftBit}` +
+      ` You do not need more analysis. You need one clear step that both of you will protect.` +
+      ask
+    );
+  }
+
+  return (
+    `${who} form this group (${connection}). ` +
+    `${rootBit}${moveBit}${giftBit}` +
+    ` The power in this room is real. It becomes useful the moment roles are clear and one aim is shared.` +
+    ask
+  );
+}
+
 export function composeGroupReading(
   people: GroupPerson[],
   when: Date = new Date(),
@@ -157,37 +261,40 @@ export function composeGroupReading(
       ? lens.otherText.trim()
       : lens?.connectionLabel || (tandem ? "Tandem" : "Group");
 
-  const seed = `${people.map(p => p.id).join("-")}-${when.toISOString().slice(0, 10)}-${lens?.question ?? ""}`;
+  const question = lens?.question?.trim() ?? "";
+  const seed = `${people.map(p => p.id).join("-")}-${when.toISOString().slice(0, 10)}-${question}`;
   const cards = pickCards(seed, 7);
 
-  const portrait = tandem
-    ? `${names[0]} and ${names[1]} are in this together. The charts point at shared momentum — use it.`
-    : `This room holds ${people.length} people. The composite asks for one clear aim and honest roles.`;
+  const portrait = overview(people, tandem, connection, question, cards);
+
+  const personBlocks = people.map(roleLine).join("\n\n");
+
+  const cardBlocks = cards.map(cardCall).join(" ");
+
+  const close = tandem
+    ? `Between ${names[0]} and ${names[1]}, the work is simple: agree on the next step, write it down, and do it before the day ends. Strength grows when both of you keep the same promise.`
+    : `This group gets stronger when effort is aimed. Pick the decision. Name who owns it. Set the date. Then protect that plan until it is real.`;
 
   const sections: GroupSection[] = [
     {
-      heading: "The room",
+      heading: "The dynamic",
       text: portrait,
     },
     {
-      heading: "How each person lands",
-      text: people
-        .map(
-          p =>
-            `${p.name} (${p.chart.sun} sun, ${p.chart.moon} moon, ${p.chart.rising} rising) brings a distinct tempo. Name their strength out loud and put it to work.`,
-        )
-        .join(" "),
+      heading: "How each person plays in",
+      text: personBlocks,
+    },
+    {
+      heading: "What the cards say",
+      text: cardBlocks,
     },
     {
       heading: "The move",
-      text:
-        lens?.question?.trim()
-          ? `You asked: ${lens.question.trim()}. Answer it with one concrete decision today — dated, owned, and shared.`
-          : "Make one shared decision today. Concrete, dated, and owned. That is how this group turns potential into progress.",
+      text: close,
     },
   ];
 
-  const body = sections.map(s => `${s.heading}\n${s.text}`).join("\n\n");
+  const body = sections.map(s => `${s.heading}\n\n${s.text}`).join("\n\n");
 
   const details = people.map(
     p => `${p.name}: Sun ${p.chart.sun}, Moon ${p.chart.moon}, Rising ${p.chart.rising}`,
@@ -198,7 +305,7 @@ export function composeGroupReading(
     body,
     bond: connection,
     connection,
-    question: lens?.question?.trim() ?? "",
+    question,
     portrait,
     cards,
     sections,
