@@ -1,4 +1,4 @@
-/** Map card display names to True North by XI XVI print-deck image paths under /deck. */
+/** Map card display names to True North by XI XVI print-deck images under /tarot. */
 const SLUG: Record<string, string> = {
   // Major Arcana
   "The Fool": "00-the-fool",
@@ -93,12 +93,12 @@ export function deckCardImage(name: string): string | null {
   const key = name.replace(/\s*\(reversed\)\s*/i, "").trim();
   const slug = SLUG[key];
   if (!slug) return null;
-  return `/deck/${slug}.jpg`;
+  return `/tarot/${slug}.webp`;
 }
 
-/** Heirloom card-back image paths (Celestial Baroque, Pearl Filigree, Stained Glass). */
+/** Heirloom card-back image paths (matches public/tarot/backs from PR #108). */
 export const HEIRLOOM_BACK_PATHS = {
-  celestial: "/deck/backs/celestial-baroque.png",
-  pearl: "/deck/backs/pearl-filigree.png",
-  stained: "/deck/backs/stained-glass.png",
+  celestial: "/tarot/backs/x1-celestial-baroque.webp",
+  pearl: "/tarot/backs/x2-pearl-filigree.webp",
+  stained: "/tarot/backs/x3-stained-glass.webp",
 } as const;
