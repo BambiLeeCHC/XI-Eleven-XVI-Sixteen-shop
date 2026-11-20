@@ -57,7 +57,7 @@ export function TrueNorthComingSoon() {
     if (!value) return;
     try {
       await subscribe({ email: value });
-      setNote("We'll write when it opens.");
+      setNote("We'll write when the room opens.");
       setEmail("");
     } catch {
       setNote("That didn't save. Try again in a moment.");
@@ -71,7 +71,9 @@ export function TrueNorthComingSoon() {
         <img src={CREST_URL} alt="" className="tn-soon__mark" />
         <p className="tn-soon__kicker">XI · XVI</p>
         <h1>True North</h1>
-        <p className="tn-soon__line">True North is coming soon.</p>
+        <p className="tn-soon__line">
+          The reading room is nearly open. Leave your name and we will send word.
+        </p>
         <form className="tn-soon__form" onSubmit={send}>
           <label htmlFor="tn-soon-email">Email</label>
           <div>
