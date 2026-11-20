@@ -1,4 +1,6 @@
+import { useState, type ReactNode } from "react";
 import type { ArcanaCard } from "../../data/arcana";
+import { TAROT_FACE_HEIGHT, TAROT_FACE_WIDTH, tarotBackForIndex, tarotFaceFile, tarotFaceSources } from "../../lib/tarotFace";
 
 const SHIELD = "/journal/shield-gold.png";
 const FIGURE = "/mannequin-women-v37.png";
@@ -225,7 +227,7 @@ function SceneBody({ scene, seed, roman }: { scene: Scene; seed: number; roman: 
   }
 }
 
-export function CardArt({ card, reversed = false }: { card: ArcanaCard; reversed?: boolean }) {
+function CardArtPlate({ card, reversed = false }: { card: ArcanaCard; reversed?: boolean }) {
   const scene = sceneOf(card);
   const seed = (card.number * 17) % 90;
   const id = `c${card.number}`;
@@ -270,14 +272,77 @@ export function CardArt({ card, reversed = false }: { card: ArcanaCard; reversed
   );
 }
 
-export function CardBack() {
+export function CardArt({ card, reversed = false }: { card: ArcanaCard; reversed?: boolean }) {
+  const file = tarotFaceFile(card);
+  const [plate, setPlate] = useState(!file);
+  if (!file || plate) return <CardArtPlate card={card} reversed={reversed} />;
+  const sources = tarotFaceSources(file);
+  return (
+    <img
+      className={`jdeck-art tn-card-face${reversed ? " is-reversed" : ""}`}
+      src={sources.thumb}
+      srcSet={`${sources.thumb} 480w, ${sources.full} 904w`}
+      sizes="(max-width: 640px) 46vw, 200px"
+      width={TAROT_FACE_WIDTH}
+      height={TAROT_FACE_HEIGHT}
+      alt={card.name}
+      loading="lazy"
+      decoding="async"
+      onError={() => setPlate(true)}
+    />
+  );
+}
+
+export function CardBack({ index = 0 }: { index?: number }) {
+  const back = tarotBackForIndex(index);
   return (
     <div className="jdeck-back">
-      <svg className="jdeck-back-art" viewBox="0 0 200 300" role="img" aria-label="XI·XVI card back">
-        <rect width="200" height="300" fill="#0f1b31" />
-        <rect x="9" y="9" width="182" height="282" rx="12" fill="none" stroke={GOLD} strokeWidth="1.2" opacity="0.8" />
-      </svg>
-      <img className="jdeck-back__logo" src={SHIELD} alt="" />
+      <img
+        className="jdeck-back__img"
+        src={`/tarot/backs/${back.file}.webp`}
+        alt=""
+        width={back.width}
+        height={back.height}
+        decoding="async"
+      />
     </div>
+  );
+}
+
+/** Short flip. The back is chosen by spread position and stays put across renders. */
+export function FlipCard({
+  index,
+  open,
+  onOpen,
+  label,
+  children,
+}: {
+  index: number;
+  open: boolean;
+  onOpen: () => void;
+  label: string;
+  children: ReactNode;
+}) {
+  return (
+    <button
+      type="button"
+      className={`jdeck-card tn-flip${open ? " is-open" : ""}`}
+      onClick={() => {
+        if (!open) onOpen();
+      }}
+      aria-pressed={open}
+      aria-label={open ? label : `Turn ${label}`}
+    >
+      <span className="jdeck-card__inner">
+        <span className="jdeck-card__side jdeck-card__side--back">
+          <CardBack index={index} />
+        </span>
+        <span className="jdeck-card__side jdeck-card__side--front">
+          <span className="jdeck-face">
+            <span className="jdeck-face__plate">{open ? children : null}</span>
+          </span>
+        </span>
+      </span>
+    </button>
   );
 }

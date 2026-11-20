@@ -8,7 +8,7 @@ const SUIT: Record<string, string> = {
   Pentacles: "Earth",
 };
 
-export function TarotCardArt({
+function PlateFallback({
   name,
   roman = "",
   reversed = false,
@@ -90,5 +90,36 @@ export function TarotCardArt({
       <div className="tarot-plate__foil" aria-hidden="true" />
       <div className="tarot-plate__pearl" aria-hidden="true" />
     </article>
+  );
+}
+
+export function TarotCardArt({
+  name,
+  roman = "",
+  reversed = false,
+}: {
+  name: string;
+  roman?: string;
+  reversed?: boolean;
+}) {
+  const file = tarotFaceFileFromName(name);
+  const [plate, setPlate] = useState(!file);
+  if (!file || plate) return <PlateFallback name={name} roman={roman} reversed={reversed} />;
+  const sources = tarotFaceSources(file);
+  return (
+    <figure className="tarot-plate tarot-plate--photo">
+      <img
+        className={reversed ? "is-reversed" : undefined}
+        src={sources.thumb}
+        srcSet={`${sources.thumb} 480w, ${sources.full} 904w`}
+        sizes="120px"
+        width={TAROT_FACE_WIDTH}
+        height={TAROT_FACE_HEIGHT}
+        alt={name}
+        loading="lazy"
+        decoding="async"
+        onError={() => setPlate(true)}
+      />
+    </figure>
   );
 }
