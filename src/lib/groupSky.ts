@@ -15,9 +15,14 @@ export type ChartPlacement = {
   house: number;
 };
 
-/** Full natal chart shape used by the server path. */
+/**
+ * Full natal chart shape used by the server path.
+ * Matches api/_lib/natalChart.computeNatalChart return shape for the fields we keep.
+ */
 export type FullChart = {
-  ascendant: { sign: string; degree: number; degreeInSign?: number };
+  /** Sign name of the ascendant, e.g. "Leo" */
+  ascendant: string;
+  ascendantDegree?: number;
   placements: ChartPlacement[];
   houses: Array<{ house: number; sign: string; degree: number }>;
 };
@@ -134,7 +139,10 @@ function signsOf(person: GroupPerson): { sun: string; moon: string; rising: stri
   }
   const sun = person.chart.placements.find(p => /sun/i.test(p.body))?.sign ?? "Leo";
   const moon = person.chart.placements.find(p => /moon/i.test(p.body))?.sign ?? "Cancer";
-  const rising = person.chart.ascendant?.sign ?? "Aries";
+  const rising =
+    typeof person.chart.ascendant === "string" && person.chart.ascendant
+      ? person.chart.ascendant
+      : "Aries";
   return { sun, moon, rising };
 }
 
