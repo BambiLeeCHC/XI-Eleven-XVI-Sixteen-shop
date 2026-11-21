@@ -6,7 +6,7 @@ import { SkyAvatar } from "../components/north/SkyAvatar";
 import { AvatarStudio } from "../components/north/AvatarStudio";
 import { TarotCardArt } from "../components/north/TarotCardArt";
 import { HeirloomBacksCarousel } from "../components/north/HeirloomBacksCarousel";
-import { ConstellationSeat, PostCard, atHandle } from "../components/north/NorthSocialPieces";
+import { ConstellationSeat, PostCard, atHandle, portraitFor } from "../components/north/NorthSocialPieces";
 import { drawCards } from "../components/north/SocialFeed";
 import { TrueNorthAtmosphere } from "../components/journal/TrueNorthAtmosphere";
 import { SEO } from "../components/SEO";
@@ -88,11 +88,9 @@ export function NorthSocialPage() {
 
   useEffect(() => {
     if (!ready || !user) return;
-    const photo = typeof user.photoUrl === "string" ? user.photoUrl : "";
-    const ai = typeof user.aiAvatarUrl === "string" ? user.aiAvatarUrl : "";
-    if (!photo && !ai) return;
     setState(current => {
-      if (current.space.photoUrl || current.space.aiAvatarUrl) return current;
+      const photo = typeof user.photoUrl === "string" ? user.photoUrl : current.space.photoUrl;
+      const ai = typeof user.aiAvatarUrl === "string" ? user.aiAvatarUrl : current.space.aiAvatarUrl;
       return {
         ...current,
         space: {
@@ -257,155 +255,119 @@ export function NorthSocialPage() {
               {composerOpen && (
                 <form onSubmit={event => { event.preventDefault(); publish("A note", draft, [], "bulletin"); }}>
                   <label className="tn-label" htmlFor="north-draft">Write a note</label>
-                  <textarea id="north-draft" className="tn-field tn-field--area" value={draft} onChange={event => setDraft(event.target.value)} placeholder="A note for the feed." rows={3} />
+                  <textarea id="north-draft" className="tn-field tn-field--area" rows={3} value={draft} onChange={event => setDraft(event.target.value)} />
                   <div className="tn-actions">
                     <button type="submit" className="cta-pist tn-action">Post</button>
-                    <button type="button" className="cta-ghost tn-action" onClick={() => publish("A pull", draft || "Three cards from the house deck.", drawCards(3), "pull")}>Pull three</button>
-                    <button type="button" className="cta-ghost tn-action" onClick={() => goReading("group")}>Tandem</button>
+                    <button type="button" className="cta-ghost tn-action" onClick={() => publish("A pull", draft, drawCards(3), "bulletin")}>Post with cards</button>
                   </div>
                 </form>
               )}
             </div>
 
-            <div className="feed-filters" role="tablist" aria-label="Feed filter">
+            <div className="tn-card north-filters">
               {([
                 ["all", "All"],
-                ["posts", "Posts & Pulls"],
-                ["tandem", "Group Reads"],
-                ["friends", "Find Friends"],
+                ["posts", "Notes"],
+                ["tandem", "Tandem"],
+                ["friends", "Circle"],
               ] as const).map(([id, label]) => (
-                <button key={id} type="button" role="tab" aria-selected={filter === id} className={filter === id ? "is-on" : ""} onClick={() => setFilter(id)}>
-                  {label}
-                </button>
+                <button key={id} type="button" className={filter === id ? "is-on" : ""} onClick={() => setFilter(id)}>{label}</button>
               ))}
             </div>
 
             {filter === "friends" ? (
-              <section className="tn-card find-friends">
-                <h2 className="north-post__title">Find Friends</h2>
-                <ul className="find-friends__list">
+              <section className="tn-card">
+                <p className="label-lock">Circle</p>
+                <ul className="constellation">
                   {rankedEight(state.top).slice(0, 4).map(person => (
-                    <li key={person.id}>
-                      <SkyAvatar name={person.name} sign={person.sun} size={36} />
-                      <span>{person.name}</span>
-                      <em>{atHandle(person.handle)}</em>
-                    </li>
+                    <ConstellationSeat
+                      key={person.id}
+                      person={person}
+                      index={state.top.findIndex(item => item.id === person.id)}
+                      onPromote={() => setState(current => ({ ...current, top: promoteTop(current.top, current.top.findIndex(item => item.id === person.id)) }))}
+                      onMove={direction => setState(current => ({ ...current, top: moveTop(current.top, current.top.findIndex(item => item.id === person.id), direction) }))}
+                      onOpen={() => setSheet(person)}
+                    />
                   ))}
                 </ul>
-                <form className="north-friend" onSubmit={event => { event.preventDefault(); saveFriend(); }}>
-                  <label className="tn-label" htmlFor="feed-friend-name">Add someone to seat #8</label>
-                  <input id="feed-friend-name" className="tn-field" value={friend.name} onChange={event => setFriend(current => ({ ...current, name: event.target.value }))} placeholder="Name" />
-                  <input className="tn-field" value={friend.handle} onChange={event => setFriend(current => ({ ...current, handle: event.target.value }))} placeholder="Handle" aria-label="Handle" />
-                  <button type="submit" className="cta-pist tn-action">Save to seat 8</button>
-                </form>
               </section>
             ) : feed.map(post => (
               <PostCard
                 key={post.id}
                 post={post}
-                youSrc={youSrc}
                 youHandle={youHandle}
-                note={note[post.id] ?? ""}
-                onNote={value => setNote(current => ({ ...current, [post.id]: value }))}
+                youSrc={youSrc}
                 onReact={key => setState(current => ({ ...current, posts: current.posts.map(item => item.id === post.id ? toggleReaction(item, key) : item) }))}
-                onComment={() => {
-                  const body = note[post.id] ?? "";
-                  if (!body.trim()) return;
-                  setState(current => ({
-                    ...current,
-                    posts: current.posts.map(item => item.id === post.id ? addComment(item, author, body) : item),
-                  }));
-                  setNote(current => ({ ...current, [post.id]: "" }));
-                }}
+                onComment={body => setState(current => ({
+                  ...current,
+                  posts: current.posts.map(item => item.id === post.id ? addComment(item, author, body) : item),
+                }))}
               />
             ))}
           </>
         )}
 
         {view.destination === "sky" && (
-          <section className="sky-panel">
-            <div className="my-sky tn-card">
-              <div className="my-sky__top">
-                <button type="button" className="sky-avatar-hit" onClick={() => setStudio(true)} aria-label="Edit avatar">
-                  <span className="sky-avatar" style={{ width: 72, height: 72 }}>
-                    <img src={youSrc || undefined} alt="" />
-                  </span>
-                </button>
-                <div>
-                  <p className="my-sky__name">{MY_SKY_LABEL}</p>
-                  <p className="my-sky__person">{author}</p>
-                  <p className="my-sky__handle">{atHandle(youHandle)}</p>
+          <section className="tn-card north-sky">
+            <div className="north-sky__you">
+              <button type="button" className="north-sky__avatar" onClick={() => setStudio(true)}>
+                <span className="north-sky__ring">
+                  <img src={youSrc || undefined} alt="" />
+                </span>
+                <small>Edit card</small>
+              </button>
+              <div>
+                <p className="label-lock">{MY_SKY_LABEL}</p>
+                <h2 className="clash">{author}</h2>
+                <p className="serif-quiet tn-lede">{sun} · {moon} · {rising}{lifePath ? ` · ${lifePath}` : ""}</p>
+                <div className="tn-actions">
+                  <button type="button" className="cta-ghost tn-action" onClick={() => setEditor(true)}>Profile</button>
+                  <button type="button" className="cta-ghost tn-action" onClick={() => void signOut()}>Sign out</button>
                 </div>
               </div>
-              <p className="tn-lede">{state.space.manifesto || "Your space in True North."}</p>
-              <div className="tn-actions">
-                <button type="button" className="cta-ghost tn-action" onClick={() => setStudio(true)}>Avatar</button>
-                <button type="button" className="cta-ghost tn-action" onClick={() => setEditor(true)}>Profile</button>
-                <button type="button" className="cta-pist tn-action" onClick={() => goReading("group")}>Tandem</button>
-              </div>
-              <ul className="sky-pills">
-                <li>{sun} sun</li>
-                <li>{moon} moon</li>
-                <li>{rising} rising</li>
-                {lifePath ? <li>Path {lifePath}</li> : null}
-              </ul>
             </div>
-
-            <div className="sky-tabrow">
-              <div className="tn-profile__tabs" role="tablist">
-                {SKY_TABS.map(tab => (
-                  <button
-                    key={tab.id}
-                    type="button"
-                    role="tab"
-                    className={view.sky === tab.id ? "tn-profile__tab is-on" : "tn-profile__tab"}
-                    onClick={() => goSky(tab.id)}
-                  >
-                    {tab.label}
-                  </button>
+            <div className="north-sky__tabs" role="tablist">
+              {SKY_TABS.map(tab => (
+                <button
+                  key={tab.id}
+                  type="button"
+                  role="tab"
+                  className={view.skyPanel === tab.id || (tab.id === "chart" && !view.skyPanel) ? "is-on" : ""}
+                  onClick={() => goSky(tab.id)}
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </div>
+            {(view.skyPanel === "chart" || !view.skyPanel) && <ChartHomePage />}
+            {view.skyPanel === "numbers" && <NumbersPage />}
+            {view.skyPanel === "constellation" && (
+              <ul className="constellation">
+                {rankedEight(state.top).map((person, index) => (
+                  <ConstellationSeat
+                    key={person.id}
+                    person={person}
+                    index={index}
+                    onPromote={() => setState(current => ({ ...current, top: promoteTop(current.top, index) }))}
+                    onMove={direction => setState(current => ({ ...current, top: moveTop(current.top, index, direction) }))}
+                    onOpen={() => setSheet(person)}
+                  />
                 ))}
-              </div>
-            </div>
-
-            {view.sky === "chart" && <ChartHomePage />}
-            {view.sky === "numbers" && <NumbersPage />}
-            {view.sky === "constellation" && (
-              <section className="tn-card">
-                <h2 className="north-post__title">{MY_CONSTELLATION_LABEL}</h2>
-                <ul className="constellation">
-                  {rankedEight(state.top).map((person, index) => (
-                    <ConstellationSeat
-                      key={person.id}
-                      person={person}
-                      index={index}
-                      onPromote={() => setState(current => ({ ...current, top: promoteTop(current.top, index) }))}
-                      onMove={direction => setState(current => ({ ...current, top: moveTop(current.top, index, direction) }))}
-                      onOpen={() => setSheet(person)}
-                    />
-                  ))}
-                </ul>
-              </section>
+              </ul>
             )}
-            {view.sky === "posts" && (
-              <div className="personal-feed">
+            {view.skyPanel === "posts" && (
+              <div className="north-personal">
                 {personal.map(post => (
                   <PostCard
                     key={post.id}
                     post={post}
-                    youSrc={youSrc}
                     youHandle={youHandle}
-                    note={note[post.id] ?? ""}
-                    onNote={value => setNote(current => ({ ...current, [post.id]: value }))}
+                    youSrc={youSrc}
                     onReact={key => setState(current => ({ ...current, posts: current.posts.map(item => item.id === post.id ? toggleReaction(item, key) : item) }))}
-                    onComment={() => {
-                      const body = note[post.id] ?? "";
-                      if (!body.trim()) return;
-                      setState(current => ({
-                        ...current,
-                        posts: current.posts.map(item => item.id === post.id ? addComment(item, author, body) : item),
-                      }));
-                      setNote(current => ({ ...current, [post.id]: "" }));
-                    }}
+                    onComment={body => setState(current => ({
+                      ...current,
+                      posts: current.posts.map(item => item.id === post.id ? addComment(item, author, body) : item),
+                    }))}
                   />
                 ))}
               </div>
@@ -414,20 +376,32 @@ export function NorthSocialPage() {
         )}
 
         {view.destination === "readings" && (
-          <section className="reading-room">
-            <div className="reading-switch" role="tablist" aria-label="Reading">
-              <button type="button" role="tab" aria-selected={view.reading === "tri"} className={view.reading === "tri" ? "is-on" : ""} onClick={() => goReading("tri")}>Tri-Sky</button>
-              <button type="button" role="tab" aria-selected={view.reading === "group"} className={view.reading === "group" ? "is-on" : ""} onClick={() => goReading("group")}>Tandem</button>
+          <section className="tn-card">
+            <div className="tn-actions">
+              <button type="button" className={view.reading === "tri" ? "cta-pist tn-action" : "cta-ghost tn-action"} onClick={() => goReading("tri")}>Tri-Sky</button>
+              <button type="button" className={view.reading === "group" ? "cta-pist tn-action" : "cta-ghost tn-action"} onClick={() => goReading("group")}>Group / Tandem</button>
             </div>
             {view.reading === "group" ? (
               <GroupReadRoom
-                you={{ id: "me", name: author, sun, moon, rising }}
+                you={{
+                  id: "me",
+                  name: author,
+                  sun,
+                  moon,
+                  rising,
+                }}
                 friends={rankedEight(state.top)}
                 onPost={(title, body, bond) => {
-                  const post = {
-                    ...createPost({ author, handle: youHandle, sign: sun, kind: "tandem", title, body }),
+                  const post = createPost({
+                    author,
+                    handle: youHandle,
+                    sign: sun,
+                    kind: "tandem",
+                    title,
+                    body,
+                    cards: [],
                     bond,
-                  };
+                  });
                   setState(current => ({ ...current, posts: [post, ...current.posts] }));
                   navigate("/chart");
                 }}
