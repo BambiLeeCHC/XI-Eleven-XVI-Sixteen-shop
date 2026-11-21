@@ -1,27 +1,50 @@
 /**
- * Group / Tandem sky helpers for GroupReadRoom.
- * Voice: direct, clear, action-first. Unite the room. Move people forward.
- * Structure: overview of the dynamic, then how each person plays in.
+ * Group / Tandem sky helpers.
+ * Shared by GroupReadRoom (client) and api/_lib/groupRead (server).
+ * Voice: direct, clear, action-first.
  */
 import { FULL_DECK } from "../data/fullDeck.js";
 import type { ArcanaCard } from "../data/arcana.js";
 import { ELEMENT_LINE, MODE_LINE } from "./groupReadVoice.js";
 
+export type ChartPlacement = {
+  body: string;
+  sign: string;
+  degree: number;
+  degreeInSign: number;
+  house: number;
+};
+
+/** Full natal chart shape used by the server path. */
+export type FullChart = {
+  ascendant: { sign: string; degree: number; degreeInSign?: number };
+  placements: ChartPlacement[];
+  houses: Array<{ house: number; sign: string; degree: number }>;
+};
+
+/** Lightweight client chart when only signs are known. */
+export type SignChart = {
+  sun: string;
+  moon: string;
+  rising: string;
+  seed: string;
+};
+
 export type GroupPerson = {
   id: string;
   name: string;
-  chart: { sun: string; moon: string; rising: string; seed: string };
+  chart: FullChart | SignChart;
   pronouns?: string;
   gender?: string;
   orientation?: string;
 };
 
 export type ReadLens = {
-  question: string;
-  connectionId: string;
-  connectionLabel: string;
-  otherText: string;
-  leadId: string;
+  question?: string;
+  connectionId?: string;
+  connectionLabel?: string;
+  otherText?: string;
+  leadId?: string;
 };
 
 export type GroupCard = {
@@ -36,6 +59,12 @@ export type GroupSection = {
   text: string;
 };
 
+export type GroupRole = {
+  id: string;
+  name: string;
+  line: string;
+};
+
 export type GroupReading = {
   title: string;
   body: string;
@@ -46,6 +75,13 @@ export type GroupReading = {
   cards: GroupCard[];
   sections: GroupSection[];
   details: string[];
+  /** Server + voice layer */
+  kindLabel: string;
+  privateNote: string;
+  roles: GroupRole[];
+  magnetize: string;
+  breakthrough: string;
+  directive: string;
 };
 
 export const GROUP_BONDS = [
@@ -72,7 +108,6 @@ export const TANDEM_BONDS = [
 const FIRE = new Set(["Aries", "Leo", "Sagittarius"]);
 const EARTH = new Set(["Taurus", "Virgo", "Capricorn"]);
 const AIR = new Set(["Gemini", "Libra", "Aquarius"]);
-const WATER = new Set(["Cancer", "Scorpio", "Pisces"]);
 const CARDINAL = new Set(["Aries", "Cancer", "Libra", "Capricorn"]);
 const FIXED = new Set(["Taurus", "Leo", "Scorpio", "Aquarius"]);
 
@@ -89,17 +124,27 @@ function modeOf(sign: string): "cardinal" | "fixed" | "mutable" {
   return "mutable";
 }
 
+function isSignChart(chart: FullChart | SignChart): chart is SignChart {
+  return "sun" in chart && "moon" in chart && "rising" in chart;
+}
+
+function signsOf(person: GroupPerson): { sun: string; moon: string; rising: string } {
+  if (isSignChart(person.chart)) {
+    return { sun: person.chart.sun, moon: person.chart.moon, rising: person.chart.rising };
+  }
+  const sun = person.chart.placements.find(p => /sun/i.test(p.body))?.sign ?? "Leo";
+  const moon = person.chart.placements.find(p => /moon/i.test(p.body))?.sign ?? "Cancer";
+  const rising = person.chart.ascendant?.sign ?? "Aries";
+  return { sun, moon, rising };
+}
+
 function roleLine(person: GroupPerson): string {
-  const el = elementOf(person.chart.sun);
-  const mode = modeOf(person.chart.sun);
-  const elText = ELEMENT_LINE[el];
-  const modeText = MODE_LINE[mode];
-  const moon = person.chart.moon;
-  const rising = person.chart.rising;
+  const { sun, moon, rising } = signsOf(person);
+  const el = elementOf(sun);
+  const mode = modeOf(sun);
   return (
-    `${person.name} holds the ${person.chart.sun} seat in this room. ${elText} ` +
-    `${modeText} ` +
-    `Moon in ${moon} shows what they need in order to stay in the work; rising in ${rising} is how the group meets them. ` +
+    `${person.name} holds the ${sun} seat in this room. ${ELEMENT_LINE[el]} ${MODE_LINE[mode]} ` +
+    `Moon in ${moon} shows what they need to stay in the work; rising in ${rising} is how the group meets them. ` +
     `Use ${person.name} for what they already do well — do not ask them to become someone else.`
   );
 }
@@ -109,7 +154,7 @@ export function chartFromSigns(input: {
   moon: string;
   rising: string;
   seed: string;
-}) {
+}): SignChart {
   return {
     sun: input.sun,
     moon: input.moon,
@@ -257,48 +302,60 @@ export function composeGroupReading(
       : `${names.slice(0, 2).join(", ")} + ${names.length - 2} more`;
 
   const connection =
-    lens?.connectionId === "other" && lens.otherText.trim()
-      ? lens.otherText.trim()
+    lens?.connectionId === "other" && (lens.otherText ?? "").trim()
+      ? (lens.otherText ?? "").trim()
       : lens?.connectionLabel || (tandem ? "Tandem" : "Group");
 
-  const question = lens?.question?.trim() ?? "";
+  const question = (lens?.question ?? "").trim();
   const seed = `${people.map(p => p.id).join("-")}-${when.toISOString().slice(0, 10)}-${question}`;
   const cards = pickCards(seed, 7);
 
   const portrait = overview(people, tandem, connection, question, cards);
+  const roles: GroupRole[] = people.map(p => ({
+    id: p.id,
+    name: p.name,
+    line: roleLine(p),
+  }));
 
-  const personBlocks = people.map(roleLine).join("\n\n");
-
+  const personBlocks = roles.map(r => r.line).join("\n\n");
   const cardBlocks = cards.map(cardCall).join(" ");
 
-  const close = tandem
+  const magnetize =
+    cards.find(c => c.slot === "support") != null
+      ? cardCall(cards.find(c => c.slot === "support")!)
+      : "The room already has chemistry. Put it toward one shared aim.";
+
+  const breakthrough =
+    cards.find(c => c.slot === "gift") != null
+      ? cardCall(cards.find(c => c.slot === "gift")!)
+      : "The breakthrough is using a strength you already have instead of hunting for a new one.";
+
+  const directive = tandem
     ? `Between ${names[0]} and ${names[1]}, the work is simple: agree on the next step, write it down, and do it before the day ends. Strength grows when both of you keep the same promise.`
     : `This group gets stronger when effort is aimed. Pick the decision. Name who owns it. Set the date. Then protect that plan until it is real.`;
 
   const sections: GroupSection[] = [
-    {
-      heading: "The dynamic",
-      text: portrait,
-    },
-    {
-      heading: "How each person plays in",
-      text: personBlocks,
-    },
-    {
-      heading: "What the cards say",
-      text: cardBlocks,
-    },
-    {
-      heading: "The move",
-      text: close,
-    },
+    { heading: "The dynamic", text: portrait },
+    { heading: "How each person plays in", text: personBlocks },
+    { heading: "Where you magnetize", text: magnetize },
+    { heading: "Breakthrough", text: breakthrough },
+    { heading: "What the cards say", text: cardBlocks },
+    { heading: "Your next step", text: directive },
   ];
 
   const body = sections.map(s => `${s.heading}\n\n${s.text}`).join("\n\n");
 
-  const details = people.map(
-    p => `${p.name}: Sun ${p.chart.sun}, Moon ${p.chart.moon}, Rising ${p.chart.rising}`,
-  );
+  const details = people.map(p => {
+    const s = signsOf(p);
+    return `${p.name}: Sun ${s.sun}, Moon ${s.moon}, Rising ${s.rising}`;
+  });
+
+  const privateBits = people
+    .map(p => {
+      const bits = [p.pronouns, p.gender, p.orientation].filter(Boolean);
+      return bits.length ? `${p.name}: ${bits.join(", ")}` : "";
+    })
+    .filter(Boolean);
 
   return {
     title,
@@ -310,5 +367,11 @@ export function composeGroupReading(
     cards,
     sections,
     details,
+    kindLabel: tandem ? "Tandem" : "Group Read",
+    privateNote: privateBits.join("\n"),
+    roles,
+    magnetize,
+    breakthrough,
+    directive,
   };
 }
