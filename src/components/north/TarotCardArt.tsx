@@ -1,5 +1,11 @@
 import { useEffect, useState } from "react";
 import { deckCardImage } from "../../lib/deckArt.js";
+import {
+  TAROT_FACE_HEIGHT,
+  TAROT_FACE_WIDTH,
+  tarotFaceFileFromName,
+  tarotFaceSources,
+} from "../../lib/tarotFace";
 
 const SUIT: Record<string, string> = {
   Wands: "Fire",
