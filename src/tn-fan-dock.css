@@ -1,0 +1,118 @@
+/* True North — dock + Tri-Sky fan splay overrides */
+.north-dock {
+  position: sticky;
+  bottom: 0.65rem;
+  z-index: 24;
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
+  margin: 0.35rem auto 0.75rem;
+  width: min(100% - 1.35rem, 24rem);
+  padding: 0.22rem;
+  border-radius: 999px;
+  border: 1px solid rgba(201, 168, 76, 0.38);
+  background: rgba(10, 20, 36, 0.88);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.36), inset 0 1px 0 rgba(240, 224, 176, 0.12);
+  backdrop-filter: blur(14px);
+  transition: width 0.35s ease, padding 0.35s ease, opacity 0.35s ease, background 0.35s ease, transform 0.35s ease;
+}
+.north-dock.is-idle {
+  width: min(100% - 2.5rem, 15rem);
+  padding: 0.14rem;
+  opacity: 0.42;
+  background: rgba(10, 20, 36, 0.45);
+  transform: scale(0.94);
+}
+.north-dock:hover,
+.north-dock:focus-within,
+.north-dock.is-awake {
+  opacity: 1;
+  width: min(100% - 1.35rem, 24rem);
+  padding: 0.22rem;
+  background: rgba(10, 20, 36, 0.9);
+  transform: scale(1);
+}
+.north-dock a,
+.north-dock button {
+  min-height: 34px;
+  flex: 1 1 0;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 999px;
+  color: #f6f1e8;
+  background: transparent;
+  text-decoration: none;
+  font: inherit;
+  font-size: 0.62rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  cursor: pointer;
+  padding: 0.2rem 0.3rem;
+}
+.north-dock a.is-on {
+  background: #C9A84C;
+  color: #0a1424;
+}
+.north-dock__util {
+  flex: 0 0 auto;
+  max-width: 4.4rem;
+  opacity: 0.85;
+  font-size: 0.58rem;
+}
+
+.journal-page--truenorth .tn-fan {
+  position: relative;
+  display: grid;
+  place-items: end center;
+  min-height: 16.5rem;
+  padding: 1.25rem 0.5rem 0.5rem;
+  cursor: pointer;
+  border-radius: 22px;
+  border: 1px solid rgba(201, 168, 76, 0.28);
+  background:
+    radial-gradient(70% 80% at 50% 100%, rgba(201, 168, 76, 0.12), transparent 55%),
+    rgba(10, 20, 36, 0.42);
+  backdrop-filter: blur(18px) saturate(1.25);
+  -webkit-backdrop-filter: blur(18px) saturate(1.25);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    0 16px 40px rgba(0, 0, 0, 0.28);
+}
+.journal-page--truenorth .tn-fan.is-closed:hover {
+  border-color: rgba(201, 168, 76, 0.5);
+}
+.journal-page--truenorth .tn-fan .tn-fan__card {
+  grid-area: 1 / 1;
+  width: min(28vw, 7.2rem);
+  transform-origin: 50% 100%;
+  transform: rotate(calc((var(--fan-i) - (var(--fan-n) - 1) / 2) * 9deg)) translateY(-0.15rem);
+  transition: transform 0.45s cubic-bezier(0.2, 0.8, 0.2, 1);
+  z-index: calc(10 + var(--fan-i));
+}
+.journal-page--truenorth .tn-fan.is-open .tn-fan__card {
+  transform: rotate(calc((var(--fan-i) - (var(--fan-n) - 1) / 2) * 11deg)) translateY(-0.3rem);
+}
+.journal-page--truenorth .tn-fan .long-read-slot-label,
+.journal-page--truenorth .tn-fan .long-read-card-name {
+  text-align: center;
+  font-size: 0.62rem;
+  letter-spacing: 0.06em;
+  color: rgba(247, 240, 230, 0.72);
+}
+.journal-page--truenorth .tn-fan .long-read-card-name {
+  max-width: 7.2rem;
+  margin: 0.25rem auto 0;
+  line-height: 1.25;
+}
+.journal-page--truenorth .tn-fan .tn-flip {
+  width: 100%;
+  margin: 0 auto;
+}
+.journal-page--truenorth .tn-fan .jdeck-card {
+  filter: drop-shadow(0 10px 18px rgba(0, 0, 0, 0.35));
+}
+@media (max-width: 640px) {
+  .journal-page--truenorth .tn-fan { min-height: 14.5rem; }
+  .journal-page--truenorth .tn-fan .tn-fan__card { width: min(26vw, 6.2rem); }
+}
