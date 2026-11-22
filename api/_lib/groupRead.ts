@@ -48,24 +48,23 @@ async function chartFor(row: BirthRow): Promise<GroupPerson["chart"] | null> {
   };
 }
 
-const VOICE = `You are the XI · XVI reader. Every reading is a tarot pull, interpreted through the charts as a lens. Magnetic, specific, poignant, and always uplifting.
+const VOICE = `You write group tarot readings for XI · XVI True North.
 
-Tone, non-negotiable:
-- Positive, forward, best-case. Strengths, growth, mending, progress.
-- Never write friction, challenge, tension, warning, doom, or a section called "where you spark".
-- Reversed cards and hard cards (Tower, Ten of Swords, Death, the Devil) are breakthroughs and invitations to move. Never warnings.
-- Squares and oppositions are growth edges that push the people forward. Never problems.
-- The close is an empowering directive.
-- Use the pronouns given. If none are given, use they/them and the person's name.
-- Never write husband, wife, or assumed masculine/feminine roles.
-- A private identity note may be included so you can affirm chosen family, visibility, or building a life on their own terms. Never print the orientation or gender label itself in the reading.
+Rules:
+- Plain English. Short sentences. No poetry. No vague "energy" talk.
+- Tell people what is true and what to do next.
+- Positive and forward. Strengths and progress only.
+- Never write doom, warning, or "where you spark".
+- Hard cards (Tower, Death, Devil, heavy Swords) mean: keep what works, drop what does not, move on what you control.
+- Squares and oppositions mean: put both views into one plan with a deadline.
+- Use given pronouns; otherwise they/them and the person's name.
+- Never invent a person, card, or placement. No degrees. No orbs.
+- Never print private orientation or gender labels.
 
-Use only the facts given. Do not invent a placement, a person, a card, or an aspect. No degree numbers. No orbs.
-
-Write exactly the headings you are given, each as "## Heading", and nothing else.
+Format only:
 ## Portrait
-Two or three sentences. Open on the core card by name. Say what these people are together, at their best.
-Then one "## " section for every heading listed after Portrait, in that order, each a short paragraph that names the card and weaves one real placement.`;
+2–3 short sentences. Name the root card. Say what this group is for and the one move in front of them.
+Then one "## " section for every heading listed after Portrait, in that order. Each section: 2–4 short sentences. Name the card. Give a clear action.`;
 
 function section(text: string, heading: string) {
   const match = text.match(new RegExp(`##\\s*${heading}\\s*([\\s\\S]*?)(?=\\n##\\s|$)`, "i"));
@@ -80,9 +79,9 @@ function voiced(base: GroupReading, text: string): GroupReading | null {
     return { heading: item.heading, text: body || item.text };
   });
   if (sections.some(item => !item.text)) return null;
-  const magnetize = sections.find(item => item.heading === "Where you magnetize")?.text ?? base.magnetize;
-  const breakthrough = sections.find(item => item.heading === "Breakthrough")?.text ?? base.breakthrough;
-  const directive = sections.find(item => /move|next step/i.test(item.heading))?.text ?? base.directive;
+  const magnetize = sections.find(item => /holds you together|magnetize/i.test(item.heading))?.text ?? base.magnetize;
+  const breakthrough = sections.find(item => /opening|breakthrough/i.test(item.heading))?.text ?? base.breakthrough;
+  const directive = sections.find(item => /move|next step|do this next/i.test(item.heading))?.text ?? base.directive;
   const next = { ...base, portrait, sections, magnetize, breakthrough, directive };
   next.body = [portrait, ...sections.map(item => `${item.heading}. ${item.text}`)].join("\n\n");
   return next;
