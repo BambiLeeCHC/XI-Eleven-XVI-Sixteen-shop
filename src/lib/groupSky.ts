@@ -1,7 +1,7 @@
 /**
  * Group / Tandem sky helpers.
  * Shared by GroupReadRoom (client) and api/_lib/groupRead (server).
- * Voice: direct, clear, action-first.
+ * Voice: plain English, short sentences, clear next steps.
  */
 import { FULL_DECK } from "../data/fullDeck.js";
 import type { ArcanaCard } from "../data/arcana.js";
@@ -151,9 +151,9 @@ function roleLine(person: GroupPerson): string {
   const el = elementOf(sun);
   const mode = modeOf(sun);
   return (
-    `${person.name} holds the ${sun} seat in this room. ${ELEMENT_LINE[el]} ${MODE_LINE[mode]} ` +
-    `Moon in ${moon} shows what they need to stay in the work; rising in ${rising} is how the group meets them. ` +
-    `Use ${person.name} for what they already do well — do not ask them to become someone else.`
+    `${person.name} — ${sun} sun. ${ELEMENT_LINE[el]} ${MODE_LINE[mode]} ` +
+    `Moon in ${moon}: what they need in order to keep showing up. Rising ${rising}: how the room meets them. ` +
+    `Use what ${person.name} already does well. Do not ask them to become someone else.`
   );
 }
 
@@ -235,16 +235,15 @@ function pickCards(seed: string, count: number): GroupCard[] {
 
 function cardCall(card: GroupCard): string {
   const name = card.card.name;
-  const rev = card.reversed ? " (reversed)" : "";
   const upright =
     (card.card.upright || "")
       .trim()
       .split(/(?<=\.)\s/)[0]
       ?.trim() || "Act on what is already clear.";
   if (card.reversed) {
-    return `${card.slotName} — ${name}${rev}. The lesson is the same, only sooner. ${upright} Do not wait for perfect conditions.`;
+    return `${card.slotName}: ${name} reversed. Same message, sooner. ${upright}`;
   }
-  return `${card.slotName} — ${name}. ${upright}`;
+  return `${card.slotName}: ${name}. ${upright}`;
 }
 
 function overview(
@@ -266,32 +265,32 @@ function overview(
   const gift = cards.find(c => c.slot === "gift");
 
   const rootBit = root
-    ? `The root of this reading is ${root.card.name}${root.reversed ? " reversed" : ""} — that is the ground you are standing on.`
-    : "The charts and cards agree: this room has enough strength to move.";
+    ? `Root card: ${root.card.name}${root.reversed ? " reversed" : ""}. That is the ground under this group.`
+    : "This group has enough strength to move.";
   const moveBit = move
-    ? ` The best move on the table is ${move.card.name}${move.reversed ? " reversed" : ""}. Treat it as an instruction, not a suggestion.`
+    ? ` Best move: ${move.card.name}${move.reversed ? " reversed" : ""}. Treat it as the instruction.`
     : "";
   const giftBit = gift
-    ? ` Your untapped gift is ${gift.card.name}${gift.reversed ? " reversed" : ""} — name it out loud and put someone in charge of using it.`
+    ? ` Unused strength: ${gift.card.name}${gift.reversed ? " reversed" : ""}. Name it and put someone on it.`
     : "";
 
   const ask = question
-    ? ` You asked: “${question}.” Answer it with one decision the whole group can own today.`
-    : " Make one shared decision today — concrete, dated, and owned by name.";
+    ? ` You asked: "${question}." Answer it with one decision the whole group can own today.`
+    : " Make one shared decision today — who owns it, and by when.";
 
   if (tandem) {
     return (
-      `${who} are in this as a pair (${connection}). ` +
+      `${who} (${connection}). ` +
       `${rootBit}${moveBit}${giftBit}` +
-      ` You do not need more analysis. You need one clear step that both of you will protect.` +
+      ` You do not need more analysis. You need one step both of you will protect.` +
       ask
     );
   }
 
   return (
-    `${who} form this group (${connection}). ` +
+    `${who} (${connection}). ` +
     `${rootBit}${moveBit}${giftBit}` +
-    ` The power in this room is real. It becomes useful the moment roles are clear and one aim is shared.` +
+    ` Roles clear. One aim. Then do the work.` +
     ask
   );
 }
@@ -331,24 +330,24 @@ export function composeGroupReading(
   const magnetize =
     cards.find(c => c.slot === "support") != null
       ? cardCall(cards.find(c => c.slot === "support")!)
-      : "The room already has chemistry. Put it toward one shared aim.";
+      : "You already have chemistry. Point it at one shared aim.";
 
   const breakthrough =
     cards.find(c => c.slot === "gift") != null
       ? cardCall(cards.find(c => c.slot === "gift")!)
-      : "The breakthrough is using a strength you already have instead of hunting for a new one.";
+      : "Use a strength you already have. Stop hunting for a new one.";
 
   const directive = tandem
-    ? `Between ${names[0]} and ${names[1]}, the work is simple: agree on the next step, write it down, and do it before the day ends. Strength grows when both of you keep the same promise.`
-    : `This group gets stronger when effort is aimed. Pick the decision. Name who owns it. Set the date. Then protect that plan until it is real.`;
+    ? `${names[0]} and ${names[1]}: agree on the next step, write it down, finish it before the day ends. Keep the same promise.`
+    : `Pick the decision. Name who owns it. Set the date. Protect that plan until it is done.`;
 
   const sections: GroupSection[] = [
-    { heading: "The dynamic", text: portrait },
-    { heading: "How each person plays in", text: personBlocks },
-    { heading: "Where you magnetize", text: magnetize },
-    { heading: "Breakthrough", text: breakthrough },
-    { heading: "What the cards say", text: cardBlocks },
-    { heading: "Your next step", text: directive },
+    { heading: "The room", text: portrait },
+    { heading: "Each person", text: personBlocks },
+    { heading: "What holds you together", text: magnetize },
+    { heading: "The opening", text: breakthrough },
+    { heading: "The cards", text: cardBlocks },
+    { heading: "Do this next", text: directive },
   ];
 
   const body = sections.map(s => `${s.heading}\n\n${s.text}`).join("\n\n");
