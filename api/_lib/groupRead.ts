@@ -98,7 +98,7 @@ function voiced(base: GroupReading, text: string): GroupReading | null {
     magnetize: main,
     breakthrough: main,
     directive,
-    body: `${portrait}\\n\\n${main}`,
+    body: `${portrait}\n\n${main}`,
   };
   return next;
 }
@@ -121,11 +121,11 @@ async function voiceGroupReading(reading: GroupReading): Promise<GroupReading> {
     "Chart facts (lens only — do not recite degrees):",
     ...reading.details,
     reading.privateNote
-      ? `Private context for pronouns/relationship framing only, never quote labels:\\n${reading.privateNote}`
+      ? `Private context for pronouns/relationship framing only, never quote labels:\n${reading.privateNote}`
       : "",
     "",
     "Write the Group Read now in the Tri-Sky house voice. Follow the format exactly.",
-  ].join("\\n");
+  ].join("\n");
   const result = await generateWithGroq(VOICE, facts, 2200);
   if (!result.success) return reading;
   return voiced(reading, result.text) ?? reading;
