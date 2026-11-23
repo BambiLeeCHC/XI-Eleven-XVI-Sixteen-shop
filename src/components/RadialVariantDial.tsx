@@ -33,10 +33,13 @@ type Props = {
   /** Shop dial: color ring first, then a separate size step. */
   colorFirst?: boolean;
   /**
-   * First tap on a swatch only previews it. A second tap on that swatch,
-   * or a tap on the center, confirms.
+   * First tap on a swatch only selects it. Enter in the center confirms.
    */
   confirmTwice?: boolean;
+  /**
+   * Size ring: a tap only selects. Enter in the center opens the next step.
+   */
+  enterToAdvance?: boolean;
 };
 
 function finePointer() {
@@ -60,6 +63,7 @@ export function RadialVariantDial({
   focus,
   colorFirst,
   confirmTwice,
+  enterToAdvance,
 }: Props) {
   const previewCb = useRef(onPreviewId);
   previewCb.current = onPreviewId;
@@ -105,6 +109,7 @@ export function RadialVariantDial({
 
   const pickSize = (id: string) => {
     onSize(id);
+    if (enterToAdvance) return;
     if (colors.length > 0) {
       setHoveredId(null);
       setView("color");
@@ -114,6 +119,13 @@ export function RadialVariantDial({
   };
 
   const showPhoto = colorFocused && Boolean(photo);
+  const showEnter =
+    (confirmTwice && colorFocused && Boolean(colorId)) ||
+    (enterToAdvance && !colorFocused && Boolean(sizeId));
+  const commit = () => {
+    if (confirmTwice && colorFocused && colorId) onCommit?.(colorId);
+    else if (enterToAdvance && sizeId) onCommitSize?.(sizeId);
+  };
 
   return (
     <div
@@ -162,8 +174,7 @@ export function RadialVariantDial({
               }
               setHoveredId(id);
               if (confirmTwice) {
-                if (id === colorId) onCommit?.(id);
-                else onColor(id);
+                onColor(id);
                 return;
               }
               onColor(id);
@@ -179,13 +190,14 @@ export function RadialVariantDial({
                 onError={() => setFailedSrc(photo)}
               />
             ) : null}
-            {confirmTwice && colorId ? (
+            {showEnter ? (
               <button
                 type="button"
-                className="radial-dial__hub-go"
-                aria-label={`Continue with ${colors.find(option => option.id === colorId)?.label || "this color"}`}
-                onClick={() => onCommit?.(colorId)}
-              />
+                className="dial-enter"
+                onClick={commit}
+              >
+                Enter
+              </button>
             ) : null}
             <span className="radial-dial__hub-copy">
               {hubKicker ? (
@@ -199,11 +211,9 @@ export function RadialVariantDial({
       <p className="radial-dial__status">
         {colorLead && !size
           ? shown
-            ? confirmTwice && shown.id === colorId
-              ? `Tap ${shown.label} again to continue.`
-              : shown.available
-                ? shown.label
-                : `${shown.label} is sold out.`
+            ? shown.available
+              ? shown.label
+              : `${shown.label} is sold out.`
             : colors.some(option => !option.available)
               ? "Choose a color. Lined-through colors are sold out."
               : "Choose a color on the ring."

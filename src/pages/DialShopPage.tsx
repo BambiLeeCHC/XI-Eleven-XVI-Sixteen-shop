@@ -482,6 +482,23 @@ export function DialShopPage() {
                   true,
                 )
               }
+              onSelect={() => {
+                const slide = familySlides[familyIndex];
+                if (!slide) return;
+                playPreview();
+                go(
+                  {
+                    f: slide.id,
+                    p: "",
+                    color: "",
+                    size: "",
+                    step: "families",
+                    sheet: false,
+                  },
+                  true,
+                );
+              }}
+              selected={Boolean(family)}
               onConfirm={slide => {
                 playConfirm();
                 go({
@@ -540,8 +557,13 @@ export function DialShopPage() {
                 sizeId={chosenSize?.id || ""}
                 colorId=""
                 focus="size"
-                selectOnTap
-                onSize={() => undefined}
+                enterToAdvance
+                onSize={id => {
+                  const option = sizes.find(item => item.id === id);
+                  if (!option?.available) return;
+                  playPreview();
+                  go({ size: id, step: "size", sheet: false }, true);
+                }}
                 onColor={() => undefined}
                 onCommitSize={id => {
                   const option = sizes.find(item => item.id === id);
@@ -745,16 +767,23 @@ function CategoryRing({
         playTick();
       }}
       onSelect={id => {
-        if (id === activeId) {
-          playConfirm();
-          onConfirm(id);
-        } else {
-          playPreview();
-          onPreview(id);
-        }
+        playPreview();
+        onPreview(id);
       }}
     >
       <p className="dial-slices__name">{label}</p>
+      {activeId ? (
+        <button
+          type="button"
+          className="dial-enter"
+          onClick={() => {
+            playConfirm();
+            onConfirm(activeId);
+          }}
+        >
+          Enter
+        </button>
+      ) : null}
     </DialSliceRing>
   );
 }
