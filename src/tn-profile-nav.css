@@ -1,0 +1,27 @@
+/* Feed / Profile / Readings dock utilities */
+.north-dock button.north-dock__util {
+  min-height: 44px;
+  border: 0;
+  background: transparent;
+  border-radius: 999px;
+  color: rgba(246, 241, 232, 0.72);
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  padding: 0 0.55rem;
+}
+.north-dock button.north-dock__util:hover {
+  color: #f6f1e8;
+}
+.tn-rail__glyph {
+  display: none !important;
+}
+.tn-rail__item {
+  gap: 0;
+}
+.north-sky__constellation {
+  margin-top: 1rem;
+  padding-top: 0.85rem;
+  border-top: 1px solid rgba(201, 168, 76, 0.22);
+}
