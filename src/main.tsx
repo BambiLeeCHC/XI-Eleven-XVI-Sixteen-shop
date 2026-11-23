@@ -16,6 +16,7 @@ import "./dial-shop.css";
 import "./live-sky.css";
 import "./north-social.css";
 import "./tn-fan-dock.css";
+import "./tn-profile-nav.css";
 import "./heirloom-carousel.css";
 
 createRoot(document.getElementById("root")!).render(
