@@ -48,23 +48,34 @@ async function chartFor(row: BirthRow): Promise<GroupPerson["chart"] | null> {
   };
 }
 
-const VOICE = `You write group tarot readings for XI · XVI True North.
+const VOICE = `You are the XI · XVI Reader writing a Group Read for True North — same house voice as Tri-Sky / The Long Read.
 
-Rules:
-- Plain English. Short sentences. No poetry. No vague "energy" talk.
-- Tell people what is true and what to do next.
-- Positive and forward. Strengths and progress only.
-- Never write doom, warning, or "where you spark".
-- Hard cards (Tower, Death, Devil, heavy Swords) mean: keep what works, drop what does not, move on what you control.
-- Squares and oppositions mean: put both views into one plan with a deadline.
-- Use given pronouns; otherwise they/them and the person's name.
-- Never invent a person, card, or placement. No degrees. No orbs.
-- Never print private orientation or gender labels.
+Your only job is to bring hope for this group. Show what they are already doing right together, and the best-case path the cards open — even when that path is slim. You never darken the room.
 
-Format only:
-## Portrait
-2–3 short sentences. Name the root card. Say what this group is for and the one move in front of them.
-Then one "## " section for every heading listed after Portrait, in that order. Each section: 2–4 short sentences. Name the card. Give a clear action.`;
+CORE MANDATE:
+- Speak to what is working between these people, what each person already brings, and the best case the spread opens.
+- NEVER dwell on failure, doom, warnings, what they are doing wrong, or worst-case outcomes.
+- Heavy or reversed cards become course-correction, latent strength, or the best move still on the table — never collapse.
+- Do not invent hardship. Do not "balance" hope with fear.
+
+VOICE AND STRUCTURE (match Tri-Sky):
+- Continuous prose. No bullet lists. No emoji. No sign-off.
+- Open from what is already workable in how this group shows up together — not a teaser about a card.
+- Address the people by name, woven in naturally. Use given pronouns; otherwise they/them.
+- Address the cards ONE AT A TIME in draw order, each in its own short paragraph that starts with the position name (e.g. "In the Root of this, **The Star** ..."). Read each card against this group and their question as evidence of strength, support, or best-case possibility — not keyword soup.
+- Build one throughline of encouragement across the spread.
+- Close with one synthesis paragraph of the hopeful throughline, then one concrete second-person (or group) action that moves them toward the best case. No vague mysticism. No telling them how to feel.
+- Sparing bold (**like this**) on three or four phrases that matter most.
+- Write 320–480 words.
+- Never invent a person, card, or placement. No degree numbers. No orbs.
+- Never print private orientation or gender labels as the subject.
+
+Format exactly:
+## Opening
+2–3 sentences. Name the group dynamic and what is already working.
+## The reading
+The full continuous read: people woven in, then each card by position, then synthesis and the one action.
+`;
 
 function section(text: string, heading: string) {
   const match = text.match(new RegExp(`##\\s*${heading}\\s*([\\s\\S]*?)(?=\\n##\\s|$)`, "i"));
@@ -72,18 +83,23 @@ function section(text: string, heading: string) {
 }
 
 function voiced(base: GroupReading, text: string): GroupReading | null {
-  const portrait = section(text, "Portrait");
-  if (!portrait) return null;
-  const sections = base.sections.map(item => {
-    const body = section(text, item.heading);
-    return { heading: item.heading, text: body || item.text };
-  });
-  if (sections.some(item => !item.text)) return null;
-  const magnetize = sections.find(item => /holds you together|magnetize/i.test(item.heading))?.text ?? base.magnetize;
-  const breakthrough = sections.find(item => /opening|breakthrough/i.test(item.heading))?.text ?? base.breakthrough;
-  const directive = sections.find(item => /move|next step|do this next/i.test(item.heading))?.text ?? base.directive;
-  const next = { ...base, portrait, sections, magnetize, breakthrough, directive };
-  next.body = [portrait, ...sections.map(item => `${item.heading}. ${item.text}`)].join("\n\n");
+  const opening = section(text, "Opening") || section(text, "Portrait");
+  const reading = section(text, "The reading") || section(text, "Reading");
+  if (!opening && !reading) return null;
+  const portrait = opening || base.portrait;
+  const main = reading || text.replace(/^##\\s*Opening[\\s\\S]*?(?=##|$)/i, "").trim() || base.body;
+  const sections = [{ heading: "The reading", text: main }];
+  const sentences = main.split(/(?<=\\.)\\s+/).filter(Boolean);
+  const directive = sentences.length ? sentences[sentences.length - 1] : base.directive;
+  const next: GroupReading = {
+    ...base,
+    portrait,
+    sections,
+    magnetize: main,
+    breakthrough: main,
+    directive,
+    body: `${portrait}\\n\\n${main}`,
+  };
   return next;
 }
 
@@ -91,15 +107,26 @@ async function voiceGroupReading(reading: GroupReading): Promise<GroupReading> {
   const facts = [
     `Title: ${reading.title}`,
     `Kind: ${reading.kindLabel}`,
+    `Connection: ${reading.connection}`,
+    reading.question ? `Their question: ${reading.question}` : "No specific question — speak to what this group is ready to build.",
     `People, in order: ${reading.roles.map(role => role.name).join(", ")}`,
-    `Section headings after Portrait, in order: ${reading.sections.map(item => item.heading).join(" | ")}`,
-    "Cards, in order:",
-    ...reading.cards.map(card => `${card.slotName}: ${card.card.name}${card.reversed ? " reversed" : ""}. ${card.reversed ? card.card.reversed : card.card.upright}`),
-    "Chart facts (for the lens only — do not recite degrees):",
+    "Each person (use for voice only):",
+    ...reading.roles.map(role => `- ${role.name}: ${role.line}`),
+    "Cards, in draw order:",
+    ...reading.cards.map(
+      card =>
+        `- ${card.slotName}: ${card.card.name}${card.reversed ? " REVERSED" : " upright"}. ` +
+        `${card.reversed ? card.card.reversed : card.card.upright}`,
+    ),
+    "Chart facts (lens only — do not recite degrees):",
     ...reading.details,
-    reading.privateNote ? `Private context, never quote these labels:\n${reading.privateNote}` : "",
-  ].join("\n");
-  const result = await generateWithGroq(VOICE, facts, 1800);
+    reading.privateNote
+      ? `Private context for pronouns/relationship framing only, never quote labels:\\n${reading.privateNote}`
+      : "",
+    "",
+    "Write the Group Read now in the Tri-Sky house voice. Follow the format exactly.",
+  ].join("\\n");
+  const result = await generateWithGroq(VOICE, facts, 2200);
   if (!result.success) return reading;
   return voiced(reading, result.text) ?? reading;
 }
