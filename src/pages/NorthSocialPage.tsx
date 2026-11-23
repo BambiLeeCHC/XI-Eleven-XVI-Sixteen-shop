@@ -1,42 +1,41 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { GroupReadRoom } from "../components/north/GroupReadRoom";
-import { CompassRose } from "../components/north/CompassRose";
-import { SkyAvatar } from "../components/north/SkyAvatar";
-import { AvatarStudio } from "../components/north/AvatarStudio";
-import { TarotCardArt } from "../components/north/TarotCardArt";
-import { HeirloomBacksCarousel } from "../components/north/HeirloomBacksCarousel";
-import { ConstellationSeat, PostCard, atHandle, portraitFor } from "../components/north/NorthSocialPieces";
 import { drawCards } from "../components/north/SocialFeed";
-import { TrueNorthAtmosphere } from "../components/journal/TrueNorthAtmosphere";
-import { SEO } from "../components/SEO";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "../components/ui/dialog";
-import { PAGE_SEO } from "../data/seoMeta";
-import { api, useAuthActions, useQuery } from "../lib/backend";
+import { AvatarStudio } from "../components/north/AvatarStudio";
+import { useAuthActions } from "@convex-dev/auth/react";
+import { useQuery } from "convex/react";
+import { api } from "../../convex/_generated/api";
 import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "../components/ui/dialog";
+import {
+  MY_CONSTELLATION_LABEL,
+  NORTH_SOCIAL_STORAGE_KEY,
   activeAvatarUrl,
   addComment,
-  createPost,
-  moveTop,
-  MY_CONSTELLATION_LABEL,
-  MY_SKY_LABEL,
-  NORTH_SOCIAL_STORAGE_KEY,
-  promoteTop,
+  atHandle,
+  portraitFor,
   rankedEight,
   resolveTrueNorthView,
-  syncNorthAvatar,
   toggleReaction,
-  upgradeSocialState,
-  upsertFriend,
-  type ReadingMode,
-  type SkyPanel,
-  type SocialPost,
+  type PostKind,
   type SocialState,
   type SpaceProfile,
   type TopFriend,
+  upgradeSocialState,
+  moveTop,
+  promoteTop,
 } from "../lib/northSocial";
-import { supabase } from "../lib/supabase";
-import { ChartHomePage } from "./chart/ChartHomePage";
+import { SkyAvatar } from "../components/north/SkyAvatar";
+import { TarotCardArt } from "../components/north/TarotCardArt";
+import { ConstellationSeat } from "../components/north/ConstellationSeat";
+import { PostCard } from "../components/north/PostCard";
+import ChartHomePage from "./chart/ChartHomePage";
 import DeepReadingPage from "./DeepReadingPage";
 import { NumbersPage } from "./chart/NumbersPage";
 import { ProfileEditor } from "./chart/ProfileEditor";
@@ -45,7 +44,6 @@ import { TrueNorthNav, type NatalChartResult, type NumerologyResult } from "./ch
 const SKY_TABS = [
   { id: "chart", label: "Chart" },
   { id: "numbers", label: "Numbers" },
-  { id: "constellation", label: MY_CONSTELLATION_LABEL },
   { id: "posts", label: "Posts" },
 ] as const;
 
@@ -53,7 +51,7 @@ export function NorthSocialPage() {
   const location = useLocation();
   const navigate = useNavigate();
   const view = resolveTrueNorthView(location.pathname, location.hash);
-  const user = useQuery(api.auth.currentUser);
+  const user = useQuery(api.users.current);
   const chartResult = useQuery<NatalChartResult>(api.natalChart.get, user ? {} : "skip");
   const numbersResult = useQuery<NumerologyResult>(api.numerology.get, user && view.destination === "sky" ? {} : "skip");
   const { signOut } = useAuthActions();
@@ -87,146 +85,86 @@ export function NorthSocialPage() {
   }, [ready, state]);
 
   useEffect(() => {
-    if (!ready || !user) return;
-    setState(current => {
-      const photo = typeof user.photoUrl === "string" ? user.photoUrl : current.space.photoUrl;
-      const ai = typeof user.aiAvatarUrl === "string" ? user.aiAvatarUrl : current.space.aiAvatarUrl;
-      return {
-        ...current,
-        space: {
-          ...current.space,
-          photoUrl: photo,
-          aiAvatarUrl: ai,
-          avatarMode: user.avatarMode === "original" ? "original" : "ai",
-        },
-      };
-    });
-  }, [ready, user]);
-
-  useEffect(() => {
-    const hash = location.hash.replace("#", "");
-    if (hash === "profile" || hash === "details" || hash === "birth") setEditor(true);
-  }, [location.hash]);
-
-  useEffect(() => {
-    setFlashKey(key => key + 1);
+    setFlashKey(k => k + 1);
   }, [view.destination, view.reading]);
 
   useEffect(() => {
     if (!ready || !user) return;
     if (!user.northOnboardedAt && !greeted.current && view.destination === "sky") {
       greeted.current = true;
-      setEditor(true);
     }
-    setState(current => ({
-      ...current,
-      space: {
-        ...current.space,
-        name: user.name || current.space.name,
-        manifesto: user.northNote || current.space.manifesto,
-      },
-    }));
   }, [ready, user, view.destination]);
 
-  const author = (user?.name as string | undefined) || state.space.name || "You";
-  const youHandle = (state.space.handle || author).toLowerCase().replace(/[^a-z0-9]+/g, "") || "you";
+  const author = state.space.displayName || user?.name || "You";
+  const youHandle = state.space.handle || "you";
+  const sun = state.space.sun || chartResult?.sun || "Leo";
+  const moon = state.space.moon || chartResult?.moon || "Cancer";
+  const rising = state.space.rising || chartResult?.rising || "Aries";
+  const lifePath = numbersResult?.lifePath;
   const youSrc = activeAvatarUrl(state.space);
-  const chart = chartResult?.success ? chartResult.chart ?? null : null;
-  const sun = chart?.placements?.find(item => item.body === "Sun")?.sign || state.space.sun;
-  const moon = chart?.placements?.find(item => item.body === "Moon")?.sign || state.space.moon;
-  const rising = chart?.ascendant || state.space.rising;
-  const lifePath = numbersResult?.numbers?.lifePath ? String(numbersResult.numbers.lifePath) : state.space.lifePath;
-  const storyPost = state.posts.find(post => post.id === story);
-
-  const rings = useMemo(() => {
-    const seen = new Set<string>();
-    const list: SocialPost[] = [];
-    for (const post of [...state.posts].sort((a, b) => b.createdAt - a.createdAt)) {
-      if (seen.has(post.handle)) continue;
-      seen.add(post.handle);
-      list.push(post);
-    }
-    return list.slice(0, 10);
-  }, [state.posts]);
 
   const feed = useMemo(() => {
-    return [...state.posts]
-      .filter(post => filter === "all" || (filter === "tandem" ? post.kind === "tandem" : post.kind !== "tandem"))
-      .sort((a, b) => b.createdAt - a.createdAt);
+    const posts = state.posts;
+    if (filter === "posts") return posts.filter(p => p.kind === "bulletin" || p.kind === "note" || p.kind === "pull" || p.kind === "spread");
+    if (filter === "tandem") return posts.filter(p => p.kind === "tandem");
+    return posts;
   }, [filter, state.posts]);
 
   const personal = useMemo(() => {
-    return [...state.posts]
-      .filter(post => post.author === author || post.kind === "tandem")
-      .sort((a, b) => b.createdAt - a.createdAt);
-  }, [author, state.posts]);
+    return state.posts.filter(p => p.handle === youHandle || p.author === author);
+  }, [state.posts, youHandle, author]);
 
-  const publish = (title: string, body: string, cards: string[], kind: SocialPost["kind"]) => {
-    if (!body.trim() && cards.length === 0) return;
+  const rings = useMemo(() => state.posts.slice(0, 12), [state.posts]);
+  const storyPost = story ? state.posts.find(p => p.id === story) : null;
+
+  const publish = (title: string, body: string, cards: string[], kind: PostKind) => {
+    const text = body.trim();
+    if (!text && cards.length === 0 && kind === "bulletin") return;
     setState(current => ({
       ...current,
-      posts: [createPost({
-        author,
-        handle: youHandle,
-        sign: sun,
-        kind,
-        title,
-        body,
-        cards,
-      }), ...current.posts],
+      posts: [
+        {
+          id: `local-${Date.now()}`,
+          author,
+          handle: youHandle,
+          title,
+          body: text,
+          cards,
+          kind,
+          sign: sun,
+          createdAt: Date.now(),
+          reactions: {},
+          comments: [],
+        },
+        ...current.posts,
+      ],
     }));
     setDraft("");
+    setComposerOpen(false);
   };
 
   const saveAvatar = (next: Pick<SpaceProfile, "photoUrl" | "aiAvatarUrl" | "avatarMode">) => {
-    setState(current => {
-      const space = { ...current.space, ...next };
-      const id = user?._id as string | undefined;
-      if (id) void syncNorthAvatar(supabase as never, id, space);
-      return { ...current, space };
-    });
+    setState(current => ({ ...current, space: { ...current.space, ...next } }));
   };
 
-  const saveFriend = () => {
-    if (!friend.name.trim()) return;
-    const next: TopFriend = {
-      id: `friend-${Date.now()}`,
-      name: friend.name.trim(),
-      handle: friend.handle.trim() || friend.name.trim().toLowerCase().replace(/[^a-z0-9]+/g, ""),
-      sun: friend.sun,
-      moon: friend.moon,
-      rising: friend.rising,
-      vibe: "Chosen",
-    };
-    setState(current => ({ ...current, top: upsertFriend(current.top, next, 7) }));
-    setFriend({ name: "", handle: "", sun: "Aries", moon: "Cancer", rising: "Libra" });
+  const goSky = (panel: "chart" | "numbers" | "constellation" | "posts") => {
+    const base = location.pathname.startsWith("/chart") ? location.pathname : "/chart";
+    if (panel === "chart" || panel === "constellation") navigate(`${base}#profile`);
+    else navigate(`${base}#${panel}`);
   };
 
-  const goSky = (panel: SkyPanel) => {
-    const base = location.pathname.startsWith("/profile") ? "/profile" : "/chart";
-    if (panel === "numbers") navigate(`${base}#numbers`);
-    else if (panel === "constellation") navigate(`${base}#constellation`);
-    else if (panel === "posts") navigate(`${base}#posts`);
-    else navigate(base === "/profile" ? "/profile#chart" : "/chart#sky");
-  };
-
-  const goReading = (mode: ReadingMode) => {
-    if (mode === "group") navigate("/chart#group");
-    else navigate("/chart#tri-sky");
+  const goReading = (mode: "tri" | "group") => {
+    navigate(mode === "tri" ? "/chart#tri-sky" : "/chart#group");
   };
 
   return (
-    <div className="journal-page journal-page--truenorth north-social">
-      <span key={flashKey} className="north-sweep" aria-hidden="true" />
-      <TrueNorthAtmosphere />
-      <div className="journal-stack tn-shell">
-        <SEO title={PAGE_SEO.chart.title} description={PAGE_SEO.chart.description} url="/chart" />
-        <HeirloomBacksCarousel />
-        <header className="tn-card north-social__head north-shell">
+    <div className="north-social" key={flashKey}>
+      <div className="north-sweep" aria-hidden="true" />
+      <div className="north-social__inner">
+        <header className="north-social__mast">
           <div className="north-social__brand">
-            <CompassRose />
             <div>
-              <p className="north-kicker">XI · XVI</p>
+              <p className="kicker-lock">XI · XVI</p>
               <h1 className="clash north-social__title">True North</h1>
             </div>
           </div>
@@ -236,7 +174,7 @@ export function NorthSocialPage() {
         {view.destination === "feed" && (
           <>
             <div className="story-row" aria-label="Stories">
-              <button type="button" className="story-ring" onClick={() => navigate("/chart#sky")}>
+              <button type="button" className="story-ring" onClick={() => navigate("/chart#profile")}>
                 <SkyAvatar name={author} sign={sun} src={youSrc} size={64} />
                 <small>You</small>
               </button>
@@ -259,6 +197,8 @@ export function NorthSocialPage() {
                   <div className="tn-actions">
                     <button type="submit" className="cta-pist tn-action">Post</button>
                     <button type="button" className="cta-ghost tn-action" onClick={() => publish("A pull", draft, drawCards(3), "bulletin")}>Post with cards</button>
+                    <button type="button" className="cta-ghost tn-action" onClick={() => publish(`${author}'s chart`, draft || `${sun} sun · ${moon} moon · ${rising} rising`, [], "chart")}>Post chart</button>
+                    <button type="button" className="cta-ghost tn-action" onClick={() => publish(`${author}'s numbers`, draft || (lifePath ? `Life path ${lifePath}` : "My numbers"), [], "number")}>Post numbers</button>
                   </div>
                 </form>
               )}
@@ -269,29 +209,12 @@ export function NorthSocialPage() {
                 ["all", "All"],
                 ["posts", "Notes"],
                 ["tandem", "Tandem"],
-                ["friends", "Circle"],
               ] as const).map(([id, label]) => (
                 <button key={id} type="button" className={filter === id ? "is-on" : ""} onClick={() => setFilter(id)}>{label}</button>
               ))}
             </div>
 
-            {filter === "friends" ? (
-              <section className="tn-card">
-                <p className="label-lock">Circle</p>
-                <ul className="constellation">
-                  {rankedEight(state.top).slice(0, 4).map(person => (
-                    <ConstellationSeat
-                      key={person.id}
-                      person={person}
-                      index={state.top.findIndex(item => item.id === person.id)}
-                      onPromote={() => setState(current => ({ ...current, top: promoteTop(current.top, current.top.findIndex(item => item.id === person.id)) }))}
-                      onMove={direction => setState(current => ({ ...current, top: moveTop(current.top, current.top.findIndex(item => item.id === person.id), direction) }))}
-                      onOpen={() => setSheet(person)}
-                    />
-                  ))}
-                </ul>
-              </section>
-            ) : feed.map(post => (
+            {feed.map(post => (
               <PostCard
                 key={post.id}
                 post={post}
@@ -310,22 +233,34 @@ export function NorthSocialPage() {
         {view.destination === "sky" && (
           <section className="tn-card north-sky">
             <div className="north-sky__you">
-              <button type="button" className="north-sky__avatar" onClick={() => setStudio(true)}>
+              <div className="north-sky__avatar">
                 <span className="north-sky__ring">
-                  <img src={youSrc || undefined} alt="" />
+                  {youSrc ? <img src={youSrc} alt="" /> : <SkyAvatar name={author} sign={sun} size={72} />}
                 </span>
-                <small>Edit card</small>
-              </button>
+              </div>
               <div>
-                <p className="label-lock">{MY_SKY_LABEL}</p>
+                <p className="label-lock">Profile</p>
                 <h2 className="clash">{author}</h2>
-                <p className="serif-quiet tn-lede">{sun} · {moon} · {rising}{lifePath ? ` · ${lifePath}` : ""}</p>
-                <div className="tn-actions">
-                  <button type="button" className="cta-ghost tn-action" onClick={() => setEditor(true)}>Profile</button>
-                  <button type="button" className="cta-ghost tn-action" onClick={() => void signOut()}>Sign out</button>
-                </div>
+                <p className="serif-quiet tn-lede">{sun} · {moon} · {rising}{lifePath ? ` · Life path ${lifePath}` : ""}</p>
               </div>
             </div>
+
+            <div className="north-sky__constellation">
+              <p className="label-lock">{MY_CONSTELLATION_LABEL}</p>
+              <ul className="constellation">
+                {rankedEight(state.top).map((person, index) => (
+                  <ConstellationSeat
+                    key={person.id}
+                    person={person}
+                    index={index}
+                    onPromote={() => setState(current => ({ ...current, top: promoteTop(current.top, index) }))}
+                    onMove={direction => setState(current => ({ ...current, top: moveTop(current.top, index, direction) }))}
+                    onOpen={() => setSheet(person)}
+                  />
+                ))}
+              </ul>
+            </div>
+
             <div className="north-sky__tabs" role="tablist">
               {SKY_TABS.map(tab => (
                 <button
@@ -339,25 +274,13 @@ export function NorthSocialPage() {
                 </button>
               ))}
             </div>
-            {(view.skyPanel === "chart" || !view.skyPanel) && <ChartHomePage />}
+            {(view.skyPanel === "chart" || !view.skyPanel || view.skyPanel === "constellation") && <ChartHomePage />}
             {view.skyPanel === "numbers" && <NumbersPage />}
-            {view.skyPanel === "constellation" && (
-              <ul className="constellation">
-                {rankedEight(state.top).map((person, index) => (
-                  <ConstellationSeat
-                    key={person.id}
-                    person={person}
-                    index={index}
-                    onPromote={() => setState(current => ({ ...current, top: promoteTop(current.top, index) }))}
-                    onMove={direction => setState(current => ({ ...current, top: moveTop(current.top, index, direction) }))}
-                    onOpen={() => setSheet(person)}
-                  />
-                ))}
-              </ul>
-            )}
             {view.skyPanel === "posts" && (
               <div className="north-personal">
-                {personal.map(post => (
+                {personal.length === 0 ? (
+                  <p className="serif-quiet">Nothing posted yet.</p>
+                ) : personal.map(post => (
                   <PostCard
                     key={post.id}
                     post={post}
@@ -376,7 +299,7 @@ export function NorthSocialPage() {
         )}
 
         {view.destination === "readings" && (
-          <section className="tn-card">
+          <section className="tn-card north-readings">
             <div className="tn-actions">
               <button type="button" className={view.reading === "tri" ? "cta-pist tn-action" : "cta-ghost tn-action"} onClick={() => goReading("tri")}>Tri-Sky</button>
               <button type="button" className={view.reading === "group" ? "cta-pist tn-action" : "cta-ghost tn-action"} onClick={() => goReading("group")}>Group / Tandem</button>
@@ -390,24 +313,11 @@ export function NorthSocialPage() {
                   moon,
                   rising,
                 }}
-                friends={rankedEight(state.top)}
-                onPost={(title, body, bond) => {
-                  const post = createPost({
-                    author,
-                    handle: youHandle,
-                    sign: sun,
-                    kind: "tandem",
-                    title,
-                    body,
-                    cards: [],
-                    bond,
-                  });
-                  setState(current => ({ ...current, posts: [post, ...current.posts] }));
-                  navigate("/chart");
-                }}
+                friends={state.top}
+                onPost={(title, body, bond) => publish(title, body, [], "tandem")}
               />
             ) : (
-              <DeepReadingPage />
+              <DeepReadingPage embedded />
             )}
           </section>
         )}
@@ -415,9 +325,10 @@ export function NorthSocialPage() {
 
       <nav className="north-dock" aria-label="True North places">
         <Link to="/chart" className={view.destination === "feed" ? "is-on" : ""}>Feed</Link>
-        <Link to="/chart#sky" className={view.destination === "sky" ? "is-on" : ""}>My Sky</Link>
-        <Link to="/chart#tri-sky" className={view.destination === "readings" && view.reading === "tri" ? "is-on" : ""}>Tri-Sky</Link>
-        <Link to="/chart#group" className={view.destination === "readings" && view.reading === "group" ? "is-on" : ""}>Tandem</Link>
+        <Link to="/chart#profile" className={view.destination === "sky" ? "is-on" : ""}>Profile</Link>
+        <Link to="/chart#readings" className={view.destination === "readings" ? "is-on" : ""}>Readings</Link>
+        <button type="button" className="north-dock__util" onClick={() => setEditor(true)}>Edit Profile</button>
+        <button type="button" className="north-dock__util" onClick={() => void signOut()}>Sign out</button>
       </nav>
 
       <Dialog open={Boolean(storyPost)} onOpenChange={open => { if (!open) setStory(null); }}>
@@ -456,8 +367,8 @@ export function NorthSocialPage() {
       <Dialog open={editor} onOpenChange={setEditor}>
         <DialogContent className="avatar-studio">
           <DialogHeader>
-            <DialogTitle>Profile</DialogTitle>
-            <DialogDescription>Your True North details.</DialogDescription>
+            <DialogTitle>Edit Profile</DialogTitle>
+            <DialogDescription>Update what your profile shows — details, chart, numbers, constellation, and avatar.</DialogDescription>
           </DialogHeader>
           <ProfileEditor onClose={() => setEditor(false)} />
         </DialogContent>
