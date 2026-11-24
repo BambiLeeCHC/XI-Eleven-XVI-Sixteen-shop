@@ -45,29 +45,27 @@
   top: 50%;
   z-index: 6;
   transform: translate(-50%, -50%);
-  min-width: 7.4rem;
-  min-height: 3.15rem;
-  padding: 0.35rem 1.15rem;
+  min-width: 6.6rem;
+  min-height: 2.7rem;
+  padding: 0.45rem 1.25rem 0.5rem;
   border-radius: 999px;
-  border: 1px solid #eaff7a;
-  background: radial-gradient(circle at 50% 40%, rgba(40, 52, 18, 0.2), rgba(6, 10, 8, 0.88));
-  color: #f3ff9a;
-  font-weight: 800;
-  font-size: 1.2rem;
-  letter-spacing: 0.24em;
-  text-indent: 0.24em;
-  text-transform: uppercase;
+  border: 1px solid rgba(214, 184, 122, 0.95);
+  background: rgba(10, 10, 12, 0.92);
+  backdrop-filter: blur(10px);
+  color: #f6edd8;
+  font-family: Fraunces, Georgia, serif;
+  font-style: italic;
+  font-weight: 500;
+  font-size: 1.35rem;
+  letter-spacing: 0.16em;
+  text-indent: 0.16em;
   line-height: 1;
   cursor: pointer;
   pointer-events: auto;
-  text-shadow:
-    0 0 8px #d6ff4a,
-    0 0 18px #9dff6a;
   box-shadow:
-    0 0 16px rgba(214, 255, 74, 0.7),
-    0 0 36px rgba(120, 255, 180, 0.35),
-    inset 0 0 14px rgba(214, 255, 74, 0.28);
-  animation: dial-enter-pulse 1.5s ease-in-out infinite;
+    inset 0 0 0 1px rgba(246, 237, 216, 0.08),
+    0 10px 24px rgba(10, 10, 12, 0.18);
+  animation: dial-enter-pulse 2.4s ease-in-out infinite;
 }
 
 .dial-slices__hub:has(.dial-enter) .dial-slices__name,
@@ -82,7 +80,7 @@
 
 @keyframes dial-enter-pulse {
   0%, 100% { opacity: 1; }
-  50% { opacity: 0.32; }
+  50% { opacity: 0.72; }
 }
 
 @media (prefers-reduced-motion: reduce) {

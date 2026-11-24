@@ -196,7 +196,7 @@ export function RadialVariantDial({
                 className="dial-enter"
                 onClick={commit}
               >
-                Enter
+                Next
               </button>
             ) : null}
             <span className="radial-dial__hub-copy">

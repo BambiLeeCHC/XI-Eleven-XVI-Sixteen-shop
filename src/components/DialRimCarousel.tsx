@@ -109,7 +109,7 @@ export function DialRimCarousel({
             onConfirm(slide);
           }}
         >
-          Enter
+          Next
         </button>
       ) : null}
       <button
@@ -163,7 +163,7 @@ export function DialRimCarousel({
         </text>
       </svg>
       <p className="dial-rim__hint" aria-live="polite">
-        {soldOut ? "Sold out" : selected ? "Press enter" : "Tap to select"}
+        {soldOut ? "Sold out" : selected ? "" : "Tap to select"}
       </p>
     </div>
   );

@@ -428,7 +428,7 @@ export function DialShopPage() {
           ))}
         </div>
 
-        <div className="dial-orbit" key={`${gender}-${category}-${family}-${step}-${productId}`}>
+        <div className="dial-orbit" key={`${gender}-${step}`}>
           {step === "categories" ? (
             <CategoryRing
               items={categories.map(item => ({
@@ -781,7 +781,7 @@ function CategoryRing({
             onConfirm(activeId);
           }}
         >
-          Enter
+          Next
         </button>
       ) : null}
     </DialSliceRing>
