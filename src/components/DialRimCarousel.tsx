@@ -1,4 +1,4 @@
-import { useEffect, useId, useRef, useState } from "react";
+import { useId, useRef } from "react";
 
 export type RimSlide = {
   id: string;
@@ -11,32 +11,31 @@ export type RimSlide = {
 /**
  * One product at a time, inside the dial.
  * Arrows, swipe, and arrow keys change the preview.
- * The first tap marks that preview. The second tap on the same preview confirms it.
+ * A tap selects it. Enter in the center confirms.
  */
 export function DialRimCarousel({
   slides,
   index,
   onIndex,
+  onSelect,
   onConfirm,
+  selected = false,
   label,
 }: {
   slides: RimSlide[];
   index: number;
   onIndex: (index: number) => void;
+  onSelect?: () => void;
   onConfirm: (slide: RimSlide) => void;
+  selected?: boolean;
   label: string;
 }) {
   const rawId = useId();
   const pathId = `rim-${rawId.replace(/[^a-zA-Z0-9]/g, "")}`;
-  const [primed, setPrimed] = useState(false);
   const startX = useRef(0);
   const dragged = useRef(false);
   const count = slides.length;
   const slide = slides[index] || slides[0];
-
-  useEffect(() => {
-    setPrimed(false);
-  }, [slide?.id]);
 
   if (!slide || count === 0) return null;
 
@@ -50,12 +49,7 @@ export function DialRimCarousel({
       dragged.current = false;
       return;
     }
-    if (!primed) {
-      setPrimed(true);
-      return;
-    }
-    if (slide.available === false) return;
-    onConfirm(slide);
+    onSelect?.();
   };
 
   const name = slide.label.toUpperCase();
@@ -63,7 +57,7 @@ export function DialRimCarousel({
 
   return (
     <div
-      className={`dial-rim${primed ? " is-armed" : ""}${soldOut ? " is-off" : ""}`}
+      className={`dial-rim${selected ? " is-armed" : ""}${soldOut ? " is-off" : ""}`}
       style={{ "--tint": slide.tint || "#e4d4f4" } as React.CSSProperties}
       role="group"
       aria-roledescription="carousel"
@@ -96,9 +90,7 @@ export function DialRimCarousel({
         aria-label={
           soldOut
             ? `${slide.label}, sold out`
-            : primed
-              ? `${slide.label}. Tap again to continue`
-              : slide.label
+          : slide.label
         }
         onClick={activate}
       >
@@ -108,6 +100,18 @@ export function DialRimCarousel({
           <span aria-hidden="true">✦</span>
         )}
       </button>
+      {selected && !soldOut ? (
+        <button
+          type="button"
+          className="dial-enter"
+          onClick={event => {
+            event.stopPropagation();
+            onConfirm(slide);
+          }}
+        >
+          Enter
+        </button>
+      ) : null}
       <button
         type="button"
         className="dial-rim__arrow dial-rim__arrow--prev"
@@ -159,7 +163,7 @@ export function DialRimCarousel({
         </text>
       </svg>
       <p className="dial-rim__hint" aria-live="polite">
-        {soldOut ? "Sold out" : primed ? "Tap again" : ""}
+        {soldOut ? "Sold out" : selected ? "Press enter" : "Tap to select"}
       </p>
     </div>
   );

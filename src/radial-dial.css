@@ -34,9 +34,59 @@
 .dial-slice.is-hot,
 .dial-slice.is-on,
 .dial-slice:focus-visible {
-  filter: drop-shadow(0 0 5px var(--slice));
-  stroke: #f7f0e6;
-  stroke-width: 1.1;
+  filter: drop-shadow(0 0 8px var(--slice)) drop-shadow(0 10px 16px rgba(17, 17, 17, 0.22));
+  stroke: #e8ff6a;
+  stroke-width: 1.4;
+}
+
+.dial-enter {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 6;
+  transform: translate(-50%, -50%);
+  min-width: 7.4rem;
+  min-height: 3.15rem;
+  padding: 0.35rem 1.15rem;
+  border-radius: 999px;
+  border: 1px solid #eaff7a;
+  background: radial-gradient(circle at 50% 40%, rgba(40, 52, 18, 0.2), rgba(6, 10, 8, 0.88));
+  color: #f3ff9a;
+  font-weight: 800;
+  font-size: 1.2rem;
+  letter-spacing: 0.24em;
+  text-indent: 0.24em;
+  text-transform: uppercase;
+  line-height: 1;
+  cursor: pointer;
+  pointer-events: auto;
+  text-shadow:
+    0 0 8px #d6ff4a,
+    0 0 18px #9dff6a;
+  box-shadow:
+    0 0 16px rgba(214, 255, 74, 0.7),
+    0 0 36px rgba(120, 255, 180, 0.35),
+    inset 0 0 14px rgba(214, 255, 74, 0.28);
+  animation: dial-enter-pulse 1.5s ease-in-out infinite;
+}
+
+.dial-slices__hub:has(.dial-enter) .dial-slices__name,
+.dial-slices__hub:has(.dial-enter) .radial-dial__hub-copy {
+  position: absolute;
+  top: 16%;
+  z-index: 4;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+@keyframes dial-enter-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.32; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dial-enter { animation: none; opacity: 1; }
 }
 
 .dial-slice.is-off {
