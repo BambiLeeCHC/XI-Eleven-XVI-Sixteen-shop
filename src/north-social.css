@@ -557,10 +557,16 @@
 .group-read .long-read-card-name { color: #f6f1e8; }
 .group-read__portrait,
 .group-read__role p,
-.group-read__block p {
+.group-read__block p,
+.group-read__card-line {
   margin: 0;
   line-height: 1.55;
   font-size: 1.02rem;
+  white-space: pre-line;
+}
+.group-read__card-line {
+  margin-top: 0.35rem;
+  font-size: 0.92rem;
 }
 .group-read__portrait { margin-bottom: 0.4rem; }
 .group-read__role,

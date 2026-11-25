@@ -5,7 +5,6 @@
  */
 import { FULL_DECK } from "../data/fullDeck.js";
 import type { ArcanaCard } from "../data/arcana.js";
-import { ELEMENT_LINE, MODE_LINE } from "./groupReadVoice.js";
 
 export type ChartPlacement = {
   body: string;
@@ -57,6 +56,8 @@ export type GroupCard = {
   slotName: string;
   card: ArcanaCard;
   reversed: boolean;
+  /** One plain sentence for this position. */
+  line: string;
 };
 
 export type GroupSection = {
@@ -110,25 +111,6 @@ export const TANDEM_BONDS = [
   { id: "other", label: "Other" },
 ] as const;
 
-const FIRE = new Set(["Aries", "Leo", "Sagittarius"]);
-const EARTH = new Set(["Taurus", "Virgo", "Capricorn"]);
-const AIR = new Set(["Gemini", "Libra", "Aquarius"]);
-const CARDINAL = new Set(["Aries", "Cancer", "Libra", "Capricorn"]);
-const FIXED = new Set(["Taurus", "Leo", "Scorpio", "Aquarius"]);
-
-function elementOf(sign: string): "fire" | "earth" | "air" | "water" {
-  if (FIRE.has(sign)) return "fire";
-  if (EARTH.has(sign)) return "earth";
-  if (AIR.has(sign)) return "air";
-  return "water";
-}
-
-function modeOf(sign: string): "cardinal" | "fixed" | "mutable" {
-  if (CARDINAL.has(sign)) return "cardinal";
-  if (FIXED.has(sign)) return "fixed";
-  return "mutable";
-}
-
 function isSignChart(chart: FullChart | SignChart): chart is SignChart {
   return "sun" in chart && "moon" in chart && "rising" in chart;
 }
@@ -146,15 +128,21 @@ function signsOf(person: GroupPerson): { sun: string; moon: string; rising: stri
   return { sun, moon, rising };
 }
 
-function roleLine(person: GroupPerson): string {
-  const { sun, moon, rising } = signsOf(person);
-  const el = elementOf(sun);
-  const mode = modeOf(sun);
-  return (
-    `${person.name} — ${sun} sun. ${ELEMENT_LINE[el]} ${MODE_LINE[mode]} ` +
-    `Moon in ${moon}: what they need in order to keep showing up. Rising ${rising}: how the room meets them. ` +
-    `Use what ${person.name} already does well. Do not ask them to become someone else.`
-  );
+function roleLine(person: GroupPerson, index: number): string {
+  const seats = [
+    "starts the decision and keeps it moving",
+    "writes the plan so everyone hears the same thing",
+    "turns the decision into steps and a deadline",
+    "checks that the plan is honest and people can live with it",
+  ];
+  const job = seats[index % seats.length];
+  const pronouns = (person.pronouns ?? "").toLowerCase();
+  const stay = pronouns.startsWith("she")
+    ? `She stays with what she already does well, on her own terms.`
+    : pronouns.startsWith("he")
+      ? `He stays with what he already does well, on his own terms.`
+      : `They stay with what they already do well, on their own terms.`;
+  return `${person.name} ${job}. ${stay}`;
 }
 
 export function chartFromSigns(input: {
@@ -205,45 +193,46 @@ export function promptIdeas(connectionId: string, tandem: boolean): string[] {
   ];
 }
 
-function pickCards(seed: string, count: number): GroupCard[] {
+function pickCards(seed: string): GroupCard[] {
   const slots = [
-    { slot: "root", slotName: "Root" },
-    { slot: "support", slotName: "Quiet Support" },
-    { slot: "you", slotName: "For You" },
-    { slot: "move", slotName: "Best Move" },
-    { slot: "gift", slotName: "Untapped Gift" },
-    { slot: "best", slotName: "Best Case" },
-    { slot: "edge", slotName: "Your Advantage" },
+    { slot: "where", slotName: "Where you are" },
+    { slot: "means", slotName: "What it means" },
+    { slot: "do", slotName: "What to do" },
   ];
   let n = 0;
   for (let i = 0; i < seed.length; i++) n = (n * 31 + seed.charCodeAt(i)) >>> 0;
   const out: GroupCard[] = [];
   const used = new Set<number>();
-  for (let i = 0; i < Math.min(count, slots.length); i++) {
+  for (let i = 0; i < slots.length; i++) {
     let idx = (n + i * 17) % FULL_DECK.length;
     while (used.has(idx)) idx = (idx + 1) % FULL_DECK.length;
     used.add(idx);
+    const card = FULL_DECK[idx];
+    const reversed = ((n >> i) & 1) === 1;
     out.push({
       slot: slots[i].slot,
       slotName: slots[i].slotName,
-      card: FULL_DECK[idx],
-      reversed: ((n >> i) & 1) === 1,
+      card,
+      reversed,
+      line: "",
     });
   }
+  for (const item of out) item.line = cardSentence(item);
   return out;
 }
 
-function cardCall(card: GroupCard): string {
-  const name = card.card.name;
-  const upright =
-    (card.card.upright || "")
-      .trim()
-      .split(/(?<=\.)\s/)[0]
-      ?.trim() || "Act on what is already clear.";
-  if (card.reversed) {
-    return `${card.slotName}: ${name} reversed. Same message, sooner. ${upright}`;
-  }
-  return `${card.slotName}: ${name}. ${upright}`;
+function firstSentence(text: string): string {
+  const clean = text.replace(/\s+/g, " ").trim();
+  return clean.split(/(?<=\.)\s/)[0]?.trim() || "Act on what is already clear.";
+}
+
+function cardSentence(card: GroupCard): string {
+  const hard = /tower|devil|death|swords|five of|ten of wands|nine of wands/i.test(card.card.name);
+  const point = hard
+    ? "Keep what is working. Drop what is not. Move the part you control."
+    : firstSentence(card.card.upright);
+  if (card.reversed) return `${card.card.name} is already in motion. ${point}`;
+  return `${card.card.name}. ${point}`;
 }
 
 function overview(
@@ -260,39 +249,16 @@ function overview(
       ? names.join(", ")
       : `${names.slice(0, 2).join(", ")} and ${names.length - 2} others`;
 
-  const root = cards.find(c => c.slot === "root");
-  const move = cards.find(c => c.slot === "move");
-  const gift = cards.find(c => c.slot === "gift");
-
-  const rootBit = root
-    ? `Root card: ${root.card.name}${root.reversed ? " reversed" : ""}. That is the ground under this group.`
-    : "This group has enough strength to move.";
-  const moveBit = move
-    ? ` Best move: ${move.card.name}${move.reversed ? " reversed" : ""}. Treat it as the instruction.`
-    : "";
-  const giftBit = gift
-    ? ` Unused strength: ${gift.card.name}${gift.reversed ? " reversed" : ""}. Name it and put someone on it.`
-    : "";
-
-  const ask = question
-    ? ` You asked: "${question}." Answer it with one decision the whole group can own today.`
-    : " Make one shared decision today — who owns it, and by when.";
-
-  if (tandem) {
-    return (
-      `${who} (${connection}). ` +
-      `${rootBit}${moveBit}${giftBit}` +
-      ` You do not need more analysis. You need one step both of you will protect.` +
-      ask
-    );
-  }
-
-  return (
-    `${who} (${connection}). ` +
-    `${rootBit}${moveBit}${giftBit}` +
-    ` Roles clear. One aim. Then do the work.` +
-    ask
-  );
+  const where = cards[0];
+  const todo = cards[2];
+  const asked = question.replace(/[?.!\s]+$/g, "");
+  const ask = asked ? `You asked, "${asked}." ` : "";
+  const ground = where ? `${where.card.name} is where you are. ` : "";
+  const move = todo ? `${todo.card.name} is what to do. ` : "";
+  const close = tandem
+    ? "The two of you agree on one decision and finish it today."
+    : "The group agrees on one decision and finishes it today.";
+  return `${ask}${who}, ${connection}. ${ground}${move}${close}`;
 }
 
 export function composeGroupReading(
@@ -303,10 +269,10 @@ export function composeGroupReading(
   const tandem = people.length === 2;
   const names = people.map(p => p.name);
   const title = tandem
-    ? `${names[0]} & ${names[1]}`
-    : names.length <= 3
-      ? names.join(", ")
-      : `${names.slice(0, 2).join(", ")} + ${names.length - 2} more`;
+    ? `Tandem · ${names[0]} & ${names[1]}`
+    : `Group Read · ${
+        names.length <= 3 ? names.join(", ") : `${names.slice(0, 2).join(", ")} + ${names.length - 2} more`
+      }`;
 
   const connection =
     lens?.connectionId === "other" && (lens.otherText ?? "").trim()
@@ -315,42 +281,31 @@ export function composeGroupReading(
 
   const question = (lens?.question ?? "").trim();
   const seed = `${people.map(p => p.id).join("-")}-${when.toISOString().slice(0, 10)}-${question}`;
-  const cards = pickCards(seed, 7);
+  const cards = pickCards(seed);
 
   const portrait = overview(people, tandem, connection, question, cards);
-  const roles: GroupRole[] = people.map(p => ({
+  const roles: GroupRole[] = people.map((p, index) => ({
     id: p.id,
     name: p.name,
-    line: roleLine(p),
+    line: roleLine(p, index),
   }));
 
-  const personBlocks = roles.map(r => r.line).join("\n\n");
-  const cardBlocks = cards.map(cardCall).join(" ");
-
-  const magnetize =
-    cards.find(c => c.slot === "support") != null
-      ? cardCall(cards.find(c => c.slot === "support")!)
-      : "You already have chemistry. Point it at one shared aim.";
-
-  const breakthrough =
-    cards.find(c => c.slot === "gift") != null
-      ? cardCall(cards.find(c => c.slot === "gift")!)
-      : "Use a strength you already have. Stop hunting for a new one.";
-
-  const directive = tandem
-    ? `${names[0]} and ${names[1]}: agree on the next step, write it down, finish it before the day ends. Keep the same promise.`
-    : `Pick the decision. Name who owns it. Set the date. Protect that plan until it is done.`;
+  const owner = names[0] ?? "Someone";
+  const asked = question.replace(/[?.!\s]+$/g, "");
+  const directive = asked
+    ? `${owner} writes one sentence that answers "${asked}." Everyone agrees on it before the day ends.`
+    : `${owner} names the decision in one sentence. Everyone agrees on it before the day ends.`;
 
   const sections: GroupSection[] = [
-    { heading: "The room", text: portrait },
-    { heading: "Each person", text: personBlocks },
-    { heading: "What holds you together", text: magnetize },
-    { heading: "The opening", text: breakthrough },
-    { heading: "The cards", text: cardBlocks },
-    { heading: "Do this next", text: directive },
+    { heading: "Who does what", text: roles.map(role => role.line).join("\n\n") },
+    { heading: "Do this today", text: directive },
   ];
 
-  const body = sections.map(s => `${s.heading}\n\n${s.text}`).join("\n\n");
+  const body = [
+    `The answer\n\n${portrait}`,
+    ...cards.map(card => `${card.slotName}\n\n${card.line}`),
+    ...sections.map(section => `${section.heading}\n\n${section.text}`),
+  ].join("\n\n");
 
   const details = people.map(p => {
     const s = signsOf(p);
@@ -377,8 +332,8 @@ export function composeGroupReading(
     kindLabel: tandem ? "Tandem" : "Group Read",
     privateNote: privateBits.join("\n"),
     roles,
-    magnetize,
-    breakthrough,
+    magnetize: cards[1]?.line ?? "",
+    breakthrough: cards[0]?.line ?? "",
     directive,
   };
 }

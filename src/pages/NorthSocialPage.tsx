@@ -379,7 +379,7 @@ export function NorthSocialPage() {
           <section className="tn-card">
             <div className="tn-actions">
               <button type="button" className={view.reading === "tri" ? "cta-pist tn-action" : "cta-ghost tn-action"} onClick={() => goReading("tri")}>Tri-Sky</button>
-              <button type="button" className={view.reading === "group" ? "cta-pist tn-action" : "cta-ghost tn-action"} onClick={() => goReading("group")}>Group / Tandem</button>
+              <button type="button" className={view.reading === "group" ? "cta-pist tn-action" : "cta-ghost tn-action"} onClick={() => goReading("group")}>Group Read</button>
             </div>
             {view.reading === "group" ? (
               <GroupReadRoom
@@ -417,7 +417,7 @@ export function NorthSocialPage() {
         <Link to="/chart" className={view.destination === "feed" ? "is-on" : ""}>Feed</Link>
         <Link to="/chart#sky" className={view.destination === "sky" ? "is-on" : ""}>My Sky</Link>
         <Link to="/chart#tri-sky" className={view.destination === "readings" && view.reading === "tri" ? "is-on" : ""}>Tri-Sky</Link>
-        <Link to="/chart#group" className={view.destination === "readings" && view.reading === "group" ? "is-on" : ""}>Tandem</Link>
+        <Link to="/chart#group" className={view.destination === "readings" && view.reading === "group" ? "is-on" : ""}>Group Read</Link>
       </nav>
 
       <Dialog open={Boolean(storyPost)} onOpenChange={open => { if (!open) setStory(null); }}>

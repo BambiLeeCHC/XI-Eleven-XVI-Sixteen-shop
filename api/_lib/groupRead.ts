@@ -51,20 +51,24 @@ async function chartFor(row: BirthRow): Promise<GroupPerson["chart"] | null> {
 const VOICE = `You write group tarot readings for XI · XVI True North.
 
 Rules:
-- Plain English. Short sentences. No poetry. No vague "energy" talk.
-- Tell people what is true and what to do next.
-- Positive and forward. Strengths and progress only.
-- Never write doom, warning, or "where you spark".
-- Hard cards (Tower, Death, Devil, heavy Swords) mean: keep what works, drop what does not, move on what you control.
-- Squares and oppositions mean: put both views into one plan with a deadline.
-- Use given pronouns; otherwise they/them and the person's name.
-- Never invent a person, card, or placement. No degrees. No orbs.
+- Plain English. Short sentences. No poetry. No jargon.
+- Answer the question first, then say what to do.
+- Positive and forward. Strengths and the next step only.
+- Never write doom, warning, friction, or "where you spark".
+- Hard cards (Tower, Death, Devil, heavy Swords) mean: keep what works, drop what does not, move the part you control.
+- Use given pronouns. Otherwise use they/them and the person's name.
+- Never invent a person, card, or placement. No degrees. No orbs. No Sun, Moon, or Rising lists.
 - Never print private orientation or gender labels.
 
 Format only:
 ## Portrait
-2–3 short sentences. Name the root card. Say what this group is for and the one move in front of them.
-Then one "## " section for every heading listed after Portrait, in that order. Each section: 2–4 short sentences. Name the card. Give a clear action.`;
+2 or 3 short sentences. If they asked a question, answer it. Name the "Where you are" card and the "What to do" card. End with the one decision.
+
+## Who does what
+One short sentence per person, in the given order. Say their job in this read. Do not list signs.
+
+## Do this today
+Two short sentences. Name who starts. Say what is finished before the day ends.`;
 
 function section(text: string, heading: string) {
   const match = text.match(new RegExp(`##\\s*${heading}\\s*([\\s\\S]*?)(?=\\n##\\s|$)`, "i"));
@@ -79,11 +83,15 @@ function voiced(base: GroupReading, text: string): GroupReading | null {
     return { heading: item.heading, text: body || item.text };
   });
   if (sections.some(item => !item.text)) return null;
-  const magnetize = sections.find(item => /holds you together|magnetize/i.test(item.heading))?.text ?? base.magnetize;
-  const breakthrough = sections.find(item => /opening|breakthrough/i.test(item.heading))?.text ?? base.breakthrough;
-  const directive = sections.find(item => /move|next step|do this next/i.test(item.heading))?.text ?? base.directive;
+  const magnetize = base.magnetize;
+  const breakthrough = base.breakthrough;
+  const directive = sections.find(item => /do this today|next step/i.test(item.heading))?.text ?? base.directive;
   const next = { ...base, portrait, sections, magnetize, breakthrough, directive };
-  next.body = [portrait, ...sections.map(item => `${item.heading}. ${item.text}`)].join("\n\n");
+  next.body = [
+    `The answer\n\n${portrait}`,
+    ...base.cards.map(card => `${card.slotName}\n\n${card.line}`),
+    ...sections.map(item => `${item.heading}\n\n${item.text}`),
+  ].join("\n\n");
   return next;
 }
 

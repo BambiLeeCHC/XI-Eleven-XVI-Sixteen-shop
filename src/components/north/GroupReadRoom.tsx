@@ -217,8 +217,9 @@ export function GroupReadRoom({
                     <CardArt card={card.card} reversed={card.reversed} />
                   </FlipCard>
                   <p className="long-read-card-name">
-                    {open ? `${card.card.name}${card.reversed ? " (rev.)" : ""}` : "Face down"}
+                    {open ? card.card.name : "Face down"}
                   </p>
+                  {open ? <p className="group-read__card-line">{card.line}</p> : null}
                 </div>
               );
             })}
