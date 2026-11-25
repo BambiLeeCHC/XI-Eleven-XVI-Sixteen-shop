@@ -1,15 +1,18 @@
 import { type ReactNode, useEffect, useRef, useState } from "react";
 import { setSoundEnabled, soundEnabled } from "../lib/dialSound";
+import { SoundMark } from "./LineMarks";
 
 const SPARKS = 36;
 
 export function DialAtmosphere({
   cue,
   burst,
+  flat = false,
   children,
 }: {
   cue: string;
   burst?: boolean;
+  flat?: boolean;
   children: ReactNode;
 }) {
   const root = useRef<HTMLDivElement>(null);
@@ -41,7 +44,7 @@ export function DialAtmosphere({
 
   useEffect(() => {
     const node = canvas.current;
-    if (!node || reduced.current) return;
+    if (!node || reduced.current || flat) return;
     const context = node.getContext("2d");
     if (!context) return;
     const sparks = Array.from({ length: SPARKS }, (_, i) => ({
@@ -85,10 +88,10 @@ export function DialAtmosphere({
       alive = false;
       cancelAnimationFrame(frame);
     };
-  }, []);
+  }, [flat]);
 
   const lean = (clientX: number, clientY: number) => {
-    if (reduced.current) return;
+    if (reduced.current || flat) return;
     const node = root.current;
     if (!node) return;
     const rect = node.getBoundingClientRect();
@@ -100,7 +103,7 @@ export function DialAtmosphere({
   return (
     <div
       ref={root}
-      className={`dial-holo${flare ? " is-flare" : ""}${shock ? " is-shock" : ""}`}
+      className={`dial-holo${flat ? " is-flat" : ""}${flare ? " is-flare" : ""}${shock ? " is-shock" : ""}`}
       onPointerMove={event => {
         if (event.pointerType === "mouse") lean(event.clientX, event.clientY);
       }}
@@ -132,7 +135,7 @@ export function DialAtmosphere({
           setSoundEnabled(next);
         }}
       >
-        {sound ? "♪" : "♪̸"}
+        {sound ? <SoundMark on /> : <SoundMark on={false} />}
       </button>
     </div>
   );

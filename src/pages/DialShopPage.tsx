@@ -382,7 +382,7 @@ export function DialShopPage() {
             : undefined
         }
       />
-      <DialAtmosphere cue={`${step}-${category}-${family}`} burst={sheet}>
+      <DialAtmosphere cue={`${step}-${category}-${family}`} burst={sheet} flat={landing}>
       <div className="dial-shop__stage">
         <div className="dial-gender" role="radiogroup" aria-label="Clothing">
           <span
