@@ -1,4 +1,4 @@
-import { Heart, Search } from "lucide-react";
+import { HeartMark, SearchMark } from "./LineMarks";
 import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useSessionId } from "../hooks/useSessionId";
@@ -71,14 +71,14 @@ export function StoreHeader() {
               aria-label="Search"
               onClick={() => setSearchOpen(true)}
             >
-              <Search size={16} />
+              <SearchMark />
             </button>
             <Link
               to="/favorites"
               className="site-icon site-icon--desk"
               aria-label="Favorites"
             >
-              <Heart size={16} />
+              <HeartMark />
               {favCount > 0 ? <span>{padCount(favCount)}</span> : null}
             </Link>
             {isAuthenticated ? (

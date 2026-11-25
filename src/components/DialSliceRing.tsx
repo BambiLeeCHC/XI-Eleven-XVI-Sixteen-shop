@@ -81,7 +81,7 @@ export function DialSliceRing({
   const refs = useRef<Record<string, SVGPathElement | null>>({});
   const count = slices.length;
   const full = count ? 360 / count : 360;
-  const gap = Math.min(2.8, full * 0.1);
+  const gap = Math.min(7.5, full * 0.16);
 
   const move = (event: KeyboardEvent<SVGPathElement>, id: string) => {
     const delta =
@@ -183,8 +183,6 @@ export function DialSliceRing({
           const sold = slice.available === false;
           const outer = hot || active ? OUTER + 3.5 : OUTER;
           const [lx, ly] = point((INNER + outer) / 2, mid);
-          const flip = mid > 90 && mid < 270;
-          const rot = flip ? mid + 180 : mid;
           const font = Math.min(
             full > 70 ? 6.4 : full > 40 ? 5 : 3.8,
             Math.max(3.1, 46 / Math.max(slice.label.length, 1)),
@@ -233,13 +231,20 @@ export function DialSliceRing({
                 y={ly}
                 textAnchor="middle"
                 dominantBaseline="middle"
-                transform={`rotate(${rot} ${lx} ${ly})`}
                 fontSize={font}
                 fill={ink(slice.fill, hot || active)}
                 className="dial-slice__label"
                 pointerEvents="none"
               >
-                {slice.label.toUpperCase()}
+                {slice.label.toUpperCase().split(" ").map((word, wordIndex, words) => (
+                  <tspan
+                    key={word}
+                    x={lx}
+                    dy={wordIndex === 0 ? (words.length > 1 ? "-0.55em" : 0) : "1.15em"}
+                  >
+                    {word}
+                  </tspan>
+                ))}
               </text>
             </g>
           );
