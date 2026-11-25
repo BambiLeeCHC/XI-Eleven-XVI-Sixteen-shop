@@ -786,8 +786,14 @@ body:has(.store-shell.is-dial) {
 }
 
 .is-dial .dial-slice.is-hot:not(.is-color),
-.is-dial .dial-slice.is-on:not(.is-color) {
+.is-dial .dial-slice.is-on:not(.is-color),
+.is-dial .dial-slice:focus,
+.is-dial .dial-slice:focus-visible {
   fill: #111;
+  stroke: #111;
+  stroke-width: 1.15;
+  filter: none;
+  outline: none;
 }
 
 .is-dial g:not(:has(.is-color)):has(.is-hot) .dial-slice__label,
