@@ -1,6 +1,6 @@
 import { Outlet, useLocation } from "react-router-dom";
 import { useTrueNorthAccess } from "../lib/trueNorthGate";
-import { LiveSky } from "./LiveSky";
+import { HeirloomField } from "./north/HeirloomField";
 import { StoreHeader } from "./StoreHeader";
 import { StoreFooter } from "./StoreFooter";
 import { StyleAssistant } from "./StyleAssistant";
@@ -19,8 +19,8 @@ export function StoreLayout() {
     (skyPath && !access.allowed);
 
   return (
-    <div className={`store-shell flex flex-col min-h-screen${north ? " is-north" : " is-shop"}${dial ? " is-dial" : ""}${piece ? " is-pdp" : ""}${plain ? " is-plain" : ""}`}>
-      {north ? <LiveSky /> : dial || piece || plain ? null : <div className="shop-field" aria-hidden="true" />}
+    <div className={`store-shell flex flex-col min-h-screen${north ? " is-north" : " is-shop"}${northPath ? " is-north-path" : ""}${dial ? " is-dial" : ""}${piece ? " is-pdp" : ""}${plain ? " is-plain" : ""}`}>
+      {northPath ? <HeirloomField /> : dial || piece || plain ? null : <div className="shop-field" aria-hidden="true" />}
       <StoreHeader />
       <main className="store-main flex-1">
         <Outlet />

@@ -5,7 +5,6 @@ import { CompassRose } from "../components/north/CompassRose";
 import { SkyAvatar } from "../components/north/SkyAvatar";
 import { AvatarStudio } from "../components/north/AvatarStudio";
 import { TarotCardArt } from "../components/north/TarotCardArt";
-import { HeirloomBacksCarousel } from "../components/north/HeirloomBacksCarousel";
 import { ConstellationSeat, PostCard, atHandle, portraitFor } from "../components/north/NorthSocialPieces";
 import { drawCards } from "../components/north/SocialFeed";
 import { TrueNorthAtmosphere } from "../components/journal/TrueNorthAtmosphere";
@@ -221,7 +220,6 @@ export function NorthSocialPage() {
       <TrueNorthAtmosphere />
       <div className="journal-stack tn-shell">
         <SEO title={PAGE_SEO.chart.title} description={PAGE_SEO.chart.description} url="/chart" />
-        <HeirloomBacksCarousel />
         <header className="tn-card north-social__head north-shell">
           <div className="north-social__brand">
             <CompassRose />
