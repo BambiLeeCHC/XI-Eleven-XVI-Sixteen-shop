@@ -181,7 +181,7 @@ export function DialSliceRing({
           const hot = hotId === slice.id;
           const active = activeId === slice.id;
           const sold = slice.available === false;
-          const outer = hot || active ? OUTER + 3.5 : OUTER;
+          const outer = OUTER;
           const [lx, ly] = point((INNER + outer) / 2, mid);
           const font = Math.min(
             full > 70 ? 6.4 : full > 40 ? 5 : 3.8,

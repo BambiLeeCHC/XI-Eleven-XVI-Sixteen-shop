@@ -39,6 +39,17 @@
   stroke-width: 1.4;
 }
 
+.is-dial .dial-slice,
+.is-dial .dial-slice.is-hot,
+.is-dial .dial-slice.is-on,
+.is-dial .dial-slice:focus,
+.is-dial .dial-slice:focus-visible {
+  filter: none;
+  stroke: #111;
+  stroke-width: 1.15;
+  outline: none;
+}
+
 .dial-enter {
   position: absolute;
   left: 50%;
